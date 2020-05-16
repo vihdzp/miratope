@@ -100,7 +100,45 @@ var BuildPolytope = {
 		for(var i = 0; i < 2**dimensions; i++) {
 			var coordinates = [];
 			for(var j = 1; j <= dimensions; j++) 
-				coordinates.push(i % (2**j) < 2**(j-1) ? 1/2 : -1/2)
+				coordinates.push(i % (2 ** j) < 2 ** (j - 1) ? 1/2 : -1/2);
+			vertices.push(new Point(coordinates));
+		}
+		
+		return new PolytopeV(vertices, dimensions);
+	},
+	
+	//Builds a simplex in the specified amount of dimensions.
+	//Implements the more complicated coordinates in the space of the same dimension.
+	simplex: function(dimensions) {
+		var vertices = [];
+		var aux = []; //Memoizes some square roots, tiny optimization.
+		for(var j = 1; j <= dimensions; j++) 
+			aux[j]=1/Math.sqrt(2 * j * (j + 1));
+		
+		for(var i = 1; i <= dimensions + 1; i++) {
+			var coordinates = [];
+			for(var j = 1; j <= dimensions; j++) 
+				coordinates.push(j >= i ? -aux[j] : j*aux[j]);
+			vertices.push(new Point(coordinates));
+		}
+		
+		return new PolytopeV(vertices, dimensions);
+	},
+	
+	//Builds a cross-polytope in the specified amount of dimensions.
+	//Just generates ±√2/2 in each coordinate.
+	cross: function(dimensions) {
+		var vertices = [];
+		var r2 = 1/Math.sqrt(2); //Miniscule code optimization.
+		for(var i = 0; i < dimensions; i++) {
+			var coordinates = [];
+			for(var j = 0; j < dimensions; j++) 
+				coordinates.push(j == i ? -r2 : 0);
+			vertices.push(new Point(coordinates));
+			
+			coordinates = [];
+			for(var j = 0; j < dimensions; j++) 
+				coordinates.push(j == i ? r2 : 0);
 			vertices.push(new Point(coordinates));
 		}
 		
