@@ -13,7 +13,7 @@ class Polytope {
 		for(var i = 0; i <= dimensions; i++)
 			els.push([]);
 		//Mapping from pairs of the indices below to indices of the corresponding els.
-		var locations = {}
+		var locations = {};
 		//i and i^j are the indices of the vertices of the current subelement.
 		//i^j is used instead of j to ensure that facets of els are generated before the corresponding element.
 		for(var i = 0; i < 2 ** dimensions; i++) {
@@ -79,9 +79,9 @@ class Polytope {
 		var els = [vertices];
 		for(var i = 1; i <= dimensions; i++)
 			els.push([]);
-		var locations = {}
+		var locations = {};
 		for(var i = 0; i < dimensions + 1; i++)
-			locations[2 ** i] = i
+			locations[2 ** i] = i;
 		for(var i = 1; i < 2**(dimensions + 1); i++) {
 			//Vertices were generated earlier
 			if (!(i & (i - 1)))
@@ -107,24 +107,11 @@ class Polytope {
 	//Builds a cross-polytope in the specified amount of dimensions.
 	//Positioned in the standard orientation with edge length 1.
 	static cross(dimensions) {
-		/*var vertices = [];
-		for(var i = 0; i < dimensions; i++) {
-			var coordinates = [];
-			for(var j = 0; j < dimensions; j++) 
-				coordinates.push(j == i ? -Math.SQRT1_2 : 0);
-			vertices.push(new Point(coordinates));
-			
-			coordinates = [];
-			for(var j = 0; j < dimensions; j++) 
-				coordinates.push(j == i ? Math.SQRT1_2 : 0);
-			vertices.push(new Point(coordinates));
-		}*/
-
 		//i is the set of nonzero dimensions, j is the set of negative dimensions
 		var els = [];
 		for(var i = 0; i <= dimensions; i++)
 			els.push([]);
-		var locations = {}
+		var locations = {};
 		//The full polytope is best handled separately
 		for(var i = 1; i < 2 ** dimensions; i++) {
 			for(var j = 0; j < 2 ** dimensions; j++) {
@@ -157,12 +144,11 @@ class Polytope {
 				els[elementDimension].push(facets);
 			}
 		}
-		console.log(locations)
 		var facets = [];
 		for(var i = 0; i < els[dimensions - 1].length; i++) {
-			facets.push(i)
+			facets.push(i);
 		}
-		els[dimensions].push(facets)
+		els[dimensions].push(facets);
 		
 		return new PolytopeC(els, dimensions);
 	}
