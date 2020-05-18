@@ -11,31 +11,34 @@
 </head>
 <body> 
 	<script>
+		//Basic variables.
+		var fillType = 0;
+		var matrix;
+		
 		//Configures the basic attributes of the scene.
 		var scene = new THREE.Scene();
 		var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-		var renderer = new THREE.WebGLRenderer();
+		camera.position.z = 5;
+		var renderer = new THREE.WebGLRenderer({antialias:true});
 		renderer.setSize( window.innerWidth, window.innerHeight );
 		document.body.appendChild( renderer.domElement );
 		
 		//Adds both ambient light and directional light.
-		var ambientLight = new THREE.AmbientLight( 0xcccccc );
+		var ambientLight = new THREE.AmbientLight( 0x777777 );
 		scene.add( ambientLight );
-		var directionalLight = new THREE.DirectionalLight( 0xffffff, 2 );
-		directionalLight.position.set( 1, 1, 0.5 ).normalize();
+		var directionalLight = new THREE.DirectionalLight( 0x777777, 2 );
+		directionalLight.position.set( 1,1,1 ).normalize();
 		scene.add( directionalLight );
 		
-		//Test triangle
-		var a = new THREE.Vector3(0,2,0);
-		var b = new THREE.Vector3(0,0,-1);
-		var c = new THREE.Vector3(0,0,1);
-		var geometry = new THREE.Geometry();
-		geometry.vertices = [ a, b, c ];
-		var face = new THREE.Face3( 0, 1, 2 );
-		geometry.faces.push(face);
-		geometry.computeFaceNormals();
+		//Test equilateral triangle
+		var geometry = new THREE.BufferGeometry();
+		var vertices = new Float32Array([-1,-0.5773502691896257,0,1,-0.5773502691896257,0,0,1.1547005383792515,0]);
+		var normals = new Float32Array([0,0,1,0,0,1,0,0,1]);
+		geometry.setAttribute('position',new THREE.BufferAttribute(vertices, 3));
+		geometry.setAttribute('normal',new THREE.BufferAttribute(normals, 3));
+		geometry.setIndex([0,1,2]);
 		var triangle = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial({color: 0xff0000, side: 2, flatShading: true}));
-		scene.add( triangle ); camera.position.z =5;
+		scene.add( triangle ); 
 		
 		//Render loop.
 		function animate() { 

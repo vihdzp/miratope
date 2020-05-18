@@ -1,12 +1,169 @@
+"use strict";
+
 //A general class for polytopes.
 //Most of its procedures need to be defined in its inherited classes.
-//Not sure if we even need it, but we might.
 class Polytope {
 	constructor() {
+	}
+	
+	//Builds a hypercube in the specified amount of dimensions.
+	//Positioned in the standard orientation with edge length 1.
+	static hypercube(dimensions) {
+		var els = []; //Elements is a reserved word.
+		for(var i = 0; i <= dimensions; i++)
+			els.push([]);
+		//Mapping from pairs of the indices below to indices of the corresponding els.
+		var locations = {}
+		//i and i^j are the indices of the vertices of the current subelement.
+		//i^j is used instead of j to ensure that facets of els are generated before the corresponding element.
+		for(var i = 0; i < 2 ** dimensions; i++) {
+			for(var j = 0; j < 2 ** dimensions; j++) {
+				//If the indices are the same, this is a vertex
+				if(i == 0) {
+					var coordinates = [];
+					for(var k = 1; k <= dimensions; k++) 
+						coordinates.push(j % (2 ** k) < 2 ** (k - 1) ? 0.5 : -0.5);
+					locations[j] = {0:els[0].length};
+					els[0].push(new Point(coordinates));
+					continue;
+				}
+				//To avoid redundancy, i^j should be >=i using the obvious partial ordering on bitstrings.
+				//This is equivalent to i and j being disjoint
+				if((j & i) != 0)
+					continue;
+				//Everything else is a higher-dimensional element
+				var elementDimension = 0;
+				var difference = i;
+				var differences = [];
+				while(difference > 0) {
+					elementDimension++;
+					differences.push(difference & ~(difference - 1));
+					difference = difference & (difference - 1);
+				}
+				var facets = [];
+				//facets connected to i
+				for(var k = 0; k < differences.length; k++)
+					facets.push(locations[j][i ^ differences[k]]);
+				//facets connected to i^j
+				for(var k = 0; k < differences.length; k++)
+					facets.push(locations[j ^ differences[k]][i ^ differences[k]]);
+				locations[j][i] = els[elementDimension].length;
+				els[elementDimension].push(facets);
+			}
+		}
+
+		return new PolytopeC(els, dimensions);
+	}
+	
+	//Builds a simplex in the specified amount of dimensions.
+	//Implements the more complicated coordinates in the space of the same dimension.
+	static simplex(dimensions) {
+		var vertices = [];
+		var aux = [Infinity]; //Memoizes some square roots, tiny optimization.
+		for(var j = 1; j <= dimensions; j++) 
+			aux.push(1/Math.sqrt(2 * j * (j + 1)));
+		
+		for(var i = 1; i <= dimensions + 1; i++) {
+			var coordinates = [];
+			for(var j = 1; j <= dimensions; j++) 
+				coordinates.push(j >= i ? -aux[j] : j*aux[j]);
+			vertices.push(new Point(coordinates));
+		}
+
+		var els = [vertices];
+		for(var i = 1; i <= dimensions; i++)
+			els.push([]);
+		var locations = {}
+		for(var i = 0; i < dimensions + 1; i++)
+			locations[2 ** i] = i
+		for(var i = 1; i < 2**(dimensions + 1); i++) {
+			//Vertices were generated earlier
+			if (!(i & (i - 1)))
+				continue;
+			var elementDimension = -1;
+			var t = i;
+			var elemVertices = [];
+			while(t > 0) {
+				elementDimension++;
+				elemVertices.push(t & ~(t - 1));
+				t = t & (t - 1);
+			}
+			var facets = [];
+			for(var k = 0; k < elemVertices.length; k++)
+				facets.push(locations[i ^ elemVertices[k]]);
+			locations[i] = els[elementDimension].length;
+			els[elementDimension].push(facets);
+		}
+		
+		return new PolytopeC(els, dimensions);
+	}
+	
+	//Builds a cross-polytope in the specified amount of dimensions.
+	//Positioned in the standard orientation with edge length 1.
+	static cross(dimensions) {
+		/*var vertices = [];
+		for(var i = 0; i < dimensions; i++) {
+			var coordinates = [];
+			for(var j = 0; j < dimensions; j++) 
+				coordinates.push(j == i ? -Math.SQRT1_2 : 0);
+			vertices.push(new Point(coordinates));
+			
+			coordinates = [];
+			for(var j = 0; j < dimensions; j++) 
+				coordinates.push(j == i ? Math.SQRT1_2 : 0);
+			vertices.push(new Point(coordinates));
+		}*/
+
+		//i is the set of nonzero dimensions, j is the set of negative dimensions
+		var els = [];
+		for(var i = 0; i <= dimensions; i++)
+			els.push([]);
+		var locations = {}
+		//The full polytope is best handled separately
+		for(var i = 1; i < 2 ** dimensions; i++) {
+			for(var j = 0; j < 2 ** dimensions; j++) {
+				//No negative zero dimensions
+				if((i & j) != j)
+					continue;
+				if(!j)
+					locations[i] = {};
+				if(!(i & (i - 1))) {
+					var coordinates = [];
+					var sign = j ? -1 : 1;
+					for(var k = 0; k < dimensions; k++) 
+						coordinates.push((2 ** k) == i ? sign * Math.SQRT1_2 : 0);
+					locations[i][j] = els[0].length;
+					els[0].push(new Point(coordinates));
+					continue;
+				}
+				var elementDimension = -1;
+				var t = i;
+				var elemVertices = [];
+				while(t > 0) {
+					elementDimension++;
+					elemVertices.push(t & ~(t - 1));
+					t = t & (t - 1);
+				}
+				var facets = [];
+				for(var k = 0; k < elemVertices.length; k++)
+					facets.push(locations[i ^ elemVertices[k]][j & ~elemVertices[k]]);
+				locations[i][j] = els[elementDimension].length;
+				els[elementDimension].push(facets);
+			}
+		}
+		console.log(locations)
+		var facets = [];
+		for(var i = 0; i < els[dimensions - 1].length; i++) {
+			facets.push(i)
+		}
+		els[dimensions].push(facets)
+		
+		return new PolytopeC(els, dimensions);
 	}
 }
 
 //Represents a polytope as a convex hull.
+//Will be merged with PolytopeC.
 class PolytopeV extends Polytope {
 	constructor(vertices, dimensions) {
 		super();
@@ -26,7 +183,7 @@ class PolytopeV extends Polytope {
 
 //Represents a polytope as a list of elements, in ascending order of dimensions, similar to an OFF file.
 //We don't store only the facets, because we don't want to deal with O(2^n) code.
-//(Should we store indexes or references?)
+//Subelements stored as indices.
 class PolytopeC extends Polytope {
 	constructor(elementList, dimensions) {
 		super();
@@ -114,146 +271,20 @@ class Point {
 	}
 }
 
-//A namespace for functions that build polytopes.
-var BuildPolytope = {
-	//Builds a hypercube in the specified amount of dimensions.
-	//Positioned in the standard orientation with edge length 1.
-	hypercube: function(dimensions) {
-		var elements = [];
-		for(var i = 0; i <= dimensions; i++)
-			elements.push([]);
-		//Mapping from pairs of the indices below to indices of the corresponding elements.
-		var locations = {};
-		//i and i^j are the indices of the vertices of the current subelement.
-		//i^j is used instead of j to ensure that facets of elements are generated before the corresponding element.
-		for(var i = 0; i < 2**dimensions; i++) {
-			for(var j = 0; j < 2**dimensions; j++) {
-				//If the indices are the same, this is a vertex
-				if(i == 0) {
-					var coordinates = [];
-					for(var k = 1; k <= dimensions; k++) 
-						coordinates.push(j % (2 ** k) < 2 ** (k - 1) ? 1/2 : -1/2);
-					locations[j] = {0:elements[0].length};
-					elements[0].push(new Point(coordinates));
-					continue;
-				}
-				//To avoid redundancy, i^j should be >=i using the obvious partial ordering on bitstrings.
-				//This is equivalent to i and j being disjoint
-				if((j & i) != 0)
-					continue;
-				//Everything else is a higher-dimensional element
-				var elementDimension = 0;
-				var difference = i;
-				var differences = [];
-				while(difference > 0) {
-					elementDimension++;
-					differences.push(difference & ~(difference - 1));
-					difference = difference & (difference - 1);
-				}
-				var facets = [];
-				//facets connected to i
-				for(var k = 0; k < differences.length; k++)
-					facets.push(locations[j][i ^ differences[k]]);
-				//facets connected to i^j
-				for(var k = 0; k < differences.length; k++)
-					facets.push(locations[j ^ differences[k]][i ^ differences[k]]);
-				locations[j][i] = elements[elementDimension].length;
-				elements[elementDimension].push(facets);
-			}
-		}
-
-		return new PolytopeC(elements, dimensions);
-	},
-	
-	//Builds a simplex in the specified amount of dimensions.
-	//Implements the more complicated coordinates in the space of the same dimension.
-	simplex: function(dimensions) {
-		var vertices = [];
-		var aux = [Infinity]; //Memoizes some square roots, tiny optimization.
-		for(var j = 1; j <= dimensions; j++) 
-			aux.push(1/Math.sqrt(2 * j * (j + 1)));
-		
-		for(var i = 1; i <= dimensions + 1; i++) {
-			var coordinates = [];
-			for(var j = 1; j <= dimensions; j++) 
-				coordinates.push(j >= i ? -aux[j] : j*aux[j]);
-			vertices.push(new Point(coordinates));
-		}
-
-		var elements = [vertices];
-		for(var i = 1; i <= dimensions; i++)
-			elements.push([]);
-		var locations = {};
-		for(var i = 0; i < dimensions + 1; i++)
-			locations[2 ** i] = i;
-		for(var i = 1; i < 2**(dimensions + 1); i++) {
-			//Vertices were generated earlier
-			if (!(i & (i - 1)))
-				continue;
-			var elementDimension = -1;
-			var t = i;
-			var elemVertices = [];
-			while(t > 0) {
-				elementDimension++;
-				elemVertices.push(t & ~(t - 1));
-				t = t & (t - 1);
-			}
-			var facets = [];
-			for(var k = 0; k < elemVertices.length; k++)
-				facets.push(locations[i ^ elemVertices[k]]);
-			locations[i] = elements[elementDimension].length;
-			elements[elementDimension].push(facets);
-		}
-		
-		return new PolytopeC(elements, dimensions);
-	},
-	
-	//Builds a cross-polytope in the specified amount of dimensions.
-	//Positioned in the standard orientation with edge length 1.
-	cross: function(dimensions) {
-		//i is the set of nonzero dimensions, j is the set of negative dimensions
-		var elements = [];
-		for(var i = 0; i <= dimensions; i++)
-			elements.push([]);
-		var locations = {};
-		//The full polytope is best handled separately
-		for(var i = 1; i < 2**dimensions; i++) {
-			for(var j = 0; j < 2**dimensions; j++) {
-				//No negative zero dimensions
-				if((i & j) != j)
-					continue;
-				if(!j)
-					locations[i] = {};
-				if(!(i & (i - 1))) {
-					var coordinates = [];
-					var sign = j ? -1 : 1;
-					for(var k = 0; k < dimensions; k++) 
-						coordinates.push((2 ** k) == i ? sign * Math.SQRT1_2 : 0);
-					locations[i][j] = elements[0].length;
-					elements[0].push(new Point(coordinates));
-					continue;
-				}
-				var elementDimension = -1;
-				var t = i;
-				var elemVertices = [];
-				while(t > 0) {
-					elementDimension++;
-					elemVertices.push(t & ~(t - 1));
-					t = t & (t - 1);
-				}
-				var facets = [];
-				for(var k = 0; k < elemVertices.length; k++)
-					facets.push(locations[i ^ elemVertices[k]][j & ~elemVertices[k]]);
-				locations[i][j] = elements[elementDimension].length;
-				elements[elementDimension].push(facets);
-			}
-		}
-		var facets = [];
-		for(var i = 0; i < elements[dimensions - 1].length; i++) {
-			facets.push(i);
-		}
-		elements[dimensions].push(facets);
-		
-		return new PolytopeC(elements, dimensions);
+//Class for drawing objects to the scene more efficiently. 
+class Scene {
+	static renderTriangle(a,b,c) {
+		var geometry = new THREE.BufferGeometry();
+		var vertices = new Float32Array(a.project().concat(b.project().concat(c.project())));
+		var x = [vertices[3]-vertices[0], vertices[4]-vertices[1], vertices[5]-vertices[2]];
+		var y = [vertices[6]-vertices[0], vertices[7]-vertices[1], vertices[8]-vertices[2]];
+		var n = [x[1]*y[2]-x[2]*y[1],x[2]*y[0]-x[0]*y[2],x[0]*y[1]-x[1]*y[0]];
+		var N = Math.sqrt(n[0]*n[0]+n[1]*n[1]+n[2]*n[2]);
+		var normals = new Float32Array([n[0]/N,n[1]/N,n[2]/N]);
+		geometry.setAttribute('position',new THREE.BufferAttribute(vertices, 3));
+		geometry.setAttribute('normal',new THREE.BufferAttribute(normals, 3));
+		geometry.setIndex([0,1,2]);
+		var triangle = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({color: 0xff0000, side: 2, flatShading: true}));
+		scene.add( triangle ); 
 	}
-};
+}
