@@ -31,7 +31,7 @@
 		scene.add( directionalLight );
 		
 		//Test octahedron.
-		Polytope.cross(3).render();
+		Polytope.cross(3).renderTo(new Scene(scene));
 		
 		//Render loop.
 		function animate() { 

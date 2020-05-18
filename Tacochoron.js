@@ -192,13 +192,13 @@ class PolytopeC extends Polytope {
 		return res;
 	}
 	
-	render() {
+	renderTo(scene) {
 		for(var i = 0; i < this.elementList[2].length; i++){
 			var e1=this.elementList[1][this.elementList[2][i][0]];
 			var e2=this.elementList[1][this.elementList[2][i][1]];
 			var e3=this.elementList[1][this.elementList[2][i][2]];
 			var f=PolytopeC.uniq(e1.concat(e2.concat(e3)));
-			Scene.renderTriangle(this.elementList[0][f[0]],this.elementList[0][f[1]],this.elementList[0][f[2]]);
+			scene.renderTriangle(this.elementList[0][f[0]],this.elementList[0][f[1]],this.elementList[0][f[2]]);
 		}
 	}
 	
@@ -291,7 +291,14 @@ class Point {
 
 //Class for drawing objects to the scene more efficiently. 
 class Scene {
-	static renderTriangle(a,b,c) {
+	constructor(scene) {
+		if(scene !== undefined)
+			this.scene = scene;
+		else
+			this.scene = new THREE.Scene();
+	}
+
+	renderTriangle(a,b,c) {
 		var geometry = new THREE.BufferGeometry();
 		var vertices = new Float32Array(a.project().concat(b.project().concat(c.project())));
 		var x = [vertices[3]-vertices[0], vertices[4]-vertices[1], vertices[5]-vertices[2]];
@@ -303,10 +310,10 @@ class Scene {
 		geometry.setAttribute('normal',new THREE.BufferAttribute(normals, 3));
 		geometry.setIndex([0,1,2]);
 		var triangle = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial({color: 0xffffff, side: THREE.DoubleSide, flatShading: true}));
-		scene.add( triangle ); 
+		this.scene.add( triangle ); 
 	}
 	
-	static reset() {
-		scene = new THREE.Scene();
+	reset() {
+		this.scene = new THREE.Scene();
 	}
 }
