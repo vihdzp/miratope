@@ -60,13 +60,19 @@ class Polytope {
 	static simplex(dimensions) {
 		var vertices = [];
 		var aux = [Infinity]; //Memoizes some square roots, tiny optimization.
-		for(var j = 1; j <= dimensions; j++) 
-			aux.push(1/Math.sqrt(2 * j * (j + 1)));
+		for(var i = 1; i <= dimensions; i++) 
+			aux.push(1/Math.sqrt(2 * i * (i + 1)));
 		
-		for(var i = 1; i <= dimensions + 1; i++) {
+		for(var i = 0; i <= dimensions ; i++) {
 			var coordinates = [];
-			for(var j = 1; j <= dimensions; j++) 
-				coordinates.push(j >= i ? -aux[j] : j*aux[j]);
+			for(var j = 1; j <= dimensions; j++) {
+				if(j > i)
+					coordinates.push(-aux[j]);
+				else if(j === i)
+					coordinates.push(j*aux[j]);
+				else
+					coordinates.push(0);
+			}
 			vertices.push(new Point(coordinates));
 		}
 
@@ -199,6 +205,24 @@ class PolytopeC extends Polytope {
 		res.divideBy(this.elementList[0].length);
 		return res;
 	}
+	
+	render() {
+		for(var i = 0; i < this.elementList[2].length; i++){
+			var e1=this.elementList[1][this.elementList[2][i][0]];
+			var e2=this.elementList[1][this.elementList[2][i][1]];
+			var e3=this.elementList[1][this.elementList[2][i][2]];
+			var f=PolytopeC.uniq(e1.concat(e2.concat(e3)));
+			Scene.renderTriangle(this.elementList[0][f[0]],this.elementList[0][f[1]],this.elementList[0][f[2]]);
+		}
+	}
+	
+	//https://stackoverflow.com/a/9229821/12419072
+	static uniq(a) {
+		var seen = {};
+		return a.filter(function(item) {
+			return seen.hasOwnProperty(item) ? false : (seen[item] = true);
+		});
+	}
 }
 
 //Represents a polytope in a way that takes advantage of symmetry.
@@ -250,6 +274,14 @@ class Point {
 		return new Point(this.coordinates);
 	}
 	
+	//Projects the point into 3D.
+	//For now, just the simplest orthographic projection possible.
+	project() {
+		return [this.coordinates[0] === undefined ? 0 : this.coordinates[0],
+		this.coordinates[1] === undefined ? 0 : this.coordinates[1],
+		this.coordinates[2] === undefined ? 0 : this.coordinates[2]];
+	}
+	
 	//Adds the coordinates of x to the coordinates of the point.
 	//Both need to have the same amount of dimensions.
 	add(x) {
@@ -280,11 +312,15 @@ class Scene {
 		var y = [vertices[6]-vertices[0], vertices[7]-vertices[1], vertices[8]-vertices[2]];
 		var n = [x[1]*y[2]-x[2]*y[1],x[2]*y[0]-x[0]*y[2],x[0]*y[1]-x[1]*y[0]];
 		var N = Math.sqrt(n[0]*n[0]+n[1]*n[1]+n[2]*n[2]);
-		var normals = new Float32Array([n[0]/N,n[1]/N,n[2]/N]);
+		var normals = new Float32Array([n[0]/N,n[1]/N,n[2]/N,n[0]/N,n[1]/N,n[2]/N,n[0]/N,n[1]/N,n[2]/N]);
 		geometry.setAttribute('position',new THREE.BufferAttribute(vertices, 3));
 		geometry.setAttribute('normal',new THREE.BufferAttribute(normals, 3));
 		geometry.setIndex([0,1,2]);
-		var triangle = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial({color: 0xff0000, side: 2, flatShading: true}));
+		var triangle = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial({color: 0xffffff, side: THREE.DoubleSide, flatShading: true}));
 		scene.add( triangle ); 
+	}
+	
+	static reset() {
+		scene = new THREE.Scene();
 	}
 }
