@@ -50,8 +50,21 @@ class PolytopeC extends Polytope {
 //within a single domain connect to each other under "change vertex/edge/..." operations,
 //matrices describing how the symmetry group affects the physical representation of the polytope,
 //and positions of each class of vertices.
+//In this implementation the symmetry group and its physical effects are bundled.
 class PolytopeS extends Polytope {
+	constructor(symmetries, flagClasses, vertices, dimensions) {
+		this.symmetries = symmetries;
+		this.flagClasses = flagClasses;
+		this.vertices = vertices;
+		this.dimensions = dimensions;
+	}
 
+	//The centroid is the centroid of the original vertices,
+	//projected onto the intersection of the eigenspaces of the generators
+	//with eigenvalues 1.
+	centroid() {
+		throw new Error("PolytopeS.centroid is not yet implemented");
+	}
 }
 
 //Class for points in any amount of dimensions.
@@ -110,7 +123,7 @@ var BuildPolytope = {
 		for(var i = 0; i <= dimensions; i++)
 			elements.push([]);
 		//Mapping from pairs of the indices below to indices of the corresponding elements.
-		var locations = {}
+		var locations = {};
 		//i and i^j are the indices of the vertices of the current subelement.
 		//i^j is used instead of j to ensure that facets of elements are generated before the corresponding element.
 		for(var i = 0; i < 2**dimensions; i++) {
@@ -170,9 +183,9 @@ var BuildPolytope = {
 		var elements = [vertices];
 		for(var i = 1; i <= dimensions; i++)
 			elements.push([]);
-		var locations = {}
+		var locations = {};
 		for(var i = 0; i < dimensions + 1; i++)
-			locations[2 ** i] = i
+			locations[2 ** i] = i;
 		for(var i = 1; i < 2**(dimensions + 1); i++) {
 			//Vertices were generated earlier
 			if (!(i & (i - 1)))
@@ -198,24 +211,11 @@ var BuildPolytope = {
 	//Builds a cross-polytope in the specified amount of dimensions.
 	//Positioned in the standard orientation with edge length 1.
 	cross: function(dimensions) {
-		/*var vertices = [];
-		for(var i = 0; i < dimensions; i++) {
-			var coordinates = [];
-			for(var j = 0; j < dimensions; j++) 
-				coordinates.push(j == i ? -Math.SQRT1_2 : 0);
-			vertices.push(new Point(coordinates));
-			
-			coordinates = [];
-			for(var j = 0; j < dimensions; j++) 
-				coordinates.push(j == i ? Math.SQRT1_2 : 0);
-			vertices.push(new Point(coordinates));
-		}*/
-
 		//i is the set of nonzero dimensions, j is the set of negative dimensions
 		var elements = [];
 		for(var i = 0; i <= dimensions; i++)
 			elements.push([]);
-		var locations = {}
+		var locations = {};
 		//The full polytope is best handled separately
 		for(var i = 1; i < 2**dimensions; i++) {
 			for(var j = 0; j < 2**dimensions; j++) {
@@ -248,12 +248,11 @@ var BuildPolytope = {
 				elements[elementDimension].push(facets);
 			}
 		}
-		console.log(locations)
 		var facets = [];
 		for(var i = 0; i < elements[dimensions - 1].length; i++) {
-			facets.push(i)
+			facets.push(i);
 		}
-		elements[dimensions].push(facets)
+		elements[dimensions].push(facets);
 		
 		return new PolytopeC(elements, dimensions);
 	}
