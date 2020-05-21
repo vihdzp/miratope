@@ -53,7 +53,7 @@ class Polytope {
 			}
 		}
 
-		return new PolytopeC(els, dimensions);
+		return new PolytopeC(els, dimensions, true);
 	}
 	
 	//Builds a simplex in the specified amount of dimensions.
@@ -102,7 +102,7 @@ class Polytope {
 			els[elementDimension].push(facets);
 		}
 		
-		return new PolytopeC(els, dimensions);
+		return new PolytopeC(els, dimensions, true);
 	}
 	
 	//Builds a cross-polytope in the specified amount of dimensions.
@@ -151,7 +151,7 @@ class Polytope {
 		}
 		els[dimensions].push(facets);
 		
-		return new PolytopeC(els, dimensions);
+		return new PolytopeC(els, dimensions, true);
 	}
 
 	//Generates a hypercube as a PolytopeS.
@@ -206,14 +206,15 @@ class PolytopeV extends Polytope {
 	}
 }
 
-//Represents a polytope as a list of elements, in ascending order of dimensions, similar to an OFF file.
-//We don't store only the facets, because we don't want to deal with O(2^n) code.
+//Represents a polytope as a list of elements, in ascending order of dimensions, similar to (but not the same as) an OFF file.
+//We don't only store the facets, because we don't want to deal with O(2^n) code.
 //Subelements stored as indices.
 class PolytopeC extends Polytope {
-	constructor(elementList, dimensions) {
+	constructor(elementList, dimensions, convex) {
 		super();
 		this.elementList = elementList;
-		this.dimensions=dimensions;
+		this.dimensions = dimensions;
+		this.convex = (convex !== undefined);
 	}
 	
 	//Calculates the centroid as the average of the vertices.
@@ -226,12 +227,38 @@ class PolytopeC extends Polytope {
 	}
 	
 	renderTo(scene) {
-		for(var i = 0; i < this.elementList[2].length; i++){
-			var e1=this.elementList[1][this.elementList[2][i][0]];
-			var e2=this.elementList[1][this.elementList[2][i][1]];
-			var e3=this.elementList[1][this.elementList[2][i][2]];
-			var f=PolytopeC.uniq(e1.concat(e2.concat(e3)));
-			scene.renderTriangle(this.elementList[0][f[0]],this.elementList[0][f[1]],this.elementList[0][f[2]]);
+		//Renders as a single PolyhedronBufferGeometry.
+		if(this.convex && this.dimensions === 3) {
+			var vertices = [];
+			var faces = [];
+			
+			//Adds vertices.
+			for(var i = 0; i < this.elementList[0].length; i++)
+				vertices.push(...this.elementList[0][i].coordinates);
+			
+			//Adds faces.
+			//Only works for triangles at the moment.
+			for(var i = 0; i < this.elementList[2].length; i++){
+				var edge1=this.elementList[1][this.elementList[2][i][0]];
+				var edge2=this.elementList[1][this.elementList[2][i][1]];
+				var edge3=this.elementList[1][this.elementList[2][i][2]];
+				var vertexIndices=PolytopeC.uniq(edge1.concat(edge2.concat(edge3)));
+				faces.push(...vertexIndices);
+			}
+			
+			var geometry = new THREE.PolyhedronBufferGeometry( vertices, faces );
+			scene.add(new THREE.Mesh( geometry, new THREE.MeshLambertMaterial({color: 0xffffff, side: THREE.DoubleSide, flatShading: true})));			
+		}
+		
+		//Renders each triangle individually.
+		else {
+			for(var i = 0; i < this.elementList[2].length; i++){
+				var edge1=this.elementList[1][this.elementList[2][i][0]];
+				var edge2=this.elementList[1][this.elementList[2][i][1]];
+				var edge3=this.elementList[1][this.elementList[2][i][2]];
+				var vertexIndices=PolytopeC.uniq(edge1.concat(edge2.concat(edge3)));
+				scene.renderTriangle(this.elementList[0][vertexIndices[0]],this.elementList[0][vertexIndices[1]],this.elementList[0][vertexIndices[2]]);
+			}
 		}
 	}
 	
@@ -532,6 +559,12 @@ class Point {
 	divideBy(x) {
 		this.multiplyBy(1/x);
 	}
+	
+	//Converts to the Vector3 class used by three.js.
+	//Meant only for 3D point.
+	toVector3() {
+		return new THREE.Vector3(...this.coordinates);
+	}
 }
 
 //Class for drawing objects to the scene more efficiently. 
@@ -546,19 +579,24 @@ class Scene {
 	renderTriangle(a,b,c) {
 		var geometry = new THREE.BufferGeometry();
 		var vertices = new Float32Array(a.project().concat(b.project().concat(c.project())));
-		var x = [vertices[3]-vertices[0], vertices[4]-vertices[1], vertices[5]-vertices[2]];
-		var y = [vertices[6]-vertices[0], vertices[7]-vertices[1], vertices[8]-vertices[2]];
-		var n = [x[1]*y[2]-x[2]*y[1],x[2]*y[0]-x[0]*y[2],x[0]*y[1]-x[1]*y[0]];
-		var N = Math.sqrt(n[0]*n[0]+n[1]*n[1]+n[2]*n[2]);
-		var normals = new Float32Array([n[0]/N,n[1]/N,n[2]/N,n[0]/N,n[1]/N,n[2]/N,n[0]/N,n[1]/N,n[2]/N]);
+		
+		//Computes the normal as a cross product.
+		var x = [vertices[3] - vertices[0], vertices[4] - vertices[1], vertices[5] - vertices[2]];
+		var y = [vertices[6] - vertices[0], vertices[7] - vertices[1], vertices[8] - vertices[2]];
+		var n = [x[1] * y[2] - x[2] * y[1], x[2] * y[0] - x[0] * y[2], x[0] * y[1] - x[1] * y[0]];
+		var N = Math.sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
+		var normals = new Float32Array([n[0]/N, n[1]/N, n[2]/N, n[0]/N, n[1]/N, n[2]/N, n[0]/N, n[1]/N, n[2]/N]);
 		geometry.setAttribute('position',new THREE.BufferAttribute(vertices, 3));
 		geometry.setAttribute('normal',new THREE.BufferAttribute(normals, 3));
 		geometry.setIndex([0,1,2]);
 		var triangle = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial({color: 0xffffff, side: THREE.DoubleSide, flatShading: true}));
-		this.scene.add( triangle ); 
+		this.scene.add( triangle );  
+	}
+	
+	add(object) {
+		this.scene.add(object);
 	}
 	
 	reset() {
 		this.scene = new THREE.Scene();
 	}
-}

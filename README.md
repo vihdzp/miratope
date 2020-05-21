@@ -1,2 +1,2 @@
-# tacochoron
+# Miratope
 A renderer for polytopes.
