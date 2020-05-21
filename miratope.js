@@ -5,6 +5,37 @@
 class Polytope {
 	constructor() {
 	}
+}
+
+//Represents a polytope as a convex hull.
+//Will be merged with PolytopeC.
+class PolytopeV extends Polytope {
+	constructor(vertices, dimensions) {
+		super();
+		this.vertices = vertices;
+		this.dimensions = dimensions; //Is not necessarily the number of dimensions of the vertices!
+	}
+	
+	//Calculates the centroid as the average of the vertices.
+	centroid() {
+		var res = this.vertices[0].clone();
+		for(var i = 1; i < this.vertices.length; i++)
+			res.add(this.vertices[i]);
+		res.divideBy(this.vertices.length);
+		return res;
+	}
+}
+
+//Represents a polytope as a list of elements, in ascending order of dimensions, similar to (but not the same as) an OFF file.
+//We don't only store the facets, because we don't want to deal with O(2^n) code.
+//Subelements stored as indices.
+class PolytopeC extends Polytope {
+	constructor(elementList, dimensions, convex) {
+		super();
+		this.elementList = elementList;
+		this.dimensions = dimensions;
+		this.convex = (convex !== undefined);
+	}
 	
 	//Builds a hypercube in the specified amount of dimensions.
 	//Positioned in the standard orientation with edge length 1.
@@ -153,70 +184,6 @@ class Polytope {
 		
 		return new PolytopeC(els, dimensions, true);
 	}
-
-	//Generates a hypercube as a PolytopeS.
-	//Will probably replace the old hypercube code once PolytopeS is fully functional.
-	static hypercubeS(dimensions) {
-		var symmetries = ConcreteGroup.BC(dimensions);
-		var flagClasses = [];
-		for(var i = 0; i < dimensions; i++) {
-			flagClasses.push([[0, [i]]]);
-		}
-		var vertex = [];
-		for(var i = 0; i < dimensions; i++) {
-			vertex.push(0.5);
-		}
-		var vertices = [new Point(vertex)];
-		return new PolytopeS(symmetries, flagClasses, vertices, dimensions);
-	}
-
-	//Generates an orthoplex as a PolytopeS.
-	//Will probably replace the old orthoplex code once PolytopeS is fully functional.
-	static crossS(dimensions) {
-		var symmetries = ConcreteGroup.BC(dimensions);
-		var flagClasses = [];
-		for(var i = 0; i < dimensions; i++) {
-			flagClasses.push([[0, [dimensions - (i + 1)]]]);
-		}
-		var vertex = [];
-		for(var i = 1; i < dimensions; i++) {
-			vertex.push(0);
-		}
-		vertex.push(Math.SQRT1_2);
-		var vertices = [new Point(vertex)];
-		return new PolytopeS(symmetries, flagClasses, vertices, dimensions);
-	}
-}
-
-//Represents a polytope as a convex hull.
-//Will be merged with PolytopeC.
-class PolytopeV extends Polytope {
-	constructor(vertices, dimensions) {
-		super();
-		this.vertices = vertices;
-		this.dimensions = dimensions; //Is not necessarily the number of dimensions of the vertices!
-	}
-	
-	//Calculates the centroid as the average of the vertices.
-	centroid() {		
-		var res = this.vertices[0].clone();
-		for(var i = 1; i < this.vertices.length; i++)
-			res.add(this.vertices[i]);
-		res.divideBy(this.vertices.length);
-		return res;
-	}
-}
-
-//Represents a polytope as a list of elements, in ascending order of dimensions, similar to (but not the same as) an OFF file.
-//We don't only store the facets, because we don't want to deal with O(2^n) code.
-//Subelements stored as indices.
-class PolytopeC extends Polytope {
-	constructor(elementList, dimensions, convex) {
-		super();
-		this.elementList = elementList;
-		this.dimensions = dimensions;
-		this.convex = (convex !== undefined);
-	}
 	
 	//Calculates the centroid as the average of the vertices.
 	centroid() {		
@@ -286,6 +253,39 @@ class PolytopeS extends Polytope {
 		this.flagClasses = flagClasses;
 		this.vertices = vertices;
 		this.dimensions = dimensions;
+	}
+
+	//Generates a hypercube as a PolytopeS.
+	//Will probably replace the old hypercube code once PolytopeS is fully functional.
+	static hypercube(dimensions) {
+		var symmetries = ConcreteGroup.BC(dimensions);
+		var flagClasses = [];
+		for(var i = 0; i < dimensions; i++) {
+			flagClasses.push([[0, [i]]]);
+		}
+		var vertex = [];
+		for(var i = 0; i < dimensions; i++) {
+			vertex.push(0.5);
+		}
+		var vertices = [new Point(vertex)];
+		return new PolytopeS(symmetries, flagClasses, vertices, dimensions);
+	}
+
+	//Generates an orthoplex as a PolytopeS.
+	//Will probably replace the old orthoplex code once PolytopeS is fully functional.
+	static cross(dimensions) {
+		var symmetries = ConcreteGroup.BC(dimensions);
+		var flagClasses = [];
+		for(var i = 0; i < dimensions; i++) {
+			flagClasses.push([[0, [dimensions - (i + 1)]]]);
+		}
+		var vertex = [];
+		for(var i = 1; i < dimensions; i++) {
+			vertex.push(0);
+		}
+		vertex.push(Math.SQRT1_2);
+		var vertices = [new Point(vertex)];
+		return new PolytopeS(symmetries, flagClasses, vertices, dimensions);
 	}
 
 	//The centroid is the centroid of the original vertices,
