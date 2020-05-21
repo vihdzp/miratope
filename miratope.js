@@ -176,12 +176,13 @@ class Polytope {
 		var symmetries = ConcreteGroup.BC(dimensions);
 		var flagClasses = [];
 		for(var i = 0; i < dimensions; i++) {
-			flagClasses.push([[0, [i]]]);
+			flagClasses.push([[0, [dimensions - (i + 1)]]]);
 		}
-		var vertex = [Math.SQRT1_2];
+		var vertex = [];
 		for(var i = 1; i < dimensions; i++) {
 			vertex.push(0);
 		}
+		vertex.push(Math.SQRT1_2);
 		var vertices = [new Point(vertex)];
 		return new PolytopeS(symmetries, flagClasses, vertices, dimensions);
 	}
@@ -456,6 +457,7 @@ class PolytopeS extends Polytope {
 					continue;
 				}
 				for(var k = 0; k < this.vertices.length; k++) {
+					//console.log(domains[i][1])
 					vertices.push(domains[i][1].movePoint(this.vertices[k]));
 				}
 			}

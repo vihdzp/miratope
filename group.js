@@ -134,7 +134,7 @@ class ConcreteGroup extends Group {
 		return [this.abstractGroup.invert(elem[0]), elem[1].inverse()];
 	}
 
-	//The representation may behave completely differently from the abstact group,
+	//The representation may behave completely differently from the abstract group,
 	//so it isn't worth trusting
 	equal(elem1, elem2) {
 		return this.abstractGroup.equal(elem1[0], elem2[0]);
