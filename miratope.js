@@ -600,3 +600,4 @@ class Scene {
 	reset() {
 		this.scene = new THREE.Scene();
 	}
+}
