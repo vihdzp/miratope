@@ -4,6 +4,10 @@ class Matrix {
 		this.elements = elements;
 	}
 
+	toString() {
+		return JSON.stringify(this.elements);
+	}
+
 	width() {
 		return this.elements[0].length;
 	}
@@ -57,5 +61,20 @@ class Matrix {
 			newEntries.push(newRow);
 		}
 		return new Matrix(newEntries);
+	}
+
+	//-1 is this<matrix, 0 is this==matrix, 1 is this>matrix
+	compare(matrix) {
+		if(this.width() != matrix.width() || this.height() != matrix.height())
+			throw new Error("Invalid dimensions for matrix comparison!");
+		for(var i = 0; i < this.height(); i++) {
+			for(var j = 0; j < this.width(); j++) {
+				if(this.elements[i][j] > matrix.elements[i][j])
+					return 1;
+				if(this.elements[i][j] < matrix.elements[i][j])
+					return -1;
+			}
+		}
+		return 0;
 	}
 }

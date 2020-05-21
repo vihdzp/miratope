@@ -2,6 +2,33 @@
 class Group {
 	constructor() {
 	}
+
+	//Probably not a good idea for anything with more than a few hundred elements.
+	//AFAIK nothing better exists for MatrixGroup or many other representations,
+	//but RewriteGroup has a much faster algorithm that I'll implement later.
+	enumerateElements(max) {
+		var elems = [];
+		var elemsToCheck = [this.identity()];
+		while(elemsToCheck.length && elems.length < max) {
+			var elem = elemsToCheck.pop();
+			var duplicate = false;
+			for(var j = 0; j < elems.length; j++) {
+				if(this.equal(elems[j], elem)) {
+					duplicate = true;
+					break;
+				}
+			}
+			if(duplicate) {
+				continue;
+			}
+			elems.push(elem);
+			for(var i = 0; i < this.generators.length; i++) {
+				var newElem = this.multiply(elem, this.generators[i]);
+				elemsToCheck.push(newElem);
+			}
+		}
+		return elems;
+	}
 }
 //A class for groups defined using matrices.
 class MatrixGroup extends Group {
@@ -11,16 +38,24 @@ class MatrixGroup extends Group {
 		this.dimension = generators[0].width();
 	}
 
-	identityElement() {
+	identity() {
 		return Matrix.identity(this.dimension);
 	}
 
-	multiplyElements(elem1, elem2) {
+	multiply(elem1, elem2) {
 		return elem1.multiply(elem2);
 	}
 
-	invertElement(elem) {
+	invert(elem) {
 		return elem1.inverse();
+	}
+
+	equal(elem1, elem2) {
+		return (elem1.compare(elem2) == 0);
+	}
+
+	compare(elem1, elem2) {
+		return elem1.compare(elem2);
 	}
 }
 //A class for groups defined using normalizing rewriting systems.
@@ -42,20 +77,36 @@ class RewriteGroup extends Group {
 		return elem;
 	}
 
-	identityElement() {
+	identity() {
 		return "";
 	}
 
-	multiplyElements(elem1, elem2) {
+	multiply(elem1, elem2) {
 		return this.simplifyElement(elem1 + elem2);
 	}
 
-	invertElement(elem) {
+	invert(elem) {
 		var inverse = "";
 		for(var i = 0; i < elem.length; i++) {
 			inverse = elem[i] + inverse;
 		}
 		return inverse;
+	}
+
+	equal(elem1, elem2) {
+		return elem1 == elem2;
+	}
+
+	compare(elem1, elem2) {
+		if(elem1.length < elem2.length)
+			return -1
+		if(elem1.length > elem2.length)
+			return 1
+		if(elem1 < elem2)
+			return -1
+		if(elem1 > elem2)
+			return 1
+		return 0
 	}
 }
 //A class for groups with matrix representations in the appropriately-dimensioned space.
@@ -63,6 +114,7 @@ class RewriteGroup extends Group {
 //but I can't think of anything better so I'm doing it this way.
 class ConcreteGroup extends Group {
 	constructor(generators, abstractGroup) {
+		super();
 		this.generators = [];
 		for(var i = 0; i < generators.length; i++)
 			this.generators.push([abstractGroup.generators[i], generators[i]]);
@@ -70,15 +122,45 @@ class ConcreteGroup extends Group {
 		this.dimension = generators[0].width();
 	}
 
-	identityElement() {
-		return [this.abstractGroup.identityElement(), Matrix.identity()];
+	identity() {
+		return [this.abstractGroup.identity(), Matrix.identity(this.dimension)];
 	}
 
-	multiplyElements(elem1, elem2) {
-		return [this.abstractGroup.multiplyElements(elem1[0], elem2[0]), elem1[1].multiply(elem2[1])];
+	multiply(elem1, elem2) {
+		return [this.abstractGroup.multiply(elem1[0], elem2[0]), elem1[1].multiply(elem2[1])];
 	}
 
-	invertElement(elem) {
-		return [this.abstractGroup.invertElement(elem[0]), elem[1].inverse()];
+	invert(elem) {
+		return [this.abstractGroup.invert(elem[0]), elem[1].inverse()];
+	}
+
+	//The representation may behave completely differently from the abstact group,
+	//so it isn't worth trusting
+	equal(elem1, elem2) {
+		return this.abstractGroup.equal(elem1[0], elem2[0]);
+	}
+
+	compare(elem1, elem2) {
+		return this.abstractGroup.compare(elem1[0], elem2[0]);
+	}
+
+	static BC(n) {
+		var symmetryGens = [];
+		//TODO: Find a better way to make these matrices
+		var fourNode = Matrix.identity(n);
+		fourNode.elements[0][0] = -1;
+		symmetryGens.push(fourNode);
+		for(var i = 0; i < n - 1; i++) {
+			var flipNode = Matrix.identity(n);
+			flipNode.elements[i][i] = 0;
+			flipNode.elements[i + 1][i] = 1;
+			flipNode.elements[i][i + 1] = 1;
+			flipNode.elements[i + 1][i + 1] = 0;
+			symmetryGens.push(flipNode);
+		}
+		//Using a RewriteGroup here might be better but generating those is slightly unpleasant
+		var abstractSymmetries = new MatrixGroup(symmetryGens);
+		var abstractSymmetries = new RewriteGroup("012",[["00",""],["11",""],["22",""],["1010","0101"],["20","02"],["212","121"],["2102","1210"],["210121","121012"]])
+		return new ConcreteGroup(symmetryGens, abstractSymmetries);
 	}
 }
