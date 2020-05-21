@@ -420,7 +420,7 @@ class PolytopeS extends Polytope {
 		var ascendingSimplifiers = [identitySimplifier];
 		for(var i = 0; i < this.dimensions; i++) {
 			var lastSimplifier = ascendingSimplifiers[ascendingSimplifiers.length - 1];
-			//console.log(lastSimplifier)
+			console.log(lastSimplifier);
 			ascendingSimplifiers.push(this.extendSimplifier(lastSimplifier, i));
 		}
 		//Maps each flag to a representative flag of its subwhatever
@@ -428,7 +428,7 @@ class PolytopeS extends Polytope {
 		var descendingSimplifiers = [identitySimplifier];
 		for(var i = 0; i < this.dimensions; i++) {
 			var lastSimplifier = descendingSimplifiers[descendingSimplifiers.length - 1];
-			//console.log(lastSimplifier)
+			console.log(lastSimplifier);
 			descendingSimplifiers.push(this.extendSimplifier(lastSimplifier, this.dimensions - (i + 1)));
 		}
 		//Maps each flag to a representative flag of the subwhatever
@@ -436,7 +436,7 @@ class PolytopeS extends Polytope {
 		var elementSimplifiers = [];
 		for(var i = 0; i < this.dimensions; i++) {
 			var simplifier = this.mergeSimplifiers(ascendingSimplifiers[i], descendingSimplifiers[this.dimensions - (i + 1)])
-			//console.log(simplifier)
+			console.log(simplifier);
 			elementSimplifiers.push(simplifier);
 		}
 		//Maps each flag to a representative flag of the subwhatever
@@ -444,7 +444,7 @@ class PolytopeS extends Polytope {
 		var intersectionSimplifiers = [];
 		for(var i = 0; i < this.dimensions - 1; i++) {
 			var simplifier = this.mergeSimplifiers(ascendingSimplifiers[i], descendingSimplifiers[this.dimensions - (i + 2)])
-			//console.log(simplifier)
+			console.log(simplifier);
 			intersectionSimplifiers.push(simplifier);
 		}
 		//Vertices are inherently different from other elements, so compute them separately.
@@ -457,12 +457,12 @@ class PolytopeS extends Polytope {
 					continue;
 				}
 				for(var k = 0; k < this.vertices.length; k++) {
-					//console.log(domains[i][1])
+					console.log(domains[i][1]);
 					vertices.push(domains[i][1].movePoint(this.vertices[k]));
 				}
 			}
 		}
-		//console.log(vertices)
+		console.log(vertices);
 		//Map representatives to IDs.
 		var locations = [];
 		var locationsLengths = [];
@@ -481,7 +481,7 @@ class PolytopeS extends Polytope {
 			locations.push(locationsRow);
 			locationsLengths.push(nextID);
 		}
-		//console.log(locations, locationsLengths);
+		console.log(locations, locationsLengths);
 		var elems = [vertices];
 		for(var i = 1; i < this.dimensions; i++) {
 			//TODO rename this to something better
@@ -501,7 +501,7 @@ class PolytopeS extends Polytope {
 					someElems[rightID].push(leftID);
 				}
 			}
-			//console.log(someElems);
+			console.log(someElems);
 			elems.push(someElems);
 		}
 		return new PolytopeC(elems, this.dimensions);
