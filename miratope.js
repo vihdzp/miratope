@@ -30,11 +30,10 @@ class PolytopeV extends Polytope {
 //We don't only store the facets, because we don't want to deal with O(2^n) code.
 //Subelements stored as indices.
 class PolytopeC extends Polytope {
-	constructor(elementList, dimensions, convex) {
+	constructor(elementList, dimensions) {
 		super();
 		this.elementList = elementList;
 		this.dimensions = dimensions;
-		this.convex = (convex !== undefined);
 	}
 	
 	//Builds a hypercube in the specified amount of dimensions.
@@ -84,7 +83,7 @@ class PolytopeC extends Polytope {
 			}
 		}
 
-		return new PolytopeC(els, dimensions, true);
+		return new PolytopeC(els, dimensions);
 	}
 	
 	//Builds a simplex in the specified amount of dimensions.
@@ -133,7 +132,7 @@ class PolytopeC extends Polytope {
 			els[elementDimension].push(facets);
 		}
 		
-		return new PolytopeC(els, dimensions, true);
+		return new PolytopeC(els, dimensions);
 	}
 	
 	//Builds a cross-polytope in the specified amount of dimensions.
@@ -182,7 +181,7 @@ class PolytopeC extends Polytope {
 		}
 		els[dimensions].push(facets);
 		
-		return new PolytopeC(els, dimensions, true);
+		return new PolytopeC(els, dimensions);
 	}
 	
 	//Calculates the centroid as the average of the vertices.
@@ -194,39 +193,14 @@ class PolytopeC extends Polytope {
 		return res;
 	}
 	
-	renderTo(scene) {
-		//Renders as a single PolyhedronBufferGeometry.
-		if(this.convex && this.dimensions === 3) {
-			var vertices = [];
-			var faces = [];
-			
-			//Adds vertices.
-			for(var i = 0; i < this.elementList[0].length; i++)
-				vertices.push(...this.elementList[0][i].coordinates);
-			
-			//Adds faces.
-			//Only works for triangles at the moment.
-			for(var i = 0; i < this.elementList[2].length; i++){
-				var edge1=this.elementList[1][this.elementList[2][i][0]];
-				var edge2=this.elementList[1][this.elementList[2][i][1]];
-				var edge3=this.elementList[1][this.elementList[2][i][2]];
-				var vertexIndices=PolytopeC.uniq(edge1.concat(edge2.concat(edge3)));
-				faces.push(...vertexIndices);
-			}
-			
-			var geometry = new THREE.PolyhedronBufferGeometry( vertices, faces );
-			scene.add(new THREE.Mesh( geometry, new THREE.MeshLambertMaterial({color: 0xffffff, side: THREE.DoubleSide, flatShading: true})));			
-		}
-		
+	renderTo(scene) {		
 		//Renders each triangle individually.
-		else {
-			for(var i = 0; i < this.elementList[2].length; i++){
-				var edge1=this.elementList[1][this.elementList[2][i][0]];
-				var edge2=this.elementList[1][this.elementList[2][i][1]];
-				var edge3=this.elementList[1][this.elementList[2][i][2]];
-				var vertexIndices=PolytopeC.uniq(edge1.concat(edge2.concat(edge3)));
-				scene.renderTriangle(this.elementList[0][vertexIndices[0]],this.elementList[0][vertexIndices[1]],this.elementList[0][vertexIndices[2]]);
-			}
+		for(var i = 0; i < this.elementList[2].length; i++){
+			var edge1=this.elementList[1][this.elementList[2][i][0]];
+			var edge2=this.elementList[1][this.elementList[2][i][1]];
+			var edge3=this.elementList[1][this.elementList[2][i][2]];
+			var vertexIndices=PolytopeC.uniq(edge1.concat(edge2.concat(edge3)));
+			scene.renderTriangle(this.elementList[0][vertexIndices[0]],this.elementList[0][vertexIndices[1]],this.elementList[0][vertexIndices[2]]);
 		}
 	}
 	
