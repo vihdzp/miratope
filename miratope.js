@@ -267,7 +267,7 @@ class PolytopeS extends Polytope {
 		for(var i = 0; i < dimensions; i++) {
 			vertex.push(0.5);
 		}
-		var vertices = [new Point(vertex)];
+		var vertices = {0:new Point(vertex)};
 		return new PolytopeS(symmetries, flagClasses, vertices, dimensions);
 	}
 
@@ -284,7 +284,39 @@ class PolytopeS extends Polytope {
 			vertex.push(0);
 		}
 		vertex.push(Math.SQRT1_2);
-		var vertices = [new Point(vertex)];
+		var vertices = {0:new Point(vertex)};
+		return new PolytopeS(symmetries, flagClasses, vertices, dimensions);
+	}
+
+	//Generates a rectified orthoplex as a PolytopeS.
+	//Will probably get replaced once more general methods for generating from CDs are added.
+	static recticross(dimensions) {
+		var symmetries = ConcreteGroup.BC(dimensions);
+		var flagClasses = [];
+		for(var i = 0; i < dimensions; i++) {
+			var row = [];
+			//i is change, j is flagclass
+			for(var j = 0; j < dimensions - 1; j++) {
+				if(j >= i)
+					row.push([j, [dimensions - (i + 2)]]);
+				else if(j == 0 && i == 1)
+					row.push([0, [dimensions - 1]]);
+				else if(i == j + 1)
+					row.push([j - 1, []]);
+				else if(i == j + 2)
+					row.push([j + 1, []]);
+				else
+					row.push([j, [dimensions - (i + 1)]]);
+			}
+			flagClasses.push(row);
+		}
+		var vertex = [];
+		for(var i = 2; i < dimensions; i++) {
+			vertex.push(0);
+		}
+		vertex.push(Math.SQRT1_2);
+		vertex.push(Math.SQRT1_2);
+		var vertices = {0:new Point(vertex)};
 		return new PolytopeS(symmetries, flagClasses, vertices, dimensions);
 	}
 
@@ -456,10 +488,8 @@ class PolytopeS extends Polytope {
 				if(this.compareFlags(flag, elementSimplifiers[0][flag])) {
 					continue;
 				}
-				for(var k = 0; k < this.vertices.length; k++) {
-					console.log(domains[i][1]);
-					vertices.push(domains[i][1].movePoint(this.vertices[k]));
-				}
+				var vertex = flag[1][1].movePoint(this.vertices[flag[0]]);
+				vertices.push(vertex);
 			}
 		}
 		console.log(vertices);
