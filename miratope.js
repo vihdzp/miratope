@@ -193,19 +193,32 @@ class PolytopeC extends Polytope {
 		return res;
 	}
 	
-	renderTo(scene) {		
-		//Renders each triangle individually.
+	//Made with 3D polyhedra in mind.
+	//Will probably have to implement other more complicated stuff for other dimensions.
+	//NOT YET FULLY IMPLEMENTED!
+	renderTo(scene) {
+		//For each face:
 		for(var i = 0; i < this.elementList[2].length; i++){
-			var edge1=this.elementList[1][this.elementList[2][i][0]];
-			var edge2=this.elementList[1][this.elementList[2][i][1]];
-			var edge3=this.elementList[1][this.elementList[2][i][2]];
-			var vertexIndices=PolytopeC.uniq(edge1.concat(edge2.concat(edge3)));
-			scene.renderTriangle(this.elementList[0][vertexIndices[0]],this.elementList[0][vertexIndices[1]],this.elementList[0][vertexIndices[2]]);
+			//Enumerates the vertices in order.
+			//A doubly linked list does the job easily.
+			var vertexDLL = [];
+			for(var j = 0; j < this.elementList[2][i].length; j++) {
+				var edge = this.elementList[1][this.elementList[2][i][j]];
+				if(vertexDLL[edge[0]] === undefined)
+					vertexDLL[edge[0]] = new DLLNode(edge[0]);
+				if(vertexDLL[edge[1]] === undefined)
+					vertexDLL[edge[1]] = new DLLNode(edge[1]);
+				
+				vertexDLL[edge[0]].linkTo(vertexDLL[edge[1]]);				
+			}
+			
+			var vertices = vertexDLL[0].getCycle();
 		}
 	}
 	
+	//Returns an array of all unique elements in a.
 	//https://stackoverflow.com/a/9229821/12419072
-	static uniq(a) {
+	static unique(a) {
 		var seen = {};
 		return a.filter(function(item) {
 			return seen.hasOwnProperty(item) ? false : (seen[item] = true);
@@ -241,7 +254,7 @@ class PolytopeS extends Polytope {
 		for(var i = 0; i < dimensions; i++) {
 			vertex.push(0.5);
 		}
-		var vertices = [new Point(vertex)];
+		var vertices = {0:new Point(vertex)};
 		return new PolytopeS(symmetries, flagClasses, vertices, dimensions);
 	}
 
@@ -258,7 +271,39 @@ class PolytopeS extends Polytope {
 			vertex.push(0);
 		}
 		vertex.push(Math.SQRT1_2);
-		var vertices = [new Point(vertex)];
+		var vertices = {0:new Point(vertex)};
+		return new PolytopeS(symmetries, flagClasses, vertices, dimensions);
+	}
+
+	//Generates a rectified orthoplex as a PolytopeS.
+	//Will probably get replaced once more general methods for generating from CDs are added.
+	static recticross(dimensions) {
+		var symmetries = ConcreteGroup.BC(dimensions);
+		var flagClasses = [];
+		for(var i = 0; i < dimensions; i++) {
+			var row = [];
+			//i is change, j is flagclass
+			for(var j = 0; j < dimensions - 1; j++) {
+				if(j >= i)
+					row.push([j, [dimensions - (i + 2)]]);
+				else if(j == 0 && i == 1)
+					row.push([0, [dimensions - 1]]);
+				else if(i == j + 1)
+					row.push([j - 1, []]);
+				else if(i == j + 2)
+					row.push([j + 1, []]);
+				else
+					row.push([j, [dimensions - (i + 1)]]);
+			}
+			flagClasses.push(row);
+		}
+		var vertex = [];
+		for(var i = 2; i < dimensions; i++) {
+			vertex.push(0);
+		}
+		vertex.push(Math.SQRT1_2);
+		vertex.push(Math.SQRT1_2);
+		var vertices = {0:new Point(vertex)};
 		return new PolytopeS(symmetries, flagClasses, vertices, dimensions);
 	}
 
@@ -430,10 +475,8 @@ class PolytopeS extends Polytope {
 				if(this.compareFlags(flag, elementSimplifiers[0][flag])) {
 					continue;
 				}
-				for(var k = 0; k < this.vertices.length; k++) {
-					console.log(domains[i][1]);
-					vertices.push(domains[i][1].movePoint(this.vertices[k]));
-				}
+				var vertex = flag[1][1].movePoint(this.vertices[flag[0]]);
+				vertices.push(vertex);
 			}
 		}
 		console.log(vertices);
