@@ -195,6 +195,9 @@ class PolytopeC extends Polytope {
 	
 	//Made with 3D polyhedra in mind.
 	//Will probably have to implement other more complicated stuff for other dimensions.
+	//Implements Bentley-Ottmann, combined with the simplification algorithm at
+	//https://web.archive.org/web/20100805164131if_/http://www.cis.southalabama.edu/~hain/general/Theses/Subramaniam_thesis.pdf	
+	//to triangulate general polygons.
 	//NOT YET FULLY IMPLEMENTED!
 	renderTo(scene) {
 		//For each face:
@@ -210,19 +213,36 @@ class PolytopeC extends Polytope {
 					vertexDLL[edge[1]] = new DLLNode(edge[1]);
 				
 				vertexDLL[edge[0]].linkTo(vertexDLL[edge[1]]);				
-			}
+			}			
 			
-			var vertices = vertexDLL[0].getCycle();
-		}
-	}
-	
-	//Returns an array of all unique elements in a.
-	//https://stackoverflow.com/a/9229821/12419072
-	static unique(a) {
-		var seen = {};
-		return a.filter(function(item) {
-			return seen.hasOwnProperty(item) ? false : (seen[item] = true);
-		});
+			//Cycle of vertex indices.
+			//"this.elementList[1][this.elementList[2][i][0]][0]" is just some vertex index.
+			var cycle = vertexDLL[this.elementList[1][this.elementList[2][i][0]][0]].getCycle();
+			
+			//Vertices in order.
+			var vertices = [];
+			for(var j = 0; j < cycle.length; j++)
+				vertices[j] = this.elementList[0][j]; //I can add .clone() if I want to edit these vertices.
+			
+			//Directed edges.
+			var edges = [[vertices.length - 1, 0]];
+			for(var j = 0; j < vertices.length - 1; j++)
+				edges.push([j, j + 1]);
+			
+			//Event queue for Bentley-Ottmann, in format [vertex, edgeIndex1, edgeIndex2].
+			var EQ = [[vertices[vertices.length - 1], 0, vertices.length - 1]];
+			for(var j = 0; j < cycle.length - 1; j++)
+				EQ.push([vertices[j], j, j + 1]);
+			
+			//Sorts EQ by a lexicographic order.
+			Sorts.quickSort(EQ, 0, EQ.length - 1, function(a,b){return Point.lexicographic(a[0], b[0]);});
+			
+			//Sweep line for Bentley-Ottmann, implemented as an AVL tree.
+			var SL = new AvlTree();
+			
+			//Intersection list for Bentley-Ottman.
+			var IL = [];
+		}		
 	}
 }
 
@@ -559,30 +579,106 @@ class Point {
 		this.coordinates[2] === undefined ? 0 : this.coordinates[2]];
 	}
 	
-	//Adds the coordinates of x to the coordinates of the point.
+	//Adds the coordinates of x to the coordinates of y.
 	//Both need to have the same amount of dimensions.
-	add(x) {
-		if(x.dimensions() !== this.dimensions())
+	static add(x, y) {
+		if(x.dimensions() !== y.dimensions())
 			throw new Error("You can't add points with different amounts of dimensions!");
-		for(var i = 0; i < this.dimensions(); i++)
-			this.coordinates[i] += x.coordinates[i];
+		var coordinates = [];
+		for(var i = 0; i < x.dimensions(); i++)
+			coordinates[i] = x.coordinates[i] + y.coordinates[i];
+		return new Point(coordinates);
 	}
 	
-	//Scales up the point by a factor of x.
-	multiplyBy(x) {
-		for(var i = 0; i < this.dimensions(); i++)
-			this.coordinates[i] *= x;
+	//Subtracts the coordinates of y from the coordinates of x.
+	//Both need to have the same amount of dimensions.
+	static subtract(x, y) {
+		if(x.dimensions() !== y.dimensions())
+			throw new Error("You can't add points with different amounts of dimensions!");
+		var coordinates = [];
+		for(var i = 0; i < x.dimensions(); i++)
+			coordinates[i] = x.coordinates[i] - y.coordinates[i];
+		return new Point(coordinates);
 	}
 	
-	//Scales up the point by a factor of 1/x.
-	divideBy(x) {
-		this.multiplyBy(1/x);
+	//Scales up the point x by a factor of t.
+	static multiply(x, t) {
+		var coordinates = [];
+		for(var i = 0; i < x.dimensions(); i++)
+			coordinates[i] = x.coordinates[i] * t;
+		return new Point(coordinates);
+	}
+	
+	//Scales up the point x by a factor of 1/t.
+	static multiply(x, t) {
+		var coordinates = [];
+		for(var i = 0; i < x.dimensions(); i++)
+			coordinates[i] = x.coordinates[i] / t;
+		return new Point(coordinates);
 	}
 	
 	//Converts to the Vector3 class used by three.js.
 	//Meant only for 3D point.
 	toVector3() {
 		return new THREE.Vector3(...this.coordinates);
+	}
+	
+	//Calculates the intersection of ab with cd.
+	//Assumes that all points lie on the same plane, but not on the same line.
+	//Returns null if this does not exist.
+	//Currently only implemented for Euclidean points, in at least 2D.
+	static intersect(a, b, c, d) {
+		if(a.dimensions() !== b.dimensions() || a.dimensions() !== c.dimensions() || a.dimensions() !== d.dimensions())
+			throw new Error("You can't intersect edges with different amounts of dimensions!");
+		//First, we calculate the coordinates in which each line segment coordinates change the most.
+		//That way, we avoid projecting lines into points.
+		var ab_MAX = 0, ab_MAX_indx = 0, cd_MAX = 0, cd_MAX_indx = 0;
+		for(var i = 0; i < a.dimensions(); i++) {
+			var ab = Math.abs(a.coordinates[i] - b.coordinates[i]);
+			var cd = Math.abs(c.coordinates[i] - d.coordinates[i]);
+			if(ab > ab_MAX){
+				ab_MAX = ab;
+				ab_MAX_indx = i;
+			}
+			if(cd > cd_MAX){
+				cd_MAX = cd;
+				cd_MAX_indx = i;
+			}
+		}
+		
+		//If both indices are the same, we can take the second one to be anything different.
+		if(ab_MAX_indx === cd_MAX_indx) {
+			if(cd_MAX_indx === 0)
+				cd_MAX_indx = 1;
+			else
+				cd_MAX_indx = 0;
+		}
+		
+		//Projects a, b, c, d onto the a plane.
+		var a1 = [a.coordinates[ab_MAX_indx], a.coordinates[cd_MAX_indx]];
+		var b1 = [b.coordinates[ab_MAX_indx], b.coordinates[cd_MAX_indx]];
+		var c1 = [c.coordinates[ab_MAX_indx], c.coordinates[cd_MAX_indx]];
+		var d1 = [d.coordinates[ab_MAX_indx], d.coordinates[cd_MAX_indx]];
+		
+		//Adapts the method from https://stackoverflow.com/a/565282/12419072
+		var t = ((b1[0] - a1[0]) * d1[1] - (b1[1] - a1[1]) * d1[0])/(c1[0] * d1[1] - c1[1] * d1[0]);
+		return a.add(b.subtract(a).multiplyBy(t));
+	}
+	
+	//Orders two points in lexicographic order of the coordinates.
+	//Returns a negative number if a < b, 0 if a == b, and a positive number if a > b.
+	//For use in sorting functions.
+	static lexicographic(a, b) {
+		if(a.dimensions() !== b.dimensions())			
+			throw new Error("You can't compare points with different amounts of dimensions!");
+		
+		for(var i = 0; i < a.dimensions(); i++) {
+			var x = a.coordinates[i] - b.coordinates[i];
+			if(x !== 0)
+				return x;
+		}
+		
+		return 0;
 	}
 }
 
