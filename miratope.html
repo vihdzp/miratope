@@ -34,7 +34,7 @@
 		scene.add( directionalLight );
 		
 		//Test cube.
-		PolytopeC.hypercube(3).renderTo(new Scene(scene));
+		PolytopeS.recticross(3).toPolytopeC().renderTo(new Scene(scene));
 		
 		//Render loop.
 		function animate() { 
