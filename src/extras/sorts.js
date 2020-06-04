@@ -10,6 +10,7 @@ class Sorts {
 		}
 	}
 	
+	//Auxiliary function for quickSort.
 	static partition(array, lo, hi, compareFunction) {
 		var pivot = array[hi];
 		var i = lo;
@@ -23,12 +24,15 @@ class Sorts {
 		return i;
 	}
 	
+	//Auxiliary function for quickSort.
 	static swap(array, i, j) {
 		var temp = array[j];
 		array[i] = array[j];
 		array[j] = temp;
 	}
 	
+	//Inserts el into an array sorted by compareFunction.
+	//We shouldn't be using arrays like this, but that'll get fixed sooner or later.
 	static binaryInsert(array, el, compareFunction) {
 		var lo = 0;
 		var hi = array.length - 1;
@@ -37,11 +41,11 @@ class Sorts {
 			compareFunction = function(a, b) {return a - b;};
  
 		while (lo <= hi) {
-			mid = Math.floor((first + last) / 2);
+			mid = Math.floor((lo + hi) / 2);
 			
-			if (compareFunction(list[middle], el) > 0) 
+			if (compareFunction(array[mid], el) > 0) 
 				hi = mid - 1;
-			else if (compareFunction(list[middle], el) < 0)
+			else if (compareFunction(array[mid], el) < 0)
 				lo = mid + 1;
 			else {
 				array.splice(mid, 0, el);
