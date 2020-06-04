@@ -28,4 +28,34 @@ class Sorts {
 		array[i] = array[j];
 		array[j] = temp;
 	}
+	
+	static binaryInsert(array, el, compareFunction) {
+		var lo = 0;
+		var hi = array.length - 1;
+		var mid;
+		if(compareFunction === undefined)
+			compareFunction = function(a, b) {return a - b;};
+ 
+		while (lo <= hi) {
+			mid = Math.floor((first + last) / 2);
+			
+			if (compareFunction(list[middle], el) > 0) 
+				hi = mid - 1;
+			else if (compareFunction(list[middle], el) < 0)
+				lo = mid + 1;
+			else {
+				array.splice(mid, 0, el);
+				return mid;
+			}
+		}
+		
+		if(lo === mid) {
+			array.splice(mid, 0, el);
+			return mid;
+		}
+		else {
+			array.splice(mid + 1, 0, el);
+			return mid + 1;
+		}
+	}
 }
