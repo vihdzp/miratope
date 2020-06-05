@@ -194,65 +194,35 @@ class PolytopeC extends Polytope {
 	//https://web.archive.org/web/20100805164131if_/http://www.cis.southalabama.edu/~hain/general/Theses/Subramaniam_thesis.pdf	
 	//to triangulate general polygons.
 	//Uses arraya for EQ and SL, but AVL Trees or something similar would be much more efficient.
-	//Also, the code might be made more readable if we made classes for stuff like edges and events.
 	//NOT YET FULLY IMPLEMENTED!
 	renderTo(scene) {
+		throw new Error("Not yet implemented!");
 		//"Cuts" edgeA and edgeB at the intersection point, adds the new directed edges according to the simplification algorithm.
-		//Edges are in format [[vertexIndex1, vertexIndex2], edgeIndex].
+		//Edges are in format [vertexNode1, vertexNode2].
 		function divide(edgeA, edgeB) {
-			//No point in doing anything if any of the arguments doesn't exist.
-			if(edgeA === undefined || edgeB === undefined) 
+			//No point in doing anything if any of the arguments doesn't exist, or if the intersection is already its own point.
+			if(edgeA === undefined || edgeB === undefined || edgeA[0] === edgeB[0] || edgeA[0] === edgeB[1] || edgeA[1] === edgeB[0] || edgeA[1] === edgeB[1])
 				return;
-			//No point in doing anything if the intersection is already its own point.
-			if(edgeA[0][0] === edgeB[0][0] || edgeA[0][0] === edgeB[0][1] || edgeA[0][1] === edgeB[0][0] || edgeA[0][1] === edgeB[0][1])
-				return;
+			
 			//No point in doing anything if the intersection is non-existent.
-			var inter = Point.intersect(vertices[edgeA[0][0]], vertices[edgeA[0][1]], vertices[edgeB[0][0]], vertices[edgeB[0][1]]);
+			var inter = Space.intersect(edgeA[0].value, edgeA[1].value, edgeB[0].value, edgeB[1].value);
 			if(inter === null) 
 				return;
+			
 			//Add the intersection and a point at "infinitesimal distance" to the vertex list.
-			vertices.push(inter); 
-			var interClone = inter.clone(); interClone.coordinates[0] += eps;
-			vertices.push(interClone);
-										
-			//If edgeA goes left to right:
-			if(Space.lexicographic(vertices[edgeA[0][0]], vertices[edgeA[0][1]]) < 0) {
-				edges.push([vertices.length - 1, edgeA[0][1]]);
-				edgeA[0][1] = vertices.length - 2;
-				//If edgeB goes left to right:
-				if(Space.lexicographic(vertices[edgeB[0][0]], vertices[edgeB[0][1]]) < 0) {
-					edges.push([vertices.length - 2, edgeB[0][1]]);
-					edgeB[0][1] = vertices.length - 1;
-					Sorts.binaryInsert(EQ, [inter, edges.length - 1, edgeA[1]], function(a,b){return -Space.lexicographic(a[0], b[0]);});
-					Sorts.binaryInsert(EQ, [interClone, edges.length - 2, edgeB[1]], function(a,b){return -Space.lexicographic(a[0], b[0]);});
-				}
-				//If edgeB goes right to left:
-				else {
-					edges.push([edgeB[0][0], vertices.length - 1]);
-					edgeB[0][0] = vertices.length - 2;
-					Sorts.binaryInsert(EQ, [inter, edgeB[1], edgeA[1]], function(a,b){return -Space.lexicographic(a[0], b[0]);});
-					Sorts.binaryInsert(EQ, [interClone, edges.length - 2, edges.length - 1], function(a,b){return -Space.lexicographic(a[0], b[0]);});
-				}
-			}
-			//If edgeA goes right to left:
-			else {
-				edges.push([edgeA[0][0], vertices.length - 2]);
-				edgeA[0][0] = vertices.length - 1;
-				//If edgeB goes left to right:
-				if(Space.lexicographic(vertices[edgeB[0][0]], vertices[edgeB[0][1]]) < 0) {
-					edges.push([vertices.length - 2, edgeB[0][1]]);
-					edgeB[0][1] = vertices.length - 1;
-					Sorts.binaryInsert(EQ, [inter, edges.length - 1, edges.length - 2], function(a,b){return -Space.lexicographic(a[0], b[0]);});
-					Sorts.binaryInsert(EQ, [interClone, edgeA[1], edgeB[1]], function(a,b){return -Space.lexicographic(a[0], b[0]);});
-				}
-				//If edgeB goes right to left:
-				else {
-					edges.push([edgeB[0][0], vertices.length - 1]);
-					edgeB[0][0] = vertices.length - 2;
-					Sorts.binaryInsert(EQ, [inter, edgeB[1], edges.length - 2], function(a,b){return -Space.lexicographic(a[0], b[0]);});
-					Sorts.binaryInsert(EQ, [interClone, edgeA[1], edges.length - 1], function(a,b){return -Space.lexicographic(a[0], b[0]);});
-				}
-			}
+			//(I don't think they actually have to be different in my implementation of the algorithm).
+			vertices.push(inter); vertexDLL[vertices.length - 1] = new DLLNode(inter);
+			var interClone = inter.clone();
+			vertices.push(interClone); vertexDLL[vertices.length - 1] = new DLLNode(interClone);
+			
+			//Re-links the vertices.
+			edgeA[0].linkToNext(vertexDLL[vertices.length - 2]);
+			vertexDLL[vertices.length - 2].linkToNext(edgeB[1]);
+			edgeB[0].linkToNext(vertexDLL[vertices.length - 1]);
+			vertexDLL[vertices.length - 1].linkToNext(edgeA[1]);
+
+			Sorts.binaryInsert(EQ, vertices.length - 2, EQSort);
+			Sorts.binaryInsert(EQ, vertices.length - 1, EQSort);
 		}
 							
 		//For each face:
@@ -277,23 +247,29 @@ class PolytopeC extends Polytope {
 			//Vertices in order.
 			var vertices = [];
 			for(var j = 0; j < cycle.length; j++)
-				vertices.push(this.elementList[0][cycle[j]]); //I can add .clone() if I want to edit these vertices.
+				vertices.push(this.elementList[0][cycle[j]]);
 			
-			//Directed edges.
-			var edges = [[vertices.length - 1, 0]];
-			for(var j = 0; j < vertices.length - 1; j++)
-				edges.push([j, j + 1]);
+			//Reuses vertexDLL for the polygon's vertices and the new vertices created.
+			//node0 is always the "next" vertex.
+			vertexDLL = [new DLLNode(vertices[0])];
+			for(var j = 0; j < vertices.length - 1; j++) {
+				vertexDLL[j + 1] = new DLLNode(vertices[j]);			
+				vertexDLL[j].node0 = vertexDLL[j + 1];
+				vertexDLL[j + 1].node1 = vertexDLL[j];
+			}						
+			vertexDLL[vertices.length - 1].node0 = vertexDLL[0];
+			vertexDLL[0].node1 = vertexDLL[vertices.length - 1];
 			
-			//Event queue for Bentley-Ottmann, in format [vertex, edgeIndex1, edgeIndex2].
-			//The first edge has the vertex in its first position, the second edge has it in its last position.
-			var EQ = [[vertices[vertices.length - 1], 0, vertices.length - 1]];
+			//Event queue for Bentley-Ottmann, stores vertex indices.
+			var EQ = [vertices.length - 1];
 			for(var j = 0; j < cycle.length - 1; j++)
-				EQ.push([vertices[j], j + 1, j]);
+				EQ.push(j);
 			
-			//Sorts EQ by inverse lexicographic order of the vertices.
-			Sorts.quickSort(EQ, 0, EQ.length - 1, function(a,b){return -Space.lexicographic(a[0], b[0]);});
+			//Sorts EQ by inverse lexicographic order of the vertices (EQ is read backwards at the moment).
+			var EQSort = function(a,b){return -Point.lexicographic(vertices[a], vertices[b]);};
+			Sorts.quickSort(EQ, 0, EQ.length - 1, EQSort);
 			
-			//Sweep line for Bentley-Ottmann, in format [[vertexIndex1, vertexIndex2], edgeIndex].
+			//Sweep line for Bentley-Ottmann, in format [vertexNode1, vertexNode2].
 			var SL = [];
 			
 			//Bentley-Ottmann:
@@ -301,48 +277,37 @@ class PolytopeC extends Polytope {
 				var E = EQ.pop(); //The next "event" in the event queue.
 				
 				//Runs this code on both edges adjacent to E's vertex.
-				for(var j = 1; j <= 2; j++) {
-					var edgeE = edges[E[j]];
-					//E is a left endpoint of edgeE:
-					if((Space.lexicographic(vertices[edgeE[0]], vertices[edgeE[1]]) > 0) !== (j == 1)) {
-						edgeE = [edgeE, E[j]];
-						var pos = Sorts.binaryInsert(SL, edgeE, function(a,b){if(a[0][0] === b[0][0] || a[0][0] === b[0][1] || a[0][1] === b[0][0] || a[0][1] === b[0][1])
-				return 0; return Space.lineCompare([vertices[a[0][0]],vertices[a[0][1]]],[vertices[b[0][0]],vertices[b[0][1]]],E[0].coordinates[0] + eps);});
+				for(var j = 0; j <= 1; j++) {
+					var edgeE;
+					if(j === 0)
+						edgeE = [vertexDLL[E], vertexDLL[E].node0];
+					else
+						edgeE = [vertexDLL[E].node1, vertexDLL[E]];
+					
+					//Vertex E is a left endpoint of edgeE:
+					if((Point.lexicographic(edgeE[0].value, edgeE[1].value) > 0) !== (j == 0)) {
+						var pos = Sorts.binaryInsert(SL, edgeE, function(a, b){return Space.lineCompare(a[0].value, a[1].value, b[0].value, b[1].value, vertices[E].coordinates[0] + eps);});
 												
 						divide(edgeE, SL[pos - 1]); //Checks for an intersection with the edge below edgeE.
 						divide(edgeE, SL[pos + 1]); //Checks for an intersection with the edge above edgeE.
 					}
-					//E is a right endpoint of edgeE:
+					//Vertex E is a right endpoint of edgeE:
 					else {
-						var pos = Sorts.binarySearch(SL, [edgeE, E[j]], function(a,b){if(a[0][0] === b[0][0] || a[0][0] === b[0][1] || a[0][1] === b[0][0] || a[0][1] === b[0][1])
-				return 0; return Space.lineCompare([vertices[a[0][0]],vertices[a[0][1]]],[vertices[b[0][0]],vertices[b[0][1]]],E[0].coordinates[0] - eps);});
+						var pos = Sorts.binaryInsert(SL, edgeE, function(a, b){return Space.lineCompare(a[0].value, a[1].value, b[0].value, b[1].value, vertices[E].coordinates[0] - eps);});
 						SL.splice(pos, 1); //Deletes edgeE from the sweep line.
 						divide(SL[pos], SL[pos - 1]); //Checks for an intersection between the edges below and above edgeE.
 					}
 				}
-			}
-			
-			//Retrieves polygonal paths from edges.
-			//Could be optimized somewhat, I think, but I first need to check that it works in concept.
+			}			
 			
 			//Polygons as ordered sets of vertices.
 			var polygons = [];
-			//Linked list encoding the directed edges.
-			var vertexLL = [];
 			
-			for(var j = 0; j < edges.length; j++) {
-				var edge = edges[j];
-				if(vertexLL[edge[0]] === undefined)
-					vertexLL[edge[0]] = new LLNode(vertices[edge[0]]);
-				if(vertexLL[edge[1]] === undefined)
-					vertexLL[edge[1]] = new LLNode(vertices[edge[0]]);
-				
-				vertexLL[edge[0]].linkTo(vertexLL[edge[1]]);		
-			}
-			
-			for(var j = 0; j < vertexLL.length; j++) {
-				if(vertexLL[j] !== undefined && !vertexLL[j].traversed)
-					polygons.push(vertexLL[j].getCycle());
+			//Retrieves polygonal paths from edges.
+			//Could be optimized somewhat, I think (do we need to traverse the list twice?), but I first need to check that it works in concept.
+			for(var j = 0; j < vertexDLL.length; j++) {
+				if(!vertexDLL[j].traversed)
+					polygons.push(vertexDLL[j].getCycle());
 			}
 			console.log(polygons);
 		}		

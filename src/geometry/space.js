@@ -56,19 +56,18 @@ class Space {
 		return new Point(pt);
 	}
 	
-	//Compares the intersections of the line from a[0] to a[1] and the line from b[0] to b[1]
-	//with the x = a hyperplane lexicographically.
+	//Compares the intersections of ab and cd with the x = k hyperplane lexicographically.
 	//Used in the Bentley-Ottmann algorithm.
-	static lineCompare(l1, l2, a) {
-		var lambda = (a - l1[1].coordinates[0])/(l1[0].coordinates[0] - l1[1].coordinates[0]);
+	static lineCompare(a, b, c, d, k) {		
+		var lambda = (k - b.coordinates[0])/(a.coordinates[0] - b.coordinates[0]);
 		var pt1 = [];
-		for(var i = 1; i < l1.length; i++)
-			pt1.push(l1[0].coordinates[i] * lambda + l1[1].coordinates[i] * (1 - lambda));
+		for(var i = 1; i < a.dimensions(); i++)
+			pt1.push(a.coordinates[i] * lambda + b.coordinates[i] * (1 - lambda));
 		
-		lambda = (a - l2[1].coordinates[0])/(l2[0].coordinates[0] - l2[1].coordinates[0])
+		lambda = (k - d.coordinates[0])/(c.coordinates[0] - d.coordinates[0])
 		var pt2 = [];
-		for(var i = 1; i < l1.length; i++)
-			pt2.push(l2[0].coordinates[i] * lambda + l2[1].coordinates[i] * (1 - lambda));
+		for(var i = 1; i < a.dimensions(); i++)
+			pt2.push(c.coordinates[i] * lambda + d.coordinates[i] * (1 - lambda));
 		return Point.lexicographicArray(pt1, pt2);
 	}
 }

@@ -1,76 +1,71 @@
 //A node, for usage in a doubly linked list
 //Each DLLNode is linked to two other nodes: linkage should be reflexive.
-//However, DLLNodes don't have a notion of a "previous" and a "next" node by themselves.
+//DLLNodes don't *necessarily* have a notion of a "previous" and a "next" node.
+//But when they do, node0 is the next node, and node1 is the previous.
 class DLLNode {
-	constructor(value, node1, node2) {
+	constructor(value, node0, node1) {
 		this.value = value;
+		this.node0 = node0;
 		this.node1 = node1;
-		this.node2 = node2;
+		this.traversed = false;
 	}
 	
 	linkTo(node) {
 		//Links this to node.
-		if(this.node1 === undefined)
+		if(this.node0 === undefined)
+			this.node0 = node;
+		else if(this.node1 === undefined)
 			this.node1 = node;
-		else if(this.node2 === undefined)
-			this.node2 = node;
 		else
 			throw new Error("A DLLNode can only be linked to two other nodes!");
 		
 		//Links node to this.
-		if(node.node1 === undefined)
+		if(node.node0 === undefined)
+			node.node0 = this;
+		else if(node.node1 === undefined)
 			node.node1 = this;
-		else if(node.node2 === undefined)
-			node.node2 = this;
 		else
 			throw new Error("A DLLNode can only be linked to two other nodes!");
+	}
+	
+	linkToNext(node) {
+		this.node0 = node;
+		node.node1 = this;
+	}
+	
+	linkToPrev(node) {
+		this.node1 = node;
+		node.node0 = this;
 	}
 	
 	//Traverses all nodes, while avoiding backtracking.
 	getCycle() {
 		var cycle = [this.value];
-		var prevNode = this;
-		var node = this.node1;
+		var node = this.node0;
+		this.traversed = true;
 		
-		while(node !== this) {
+		while(!node.traversed) {
+			node.traversed = true;
 			cycle.push(node.value);
-			if(node.node1 !== prevNode){				
-				prevNode = node;
+			if(node.node1.traversed)
+				node = node.node0;
+			else
 				node = node.node1;
-			}
-			else{				
-				prevNode = node;
-				node = node.node2;
-			}
 		}
 		
 		return cycle;
 	}
-}
-
-//A node, for usage in a linked list
-//Each LLNode is linked to exactly one other node.
-class LLNode {
-	constructor(value, node) {
-		this.value = value;
-		this.node = node;
-		this.traversed = false;
-	}
 	
-	linkTo(node) {
-		this.node = node;
-	}
-	
-	//Traverses all nodes.
-	getCycle() {
+	//Traverses all nodes quicker than getCycle, assuming that node0 is always the "next" node.
+	getOrderedCycle() {
 		var cycle = [this.value];
-		var node = this.node;
+		var node = this.node0;
 		this.traversed = true;
 		
 		while(!node.traversed) {
-			cycle.push(node.value);
 			node.traversed = true;
-			node = node.node;
+			cycle.push(node.value);
+			node = node.node0;
 		}
 		
 		return cycle;
