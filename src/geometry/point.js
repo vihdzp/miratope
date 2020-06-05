@@ -23,7 +23,7 @@ class Point {
 	
 	//Makes a Point object with the same base attributes.
 	clone() {
-		return new Point(this.coordinates);
+		return new Point([...this.coordinates]);
 	}
 	
 	//Projects the point into 3D.
@@ -83,9 +83,6 @@ class Point {
 	//Returns null if this does not exist.
 	//Currently only implemented for Euclidean points, in at least 2D.
 	static intersect(a, b, c, d) {
-		if(a === undefined || b === undefined || c === undefined || d === undefined)
-			return undefined;
-		
 		if(a.dimensions() !== b.dimensions() || a.dimensions() !== c.dimensions() || a.dimensions() !== d.dimensions())
 			throw new Error("You can't intersect edges with different amounts of dimensions!");
 		
@@ -125,20 +122,31 @@ class Point {
 		var s = [d.coordinates[ab_MAX_indx] - c.coordinates[ab_MAX_indx], d.coordinates[cd_MAX_indx] - c.coordinates[cd_MAX_indx]];
 		
 		var t = ((p[0] - q[0]) * s[1] - (p[1] - q[1]) * s[0])/(r[1] * s[0] - r[0] * s[1]);
-		if(t <= 0 || t >= 1 || isNaN(t))
+		var u = ((p[0] - q[0]) * r[1] - (p[1] - q[1]) * r[0])/(r[1] * s[0] - r[0] * s[1]);
+		if(t <= 0 || t >= 1 || u <= 0 || u >= 1 || isNaN(t) || isNaN(u))
 			return null;
-		return Point.multiplyBy(Point.add(a,Point.subtract(b, a)), t);
+		return Point.add(a, Point.multiplyBy(Point.subtract(b, a), t));
 	}
 	
 	//Orders two points in lexicographic order of the coordinates.
 	//Returns a negative number if a < b, 0 if a == b, and a positive number if a > b.
 	//For use in sorting functions.
 	static lexicographic(a, b) {
-		if(a.dimensions() !== b.dimensions())			
-			throw new Error("You can't compare points with different amounts of dimensions!");
-		
 		for(var i = 0; i < a.dimensions(); i++) {
 			var x = a.coordinates[i] - b.coordinates[i];
+			if(x !== 0)
+				return x;
+		}
+		
+		return 0;
+	}
+	
+	//Orders two arrays in lexicographic order of the coordinates.
+	//Returns a negative number if a < b, 0 if a == b, and a positive number if a > b.
+	//For use in sorting functions.
+	static lexicographicArray(a, b) {
+		for(var i = 0; i < a.length; i++) {
+			var x = a[i] - b[i];
 			if(x !== 0)
 				return x;
 		}
@@ -150,10 +158,15 @@ class Point {
 	//with the x = a hyperplane lexicographically.
 	//Used in the Bentley-Ottmann algorithm.
 	static lineCompare(l1, l2, a) {
-		var lambda1 = (a - l1[1].coordinates[0])/(l1[0].coordinates[0] - l1[1].coordinates[0])
-		var pt1 = l1[0].multiplyBy(lambda1).add(l1[1].multiplyBy(1 - lambda1));
-		var lambda2 = (a - l2[1].coordinates[0])/(l2[0].coordinates[0] - l2[1].coordinates[0])
-		var pt2 = l2[0].multiplyBy(lambda2).add(l2[1].multiplyBy(1 - lambda2));
-		return Point.lexicographic(pt1, pt2);
+		var lambda = (a - l1[1].coordinates[0])/(l1[0].coordinates[0] - l1[1].coordinates[0]);
+		var pt1 = [];
+		for(var i = 1; i < l1.length; i++)
+			pt1.push(l1[0].coordinates[i] * lambda + l1[1].coordinates[i] * (1 - lambda));
+		
+		lambda = (a - l2[1].coordinates[0])/(l2[0].coordinates[0] - l2[1].coordinates[0])
+		var pt2 = [];
+		for(var i = 1; i < l1.length; i++)
+			pt2.push(l2[0].coordinates[i] * lambda + l2[1].coordinates[i] * (1 - lambda));
+		return Point.lexicographicArray(pt1, pt2);
 	}
 }

@@ -23,12 +23,13 @@ class Sorts {
 		Sorts.swap(array, i, hi);
 		return i;
 	}
-	
+
 	//Auxiliary function for quickSort.
+	//Assumes array is an array of arrays.
 	static swap(array, i, j) {
-		var temp = array[j];
-		array[i] = array[j];
-		array[j] = temp;
+		var temp = [...array[j]];
+		array[j] = array[i];
+		array[i] = temp;
 	}
 	
 	//Inserts el into an array sorted by compareFunction.
@@ -36,7 +37,7 @@ class Sorts {
 	static binaryInsert(array, el, compareFunction) {
 		var lo = 0;
 		var hi = array.length - 1;
-		var mid;
+		var mid = 0;
 		if(compareFunction === undefined)
 			compareFunction = function(a, b) {return a - b;};
  
@@ -61,5 +62,27 @@ class Sorts {
 			array.splice(mid + 1, 0, el);
 			return mid + 1;
 		}
+	}
+	
+	//Searches for el in an array sorted by compareFunction.
+	static binarySearch(array, el, compareFunction) {
+		var lo = 0;
+		var hi = array.length - 1;
+		var mid;
+		if(compareFunction === undefined)
+			compareFunction = function(a, b) {return a - b;};
+ 
+		while (lo <= hi) {
+			mid = Math.floor((lo + hi) / 2);
+			
+			if (compareFunction(array[mid], el) > 0) 
+				hi = mid - 1;
+			else if (compareFunction(array[mid], el) < 0)
+				lo = mid + 1;
+			else 
+				return mid;
+		}
+		
+		return -1;
 	}
 }
