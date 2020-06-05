@@ -197,7 +197,6 @@ class PolytopeC extends Polytope {
 	//Also, the code might be made more readable if we made classes for stuff like edges and events.
 	//NOT YET FULLY IMPLEMENTED!
 	renderTo(scene) {
-		throw new Error("Not yet implemented!");
 		//"Cuts" edgeA and edgeB at the intersection point, adds the new directed edges according to the simplification algorithm.
 		//Edges are in format [[vertexIndex1, vertexIndex2], edgeIndex].
 		function divide(edgeA, edgeB) {
@@ -217,22 +216,22 @@ class PolytopeC extends Polytope {
 			vertices.push(interClone);
 										
 			//If edgeA goes left to right:
-			if(Point.lexicographic(vertices[edgeA[0][0]], vertices[edgeA[0][1]]) < 0) {
+			if(Space.lexicographic(vertices[edgeA[0][0]], vertices[edgeA[0][1]]) < 0) {
 				edges.push([vertices.length - 1, edgeA[0][1]]);
 				edgeA[0][1] = vertices.length - 2;
 				//If edgeB goes left to right:
-				if(Point.lexicographic(vertices[edgeB[0][0]], vertices[edgeB[0][1]]) < 0) {
+				if(Space.lexicographic(vertices[edgeB[0][0]], vertices[edgeB[0][1]]) < 0) {
 					edges.push([vertices.length - 2, edgeB[0][1]]);
 					edgeB[0][1] = vertices.length - 1;
-					Sorts.binaryInsert(EQ, [inter, edges.length - 1, edgeA[1]], function(a,b){return -Point.lexicographic(a[0], b[0]);});
-					Sorts.binaryInsert(EQ, [interClone, edges.length - 2, edgeB[1]], function(a,b){return -Point.lexicographic(a[0], b[0]);});
+					Sorts.binaryInsert(EQ, [inter, edges.length - 1, edgeA[1]], function(a,b){return -Space.lexicographic(a[0], b[0]);});
+					Sorts.binaryInsert(EQ, [interClone, edges.length - 2, edgeB[1]], function(a,b){return -Space.lexicographic(a[0], b[0]);});
 				}
 				//If edgeB goes right to left:
 				else {
 					edges.push([edgeB[0][0], vertices.length - 1]);
 					edgeB[0][0] = vertices.length - 2;
-					Sorts.binaryInsert(EQ, [inter, edgeB[1], edgeA[1]], function(a,b){return -Point.lexicographic(a[0], b[0]);});
-					Sorts.binaryInsert(EQ, [interClone, edges.length - 2, edges.length - 1], function(a,b){return -Point.lexicographic(a[0], b[0]);});
+					Sorts.binaryInsert(EQ, [inter, edgeB[1], edgeA[1]], function(a,b){return -Space.lexicographic(a[0], b[0]);});
+					Sorts.binaryInsert(EQ, [interClone, edges.length - 2, edges.length - 1], function(a,b){return -Space.lexicographic(a[0], b[0]);});
 				}
 			}
 			//If edgeA goes right to left:
@@ -240,18 +239,18 @@ class PolytopeC extends Polytope {
 				edges.push([edgeA[0][0], vertices.length - 2]);
 				edgeA[0][0] = vertices.length - 1;
 				//If edgeB goes left to right:
-				if(Point.lexicographic(vertices[edgeB[0][0]], vertices[edgeB[0][1]]) < 0) {
+				if(Space.lexicographic(vertices[edgeB[0][0]], vertices[edgeB[0][1]]) < 0) {
 					edges.push([vertices.length - 2, edgeB[0][1]]);
 					edgeB[0][1] = vertices.length - 1;
-					Sorts.binaryInsert(EQ, [inter, edges.length - 1, edges.length - 2], function(a,b){return -Point.lexicographic(a[0], b[0]);});
-					Sorts.binaryInsert(EQ, [interClone, edgeA[1], edgeB[1]], function(a,b){return -Point.lexicographic(a[0], b[0]);});
+					Sorts.binaryInsert(EQ, [inter, edges.length - 1, edges.length - 2], function(a,b){return -Space.lexicographic(a[0], b[0]);});
+					Sorts.binaryInsert(EQ, [interClone, edgeA[1], edgeB[1]], function(a,b){return -Space.lexicographic(a[0], b[0]);});
 				}
 				//If edgeB goes right to left:
 				else {
 					edges.push([edgeB[0][0], vertices.length - 1]);
 					edgeB[0][0] = vertices.length - 2;
-					Sorts.binaryInsert(EQ, [inter, edgeB[1], edges.length - 2], function(a,b){return -Point.lexicographic(a[0], b[0]);});
-					Sorts.binaryInsert(EQ, [interClone, edgeA[1], edges.length - 1], function(a,b){return -Point.lexicographic(a[0], b[0]);});
+					Sorts.binaryInsert(EQ, [inter, edgeB[1], edges.length - 2], function(a,b){return -Space.lexicographic(a[0], b[0]);});
+					Sorts.binaryInsert(EQ, [interClone, edgeA[1], edges.length - 1], function(a,b){return -Space.lexicographic(a[0], b[0]);});
 				}
 			}
 		}
@@ -292,7 +291,7 @@ class PolytopeC extends Polytope {
 				EQ.push([vertices[j], j + 1, j]);
 			
 			//Sorts EQ by inverse lexicographic order of the vertices.
-			Sorts.quickSort(EQ, 0, EQ.length - 1, function(a,b){return -Point.lexicographic(a[0], b[0]);});
+			Sorts.quickSort(EQ, 0, EQ.length - 1, function(a,b){return -Space.lexicographic(a[0], b[0]);});
 			
 			//Sweep line for Bentley-Ottmann, in format [[vertexIndex1, vertexIndex2], edgeIndex].
 			var SL = [];
@@ -305,10 +304,10 @@ class PolytopeC extends Polytope {
 				for(var j = 1; j <= 2; j++) {
 					var edgeE = edges[E[j]];
 					//E is a left endpoint of edgeE:
-					if((Point.lexicographic(vertices[edgeE[0]], vertices[edgeE[1]]) > 0) !== (j == 1)) {
+					if((Space.lexicographic(vertices[edgeE[0]], vertices[edgeE[1]]) > 0) !== (j == 1)) {
 						edgeE = [edgeE, E[j]];
 						var pos = Sorts.binaryInsert(SL, edgeE, function(a,b){if(a[0][0] === b[0][0] || a[0][0] === b[0][1] || a[0][1] === b[0][0] || a[0][1] === b[0][1])
-				return 0; return Point.lineCompare([vertices[a[0][0]],vertices[a[0][1]]],[vertices[b[0][0]],vertices[b[0][1]]],E[0].coordinates[0] + eps);});
+				return 0; return Space.lineCompare([vertices[a[0][0]],vertices[a[0][1]]],[vertices[b[0][0]],vertices[b[0][1]]],E[0].coordinates[0] + eps);});
 												
 						divide(edgeE, SL[pos - 1]); //Checks for an intersection with the edge below edgeE.
 						divide(edgeE, SL[pos + 1]); //Checks for an intersection with the edge above edgeE.
@@ -316,7 +315,7 @@ class PolytopeC extends Polytope {
 					//E is a right endpoint of edgeE:
 					else {
 						var pos = Sorts.binarySearch(SL, [edgeE, E[j]], function(a,b){if(a[0][0] === b[0][0] || a[0][0] === b[0][1] || a[0][1] === b[0][0] || a[0][1] === b[0][1])
-				return 0; return Point.lineCompare([vertices[a[0][0]],vertices[a[0][1]]],[vertices[b[0][0]],vertices[b[0][1]]],E[0].coordinates[0] - eps);});
+				return 0; return Space.lineCompare([vertices[a[0][0]],vertices[a[0][1]]],[vertices[b[0][0]],vertices[b[0][1]]],E[0].coordinates[0] - eps);});
 						SL.splice(pos, 1); //Deletes edgeE from the sweep line.
 						divide(SL[pos], SL[pos - 1]); //Checks for an intersection between the edges below and above edgeE.
 					}
