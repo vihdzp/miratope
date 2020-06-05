@@ -27,7 +27,7 @@ class Sorts {
 	//Auxiliary function for quickSort.
 	//Assumes the elements of array are immutable.
 	static swap(array, i, j) {
-		var temp = j;
+		var temp = array[j];
 		array[j] = array[i];
 		array[i] = temp;
 	}
