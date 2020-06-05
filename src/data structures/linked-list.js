@@ -47,3 +47,32 @@ class DLLNode {
 		return cycle;
 	}
 }
+
+//A node, for usage in a linked list
+//Each LLNode is linked to exactly one other node.
+class LLNode {
+	constructor(value, node) {
+		this.value = value;
+		this.node = node;
+		this.traversed = false;
+	}
+	
+	linkTo(node) {
+		this.node = node;
+	}
+	
+	//Traverses all nodes.
+	getCycle() {
+		var cycle = [this.value];
+		var node = this.node;
+		this.traversed = true;
+		
+		while(!node.traversed) {
+			cycle.push(node.value);
+			node.traversed = true;
+			node = node.node;
+		}
+		
+		return cycle;
+	}
+}

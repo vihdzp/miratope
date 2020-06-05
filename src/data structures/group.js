@@ -1,3 +1,5 @@
+"use strict";
+
 //A class for abstract groups.
 class Group {
 	constructor() {
