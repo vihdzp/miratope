@@ -70,4 +70,10 @@ class DLLNode {
 		
 		return cycle;
 	}
+	
+	getNode(i) {
+		if(i === 0)
+			return this.node0;
+		return this.node1;
+	}
 }
