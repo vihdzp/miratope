@@ -62,7 +62,7 @@ class Space {
 		var lambda1 = (k - b.coordinates[indx0])/(a.coordinates[indx0] - b.coordinates[indx0]);		
 		var lambda2 = (k - d.coordinates[indx0])/(c.coordinates[indx0] - d.coordinates[indx0]);
 		
-		return a.coordinates[indx1] * lambda1 + b.coordinates[indx1] * (1 - lambda1) - c.coordinates[indx1] * lambda2 + d.coordinates[indx1] * (1 - lambda2);
+		return a.coordinates[indx1] * lambda1 + b.coordinates[indx1] * (1 - lambda1) - c.coordinates[indx1] * lambda2 - d.coordinates[indx1] * (1 - lambda2);
 	}
 	
 	//Calculates the angle between b - a and c - a, and check if it's straight to a given precision.

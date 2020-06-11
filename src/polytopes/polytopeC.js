@@ -236,11 +236,17 @@ class PolytopeC extends Polytope {
 		
 		//Converts an element of the sweepline in the format described below to a directed edge in the format [vertex1, vertex2].
 		function SLToEdge(el) {
-			if(el[1] === 0)
-				return [el[0], el[0].node0];
-			return [el[0].node1, el[0]];
+			if(el.rightVertexIndex === 0)
+				return [el.leftVertex, el.leftVertex.node0];
+			return [el.leftVertex.node1, el.leftVertex];
 		}
 		
+		function debug() {
+			console.log(E.value.coordinates);
+			for(var tst = 0; tst < SL.length; tst++)
+				console.log(SL[tst].toS())
+		}
+	
 		/*Deletes el from the sweep line.
 		Takes into account that in the SL format, each edge has two representations.
 		Implemented as a modified binary search, but really, SL should be a tree.
@@ -331,7 +337,7 @@ class PolytopeC extends Polytope {
 			//Calculates the coordinates such that the projection of our three non-collinear points onto their 2D plane has the highest area.
 			//Uses the shoelace formula.
 			//Stores such coordinates' indices in indx0, indx1.
-			var maxArea, indx0, indx1;
+			var maxArea = 0, indx0 = 0, indx1 = 1;
 			for(j = 0; j < vertexDLL[0].value.coordinates.length; j++) {
 				for(k = j + 1; k < vertexDLL[0].value.coordinates.length; k++) {
 					if(vertexDLL[0].value.coordinates[j] * (vertexDLL[a].value.coordinates[k] - vertexDLL[b].value.coordinates[k])
@@ -376,16 +382,21 @@ class PolytopeC extends Polytope {
 					
 					//Vertex E is a left endpoint of the edge:
 					if(ord < 0) {
-						edgeSL = {leftVertex: E, rightVertexIndex: j, rightVertex: function(){return this.leftVertex.getNode(this.rightVertexIndex);}};
-						pos = Sorts.binaryInsert(SL, edgeSL,
-							function(a, b){return Space.lineCompare(a.leftVertex.value, a.rightVertex().value, b.leftVertex.value, b.rightVertex().value, edgeSL.leftVertex.value.coordinates[indx0] * (1 + eps));}, indx0, indx1);
-						
+						edgeSL = {leftVertex: E, rightVertexIndex: j, rightVertex: function(){return this.leftVertex.getNode(this.rightVertexIndex);}
+						, toS: function(){return "([" + this.leftVertex.value.coordinates.toString() +"], ["+this.rightVertex().value.coordinates.toString()+"])";}
+						};
+						pos = Sorts.binaryInsert(SL, edgeSL, 
+						function(a, b){return Space.lineCompare(a.leftVertex.value, a.rightVertex().value, b.leftVertex.value, b.rightVertex().value, edgeSL.leftVertex.value.coordinates[indx0] + eps, indx0, indx1);});
+
 						divide(edgeSL, SL[pos - 1]); //Checks for an intersection with the edge below edgeE.
 						divide(edgeSL, SL[pos + 1]); //Checks for an intersection with the edge above edgeE.
 					}
 					//Vertex E is a right endpoint of the edge:
 					else if (ord > 0) {
-						edgeSL = {leftVertex: E.getNode(j), rightVertexIndex: 1 - j};
+						edgeSL = {leftVertex: E.getNode(j), rightVertexIndex: 1 - j
+						, rightVertex: function(){return this.leftVertex.getNode(this.rightVertexIndex);}
+						, toS: function(){return "([" + this.leftVertex.value.coordinates.toString() +"], ["+this.rightVertex().value.coordinates.toString()+"])";}
+						};
 						
 						//Deletes edgeSL from the sweep line.
 						//This would be way more efficient with a tree-like structure.
