@@ -274,14 +274,6 @@ class PolytopeC extends Polytope {
 		}
 		*/
 		
-		//Orders two points lexicographically based on the coordinates on indices 0 and 1.
-		function order(a, b) {
-			var c = a.value.coordinates[indx0] - b.value.coordinates[indx0]
-			if(c === 0)
-				return a.value.coordinates[indx1] - b.value.coordinates[indx1];
-			return c;
-		}
-		
 		var j, k;
 		
 		//For each face:
@@ -334,9 +326,8 @@ class PolytopeC extends Polytope {
 			for(j = 0; j < vertexDLL[0].value.coordinates.length; j++) {
 				for(k = j + 1; k < vertexDLL[0].value.coordinates.length; k++) {
 					if(vertexDLL[0].value.coordinates[j] * (vertexDLL[a].value.coordinates[k] - vertexDLL[b].value.coordinates[k])
-					- vertexDLL[0].value.coordinates[k] * (vertexDLL[a].value.coordinates[j] - vertexDLL[b].value.coordinates[j])
-					+ vertexDLL[a].value.coordinates[j] * vertexDLL[b].value.coordinates[k] 
-					- vertexDLL[a].value.coordinates[k] * vertexDLL[b].value.coordinates[j]
+					+ vertexDLL[a].value.coordinates[j] * (vertexDLL[b].value.coordinates[k] - vertexDLL[0].value.coordinates[k])
+					+ vertexDLL[b].value.coordinates[j] * (vertexDLL[0].value.coordinates[k] - vertexDLL[a].value.coordinates[k])
 					> maxArea) {
 						indx0 = j;
 						indx1 = k;
