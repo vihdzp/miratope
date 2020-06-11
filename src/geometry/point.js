@@ -78,30 +78,15 @@ class Point {
 		return new THREE.Vector3(...this.coordinates);
 	}	
 	
-	//Orders two points in lexicographic order of the coordinates.
-	//Returns a negative number if a < b, 0 if a == b, and a positive number if a > b.
-	//For use in sorting functions.
-	static lexicographic(a, b) {
-		for(var i = 0; i < a.dimensions(); i++) {
-			var x = a.coordinates[i] - b.coordinates[i];
-			if(x !== 0)
-				return x;
+	//Checks if two points are equal, to a predetermined precision.
+	static equal(a, b) {
+		var eps = 0.0000001;
+		for(var i = 0; i < a.coordinates.length; i++) {
+			if(Math.abs(a.coordinates[i] - b.coordinates[i]) > Math.abs(a.coordinates[i] * eps))
+				return false;
 		}
 		
-		return 0;
-	}
-	
-	//Orders two arrays in lexicographic order of the coordinates.
-	//Returns a negative number if a < b, 0 if a == b, and a positive number if a > b.
-	//For use in sorting functions.
-	static lexicographicArray(a, b) {
-		for(var i = 0; i < a.length; i++) {
-			var x = a[i] - b[i];
-			if(x !== 0)
-				return x;
-		}
-		
-		return 0;
+		return true;
 	}
 	
 	//Calculates the specified permutations of a point in a given format.
@@ -109,6 +94,7 @@ class Point {
 	//These are followed by permutation and sign "modifiers", such as allPerms(0, 1) for all permutations of the first and second coordinates,
 	//or evenSignChanges(all) for even sign changes in all coordinates.
 	static calculatePermutations(line) {
+		throw new Error("Not yet implemented!");
 		line = line.replace(" ", "");
 		var coords = []; //Coordinates of point.
 		var c = 1; //Caret for reading the line – skips first character (assumed to be a left parenthesis)

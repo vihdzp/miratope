@@ -56,18 +56,32 @@ class Space {
 		return new Point(pt);
 	}
 	
-	//Compares the intersections of ab and cd with the x = k hyperplane lexicographically.
+	//Compares the intersections of ab and cd with the (indx0 coordinate) = k hyperplane w.r.t the indx1 coordinate.
 	//Used in the Bentley-Ottmann algorithm.
-	static lineCompare(a, b, c, d, k) {		
-		var lambda = (k - b.coordinates[0])/(a.coordinates[0] - b.coordinates[0]);
-		var pt1 = [];
-		for(var i = 1; i < a.dimensions(); i++)
-			pt1.push(a.coordinates[i] * lambda + b.coordinates[i] * (1 - lambda));
+	static lineCompare(a, b, c, d, k, indx0, indx1) {		
+		var lambda1 = (k - b.coordinates[indx0])/(a.coordinates[indx0] - b.coordinates[indx0]);		
+		var lambda2 = (k - d.coordinates[indx0])/(c.coordinates[indx0] - d.coordinates[indx0]);
 		
-		lambda = (k - d.coordinates[0])/(c.coordinates[0] - d.coordinates[0])
-		var pt2 = [];
-		for(var i = 1; i < a.dimensions(); i++)
-			pt2.push(c.coordinates[i] * lambda + d.coordinates[i] * (1 - lambda));
-		return Point.lexicographicArray(pt1, pt2);
+		return a.coordinates[indx1] * lambda1 + b.coordinates[indx1] * (1 - lambda1) - c.coordinates[indx1] * lambda2 + d.coordinates[indx1] * (1 - lambda2);
+	}
+	
+	//Calculates the angle between b - a and c - a, and check if it's straight to a given precision.
+	static collinear(a, b, c) {
+		var eps = 0.0000001;
+		if(Point.equal(a, b) || Point.equal(a, c))
+			return true;
+		
+		var dot = 0;
+		var norm0, norm1;
+		var sub0, sub1;
+		for(var i = 0; i < a.coordinates.length; i++) {
+			sub0 = b.coordinates[i] - a.coordinates[i];
+			sub1 = c.coordinates[i] - a.coordinates[i];
+			dot += sub0 * sub1;
+			norm0 += sub0 * sub0;
+			norm1 += sub1 * sub1;
+		}
+
+		return 1 - Math.abs(dot / Math.sqrt(norm0 * norm1)) <= eps;
 	}
 }

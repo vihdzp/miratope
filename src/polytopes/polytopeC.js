@@ -196,7 +196,7 @@ class PolytopeC extends Polytope {
 	//Uses arraya for EQ and SL, but AVL Trees or something similar would be much more efficient.
 	//NOT YET FULLY IMPLEMENTED!
 	renderTo(scene) {
-		throw new Error("Not yet implemented!");
+		var eps = 0.0000001;
 		
 		//"Cuts" edgeA and edgeB at the intersection point, adds the new directed edges according to the simplification algorithm.
 		//Edges are in the SL format.
@@ -274,6 +274,14 @@ class PolytopeC extends Polytope {
 		}
 		*/
 		
+		//Orders two points lexicographically based on the coordinates on indices 0 and 1.
+		function order(a, b) {
+			var c = a.value.coordinates[indx0] - b.value.coordinates[indx0]
+			if(c === 0)
+				return a.value.coordinates[indx1] - b.value.coordinates[indx1];
+			return c;
+		}
+		
 		var j, k;
 		
 		//For each face:
@@ -321,6 +329,7 @@ class PolytopeC extends Polytope {
 			}
 			
 			//Calculates the coordinates such that the projection of our three non-collinear points onto their 2D plane has the highest area.
+			//Uses the shoelace formula.
 			//Stores such coordinates' indices in indx0, indx1.
 			var maxArea, indx0, indx1;
 			for(j = 0; j < vertexDLL[0].value.coordinates.length; j++) {
@@ -341,7 +350,12 @@ class PolytopeC extends Polytope {
 				EQ.push(vertexDLL[j]);
 			
 			//Sorts EQ by inverse lexicographic order of the vertices (EQ is read backwards at the moment).
-			var EQSort = function(a, b){return order(b, a)};
+			var EQSort = function(a, b){
+				var c = b.value.coordinates[indx0] - a.value.coordinates[indx0]
+				if(c === 0)
+					return b.value.coordinates[indx1] - a.value.coordinates[indx1];
+				return c;
+			};
 			Sorts.quickSort(EQ, 0, EQ.length - 1, EQSort);
 			
 			//Sweep line for Bentley-Ottmann, as an object with properties leftVertex and rightVertexIndex.
@@ -364,7 +378,7 @@ class PolytopeC extends Polytope {
 					if(ord < 0) {
 						edgeSL = {leftVertex: E, rightVertexIndex: j, rightVertex: function(){return this.leftVertex.getNode(this.rightVertexIndex);}};
 						pos = Sorts.binaryInsert(SL, edgeSL,
-							function(a, b){return Space.lineCompare(a.leftVertex.value, a.rightVertex().value, b.leftVertex.value, b.rightVertex().value, edgeSL.leftVertex.value.coordinates[indx0] * (1 + eps));});
+							function(a, b){return Space.lineCompare(a.leftVertex.value, a.rightVertex().value, b.leftVertex.value, b.rightVertex().value, edgeSL.leftVertex.value.coordinates[indx0] * (1 + eps));}, indx0, indx1);
 						
 						divide(edgeSL, SL[pos - 1]); //Checks for an intersection with the edge below edgeE.
 						divide(edgeSL, SL[pos + 1]); //Checks for an intersection with the edge above edgeE.
