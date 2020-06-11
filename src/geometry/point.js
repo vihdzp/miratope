@@ -73,11 +73,10 @@ class Point {
 	}
 	
 	//Converts to the Vector3 class used by three.js.
-	//Meant only for 3D point.
+	//Meant only for 3D points.
 	toVector3() {
 		return new THREE.Vector3(...this.coordinates);
-	}
-	
+	}	
 	
 	//Orders two points in lexicographic order of the coordinates.
 	//Returns a negative number if a < b, 0 if a == b, and a positive number if a > b.
@@ -103,5 +102,36 @@ class Point {
 		}
 		
 		return 0;
+	}
+	
+	//Calculates the specified permutations of a point in a given format.
+	//The string needs to start with the coordinates of the point in parentheses, separated by commas.
+	//These are followed by permutation and sign "modifiers", such as allPerms(0, 1) for all permutations of the first and second coordinates,
+	//or evenSignChanges(all) for even sign changes in all coordinates.
+	static calculatePermutations(line) {
+		line = line.replace(" ", "");
+		var coords = []; //Coordinates of point.
+		var c = 1; //Caret for reading the line – skips first character (assumed to be a left parenthesis)
+		var leftP = 0, rightP = 0; //Counts parentheses, to detect when the point ends.
+		
+		var coord = ""; //A single coordinate
+		while(rightP <= leftP) {
+			switch(line[c]) {
+				case "(":
+					leftP++;
+					break;
+				case ")":
+					rightP++;
+					break;
+				case ",":				
+					coords.push(coord);
+					coord = "";
+					break;
+				default:
+					coord += line[c];
+					break;
+			}
+			c++;
+		}
 	}
 }

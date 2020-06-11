@@ -85,30 +85,4 @@ class Sorts {
 		
 		return -1;
 	}
-	
-		
-	//Searches for el in an array sorted by compareFunction.
-	//Slightly different from binarySearch, tailored specifically for use in Bentley-Ottmann,
-	//where elements are sweep line edges, and various elements can be equivalent under compareFunction.
-	static binarySearchSL(array, el, compareFunction) {
-		var lo = 0;
-		var hi = array.length - 1;
-		var mid;
-		if(compareFunction === undefined)
-			compareFunction = function(a, b) {return a - b;};
- 
-		while (lo <= hi) {
-			mid = Math.floor((lo + hi) / 2);
-			
-			if (compareFunction(array[mid], el) >= 0) 
-				hi = mid - 1;
-			else if (compareFunction(array[mid], el) < 0)
-				lo = mid + 1;
-		}
-		
-		while(array[mid][0][0] !== el[0][0] || array[mid][0][1] !== el[0][1])
-			mid++;
-		
-		return mid;
-	}
 }
