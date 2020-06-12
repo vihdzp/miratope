@@ -1,6 +1,7 @@
 /**
  * @license
  * Copyright Daniel Imms <http://www.growingwiththeweb.com>
+ * Modified by the Miratope authors.
  * Released under MIT license. See LICENSE in the project root for details.
  */
 'use strict';
@@ -46,6 +47,7 @@ AvlTree.prototype._compare = function (a, b) {
 AvlTree.prototype.insert = function (key, value) {
   this._root = this._insert(key, value, this._root);
   this._size++;
+  return insertedNode;
 };
 
 /**
@@ -57,16 +59,18 @@ AvlTree.prototype.insert = function (key, value) {
  * @param {Node} root The root of the tree to insert in.
  * @return {Node} The new tree root.
  */
+var insertedNode;
 AvlTree.prototype._insert = function (key, value, root) {
   // Perform regular BST insertion
   if (root === null) {
-    return new Node(key, value);
+    insertedNode = new Node(key, value);
+	return insertedNode;
   }
 
   if (this._compare(key, root.key) < 0) {
-    root.left = this._insert(key, value, root.left);
+    root.linkLeft(this._insert(key, value, root.left));
   } else if (this._compare(key, root.key) > 0) {
-    root.right = this._insert(key, value, root.right);
+    root.linkRight(this._insert(key, value, root.right));
   } else {
     // It's a duplicate so insertion failed, decrement size to make up for it
     this._size--;
@@ -83,7 +87,7 @@ AvlTree.prototype._insert = function (key, value, root) {
       root = root.rotateRight();
     } else {
       // Left right case
-      root.left = root.left.rotateLeft();
+      root.linkLeft(root.left.rotateLeft());
       return root.rotateRight();
     }
   }
@@ -94,13 +98,47 @@ AvlTree.prototype._insert = function (key, value, root) {
       root = root.rotateLeft();
     } else {
       // Right left case
-      root.right = root.right.rotateRight();
+      root.linkRight(root.right.rotateRight());
       return root.rotateLeft();
     }
   }
 
   return root;
 };
+
+AvlTree.prototype.next = function(node) {
+	if(node.right) {
+		node = node.right;
+		while(node.left)
+			node = node.left;
+		return node;
+	}
+	
+	while(node.parent) {
+		if(node.parent.right === node)
+			node = node.parent;
+		else
+			return node.parent;
+	}
+	return null;
+}
+
+AvlTree.prototype.prev = function(node) {
+	if(node.left) {
+		node = node.left;
+		while(node.right)
+			node = node.right;
+		return node;
+	}
+	
+	while(node.parent) {
+		if(node.parent.left === node)
+			node = node.parent;
+		else
+			return node.parent;
+	}
+	return null;
+}
 
 /**
  * Deletes a node with a specific key from the tree.
@@ -129,10 +167,10 @@ AvlTree.prototype._delete = function (key, root) {
 
   if (this._compare(key, root.key) < 0) {
     // The key to be deleted is in the left sub-tree
-    root.left = this._delete(key, root.left);
+    root.linkLeft(this._delete(key, root.left));
   } else if (this._compare(key, root.key) > 0) {
     // The key to be deleted is in the right sub-tree
-    root.right = this._delete(key, root.right);
+    root.linkRight(this._delete(key, root.right));
   } else {
     // root is the node to be deleted
     if (!root.left && !root.right) {
@@ -151,7 +189,7 @@ AvlTree.prototype._delete = function (key, root) {
   }
 
   if (root === null) {
-    return root;
+    return null;
   }
 
   // Update height and rebalance tree
@@ -166,7 +204,7 @@ AvlTree.prototype._delete = function (key, root) {
     }
     // Left right case
     if (getBalanceState(root.left) === BalanceState.SLIGHTLY_UNBALANCED_RIGHT) {
-      root.left = root.left.rotateLeft();
+      root.linkLeft(root.left.rotateLeft());
       return root.rotateRight();
     }
   }
@@ -179,7 +217,7 @@ AvlTree.prototype._delete = function (key, root) {
     }
     // Right left case
     if (getBalanceState(root.right) === BalanceState.SLIGHTLY_UNBALANCED_LEFT) {
-      root.right = root.right.rotateRight();
+      root.linkRight(root.right.rotateRight());
       return root.rotateLeft();
     }
   }
@@ -199,6 +237,20 @@ AvlTree.prototype.get = function (key) {
   }
 
   return this._get(key, this._root).value;
+};
+
+/**
+ * Gets the node within the tree with a specific key.
+ *
+ * @param {Object} key The key being searched for.
+ * @return {Object} The node or null if it doesn't exist.
+ */
+AvlTree.prototype.getNode = function (key) {
+  if (this._root === null) {
+    return null;
+  }
+
+  return this._get(key, this._root);
 };
 
 /**
@@ -251,6 +303,13 @@ AvlTree.prototype.findMinimum = function () {
 };
 
 /**
+ * @return {Object} The minimum node in the tree.
+ */
+AvlTree.prototype.findMinimumNode = function () {
+  return minValueNode(this._root);
+};
+
+/**
  * Gets the minimum value node, rooted in a particular node.
  *
  * @private
@@ -270,6 +329,13 @@ function minValueNode(root) {
  */
 AvlTree.prototype.findMaximum = function () {
   return maxValueNode(this._root).key;
+};
+
+/**
+ * @return {Object} The maximum node in the tree.
+ */
+AvlTree.prototype.findMaximumNode = function () {
+  return maxValueNode(this._root);
 };
 
 /**
@@ -343,6 +409,7 @@ function getBalanceState(node) {
 var Node = function (key, value) {
   this.left = null;
   this.right = null;
+  this.parent = null;
   this.height = null;
   this.key = key;
   this.value = value;
@@ -361,8 +428,8 @@ var Node = function (key, value) {
  */
 Node.prototype.rotateRight = function () {
   var other = this.left;
-  this.left = other.right;
-  other.right = this;
+  this.linkLeft(other.right);
+  other.linkRight(this);
   this.height = Math.max(this.leftHeight(), this.rightHeight()) + 1;
   other.height = Math.max(other.leftHeight(), this.height) + 1;
   return other;
@@ -381,8 +448,8 @@ Node.prototype.rotateRight = function () {
  */
 Node.prototype.rotateLeft = function () {
   var other = this.right;
-  this.right = other.left;
-  other.left = this;
+  this.linkRight(other.left);
+  other.linkLeft(this);
   this.height = Math.max(this.leftHeight(), this.rightHeight()) + 1;
   other.height = Math.max(other.rightHeight(), this.height) + 1;
   return other;
@@ -412,5 +479,27 @@ Node.prototype.rightHeight = function () {
     return -1;
   }
   return this.right.height;
+};
+
+/**
+ * Links a node to the left.
+ *
+ * @param {Object} node The node to be linked.
+ */
+Node.prototype.linkLeft = function (node) {
+  this.left = node;
+  if(node)
+	node.parent = this;
+};
+
+/**
+ * Links a node to the right.
+ *
+ * @param {Object} node The node to be linked.
+ */
+Node.prototype.linkRight = function (node) {
+  this.right = node;
+  if(node)
+	node.parent = this;
 };
 

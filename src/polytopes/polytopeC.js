@@ -195,102 +195,79 @@ class PolytopeC extends Polytope {
 	//to triangulate general polygons.
 	//Uses arraya for EQ and SL, but AVL Trees or something similar would be much more efficient.
 	//NOT YET FULLY IMPLEMENTED!
-	renderTo(scene) {
-		var eps = 0.0000001;
-		
-		//"Cuts" edgeA and edgeB at the intersection point, adds the new directed edges according to the simplification algorithm.
-		//Edges are in the SL format.
-		function divide(edgeA, edgeB) {
-			//No point in doing anything if any of the arguments doesn't exist.
-			if(edgeA === undefined || edgeB === undefined)
-				return;
-			
-			//Converts edges from the SL format to the [vertex1, vertex2] directed edge format. 
-			edgeA = SLToEdge(edgeA);
-			edgeB = SLToEdge(edgeB);
-			
-			//No point in doing anything if the intersection has already been dealt with.
-			if(edgeA[0].value === edgeB[0].value || edgeA[0].value === edgeB[1].value || edgeA[1].value === edgeB[0].value || edgeA[1].value === edgeB[1].value)
-				return;
-			
-			//No point in doing anything if the intersection is non-existent.
-			var inter = Space.intersect(edgeA[0].value, edgeA[1].value, edgeB[0].value, edgeB[1].value);
-			if(inter === null) 
-				return;
-			
-			//Add the intersection and a point at "infinitesimal distance" to the vertex list.
-			//They don't actually have to be different in this implementation of the algorithm.
-			//In fact, the algorithm might fail if both nodes don't reference the same point.
-			var newNode1 = new DLLNode(inter); var newNode2 = new DLLNode(inter);
-			vertexDLL.push(newNode1); vertexDLL.push(newNode2);
-			
-			//Re-links the vertices.
-			edgeA[0].linkToNext(newNode1);
-			newNode1.linkToNext(edgeB[1]);
-			edgeB[0].linkToNext(newNode2);
-			newNode2.linkToNext(edgeA[1]);
-
-			Sorts.binaryInsert(EQ, newNode1, EQSort);
-			Sorts.binaryInsert(EQ, newNode2, EQSort);
-		}
-		
-		//Converts an element of the sweepline in the format described below to a directed edge in the format [vertex1, vertex2].
-		function SLToEdge(el) {
-			if(el.rightVertexIndex === 0)
-				return [el.leftVertex, el.leftVertex.node0];
-			return [el.leftVertex.node1, el.leftVertex];
-		}
-		
-		function debug() {
-			console.log(E.value.coordinates);
-			for(var tst = 0; tst < SL.length; tst++)
-				console.log(SL[tst].toS())
-		}
-	
-		/*Deletes el from the sweep line.
-		Takes into account that in the SL format, each edge has two representations.
-		Implemented as a modified binary search, but really, SL should be a tree.
-		function SLDelete(el) {
-			var compareFunction = function(a, b){return Space.lineCompare(a[0].value, a[0].getNode(a[1]).value, b[0].value, b[0].getNode(b[1]).value, E.value.coordinates[0] - eps);};
-			var lo = 0;
-			var hi = SL.length - 1;
-			var mid;
-			
-			//Finds lowest equivalent element.
-			while (lo <= hi) {
-				mid = Math.floor((lo + hi) / 2);
-				
-				if (compareFunction(SL[mid], el) >= 0) 
-					hi = mid - 1;
-				else if (compareFunction(SL[mid], el) < 0)
-					lo = mid + 1;
-			}
-			
-			while(mid < SL.length) {
-				//If SL[mid] is the same edge as el:
-				if((SL[mid][0] === el[0] && SL[mid][1] === el[1]) || (SL[mid][0].getNode(SL[mid][1]) === el[0])) {
-					SL.splice(mid, 1);
-					return;
-				}
-				mid++;
-			}
-			
-			//The code shouldn't be able to reach here.
-			throw new Error("Element not found!");
-		}
-		*/
-		
+	renderTo(scene) {		
 		//Orders two points lexicographically based on the coordinates on indices 0 and 1.
+		//Uses the indices of the vertices to order them consistently if their coordinates are identical.
 		function order(a, b) {
-			var c = a.value.coordinates[indx0] - b.value.coordinates[indx0]
-			if(c === 0)
-				return a.value.coordinates[indx1] - b.value.coordinates[indx1];
+			var c = a.value.coordinates[indx0] - b.value.coordinates[indx0];
+			if(c === 0) {
+				c = a.value.coordinates[indx1] - b.value.coordinates[indx1];
+				if(c === 0)
+					return a.index - b.index;
+			}
 			return c;
 		}
 		
+		//SL is sorted by the height of the edges' intersections with the sweepline.
+		//If these are equal, the lines are sorted by slope.
+		//If both are equal, the lines are consistently ordered by their hashes (unique identifiers).
+		function SLSort(x, y){
+			if(x.hash() === y.hash())
+				return 0;
+			
+			var a = x.leftVertex.value;
+			var b = x.rightVertex().value;
+			var c = y.leftVertex.value;
+			var d = y.rightVertex().value;
+			var k;
+			
+			//If we're adding a vertex, we order by increasing slope.
+			//If we're deleting it, we order by decreasing slope.
+			var slopeMod = 1;
+			
+			//If we're adding an edge:
+			if(ord < 0)
+				k = edge.leftVertex.value.coordinates[indx0];
+			//If we're deleting an edge:
+			else {
+				k = edge.rightVertex().value.coordinates[indx0];
+				slopeMod = -1;
+			}
+			
+			//Calculates where in the segments the intersection with the sweepline lies.
+			var lambda0 = (k - b.coordinates[indx0])/(a.coordinates[indx0] - b.coordinates[indx0]);		
+			var lambda1 = (k - d.coordinates[indx0])/(c.coordinates[indx0] - d.coordinates[indx0]);
+			
+			//This case occurs only when comparing an edge ending at a point, with an edge starting at that same point.
+			//One of them will get inserted, and the other will be deleted right afterwards.
+			//This case breaks the slope logic, so we just compare using hashes instead.
+			if((lambda0 === 1 && lambda1 === 0) || (lambda0 === 0 && lambda1 === 1))
+				return x.hash() - y.hash();
+			
+			//The height difference between the intersections.
+			var res = (a.coordinates[indx1] * lambda0 + b.coordinates[indx1] * (1 - lambda0)) - (c.coordinates[indx1] * lambda1 + d.coordinates[indx1] * (1 - lambda1));
+			
+			//If the intersections are the same:
+			if (res === 0) {
+				//lambda0, lambda1 are recycled as slopes.
+				//These shouldn't be NaNs, that case is handled separately.
+				lambda0 = (a.coordinates[indx1] - b.coordinates[indx1])/(a.coordinates[indx0] - b.coordinates[indx0]);
+				lambda1 = (c.coordinates[indx1] - d.coordinates[indx1])/(c.coordinates[indx0] - d.coordinates[indx0]);
+				
+				//The difference between the slopes.
+				res = slopeMod * (lambda0 - lambda1);
+				
+				//If both lines are the same, might as well compare using hashes.
+				if(res === 0)
+					return x.hash() - y.hash();
+			}
+			return res;
+		};
+			
 		var j, k;
 		
 		//For each face:
+		faceLoop:
 		for(var i = 0; i < this.elementList[2].length; i++){
 			//Enumerates the vertices in order.
 			//A doubly linked list does the job easily.
@@ -320,19 +297,15 @@ class PolytopeC extends Polytope {
 			
 			//Tries to find two non-equal points. If all points are the same, doesn't render the face.
 			var a = 1;
-			while(Point.equal(vertexDLL[0].value, vertexDLL[a].value)) {
-				if(a >= vertexDLL.length)
-					continue;
-				a++;
-			}
+			while(Point.equal(vertexDLL[0].value, vertexDLL[a].value))
+				if(a++ >= vertexDLL.length)
+					continue faceLoop;
 			
 			//Tries to find three non-collinear points. If all points are collinear, doesn't render the face.
 			var b = (a == 1 ? 2 : 1);
-			while(Space.collinear(vertexDLL[0].value, vertexDLL[a].value, vertexDLL[b].value)) {
-				if(b >= vertexDLL.length)
-					continue;
-				b++;
-			}
+			while(Space.collinear(vertexDLL[0].value, vertexDLL[a].value, vertexDLL[b].value))
+				if(b++ >= vertexDLL.length)
+					continue faceLoop;
 			
 			//Calculates the coordinates such that the projection of our three non-collinear points onto their 2D plane has the highest area.
 			//Uses the shoelace formula.
@@ -351,69 +324,68 @@ class PolytopeC extends Polytope {
 			}
 			
 			//Event queue for Bentley-Ottmann, stores vertices.
-			var EQ = [vertexDLL[vertexDLL.length - 1]];
-			for(j = 0; j < vertexDLL.length - 1; j++)
-				EQ.push(vertexDLL[j]);
+			//Sorts EQ by lexicographic order of the vertices (EQ is read backwards at the moment).
 			
-			//Sorts EQ by inverse lexicographic order of the vertices (EQ is read backwards at the moment).
-			var EQSort = function(a, b){
-				var c = b.value.coordinates[indx0] - a.value.coordinates[indx0]
-				if(c === 0)
-					return b.value.coordinates[indx1] - a.value.coordinates[indx1];
-				return c;
-			};
-			Sorts.quickSort(EQ, 0, EQ.length - 1, EQSort);
+			var EQ = new AvlTree(order);
+			for(j = 0; j < vertexDLL.length; j++)
+				EQ.insert(vertexDLL[j]);
 			
 			//Sweep line for Bentley-Ottmann, as an object with properties leftVertex and rightVertexIndex.
 			//rightVertexIndex should be 0 if leftVertex.node0.value is to the right of leftVertex.value, 1 if leftVertex.node1.value is.
 			//This format is useful because an edge on the sweep line can only be cut to the right.
 			//That way, we don't need to modify the SL objects after the division process: only the nodes' connections change.
-			var SL = [];
+			
+			var SL = new AvlTree(SLSort);
 
 			//Bentley-Ottmann:
-			while(EQ.length !== 0) {
-				var E = EQ.pop(); //The next "event" in the event queue.
+			while(!EQ.isEmpty()) {
+				var E = EQ.findMinimum(); //The next "event" in the event queue.
+				EQ.delete(E);
 				
 				//Runs this code on both edges adjacent to E's vertex.
 				for(j = 0; j <= 1; j++) {
-					var edgeSL //E's edge in the SL format.
+					var edge //E's edge in the SL format.
 					var ord = E.value.coordinates[indx0] - E.getNode(j).value.coordinates[indx0];
 					var pos = 0;
+					var node, prevNode, nextNode;
 					
 					//Vertex E is a left endpoint of the edge:
 					if(ord < 0) {
-						edgeSL = {leftVertex: E, rightVertexIndex: j, rightVertex: function(){return this.leftVertex.getNode(this.rightVertexIndex);}
-						, toS: function(){return "([" + this.leftVertex.value.coordinates.toString() +"], ["+this.rightVertex().value.coordinates.toString()+"])";}
-						};
-						pos = Sorts.binaryInsert(SL, edgeSL, 
-						function(a, b){return Space.lineCompare(a.leftVertex.value, a.rightVertex().value, b.leftVertex.value, b.rightVertex().value, edgeSL.leftVertex.value.coordinates[indx0] + eps, indx0, indx1);});
-
-						divide(edgeSL, SL[pos - 1]); //Checks for an intersection with the edge below edgeE.
-						divide(edgeSL, SL[pos + 1]); //Checks for an intersection with the edge above edgeE.
+						edge = new SLEdge(E, j);
+						
+						node = SL.insert(edge);
+						prevNode = SL.prev(node);
+						nextNode = SL.next(node);
+						
+						if(prevNode)
+							PolytopeC.divide(edge, prevNode.key, vertexDLL, EQ); //Checks for an intersection with the edge below edgeE.
+						if(nextNode)
+							PolytopeC.divide(edge, nextNode.key, vertexDLL, EQ); //Checks for an intersection with the edge above edgeE.
 					}
 					//Vertex E is a right endpoint of the edge:
 					else if (ord > 0) {
-						edgeSL = {leftVertex: E.getNode(j), rightVertexIndex: 1 - j
-						, rightVertex: function(){return this.leftVertex.getNode(this.rightVertexIndex);}
-						, toS: function(){return "([" + this.leftVertex.value.coordinates.toString() +"], ["+this.rightVertex().value.coordinates.toString()+"])";}
-						};
+						edge = new SLEdge(E.getNode(j), 1 - j);
 						
-						//Deletes edgeSL from the sweep line.
-						//This would be way more efficient with a tree-like structure.
-						while(SL[pos].leftVertex !== edgeSL.leftVertex || SL[pos].rightVertexIndex !== edgeSL.rightVertexIndex)
-							pos++;
-						SL.splice(pos, 1);
+						//Deletes edge from the sweep line.
+						node = SL.getNode(edge);
+						prevNode = SL.prev(node);
+						nextNode = SL.next(node);
 						
-						divide(SL[pos], SL[pos - 1]); //Checks for an intersection between the edges below and above edgeE.
+						if(prevNode && nextNode)
+							PolytopeC.divide(prevNode.key, nextNode.key, vertexDLL, EQ); //Checks for an intersection between the edges below and above edgeE.
+						SL.delete(edge);
 					}
 					//The edge is perpendicular to the first coordinate's axis:
 					//Runs only once per such an edge.
 					else if(E.value.coordinates[indx1] > E.getNode(j).value.coordinates[indx1]) {
-						edgeSL = {leftVertex: E, rightVertexIndex: j};
+						edge = new SLEdge(E, j);
 					
-						//I really should only check intersections with segments at the "correct height", but I'm too lazy to implement a binary search atm.
-						for(k = 0; k < SL.length; k++)
-							divide(edgeSL, SL[k]);
+						//I really should only check intersections with segments at the "correct height".
+						node = SL.findMinimumNode();
+						for(k = 0; k < SL.size(); k++) {
+							PolytopeC.divide(edge, node.key, vertexDLL, EQ);
+							node = SL.next(node);
+						}
 					}
 				}
 			}			
@@ -429,5 +401,76 @@ class PolytopeC extends Polytope {
 			}
 			console.log(polygons);
 		}		
+	}
+	
+	//renderTo helper function.
+	//"Cuts" edgeA and edgeB at the intersection point, adds the new directed edges according to the simplification algorithm.
+	//Edges are in the SL format.
+	static divide(edgeA, edgeB, vertexDLL, EQ) {
+		//No point in doing anything if any of the arguments doesn't exist.
+		if(edgeA === null || edgeB === null)
+			return;
+
+		//No point in doing anything if the intersection has already been dealt with.
+		if(edgeA.leftVertex.value === edgeB.leftVertex.value || edgeA.leftVertex.value === edgeB.rightVertex().value ||
+		edgeA.rightVertex().value === edgeB.leftVertex.value || edgeA.rightVertex().value === edgeB.rightVertex().value)
+			return;
+
+		//Converts edges from the SL format to the [vertex1, vertex2] directed edge format.
+		if(edgeA.rightVertexIndex === 0)
+			edgeA = [edgeA.leftVertex, edgeA.leftVertex.node0];
+		else
+			edgeA = [edgeA.leftVertex.node1, edgeA.leftVertex];		
+		if(edgeB.rightVertexIndex === 0)
+			edgeB = [edgeB.leftVertex, edgeB.leftVertex.node0];
+		else
+			edgeB = [edgeB.leftVertex.node1, edgeB.leftVertex];		
+		
+		//No point in doing anything if the intersection is non-existent.
+		var inter = Space.intersect(edgeA[0].value, edgeA[1].value, edgeB[0].value, edgeB[1].value);
+		if(inter === null) 
+			return;
+		
+		//Add the intersection and a point at "infinitesimal distance" to the vertex list.
+		//They don't actually have to be different in this implementation of the algorithm.
+		//In fact, the algorithm will fail if both nodes don't reference the same point.
+		var newNode1 = new DLLNode(inter); var newNode2 = new DLLNode(inter);
+		vertexDLL.push(newNode1); vertexDLL.push(newNode2);
+		
+		//Re-links the vertices.
+		edgeA[0].linkToNext(newNode1);
+		newNode1.linkToNext(edgeB[1]);
+		edgeB[0].linkToNext(newNode2);
+		newNode2.linkToNext(edgeA[1]);
+
+		EQ.insert(newNode1);
+		EQ.insert(newNode2);
+	}
+}
+
+//Helper class for renderTo, used in the sweep line for Bentley-Ottmann.
+//Encodes an object with properties leftVertex and rightVertexIndex.
+//rightVertexIndex should be 0 if leftVertex.node0.value is to the right of leftVertex.value, 1 if leftVertex.node1.value is.
+//This format is useful because an edge on the sweep line can only be cut to the right.
+//That way, we don't need to modify the SL objects after the division process: only the nodes' connections change.
+class SLEdge {
+	constructor(leftVertex, rightVertexIndex) {
+		this.leftVertex = leftVertex;
+		this.rightVertexIndex = rightVertexIndex;
+	}
+	
+	rightVertex() {
+		return this.leftVertex.getNode(this.rightVertexIndex);
+	}
+	
+	//A unique identifier for each edge.
+	//Uses Cantor's pairing function.
+	hash(){
+		var x = this.leftVertex.index; var y = this.rightVertex().index; return (x + y) * (x + y + 1)/2 + y;
+	}
+	
+	//Used for debugging purposes.
+	toString(){
+		return "([" + this.leftVertex.value.coordinates.toString() +"], ["+this.rightVertex().value.coordinates.toString()+"])";
 	}
 }

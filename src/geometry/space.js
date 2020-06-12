@@ -56,15 +56,6 @@ class Space {
 		return new Point(pt);
 	}
 	
-	//Compares the intersections of ab and cd with the (indx0 coordinate) = k hyperplane w.r.t the indx1 coordinate.
-	//Used in the Bentley-Ottmann algorithm.
-	static lineCompare(a, b, c, d, k, indx0, indx1) {		
-		var lambda1 = (k - b.coordinates[indx0])/(a.coordinates[indx0] - b.coordinates[indx0]);		
-		var lambda2 = (k - d.coordinates[indx0])/(c.coordinates[indx0] - d.coordinates[indx0]);
-		
-		return a.coordinates[indx1] * lambda1 + b.coordinates[indx1] * (1 - lambda1) - c.coordinates[indx1] * lambda2 - d.coordinates[indx1] * (1 - lambda2);
-	}
-	
 	//Calculates the angle between b - a and c - a, and check if it's straight to a given precision.
 	static collinear(a, b, c) {
 		var eps = 0.0000001;

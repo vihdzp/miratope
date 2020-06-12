@@ -3,11 +3,16 @@
 //DLLNodes don't *necessarily* have a notion of a "previous" and a "next" node.
 //But when they do, node0 is the next node, and node1 is the previous.
 class DLLNode {
+	//Represents the number of existing nodes.
+	//Used to distinguish between identical elements consistently.
+	static nodeNumber = 0;
+	
 	constructor(value, node0, node1) {
 		this.value = value;
 		this.node0 = node0;
 		this.node1 = node1;
 		this.traversed = false;
+		this.index = DLLNode.nodeNumber++;
 	}
 	
 	linkTo(node) {
