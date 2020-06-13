@@ -487,7 +487,7 @@ Node.prototype.rightHeight = function () {
  * @param {Object} node The node to be linked.
  */
 Node.prototype.linkLeft = function (node) {
-  if(this.left)
+  if(this.left && this.left.parent === this)
     this.left.parent = null;
   this.left = node;
   if(node)
@@ -500,7 +500,7 @@ Node.prototype.linkLeft = function (node) {
  * @param {Object} node The node to be linked.
  */
 Node.prototype.linkRight = function (node) {
-  if(this.right)
+  if(this.right && this.right.parent === this)
     this.right.parent = null;
   this.right = node;
   if(node)
