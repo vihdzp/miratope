@@ -22,11 +22,14 @@ class PolytopeV extends Polytope {
 //Represents a polytope as a list of elements, in ascending order of dimensions, similar to (but not the same as) an OFF file.
 //We don't only store the facets, because we don't want to deal with O(2^n) code.
 //Subelements stored as indices.
+//All points assumed to be of the same dimension.
 class PolytopeC extends Polytope {
-	constructor(elementList, dimensions) {
+	constructor(elementList) {
 		super();
 		this.elementList = elementList;
-		this.dimensions = dimensions;
+		this.dimensions = elementList.length; //The combinatorial dimension.
+		this.spaceDimensions = this.elementList[0][0].dimensions(); //The space's dimension.
+		this.name = "Polytope"; //Polytope is just a placeholder name.
 	}
 	
 	//Builds a hypercube in the specified amount of dimensions.
@@ -178,12 +181,299 @@ class PolytopeC extends Polytope {
 	}
 	
 	//Calculates the centroid as the average of the vertices.
+	//Could be made more efficient replacing the add method with direct calculations with arrays.
 	centroid() {		
 		var res = this.elementList[0][0].clone();
 		for(var i = 1; i < this.elementList[0].length; i++)
 			res.add(this.elementList[0][i]);
 		res.divideBy(this.elementList[0].length);
 		return res;
+	}
+	
+	//Builds a Grünbaumian n/d star.
+	static star(n, d) {
+		var el = [[], []];
+		
+		for(var i = 0; i < n; i++) {
+			var angle = 2 * Math.PI * i * d / n
+			el[0].push(new Point([Math.cos(angle), Math.sin(angle)]));
+		}
+		
+		for(var i = 0; i < n - 1; i++)
+			el[1].push([i, i + 1]);		
+		el[1].push([el[0].length - 1, 0]);
+		
+		return new PolytopeC(el);
+	}
+
+	//Makes every vertex have dim coordinates either by adding zeros or removing numbers.
+	setSpaceDimensions(dim) {
+		for(var i = 0; i < this.elementList[0].length; i++) {
+			if(this.elementList[0][i].coordinates.length > dim)
+				this.elementList[0].coordinates = this.elementList[0].coordinates.slice(0, dim);
+			else if(this.elementList[0][i].coordinates.length < dim)
+				for(var j = 0; j < dim - this.elementList[0][i].coordinates.length; j++)
+					this.elementList[0][i].coordinates.push(0);
+		}
+		this.spaceDimensions = dim;
+	}
+	
+	//The name for an i-element, according to http://os2fan2.com/gloss/pglosstu.html.
+	//Works for up to 20 dimensions, we very probably don't need more than that.
+	static elementName(i, plural) {
+		switch(i) {
+			case 0:
+				if(plural) return "Vertices"; return "Vertex";
+			case 1:
+				if(plural) return "Edges"; return "Edge";
+			case 2:
+				if(plural) return "Faces"; return "Face";
+			case 3:
+				if(plural) return "Cells"; return "Cell";
+			case 4:
+				if(plural) return "Tera"; return "Teron";
+			case 5:
+				if(plural) return "Peta"; return "Peton";
+			case 6:
+				if(plural) return "Exa"; return "Exon";
+			case 7:
+				if(plural) return "Zetta"; return "Zetton";
+			case 8:
+				if(plural) return "Yotta"; return "Yotton";
+			case 9:
+				if(plural) return "Xenna"; return "Xennon";
+			case 10:
+				if(plural) return "Daka"; return "Dakon";
+			case 11:
+				if(plural) return "Hendaka"; return "Hendakon";
+			case 12:
+				if(plural) return "Doka"; return "Dokon";
+			case 13:
+				if(plural) return "Tradaka"; return "Tradakon";
+			case 14:
+				if(plural) return "Teradaka"; return "Teradakon";
+			case 15:
+				if(plural) return "Petadaka"; return "Petadakon";
+			case 16:
+				if(plural) return "Exdaka"; return "Exdakon";
+			case 17:
+				if(plural) return "Zettadaka"; return "Zettadakon";
+			case 18:
+				if(plural) return "Yottadaka"; return "Yottadakon";
+			case 19:
+				if(plural) return "Xendaka"; return "Xendakon";
+			case 20:
+				if(plural) return "Ica"; return "Icon";				
+			default:
+				if(plural) return i + "-elements"; return i + "-element";
+		}
+	}
+	
+	//Converts the edge representation of the i-th face to an ordered array of vertices.
+	faceToVertices(i) {
+		//Enumerates the vertices in order.
+		//A doubly linked list does the job easily.
+		var vertexDLL = [];
+		for(var j = 0; j < this.elementList[2][i].length; j++) {
+			var edge = this.elementList[1][this.elementList[2][i][j]];
+			if(vertexDLL[edge[0]] === undefined)
+				vertexDLL[edge[0]] = new DLLNode(edge[0]);
+			if(vertexDLL[edge[1]] === undefined)
+				vertexDLL[edge[1]] = new DLLNode(edge[1]);
+			
+			vertexDLL[edge[0]].linkTo(vertexDLL[edge[1]]);				
+		}			
+		
+		//Cycle of vertex indices.
+		//"this.elementList[1][this.elementList[2][i][0]][0]" is just some vertex index.
+		return vertexDLL[this.elementList[1][this.elementList[2][i][0]][0]].getCycle();
+	}
+	
+	//Converts the edge representation of a face to an ordered array of vertices.
+	//Meant only for a polygon, for which the above code doesn't work.
+	faceToVertices2D() {
+		//Enumerates the vertices in order.
+		//A doubly linked list does the job easily.
+		var vertexDLL = [];
+		for(var i = 0; i < this.elementList[1].length; i++) {
+			var edge = this.elementList[1][this.elementList[1][i]];
+			if(vertexDLL[edge[0]] === undefined)
+				vertexDLL[edge[0]] = new DLLNode(edge[0]);
+			if(vertexDLL[edge[1]] === undefined)
+				vertexDLL[edge[1]] = new DLLNode(edge[1]);
+			
+			vertexDLL[edge[0]].linkTo(vertexDLL[edge[1]]);				
+		}			
+		
+		//Cycle of vertex indices.
+		return vertexDLL[0].getCycle();
+	}
+	
+	//Extrudes a polytope to a pyramid with an apex at the specified point.
+	//Constructs pyramids out of elements recursively.
+	//The ith n-element in the original polytope gets extruded to the 
+	//(i+[(n+1)-elements in the original polytope])th element in the new polytope.
+	extrudeToPyramid(apex) {
+		var els, i;
+		this.dimensions++;
+		this.elementList.push([]);
+		
+		var oldElNumbers = [];
+		for(i = 0; i < this.dimensions; i++)
+			oldElNumbers.push(this.elementList[i].length);
+		
+		//Adds apex.
+		this.elementList[0].push(apex);		
+		this.setSpaceDimensions(Math.max(apex.dimensions(), this.spaceDimensions));
+		
+		//Adds edges.
+		for(i = 0; i < oldElNumbers[0]; i++)
+			this.elementList[1].push([i, oldElNumbers[0]]);
+		
+		//Adds remaining elements.
+		for(var d = 2; d < this.dimensions; d++) {
+			for(i = 0; i < oldElNumbers[d - 1]; i++) {
+				els = [i];
+				for(var j = 0; j < this.elementList[d - 1][i].length; j++)
+					els.push(this.elementList[d - 1][i][j] + oldElNumbers[d - 1]);
+				this.elementList[d].push(els);
+			}
+		}
+
+		//Adds base facet.
+		els = [];
+		for(i = 0; i < oldElNumbers[this.dimensions - 2]; i++)
+			els.push(i);
+		this.elementList[this.dimensions - 1].push(els);
+	}
+	
+	saveAsOFF(comments) {
+		var i, j, coord, vertices;
+		
+		if(this.spaceDimensions > this.dimensions) {
+			//Maybe automatically project the polytope?
+			alert("The OFF format does not support polytopes in spaces with more dimensions than themselves.");
+			return;
+		}
+		//The contexts of the OFF file, as an array of plaintext strings.
+		var data = [];
+		
+		//Writes the element counts, and optionally, leaves a comment listing their names in order.
+		switch(this.dimensions) {
+			case 0: //LOL
+				data.push("0OFF");
+				break;
+			case 1: //Also LOL
+				data.push("1OFF\n");
+				if(comments)
+					data.push("# Vertices\n");
+				data.push(this.elementList[0].length + "\n");
+				break;
+			case 2:
+				data.push("2OFF\n");
+				if(comments)
+					data.push("# Vertices, Edges\n");
+				data.push(this.elementList[0].length + " ");
+				data.push(this.elementList[1].length + "\n");
+				break;
+			case 3:
+				data.push("OFF\n"); //For compatibility.
+				if(comments)
+					data.push("# Vertices, Faces, Edges\n");
+				data.push(this.elementList[0].length + " ");
+				data.push(this.elementList[2].length + " ");
+				data.push(this.elementList[1].length + "\n");
+				break;
+			default:
+				data.push(this.dimensions);
+				data.push("OFF\n");
+				if(comments) {
+					data.push("# Vertices, Faces, Edges, Cells");
+					for(i = 4; i < this.dimensions; i++)
+						data.push(", " + PolytopeC.elementName(i, true));
+					data.push("\n");
+				}
+				data.push(this.elementList[0].length + " ");
+				data.push(this.elementList[2].length + " ");
+				data.push(this.elementList[1].length + " ");
+				for(i = 3; i < this.dimensions - 1; i++)					
+					data.push(this.elementList[i].length + " ");
+				data.push(this.elementList[this.dimensions - 1].length + "\n");
+		}
+		
+		//Adds vertices. Fills in zeros if spaceDimensions < dimensions.
+		if(this.dimensions === 1 || this.dimensions >= 3) {
+			if(comments)
+				data.push("\n# Vertices\n");
+			for(i = 0; i < this.elementList[0].length; i++) {
+				for(j = 0; j < this.dimensions - 1; j++) {
+					coord = this.elementList[0][i].coordinates[j];
+					if(coord === undefined)
+						data.push("0 ");
+					else
+						data.push(coord + " ");
+				}
+				coord = this.elementList[0][i].coordinates[this.dimensions - 1];
+				if(coord === undefined)
+					data.push("0\n");
+				else
+					data.push(coord + "\n");
+			}
+		}
+		//In this special case, the vertices need to be in order.
+		else if(this.dimensions === 2) {
+			vertices = this.faceToVertices2D();
+			if(comments)
+				data.push("\n# Vertices\n");
+			for(i = 0; i < this.elementList[0].length; i++) {
+				coord = vertices[i].coordinates[0];
+				if(coord === undefined)
+					data.push("0 ");
+				else
+					data.push(coord + " ");
+				
+				coord = vertices[i].coordinates[1];
+				if(coord === undefined)
+					data.push("0\n");
+				else
+					data.push(coord + "\n");
+			}
+		}
+		
+		//Adds faces.
+		if(this.dimensions >= 3) {
+			if(comments)
+				data.push("\n# Faces\n");
+			for(i = 0; i < this.elementList[2].length; i++) {
+				vertices = this.faceToVertices(i);
+				data.push(this.elementList[2][i].length);
+				for(j = 0; j < this.elementList[2][i].length; j++)
+					data.push(" " + vertices[j]);
+				data.push("\n");
+			}
+		}
+			
+		//Adds the rest of the elements.
+		for(var d = 3; d < this.dimensions; d++) {
+			if(comments) {
+				data.push("\n# ");
+				data.push(PolytopeC.elementName(d, true));
+				data.push("\n");
+			}
+			for(i = 0; i < this.elementList[d].length; i++) {
+				data.push(this.elementList[d][i].length);
+				for(j = 0; j < this.elementList[d][i].length; j++)
+					data.push(" " + this.elementList[d][i][j]);
+				data.push("\n");
+			}
+		}
+		
+		var blob = new Blob(data, {type: "text/plain"});
+		var a = document.getElementById("download");
+		a.href = window.URL.createObjectURL(blob);
+		a.download = this.name + ".off";
+		a.click();
+		window.URL.revokeObjectURL(a.href);
 	}
 	
 	//Made with 3D polyhedra in mind.
@@ -193,9 +483,20 @@ class PolytopeC extends Polytope {
 	//combined with the simplification algorithm at
 	//https://web.archive.org/web/20100805164131if_/http://www.cis.southalabama.edu/~hain/general/Theses/Subramaniam_thesis.pdf	
 	//to triangulate general polygons.
-	//Uses arraya for EQ and SL, but AVL Trees or something similar would be much more efficient.
 	//NOT YET FULLY IMPLEMENTED!
-	renderTo(scene) {		
+	renderTo(scene) {
+		function debug() {
+			var x = 0;
+			console.log(E.value.coordinates[indx0].toString());
+			if(SL.isEmpty())
+				return;
+			var node = SL.findMinimumNode();
+			while(node !== null && x++ < 100) {
+				console.log(node.key.toString());
+				node = SL.next(node);
+			}
+		}
+		
 		//Orders two points lexicographically based on the coordinates on indices 0 and 1.
 		//Uses the indices of the vertices to order them consistently if their coordinates are identical.
 		function order(a, b) {
@@ -238,17 +539,17 @@ class PolytopeC extends Polytope {
 			var lambda0 = (k - b.coordinates[indx0])/(a.coordinates[indx0] - b.coordinates[indx0]);		
 			var lambda1 = (k - d.coordinates[indx0])/(c.coordinates[indx0] - d.coordinates[indx0]);
 			
-			//This case occurs only when comparing an edge ending at a point, with an edge starting at that same point.
-			//One of them will get inserted, and the other will be deleted right afterwards.
-			//This case breaks the slope logic, so we just compare using hashes instead.
-			if((lambda0 === 1 && lambda1 === 0) || (lambda0 === 0 && lambda1 === 1))
-				return x.hash() - y.hash();
-			
 			//The height difference between the intersections.
 			var res = (a.coordinates[indx1] * lambda0 + b.coordinates[indx1] * (1 - lambda0)) - (c.coordinates[indx1] * lambda1 + d.coordinates[indx1] * (1 - lambda1));
 			
 			//If the intersections are the same:
-			if (res === 0) {
+			if (res === 0) {			
+				//This case occurs only when comparing an edge ending at a point, with an edge starting at that same point.
+				//One of them will get inserted, and the other will be deleted right afterwards.
+				//This case breaks the slope logic, so we just compare using hashes instead.
+				if((lambda0 === 1 && lambda1 === 0) || (lambda0 === 0 && lambda1 === 1))
+					return x.hash() - y.hash();
+			
 				//lambda0, lambda1 are recycled as slopes.
 				//These shouldn't be NaNs, that case is handled separately.
 				lambda0 = (a.coordinates[indx1] - b.coordinates[indx1])/(a.coordinates[indx0] - b.coordinates[indx0]);
@@ -270,25 +571,11 @@ class PolytopeC extends Polytope {
 		faceLoop:
 		for(var i = 0; i < this.elementList[2].length; i++){
 			//Enumerates the vertices in order.
-			//A doubly linked list does the job easily.
-			var vertexDLL = [];
-			for(j = 0; j < this.elementList[2][i].length; j++) {
-				var edge = this.elementList[1][this.elementList[2][i][j]];
-				if(vertexDLL[edge[0]] === undefined)
-					vertexDLL[edge[0]] = new DLLNode(edge[0]);
-				if(vertexDLL[edge[1]] === undefined)
-					vertexDLL[edge[1]] = new DLLNode(edge[1]);
-				
-				vertexDLL[edge[0]].linkTo(vertexDLL[edge[1]]);				
-			}			
+			var cycle = this.faceToVertices(i);
 			
-			//Cycle of vertex indices.
-			//"this.elementList[1][this.elementList[2][i][0]][0]" is just some vertex index.
-			var cycle = vertexDLL[this.elementList[1][this.elementList[2][i][0]][0]].getCycle();
-			
-			//Reuses vertexDLL for the polygon's vertices and the new vertices created.
+			//Makes a doubly-linked list vertexDLL for the polygon's vertices and the new vertices created.
 			//node0 is always the "next" vertex.
-			vertexDLL = [new DLLNode(this.elementList[0][cycle[0]])];
+			var vertexDLL = [new DLLNode(this.elementList[0][cycle[0]])];
 			for(j = 0; j < cycle.length - 1; j++) {
 				vertexDLL[j + 1] = new DLLNode(this.elementList[0][cycle[j + 1]]);			
 				vertexDLL[j].linkToNext(vertexDLL[j + 1]);
@@ -311,8 +598,8 @@ class PolytopeC extends Polytope {
 			//Uses the shoelace formula.
 			//Stores such coordinates' indices in indx0, indx1.
 			var maxArea = 0, indx0 = 0, indx1 = 1;
-			for(j = 0; j < vertexDLL[0].value.coordinates.length; j++) {
-				for(k = j + 1; k < vertexDLL[0].value.coordinates.length; k++) {
+			for(j = 0; j < vertexDLL[0].value.dimensions(); j++) {
+				for(k = j + 1; k < vertexDLL[0].value.dimensions(); k++) {
 					if(vertexDLL[0].value.coordinates[j] * (vertexDLL[a].value.coordinates[k] - vertexDLL[b].value.coordinates[k])
 					+ vertexDLL[a].value.coordinates[j] * (vertexDLL[b].value.coordinates[k] - vertexDLL[0].value.coordinates[k])
 					+ vertexDLL[b].value.coordinates[j] * (vertexDLL[0].value.coordinates[k] - vertexDLL[a].value.coordinates[k])
@@ -329,7 +616,7 @@ class PolytopeC extends Polytope {
 			var EQ = new AvlTree(order);
 			for(j = 0; j < vertexDLL.length; j++)
 				EQ.insert(vertexDLL[j]);
-			
+
 			//Sweep line for Bentley-Ottmann, as an object with properties leftVertex and rightVertexIndex.
 			//rightVertexIndex should be 0 if leftVertex.node0.value is to the right of leftVertex.value, 1 if leftVertex.node1.value is.
 			//This format is useful because an edge on the sweep line can only be cut to the right.
@@ -338,13 +625,13 @@ class PolytopeC extends Polytope {
 			var SL = new AvlTree(SLSort);
 
 			//Bentley-Ottmann:
-			while(!EQ.isEmpty()) {
+			while(!EQ.isEmpty()) {				
 				var E = EQ.findMinimum(); //The next "event" in the event queue.
 				EQ.delete(E);
 				
 				//Runs this code on both edges adjacent to E's vertex.
 				for(j = 0; j <= 1; j++) {
-					var edge //E's edge in the SL format.
+					var edge; //E's edge in the SL format.
 					var ord = E.value.coordinates[indx0] - E.getNode(j).value.coordinates[indx0];
 					var pos = 0;
 					var node, prevNode, nextNode;
@@ -354,6 +641,8 @@ class PolytopeC extends Polytope {
 						edge = new SLEdge(E, j);
 						
 						node = SL.insert(edge);
+						if(!node)
+							console.log("shit");
 						prevNode = SL.prev(node);
 						nextNode = SL.next(node);
 						
@@ -368,6 +657,8 @@ class PolytopeC extends Polytope {
 						
 						//Deletes edge from the sweep line.
 						node = SL.getNode(edge);
+						if(!node)
+							console.log("shit");
 						prevNode = SL.prev(node);
 						nextNode = SL.next(node);
 						
@@ -382,12 +673,14 @@ class PolytopeC extends Polytope {
 					
 						//I really should only check intersections with segments at the "correct height".
 						node = SL.findMinimumNode();
-						for(k = 0; k < SL.size(); k++) {
+						while(node) {
 							PolytopeC.divide(edge, node.key, vertexDLL, EQ);
 							node = SL.next(node);
 						}
 					}
 				}
+				
+				debug();
 			}			
 			
 			//Polygons as ordered sets of vertices.
@@ -407,10 +700,6 @@ class PolytopeC extends Polytope {
 	//"Cuts" edgeA and edgeB at the intersection point, adds the new directed edges according to the simplification algorithm.
 	//Edges are in the SL format.
 	static divide(edgeA, edgeB, vertexDLL, EQ) {
-		//No point in doing anything if any of the arguments doesn't exist.
-		if(edgeA === null || edgeB === null)
-			return;
-
 		//No point in doing anything if the intersection has already been dealt with.
 		if(edgeA.leftVertex.value === edgeB.leftVertex.value || edgeA.leftVertex.value === edgeB.rightVertex().value ||
 		edgeA.rightVertex().value === edgeB.leftVertex.value || edgeA.rightVertex().value === edgeB.rightVertex().value)
