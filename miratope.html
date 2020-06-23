@@ -53,10 +53,9 @@
 		new PolytopeC([pts,edges,faces],3).renderTo(scene);*/
 		
 		//Test heptagrammic pyramid pyramid
-		var P = PolytopeC.star(7,2);
+		var P = PolytopeC.star(100,49);
 		P.extrudeToPyramid(new Point([0,0,1]));
-		P.name = "Heptagrammic pyramid pyramid";
-		P.saveAsOFF(true);
+		P.renderTo(new Scene());
 		
 		//Render loop.
 		/*function animate() { 

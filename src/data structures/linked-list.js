@@ -5,14 +5,14 @@
 class DLLNode {
 	//Represents the number of existing nodes.
 	//Used to distinguish between identical elements consistently.
-	static nodeNumber = 0;
+	static idCounter = 0;
 	
 	constructor(value, node0, node1) {
 		this.value = value;
 		this.node0 = node0;
 		this.node1 = node1;
 		this.traversed = false;
-		this.index = DLLNode.nodeNumber++;
+		this.id = DLLNode.idCounter++;
 	}
 	
 	linkTo(node) {

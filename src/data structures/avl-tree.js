@@ -299,6 +299,8 @@ AvlTree.prototype.contains = function (key) {
  * @return {Object} The minimum key in the tree.
  */
 AvlTree.prototype.findMinimum = function () {
+  if(this._size === 0)
+	  return null;
   return minValueNode(this._root).key;
 };
 
@@ -306,6 +308,8 @@ AvlTree.prototype.findMinimum = function () {
  * @return {Object} The minimum node in the tree.
  */
 AvlTree.prototype.findMinimumNode = function () {
+  if(this._size === 0)
+	  return null;
   return minValueNode(this._root);
 };
 
@@ -322,12 +326,14 @@ function minValueNode(root) {
     current = current.left;
   }
   return current;
-}
+};
 
 /**
  * @return {Object} The maximum key in the tree.
  */
 AvlTree.prototype.findMaximum = function () {
+  if(this._size === 0)
+	  return null;
   return maxValueNode(this._root).key;
 };
 
@@ -335,6 +341,8 @@ AvlTree.prototype.findMaximum = function () {
  * @return {Object} The maximum node in the tree.
  */
 AvlTree.prototype.findMaximumNode = function () {
+  if(this._size === 0)
+	  return null;
   return maxValueNode(this._root);
 };
 
@@ -351,7 +359,7 @@ function maxValueNode(root) {
     current = current.right;
   }
   return current;
-}
+};
 
 /**
  * @return {number} The size of the tree.
@@ -365,6 +373,38 @@ AvlTree.prototype.size = function () {
  */
 AvlTree.prototype.isEmpty = function () {
   return this._size === 0;
+};
+
+//TO DELETE
+AvlTree.prototype.toString = function() {
+	if(this.isEmpty())
+		return;
+	var res = "", x = 0;
+	var node = this.findMinimumNode();
+	while(node !== null && x++ < 100) {
+		res += node.key.toString()+"\n";
+		node = this.next(node);
+	}
+	return res;
+};
+
+//TO DELETE
+AvlTree.prototype.checkSorted = function() {
+	if(this.size() === 0)
+		return true;
+	var node = this.findMinimumNode();
+	var next = this.next(node);
+	
+	while(next) {
+		if(this._compare(node.key, next.key) >= 0 || isNaN(this._compare(node.key, next.key))) {
+			console.log(node.key.toString()+", "+next.key.toString()+" out of order!");
+			return false;
+		}
+		node = next;
+		next = this.next(next);
+	}
+	
+	return true;
 };
 
 /**
