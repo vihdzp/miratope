@@ -72,6 +72,10 @@ class Point {
 		return new Point(coordinates);
 	}
 	
+	static product(p, q) {
+		return new Point([...p.coordinates, ...q.coordinates]);
+	}
+	
 	//Converts to the Vector3 class used by three.js.
 	//Meant only for 3D points.
 	toVector3() {

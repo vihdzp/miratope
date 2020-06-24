@@ -88,7 +88,7 @@ class PolytopeC extends Polytope {
 		var vertices = [];
 		var aux = [Infinity]; //Memoizes some square roots, tiny optimization.
 		for(var i = 1; i <= dimensions; i++) 
-			aux.push(1/Math.sqrt(2 * i * (i + 1)));
+			aux.push(1 / Math.sqrt(2 * i * (i + 1)));
 		
 		for(var i = 0; i <= dimensions ; i++) {
 			var coordinates = [];
@@ -96,7 +96,7 @@ class PolytopeC extends Polytope {
 				if(j > i)
 					coordinates.push(-aux[j]);
 				else if(j === i)
-					coordinates.push(j*aux[j]);
+					coordinates.push(j * aux[j]);
 				else
 					coordinates.push(0);
 			}
@@ -109,7 +109,7 @@ class PolytopeC extends Polytope {
 		var locations = {};
 		for(var i = 0; i < dimensions + 1; i++)
 			locations[2 ** i] = i;
-		for(var i = 1; i < 2**(dimensions + 1); i++) {
+		for(var i = 1; i < 2 ** (dimensions + 1); i++) {
 			//Vertices were generated earlier
 			if (!(i & (i - 1)))
 				continue;
@@ -205,10 +205,64 @@ class PolytopeC extends Polytope {
 		}
 		
 		for(i = 0; i < n - 1; i++)
-			els[1].push([i, i + 1]);	//Edges
+			els[1].push([i, i + 1]); //Edges
 		els[1].push([els[0].length - 1, 0]);
 		
 		return new PolytopeC(els);
+	}
+	
+	//Calculates the prism product, or rather Cartesian product, of P and Q.
+	//Vertices are the products of vertices, edges are the products of vertices with edges or viceversa, and so on.
+	static prismProduct(P, Q) {
+		//Gets the index of the product of the ith m-element and the jth n-element in the new polytope.
+		//Takes into account the order in which the elements are calculated and added.
+		function getIndexOfProduct(m, i, n, j) {
+			var res = 0;
+			
+			//Memoization would speed this up quite a bit.
+			for(var x = Math.max(0, (m + n) - Q.elementList.length + 1); x < m; x++)
+				res += P.elementList[x].length * Q.elementList[(m + n) - x].length;
+			return res + (i * Q.elementList[n].length) + j;
+		}
+		
+		var i, j, k, l, m, n, d, els,
+		newElementList = [[]];
+		
+		//Adds vertices.
+		for(i = 0; i < P.elementList[0].length; i++) 
+			for(j = 0; j < Q.elementList[0].length; j++) 
+				newElementList[0].push(Point.product(P.elementList[0][i], Q.elementList[0][j]));
+		
+		//Fills up newElementList.
+		for(d = 1; d <= P.dimensions + Q.dimensions; d++) 
+			newElementList.push([]);
+		
+		//We take products of 0-elements * m-elements, 1-elements * (m-1)-elements, ..., in order.
+		//The dimensions of the subelements we're multiplying.
+		for (m = 0; m <= P.dimensions; m++) {
+			for (n = (m === 0 ? 1 : 0); n <= Q.dimensions; n++) {
+				//The indices of the elements we're multiplying.
+				for(i = 0; i < P.elementList[m].length; i++) {
+					for(j = 0; j < Q.elementList[n].length; j++) {
+						//Adds the Cartesian product of the ith m-element and the j-th n-element to the newElementList.
+						//The elements of this product are the products of each of the first polytope's ridges with the other polytope, and viceversa.
+						els = [];
+						
+						//Vertices don't have ridges!
+						if(m !== 0)
+							for(k = 0; k < P.elementList[m][i].length; k++)
+								els.push(getIndexOfProduct(m - 1, P.elementList[m][i][k], n, j));
+						if(n!== 0)
+							for(k = 0; k < Q.elementList[n][j].length; k++)
+								els.push(getIndexOfProduct(m, i, n - 1, Q.elementList[n][j][k]));
+
+						newElementList[m + n].push(els);
+					}
+				}
+			}
+		}
+		
+		return new PolytopeC(newElementList);
 	}
 
 	//Makes every vertex have dim coordinates either by adding zeros or removing numbers.
@@ -294,27 +348,6 @@ class PolytopeC extends Polytope {
 		return vertexDLL[this.elementList[1][this.elementList[2][i][0]][0]].getCycle();
 	}
 	
-	//Converts the edge representation of a face to an ordered array of vertices.
-	//Meant only for a polygon, for which the above code doesn't work.
-	faceToVertices2D() {
-		//Enumerates the vertices in order.
-		//A doubly linked list does the job easily.
-		var vertexDLL = [];
-		for(var i = 0; i < this.elementList[1].length; i++) {
-			var edge = this.elementList[1][i];
-			if(vertexDLL[edge[0]] === undefined)
-				vertexDLL[edge[0]] = new DLLNode(edge[0]);
-			if(vertexDLL[edge[1]] === undefined)
-				vertexDLL[edge[1]] = new DLLNode(edge[1]);
-			
-			vertexDLL[edge[0]].linkTo(vertexDLL[edge[1]]);				
-		}			
-		
-		//Cycle of vertex indices.
-		var res= vertexDLL[0].getCycle();
-		return res;
-	}
-	
 	//Extrudes a polytope to a pyramid with an apex at the specified point.
 	//Constructs pyramids out of elements recursively.
 	//The ith n-element in the original polytope gets extruded to the 
@@ -347,6 +380,8 @@ class PolytopeC extends Polytope {
 		}
 	}
 	
+	//Saves the current polytope as an OFF file.
+	//If comments, the OFF file will contain comments dividing the different element types.
 	saveAsOFF(comments) {
 		var i, j, coord, vertices;
 		
@@ -422,7 +457,7 @@ class PolytopeC extends Polytope {
 		}
 		//In this special case, the vertices need to be in order.
 		else if(this.dimensions === 2) {
-			vertices = this.faceToVertices2D();
+			vertices = this.faceToVertices();
 			if(comments)
 				data.push("\n# Vertices\n");
 			for(i = 0; i < this.elementList[0].length; i++) {
