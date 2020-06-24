@@ -199,7 +199,7 @@ class PolytopeC extends Polytope {
 		i;
 		
 		for(i = 0; i < n; i++) {
-			var angle = 2 * Math.PI * i * d / n + 0.01 //REMOVE LAST NUMBER, THIS IS JUST FOR TESTING
+			var angle = 2 * Math.PI * i * d / n;
 			els[0].push(new Point([Math.cos(angle), Math.sin(angle)])); //Vertices
 			els[2][0].push(i); //Face.
 		}
@@ -212,8 +212,14 @@ class PolytopeC extends Polytope {
 	}
 	
 	//Calculates the prism product, or rather Cartesian product, of P and Q.
+	//Q can be excluded if P is instead the array of polytopes to multiply.
 	//Vertices are the products of vertices, edges are the products of vertices with edges or viceversa, and so on.
 	static prismProduct(P, Q) {
+		if(Q === undefined) {
+			if(P.length === 1)
+				return P[0];
+			return PolytopeC.prismProduct(P.pop(), PolytopeC.prismProduct(P));
+		}
 		//Gets the index of the product of the ith m-element and the jth n-element in the new polytope.
 		//Takes into account the order in which the elements are calculated and added.
 		function getIndexOfProduct(m, i, n, j) {

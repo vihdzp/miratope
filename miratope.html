@@ -53,7 +53,9 @@
 		new PolytopeC([pts,edges,faces],3).renderTo(scene);*/
 		
 		//Test heptagrammic pyramid pyramid
-		PolytopeC.prismProduct(PolytopeC.star(7, 2), PolytopeC.star(11, 3)).saveAsOFF(true);
+		var P = PolytopeC.prismProduct([PolytopeC.star(3),PolytopeC.star(3),PolytopeC.star(3)]);
+		P.name = "Triangular trioprism";
+		P.saveAsOFF(true);
 		
 		//Render loop.
 		/*function animate() { 
