@@ -27,7 +27,7 @@ class PolytopeC extends Polytope {
 	constructor(elementList) {
 		super();
 		this.elementList = elementList;
-		this.dimensions = elementList.length; //The combinatorial dimension.
+		this.dimensions = elementList.length - 1; //The combinatorial dimension.
 		this.spaceDimensions = this.elementList[0][0].dimensions(); //The space's dimension.
 		this.name = "Polytope"; //Polytope is just a placeholder name.
 	}
@@ -79,7 +79,7 @@ class PolytopeC extends Polytope {
 			}
 		}
 
-		return new PolytopeC(els, dimensions);
+		return new PolytopeC(els);
 	}
 	
 	//Builds a simplex in the specified amount of dimensions.
@@ -128,7 +128,7 @@ class PolytopeC extends Polytope {
 			els[elementDimension].push(facets);
 		}
 		
-		return new PolytopeC(els, dimensions);
+		return new PolytopeC(els);
 	}
 	
 	//Builds a cross-polytope in the specified amount of dimensions.
@@ -177,7 +177,7 @@ class PolytopeC extends Polytope {
 		}
 		els[dimensions].push(facets);
 		
-		return new PolytopeC(els, dimensions);
+		return new PolytopeC(els);
 	}
 	
 	//Calculates the centroid as the average of the vertices.
@@ -192,18 +192,23 @@ class PolytopeC extends Polytope {
 	
 	//Builds a Grünbaumian n/d star.
 	static star(n, d) {
-		var el = [[], []];
+		if(d === undefined)
+			d = 1;
 		
-		for(var i = 0; i < n; i++) {
+		var els = [[], [], [[]]],
+		i;
+		
+		for(i = 0; i < n; i++) {
 			var angle = 2 * Math.PI * i * d / n + 0.01 //REMOVE LAST NUMBER, THIS IS JUST FOR TESTING
-			el[0].push(new Point([Math.cos(angle), Math.sin(angle)]));
+			els[0].push(new Point([Math.cos(angle), Math.sin(angle)])); //Vertices
+			els[2][0].push(i); //Face.
 		}
 		
-		for(var i = 0; i < n - 1; i++)
-			el[1].push([i, i + 1]);		
-		el[1].push([el[0].length - 1, 0]);
+		for(i = 0; i < n - 1; i++)
+			els[1].push([i, i + 1]);	//Edges
+		els[1].push([els[0].length - 1, 0]);
 		
-		return new PolytopeC(el);
+		return new PolytopeC(els);
 	}
 
 	//Makes every vertex have dim coordinates either by adding zeros or removing numbers.
@@ -296,7 +301,7 @@ class PolytopeC extends Polytope {
 		//A doubly linked list does the job easily.
 		var vertexDLL = [];
 		for(var i = 0; i < this.elementList[1].length; i++) {
-			var edge = this.elementList[1][this.elementList[1][i]];
+			var edge = this.elementList[1][i];
 			if(vertexDLL[edge[0]] === undefined)
 				vertexDLL[edge[0]] = new DLLNode(edge[0]);
 			if(vertexDLL[edge[1]] === undefined)
@@ -306,7 +311,8 @@ class PolytopeC extends Polytope {
 		}			
 		
 		//Cycle of vertex indices.
-		return vertexDLL[0].getCycle();
+		var res= vertexDLL[0].getCycle();
+		return res;
 	}
 	
 	//Extrudes a polytope to a pyramid with an apex at the specified point.
@@ -319,7 +325,7 @@ class PolytopeC extends Polytope {
 		this.elementList.push([]);
 		
 		var oldElNumbers = [];
-		for(i = 0; i < this.dimensions; i++)
+		for(i = 0; i <= this.dimensions; i++)
 			oldElNumbers.push(this.elementList[i].length);
 		
 		//Adds apex.
@@ -331,7 +337,7 @@ class PolytopeC extends Polytope {
 			this.elementList[1].push([i, oldElNumbers[0]]);
 		
 		//Adds remaining elements.
-		for(var d = 2; d < this.dimensions; d++) {
+		for(var d = 2; d <= this.dimensions; d++) {
 			for(i = 0; i < oldElNumbers[d - 1]; i++) {
 				els = [i];
 				for(var j = 0; j < this.elementList[d - 1][i].length; j++)
@@ -339,12 +345,6 @@ class PolytopeC extends Polytope {
 				this.elementList[d].push(els);
 			}
 		}
-
-		//Adds base facet.
-		els = [];
-		for(i = 0; i < oldElNumbers[this.dimensions - 2]; i++)
-			els.push(i);
-		this.elementList[this.dimensions - 1].push(els);
 	}
 	
 	saveAsOFF(comments) {
@@ -426,13 +426,13 @@ class PolytopeC extends Polytope {
 			if(comments)
 				data.push("\n# Vertices\n");
 			for(i = 0; i < this.elementList[0].length; i++) {
-				coord = vertices[i].coordinates[0];
+				coord = this.elementList[0][vertices[i]].coordinates[0];
 				if(coord === undefined)
 					data.push("0 ");
 				else
 					data.push(coord + " ");
 				
-				coord = vertices[i].coordinates[1];
+				coord = this.elementList[0][vertices[i]].coordinates[1];
 				if(coord === undefined)
 					data.push("0\n");
 				else

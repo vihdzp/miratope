@@ -313,6 +313,6 @@ class PolytopeS extends Polytope {
 			console.log(someElems);
 			elems.push(someElems);
 		}
-		return new PolytopeC(elems, this.dimensions);
+		return new PolytopeC(elems);
 	}
 }
