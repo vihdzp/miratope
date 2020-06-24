@@ -101,13 +101,13 @@ class RewriteGroup extends Group {
 
 	compare(elem1, elem2) {
 		if(elem1.length < elem2.length)
-			return -1
+			return -1;
 		if(elem1.length > elem2.length)
-			return 1
+			return 1;
 		if(elem1 < elem2)
-			return -1
+			return -1;
 		if(elem1 > elem2)
-			return 1
+			return 1;
 		return 0
 	}
 }
@@ -164,8 +164,8 @@ class ConcreteGroup extends Group {
 		var abstractSymmetries = new MatrixGroup(symmetryGens);
 		//3D and 4D RewriteGroups for for debugging toPolytopeS.
 		//abstractSymmetries = new RewriteGroup("012",[["00",""],["11",""],["22",""],["1010","0101"],["20","02"],["212","121"],["2102","1210"],["210121","121012"]])
-		abstractSymmetries = new RewriteGroup("0123",[["00",""],["11",""],["22",""],["33",""],["1010","0101"],["20","02"],["30","03"],["212","121"],["31","13"],["323","232"],["2102","1210"],["3213","2321"],["32103","23210"],["210121","121012"],["321013","232101"],["32101232","23210123"]])
-		console.warn("Dimensional special case enabled.")
+		abstractSymmetries = new RewriteGroup("0123",[["00",""],["11",""],["22",""],["33",""],["1010","0101"],["20","02"],["30","03"],["212","121"],["31","13"],["323","232"],["2102","1210"],["3213","2321"],["32103","23210"],["210121","121012"],["321013","232101"],["32101232","23210123"]]);
+		console.warn("Dimensional special case enabled.");
 		return new ConcreteGroup(symmetryGens, abstractSymmetries);
 	}
 }
