@@ -442,7 +442,7 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 	}
 	
 	//Adds vertices. Fills in zeros if spaceDimensions < dimensions.
-	if(this.dimensions === 1 || this.dimensions >= 3) {
+	if(this.dimensions >= 1) {
 		if(comments)
 			data.push("\n# Vertices\n");
 		for(i = 0; i < this.elementList[0].length; i++) {
@@ -454,25 +454,6 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 					data.push(coord + " ");
 			}
 			coord = this.elementList[0][i].coordinates[this.dimensions - 1];
-			if(coord === undefined)
-				data.push("0\n");
-			else
-				data.push(coord + "\n");
-		}
-	}
-	//In this special case, the vertices need to be in order.
-	else if(this.dimensions === 2) {
-		vertices = this.faceToVertices(0);
-		if(comments)
-			data.push("\n# Vertices\n");
-		for(i = 0; i < this.elementList[0].length; i++) {
-			coord = this.elementList[0][vertices[i]].coordinates[0];
-			if(coord === undefined)
-				data.push("0 ");
-			else
-				data.push(coord + " ");
-			
-			coord = this.elementList[0][vertices[i]].coordinates[1];
 			if(coord === undefined)
 				data.push("0\n");
 			else
