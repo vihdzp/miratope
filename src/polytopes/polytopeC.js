@@ -220,19 +220,10 @@ class PolytopeC extends Polytope {
 				return P[0];
 			return PolytopeC.prismProduct(P.pop(), PolytopeC.prismProduct(P));
 		}
-		//Gets the index of the product of the ith m-element and the jth n-element in the new polytope.
-		//Takes into account the order in which the elements are calculated and added.
-		function getIndexOfProduct(m, i, n, j) {
-			var res = 0;
-			
-			//Memoization would speed this up quite a bit.
-			for(var x = Math.max(0, (m + n) - Q.elementList.length + 1); x < m; x++)
-				res += P.elementList[x].length * Q.elementList[(m + n) - x].length;
-			return res + (i * Q.elementList[n].length) + j;
-		}
 		
 		var i, j, k, l, m, n, d, els,
-		newElementList = [[]];
+		newElementList = [[]],
+		memoizer = [];
 		
 		//Adds vertices.
 		for(i = 0; i < P.elementList[0].length; i++) 
@@ -257,10 +248,10 @@ class PolytopeC extends Polytope {
 						//Vertices don't have ridges!
 						if(m !== 0)
 							for(k = 0; k < P.elementList[m][i].length; k++)
-								els.push(getIndexOfProduct(m - 1, P.elementList[m][i][k], n, j));
+								els.push(PolytopeC._getIndexOfProduct(m - 1, P.elementList[m][i][k], n, j, P, Q, memoizer));
 						if(n!== 0)
 							for(k = 0; k < Q.elementList[n][j].length; k++)
-								els.push(getIndexOfProduct(m, i, n - 1, Q.elementList[n][j][k]));
+								els.push(PolytopeC._getIndexOfProduct(m, i, n - 1, Q.elementList[n][j][k], P, Q, memoizer));
 
 						newElementList[m + n].push(els);
 					}
@@ -269,6 +260,31 @@ class PolytopeC extends Polytope {
 		}
 		
 		return new PolytopeC(newElementList);
+	}
+	
+	//Helper function for prismProduct.
+	//Gets the index of the product of the ith m-element and the jth n-element in the new polytope.
+	//Takes into account the order in which the elements are calculated and added.
+	static _getIndexOfProduct(m, i, n, j, P, Q, memoizer) {
+		//Recall that the elements of a single dimension are added in order vertex * facet, edge * ridge, ...
+		//memoizer[m][n] counts the number of such elements that we have to skip before we reach the multiplication we actually care about.
+		//This number is found recursively, so we memoize to calculate it more efficiently.
+		//offset calculates the index of our product within the products of elements of the same dimensions,
+		//simply by recalling this last ordering is lexicographic.
+		var offset = (i * Q.elementList[n].length) + j;
+		
+		if(memoizer[m]) {
+			if(memoizer[m][n])
+				return memoizer[m][n] + offset;
+		}
+		else 
+			memoizer[m] = [];
+		
+		if(m === 0 || n === Q.elementList.length - 1)
+			memoizer[m][n] = 0;
+		else
+			memoizer[m][n] = memoizer[m - 1][n + 1] + P.elementList[m - 1].length * Q.elementList[n + 1].length;
+		return memoizer[m][n] + offset;
 	}
 
 	//Makes every vertex have dim coordinates either by adding zeros or removing numbers.
@@ -682,9 +698,9 @@ class PolytopeC extends Polytope {
 						nextNode = SL.next(node);
 						
 						if(prevNode)
-							PolytopeC.divide(edge, prevNode.key, vertexDLL, EQ); //Checks for an intersection with the edge below edgeE.
+							PolytopeC._divide(edge, prevNode.key, vertexDLL, EQ); //Checks for an intersection with the edge below edgeE.
 						if(nextNode)
-							PolytopeC.divide(edge, nextNode.key, vertexDLL, EQ); //Checks for an intersection with the edge above edgeE.
+							PolytopeC._divide(edge, nextNode.key, vertexDLL, EQ); //Checks for an intersection with the edge above edgeE.
 					}
 					//Vertex E is a right endpoint of the edge:
 					else if (ord > 0) {
@@ -702,7 +718,7 @@ class PolytopeC extends Polytope {
 						nextNode = SL.next(node);
 						
 						if(prevNode && nextNode)
-							PolytopeC.divide(prevNode.key, nextNode.key, vertexDLL, EQ); //Checks for an intersection between the edges below and above edgeE.
+							PolytopeC._divide(prevNode.key, nextNode.key, vertexDLL, EQ); //Checks for an intersection between the edges below and above edgeE.
 						SL.delete(edge);
 					}
 					//The edge is perpendicular to the first coordinate's axis:
@@ -713,7 +729,7 @@ class PolytopeC extends Polytope {
 						//I really should only check intersections with segments at the "correct height".
 						node = SL.findMinimumNode();
 						while(node) {
-							PolytopeC.divide(edge, node.key, vertexDLL, EQ);
+							PolytopeC._divide(edge, node.key, vertexDLL, EQ);
 							node = SL.next(node);
 						}
 					}
@@ -736,7 +752,7 @@ class PolytopeC extends Polytope {
 	//renderTo helper function.
 	//"Cuts" edgeA and edgeB at the intersection point, adds the new directed edges according to the simplification algorithm.
 	//Edges are in the SL format.
-	static divide(edgeA, edgeB, vertexDLL, EQ) {
+	static _divide(edgeA, edgeB, vertexDLL, EQ) {
 		//No point in doing anything if the intersection has already been dealt with.
 		//...what happens if two different vertices take the same location?
 		if(edgeA.leftVertex.value === edgeB.leftVertex.value || edgeA.leftVertex.value === edgeB.rightVertex().value ||
