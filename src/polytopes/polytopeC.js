@@ -462,7 +462,7 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 	}
 	//In this special case, the vertices need to be in order.
 	else if(this.dimensions === 2) {
-		vertices = this.faceToVertices();
+		vertices = this.faceToVertices(0);
 		if(comments)
 			data.push("\n# Vertices\n");
 		for(i = 0; i < this.elementList[0].length; i++) {
