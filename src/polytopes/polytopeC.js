@@ -384,6 +384,11 @@ PolytopeC.prototype.extrudeToPyramid = function(apex) {
 		}
 	}
 };
+
+//Creates a dyad of the given length.
+PolytopeC.dyad = function(length) {
+	return new PolytopeC([[new Point([-length / 2]), new Point([length / 2])], [[0, 1]]]);
+};
 	
 	//Saves the current polytope as an OFF file.
 	//If comments, the OFF file will contain comments dividing the different element types.
