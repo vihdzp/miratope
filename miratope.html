@@ -10,7 +10,6 @@
 	<script src="src/data structures/avl-tree.js"></script> <!--An implementation of the AVL tree data structure.-->
 	<script src="src/geometry/point.js"></script> <!--Class for points.-->
 	<script src="src/geometry/space.js"></script> <!--Class for calculations related to points.-->
-	<script src="src/polytopes/Polytope.js"></script> <!--The master class for polytopes.-->
 	<script src="src/polytopes/PolytopeC.js"></script> <!--The class for polytopes in combinatorial representation.-->
 	<script src="src/polytopes/PolytopeS.js"></script> <!--The class for polytopes in symmetry representation.-->
 	<script src="src/rendering/scene.js"></script> <!--A class for scenes.-->
@@ -53,8 +52,8 @@
 		new PolytopeC([pts,edges,faces],3).renderTo(scene);*/
 		
 		//Test heptagrammic pyramid pyramid
-		var P = PolytopeC.prismProduct([PolytopeC.star(3),PolytopeC.star(3),PolytopeC.star(3)]);
-		P.name = "Triangular trioprism";
+		var P = PolytopeC.prismProduct([PolytopeC.simplex(3),PolytopeC.simplex(3)]);
+		P.name = "Tetrahedral duoprism";
 		P.saveAsOFF(true);
 		
 		//Render loop.
