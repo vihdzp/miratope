@@ -185,8 +185,8 @@ Names._endings = [
 	new Ending("um", -2, "matic"), //Duoteg(um/matic)
 	new Ending("ium", -2, "al"), //Gyrobifastigi(um/al)
 	new Ending("lum", -2, "ar"), //Disphenocingul(um/ar)
-	new Ending("n", -2, "al"), //Tetrahedr(on/al)
-	new Ending("on", 0, "al"), //Pentagon(al)
+	new Ending("on", -2, "al"), //Tetrahedr(on/al)
+	new Ending("gon", 0, "al"), //Pentagon(al)
 	new Ending("lon", -2, "ar"), //Ditel(on/ar)
 	//Pentacross
 	new Ending("ct", 0, "ic"), //Tesseract(ic)
