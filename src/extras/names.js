@@ -172,13 +172,15 @@ Names.toAdjective = function(name) {
 Names._endings = [
 	new Ending("a", 0, "ic"), //Rotunda(ic)
 	new Ending("la", 0, "ic"), //Cupola(ic)
+	new Ending("ula", 0, "r"), //Stella octangula(r)
 	new Ending("na", 0, "l"), //Sphenocorona(l)
+	new Ending("b", 0, "ic"), //Cube honeycomb(ic)
 	new Ending("d", 0, "ic"), //Dyad(ic)
 	new Ending("id", 0, "al"), //Triangular pyramid(al)
-	new Ending("e", -1, "ic"), //Cub(e/ic)
+	//new Ending("e", 0, ""), //Square
+	new Ending("be", -1, "ic"), //Cub(e/ic)
 	new Ending("le", -2, "ular"), //Triang(le/ular)
 	new Ending("pe", -1, "ic"), //Pentatop(e/ic)
-	//Square
 	new Ending("ure", -1, "al"), //Skilling's figur(e/al)
 	new Ending("l", 0, "ular"), //5-cell(ular)
 	new Ending("m", 0, "atic"), //Triangular prism(atic)
@@ -186,12 +188,14 @@ Names._endings = [
 	new Ending("ium", -2, "al"), //Gyrobifastigi(um/al)
 	new Ending("lum", -2, "ar"), //Disphenocingul(um/ar)
 	new Ending("on", -2, "al"), //Tetrahedr(on/al)
+	new Ending("ion", -3, "e"), //Square tesselat(ion/e)
 	new Ending("gon", 0, "al"), //Pentagon(al)
 	new Ending("lon", -2, "ar"), //Ditel(on/ar)
-	//Pentacross
+	//new Ending("s", 0, ""), // Pentacross
+	//new Ending("t", 0, ""), // Point
 	new Ending("ct", 0, "ic"), //Tesseract(ic)
-	//Point
 	new Ending("x", -2, "icial"), //Simpl(ex/icial)
+	new Ending("ix", -1, "cal"), //Square heli(x/cal)
 	new Ending("y", -1, "ical") //Octagonn(y/ical)
 ];
 
