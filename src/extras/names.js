@@ -93,38 +93,22 @@ Names.firstToUpper = function(str) {
 //Converts a polytope name into an adjective.
 //E.g. cube -> cubical, sphenocorona -> sphenocoronal, etc.
 //Goes through _endings in a modified binary search.
-//If there's an ending match, the transformation done will correspond to the longest.
+//If there's an ending match, the transformation done will correspond to the longest match.
 //If no ending matches, the default is to leave the name as is.
 Names.toAdjective = function(name) {
 	var first,
 	mid,
 	last,
 	firstMatch = 0, 
-	lastMatch = Names._endings.length,
+	lastMatch = Names._endings.length - 1,
+	ending, endingStr,
 	k = 1;
 	
 	//Adds one letter of name at a time.
 	//Searches for the least and greatest elements of _endings that are compatible with the observed letters.
+	//Will not compare the first match, if all others have been discarded. That way, the "longest match" functionality works.
 	while(lastMatch > firstMatch) {
-		//Finds firstMatch.
-		first = firstMatch;
-		last = lastMatch;
-		
-		while(last - first > 1) {
-			mid = Math.floor((first + last) / 2);
-			if(Ending.compare(name, mid, k) <= 0)
-				last = mid;
-			else
-				first = mid;
-		}
-		if(Ending.compare(name, first, k) === 0)
-			firstMatch = first;
-		else if(Ending.compare(name, last, k) === 0)
-			firstMatch = last;
-		else
-			return name;
-		
-		//Finds greatestMatch.
+		//Finds lastMatch.
 		first = firstMatch;
 		last = lastMatch;
 		while(last - first > 1) {
@@ -136,19 +120,48 @@ Names.toAdjective = function(name) {
 		}
 		if(Ending.compare(name, last, k) === 0)
 			lastMatch = last;
-		else if(Ending.compare(name, first, k) === 0)
-			lastMatch = first;
 		else
-			return name;
+			lastMatch = first;
 		
+		//Finds firstMatch.
+		//If lastMatch - firstMatch > 1, at least another match other than the first remains, so we can safely compare the first.
+		first = firstMatch;
+		last = lastMatch;		
+		while(last - first > 1) {
+			mid = Math.floor((first + last) / 2);
+			if(Ending.compare(name, mid, k) <= 0)
+				last = mid;
+			else
+				first = mid;
+		}
+		
+		//If only the first match remains to be discarded, it's checked outside the while loop.
+		if(lastMatch - firstMatch === 1 && Ending.compare(name, lastMatch, k) !== 0) {
+			lastMatch = firstMatch;
+			break;
+		}
+		
+		//At least another match other than the first remains, so we can safely compare the first.
+		if(Ending.compare(name, first, k) === 0)
+			firstMatch = first;
+		else
+			firstMatch = last;
 		k++;
 	}	
 	
 	//If at some point, only one match fits, we check if it fits the whole string.
-	//If it does, we do the corresponding ending change.
-	if(firstMatch === lastMatch && !Ending.compare(name, firstMatch, Infinity))
+	ending = Names._endings[firstMatch],
+	endingStr = ending.string;
+	if(firstMatch === lastMatch) {
+		for(; k <= ending.string.length; k++)
+			//No match.
+			if(name.charAt(name.length - k).toLowerCase() !== endingStr.charAt(endingStr.length - k).toLowerCase())
+				return name;
+		//If the match does fit, we do the corresponding ending change.
 		return Names._endings[firstMatch].changeEnding(name);
-	//No match.
+	}
+	
+	//No match either.
 	return name;
 };
 
@@ -157,29 +170,29 @@ Names.toAdjective = function(name) {
 //Sorted by alphabetical order of the strings, backwards!
 //cba is sorted before dcba.
 Names._endings = [
-	new Ending("da", 0, "ic"), //Rotunda(ic)
+	new Ending("a", 0, "ic"), //Rotunda(ic)
 	new Ending("la", 0, "ic"), //Cupola(ic)
 	new Ending("na", 0, "l"), //Sphenocorona(l)
-	new Ending("ad", 0, "ic"), //Dyad(ic)
+	new Ending("d", 0, "ic"), //Dyad(ic)
 	new Ending("id", 0, "al"), //Triangular pyramid(al)
-	new Ending("be", -1, "ic"), //Cub(e/ic)
-	//Square
-	new Ending("gle", -2, "ular"), //Triang(le/ular)
+	new Ending("e", -1, "ic"), //Cub(e/ic)
+	new Ending("le", -2, "ular"), //Triang(le/ular)
 	new Ending("pe", -1, "ic"), //Pentatop(e/ic)
+	//Square
 	new Ending("ure", -1, "al"), //Skilling's figur(e/al)
-	new Ending("ll", 0, "ular"), //5-cell(ular)
-	new Ending("sm", 0, "atic"), //Triangular prism(atic)
-	new Ending("gum", -2, "matic"), //Duoteg(um/matic)
+	new Ending("l", 0, "ular"), //5-cell(ular)
+	new Ending("m", 0, "atic"), //Triangular prism(atic)
+	new Ending("um", -2, "matic"), //Duoteg(um/matic)
 	new Ending("ium", -2, "al"), //Gyrobifastigi(um/al)
 	new Ending("lum", -2, "ar"), //Disphenocingul(um/ar)
-	new Ending("on", -2, "al"), //Tetrahedr(on/al)
-	new Ending("gon", 0, "al"), //Pentagon(al)
+	new Ending("n", -2, "al"), //Tetrahedr(on/al)
+	new Ending("on", 0, "al"), //Pentagon(al)
 	new Ending("lon", -2, "ar"), //Ditel(on/ar)
 	//Pentacross
 	new Ending("ct", 0, "ic"), //Tesseract(ic)
 	//Point
-	new Ending("ex", -2, "icial"), //Simpl(ex/icial)
-	new Ending("ny", -1, "ical") //Octagonn(y/ical)
+	new Ending("x", -2, "icial"), //Simpl(ex/icial)
+	new Ending("y", -1, "ical") //Octagonn(y/ical)
 ];
 
 //A plain name for the polytope is simply [greek facet count prefix] [greek dimension Ending].
@@ -313,19 +326,22 @@ Ending.prototype.changeEnding = function(name) {
 	return name.slice(0, this.sliceDepth) + this.newEnding;
 };
 
-//Compares the last k characters of name with ending, in backwards order.
+//Compares the kth to last (and therefore the last k characters backwards) of name with _endings kth entry, 
+//in alphabetical order.
 Ending.compare = function(name, indx, k) {
-	var endingStr = Names._endings[indx].string;
-	var i = name.length - 1, j = endingStr.length - 1, 
-	//Compares k characters if possible, otherwise, compares the max amount possible.
-	k = Math.min(k, endingStr.length);
+	var endingStr = Names._endings[indx].string,
+	i = name.length - k,
+	j = endingStr.length - k;
 	
-	while(k--) {
-		if(name.charAt(i).toLowerCase() < endingStr.charAt(j).toLowerCase())
-			return -1;
-		if(name.charAt(i--).toLowerCase() > endingStr.charAt(j--).toLowerCase())
-			return 1;
-	}
+	//This can only happen if there's another longer matching string.
+	if(k > endingStr.length + 1)
+		return 1;
 	
+	//We only really need to check the kth character; the rest have been checked before.
+	if(name.charAt(i).toLowerCase() < endingStr.charAt(j).toLowerCase())
+		return -1;
+	if(name.charAt(i).toLowerCase() > endingStr.charAt(j).toLowerCase())
+		return 1;	
+
 	return 0;
 };
