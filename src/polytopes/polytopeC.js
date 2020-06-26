@@ -188,11 +188,12 @@ PolytopeC.regularPolygon = function(n, d) {
 	n_gcd = n / gcd,
 	counter = 0,
 	comp,
-	i, j, x = 0, y = d;
+	i, j, x = 0, y = d,
+	invRad = 2 * Math.sin(Math.PI * d / n); //1 / the circumradius.
 	
 	for(i = 0; i < n; i++) {
 		var angle = 2 * Math.PI * i / n;
-		els[0].push(new Point([Math.cos(angle)/(2*Math.sin(Math.PI*d/n)), Math.sin(angle)/(2*Math.sin(Math.PI*d/n))])); //Vertices
+		els[0].push(new Point([Math.cos(angle) / invRad, Math.sin(angle) / invRad]); //Vertices
 	}
 	
 	//i is the component number.
@@ -233,11 +234,12 @@ PolytopeC.regularPolygonG = function(n, d) {
 		d = 1;
 	
 	var els = [[], [], [[]]],
-	i;
+	i,
+	invRad = 2 * Math.sin(Math.PI * d / n); //1 / the circumradius
 	
 	for(i = 0; i < n; i++) {
 		var angle = 2 * Math.PI * i * d / n;
-		els[0].push(new Point([Math.cos(angle), Math.sin(angle)])); //Vertices
+		els[0].push(new Point([Math.cos(angle) / invRad, Math.sin(angle) / invRad])); //Vertices
 		els[2][0].push(i); //Face.
 	}
 	
