@@ -1,5 +1,6 @@
 "use strict";
 //Class for naming elements, polygons, etc.
+//If we ever translate Miratope... (and we should!) this part will be hard.
 var Names = {};
 
 const PLURAL = 1;
@@ -60,8 +61,8 @@ Names.elementName = function(d, options) {
 	return res;
 };
 
-//The suffix in the name for a d-polytope.
-Names.polytopeSuffix = function(d, options) {
+//The Ending in the name for a d-polytope.
+Names.polytopeEnding = function(d, options) {
 	var res = "";
 	switch(d) {
 		case 1:
@@ -90,53 +91,106 @@ Names.firstToUpper = function(str) {
 }
 
 //Converts a polytope name into an adjective.
-//E.g. cube → cubical, sphenomegacorona → sphenomegacoronal, etc.
-//Can probably be made more efficient in the future.
+//E.g. cube -> cubical, sphenocorona -> sphenocoronal, etc.
+//Goes through _endings in a modified binary search.
+//If there's an ending match, the transformation done will correspond to the longest.
+//If no ending matches, the default is to leave the name as is.
 Names.toAdjective = function(name) {
-	if(Names._checkSuffix(name, "cube")
-	|| Names._checkSuffix(name, "square")
-	|| Names._checkSuffix(name, "point"))
-		return name;
-	if(Names._checkSuffix(name, "tesseract")
-	|| Names._checkSuffix(name, "dyad"))
-		return name + "ic";
-	if(Names._checkSuffix(name, "gon"))
-		return name + "al";
-	if(Names._checkSuffix(name, "on"))
-		return name.slice(0, -2) + "al";
-	if(Names._checkSuffix(name, "gram"))
-		return name + "mic";
-	if(Names._checkSuffix(name, "prism"))
-		return name + "atic";
-	if(Names._checkSuffix(name, "a"))
-		return name + "l";
-	return name + "al";
+	var first,
+	mid,
+	last,
+	firstMatch = 0, 
+	lastMatch = Names._endings.length,
+	k = 1;
+	
+	//Adds one letter of name at a time.
+	//Searches for the least and greatest elements of _endings that are compatible with the observed letters.
+	while(lastMatch > firstMatch) {
+		//Finds firstMatch.
+		first = firstMatch;
+		last = lastMatch;
+		
+		while(last - first > 1) {
+			mid = Math.floor((first + last) / 2);
+			if(Ending.compare(name, mid, k) <= 0)
+				last = mid;
+			else
+				first = mid;
+		}
+		if(Ending.compare(name, first, k) === 0)
+			firstMatch = first;
+		else if(Ending.compare(name, last, k) === 0)
+			firstMatch = last;
+		else
+			return name;
+		
+		//Finds greatestMatch.
+		first = firstMatch;
+		last = lastMatch;
+		while(last - first > 1) {
+			mid = Math.floor((first + last) / 2);
+			if(Ending.compare(name, mid, k) < 0)
+				last = mid;
+			else
+				first = mid;
+		}
+		if(Ending.compare(name, last, k) === 0)
+			lastMatch = last;
+		else if(Ending.compare(name, first, k) === 0)
+			lastMatch = first;
+		else
+			return name;
+		
+		k++;
+	}	
+	
+	//If at some point, only one match fits, we check if it fits the whole string.
+	//If it does, we do the corresponding ending change.
+	if(firstMatch === lastMatch && !Ending.compare(name, firstMatch, Infinity))
+		return Names._endings[firstMatch].changeEnding(name);
+	//No match.
+	return name;
 };
 
-//Helper function for toAdjective.
-//Checks if name ends in suffix.
-Names._checkSuffix = function(name, suffix) {
-	var i = name.length - suffix.length, j = 0;
-	
-	while(i < name.length)
-		if(name.charAt(i++).toLowerCase() !== suffix.charAt(j++).toLowerCase())
-			return false;
-	return true;
-}
+//Helper array for toAdjective.
+//Stores some endings and what to do with them.
+//Sorted by alphabetical order of the strings, backwards!
+//cba is sorted before dcba.
+Names._endings = [
+	new Ending("da", 0, "ic"), //Rotunda(ic)
+	new Ending("la", 0, "ic"), //Cupola(ic)
+	new Ending("na", 0, "l"), //Sphenocorona(l)
+	new Ending("ad", 0, "ic"), //Dyad(ic)
+	new Ending("id", 0, "al"), //Triangular pyramid(al)
+	new Ending("be", -1, "ic"), //Cub(e/ic)
+	//Square
+	new Ending("gle", -2, "ular"), //Triang(le/ular)
+	new Ending("pe", -1, "ic"), //Pentatop(e/ic)
+	new Ending("ure", -1, "al"), //Skilling's figur(e/al)
+	new Ending("ll", 0, "ular"), //5-cell(ular)
+	new Ending("sm", 0, "atic"), //Triangular prism(atic)
+	new Ending("gum", -2, "matic"), //Duoteg(um/matic)
+	new Ending("ium", -2, "al"), //Gyrobifastigi(um/al)
+	new Ending("lum", -2, "ar"), //Disphenocingul(um/ar)
+	new Ending("on", -2, "al"), //Tetrahedr(on/al)
+	new Ending("gon", 0, "al"), //Pentagon(al)
+	new Ending("lon", -2, "ar"), //Ditel(on/ar)
+	//Pentacross
+	new Ending("ct", 0, "ic"), //Tesseract(ic)
+	//Point
+	new Ending("ex", -2, "icial"), //Simpl(ex/icial)
+	new Ending("ny", -1, "ical") //Octagonn(y/ical)
+];
 
-//Replaces 
-Names._replaceLast = function(name, i, newName) {
-}
-
-//A plain name for the polytope is simply [greek facet count prefix] [greek dimension suffix].
+//A plain name for the polytope is simply [greek facet count prefix] [greek dimension Ending].
 Names.plain = function(n, d, options) {
-	return Names.greekPrefix(n, options & UPPERCASE) + Names.polytopeSuffix(d, options & PLURAL);
+	return Names.greekPrefix(n, options & UPPERCASE) + Names.polytopeEnding(d, options & PLURAL);
 };
 
 Names._units = ["", "mono", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "ennea"];
 
 //Converts n into a greek prefix.
-//Works only from 0 to 999.
+//Works only from 0 to 99999.
 //Based on https://www.georgehart.com/virtual-polyhedra/greek-prefixes.html
 //Defaults to n-.
 Names.greekPrefix = function(n, options) {	
@@ -223,7 +277,7 @@ Names.greekPrefix = function(n, options) {
 	if(options & UPPERCASE)		
 		return Names.firstToUpper(res);
 	return res;
-}
+};
 
 //TBA some more star names.
 Names.regularPolygonName = function(n, d) {
@@ -243,4 +297,35 @@ Names.regularPolygonName = function(n, d) {
 		default: 
 			return Names.plain(n, 2, UPPERCASE);
 	}
-}
+};
+
+//Helper class for toAdjective.
+//Stores endings of words and what to do with them.
+function Ending(string, sliceDepth, newEnding) {
+	this.string = string;
+	this.sliceDepth = sliceDepth;
+	this.newEnding = newEnding;
+};
+
+Ending.prototype.changeEnding = function(name) {
+	if(!this.sliceDepth)
+		return name + this.newEnding;
+	return name.slice(0, this.sliceDepth) + this.newEnding;
+};
+
+//Compares the last k characters of name with ending, in backwards order.
+Ending.compare = function(name, indx, k) {
+	var endingStr = Names._endings[indx].string;
+	var i = name.length - 1, j = endingStr.length - 1, 
+	//Compares k characters if possible, otherwise, compares the max amount possible.
+	k = Math.min(k, endingStr.length);
+	
+	while(k--) {
+		if(name.charAt(i).toLowerCase() < endingStr.charAt(j).toLowerCase())
+			return -1;
+		if(name.charAt(i--).toLowerCase() > endingStr.charAt(j--).toLowerCase())
+			return 1;
+	}
+	
+	return 0;
+};
