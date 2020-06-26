@@ -34,6 +34,8 @@ function MatrixGroup(generators) {
 	this.dimension = generators[0].width();
 }
 
+MatrixGroup.prototype = new Group();
+
 MatrixGroup.prototype.identity = function() {
 	return Matrix.identity(this.dimension);
 };
@@ -53,6 +55,8 @@ MatrixGroup.prototype.equal = function(elem1, elem2) {
 MatrixGroup.prototype.compare = function(elem1, elem2) {
 	return elem1.compare(elem2);
 };
+
+RewriteGroup.prototype = new Group();
 
 //A class for groups defined using normalizing rewriting systems.
 function RewriteGroup(generators, system) {
@@ -103,6 +107,8 @@ RewriteGroup.prototype.compare = function(elem1, elem2) {
 		return 1;
 	return 0;
 };
+
+ConcreteGroup.prototype = new Group();
 
 //A class for groups with matrix representations in the appropriately-dimensioned space.
 //Including the abstract representation as a property probably isn't the right way to do this,
