@@ -14,6 +14,7 @@
 	<script src="src/polytopes/PolytopeS.js"></script> <!--The class for polytopes in symmetry representation.-->
 	<script src="src/rendering/scene.js"></script> <!--A class for scenes.-->
 	<script src="src/rendering/three.js"></script> <!--A 3D rendering library.-->
+	<script src="src/extras/names.js"></script> <!--A class for naming stuff in general.-->
 </head>
 <body>
 	<!-- Used to download files. -->
@@ -51,11 +52,11 @@
 		var faces=[[0,1,2,3,4,5,6,7],[8,9,10,11,12,13,14,15],[0,8,16,17],[1,9,17,18],[2,10,18,19],[3,11,19,20],[4,12,20,21],[5,13,21,22],[6,14,22,23],[7,15,23,0]];
 		new PolytopeC([pts,edges,faces],3).renderTo(scene);*/
 		
-		//Test heptagrammic pyramid pyramid
-		var P = PolytopeC.prismProduct([PolytopeC.simplex(3),PolytopeC.simplex(3)]);
-		P.name = "Tetrahedral duoprism";
+		/*
+		var P = PolytopeC.regularPolygon(15).extrudeToPyramid(new Point([0,0,1]));
 		P.saveAsOFF(true);
-		
+		*/
+		Names.toAdjective("Icosagonal tetragonal prism")
 		//Render loop.
 		/*function animate() { 
 			requestAnimationFrame( animate );

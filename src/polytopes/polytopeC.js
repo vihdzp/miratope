@@ -8,11 +8,11 @@
 //We don't only store the facets, because we don't want to deal with O(2^n) code.
 //Subelements stored as indices.
 //All points assumed to be of the same dimension.
-function PolytopeC(elementList) {
+function PolytopeC(elementList, name) {
 	this.elementList = elementList;
 	this.dimensions = elementList.length - 1; //The combinatorial dimension.
 	this.spaceDimensions = this.elementList[0][0].dimensions(); //The space's dimension.
-	this.name = "Polytope"; //Polytope is just a placeholder name.
+	this.name = (name === undefined ? Names.plain(elementList[elementList.length - 1].length, this.dimensions) : name); //If no name is given, uses simply the plain name constructor.
 };
 	
 //Builds a hypercube in the specified amount of dimensions.
@@ -173,8 +173,62 @@ PolytopeC.prototype.centroid = function() {
 	return res;
 };
 
+//Builds a n/d star.
+//If n and d are not coprime, a regular polygon compound is made instead.
+PolytopeC.regularPolygon = function(n, d) {
+	var gcd;
+	if(d === undefined) {
+		d = 1;
+		gcd = 1;
+	}
+	else
+		gcd = PolytopeC._gcd(n, d);
+	
+	var els = [[], [], []],
+	n_gcd = n / gcd,
+	counter = 0,
+	comp,
+	i, j, x = 0, y = d;
+	
+	for(i = 0; i < n; i++) {
+		var angle = 2 * Math.PI * i / n;
+		els[0].push(new Point([Math.cos(angle), Math.sin(angle)])); //Vertices
+	}
+	
+	//i is the component number.
+	for(i = 0; i < gcd; i++) {
+		//x and y keep track of the vertices that are being connected.
+		comp = [];
+		//j is the edge.
+		for(j = 0; j < n_gcd; j++) {
+			els[1].push([x, y]); //Edges
+			x = y;
+			y += d;
+			if(y >= n)
+				y -= n;
+			comp.push(counter++); //Components
+		}
+		els[2].push(comp);
+		x++; y++;
+	}
+	
+	return new PolytopeC(els, Names.regularPolygonName(n, d));
+};
+
+//Helper function for star.
+//Just the most basic form of the Euclidean algorithm.
+PolytopeC._gcd = function(n, d) {
+	var t;
+	while (d !== 0) {
+		t = d;
+		d = n % d;
+		n = t;
+	}
+	return n;
+};	
+
 //Builds a Grünbaumian n/d star.
-PolytopeC.star = function(n, d) {
+PolytopeC.regularPolygonG = function(n, d) {
 	if(d === undefined)
 		d = 1;
 	
@@ -191,7 +245,7 @@ PolytopeC.star = function(n, d) {
 		els[1].push([i, i + 1]); //Edges
 	els[1].push([els[0].length - 1, 0]);
 	
-	return new PolytopeC(els);
+	return new PolytopeC(els, Names.regularPolygonName(n, d));
 };
 	
 //Calculates the prism product, or rather Cartesian product, of P and Q.
@@ -203,8 +257,13 @@ PolytopeC.prismProduct = function(P, Q) {
 			return P[0];
 		return PolytopeC.prismProduct(P.pop(), PolytopeC.prismProduct(P));
 	}
+
+	if(P.dimensions === 0)
+		return Q;
+	if(Q.dimensions === 0)
+		return P;
 	
-	var i, j, k, m, n, d, els,
+	var i, j, k, m, n, d, els, name,
 	newElementList = [[]],
 	memoizer = [];
 	
@@ -242,7 +301,21 @@ PolytopeC.prismProduct = function(P, Q) {
 		}
 	}
 	
-	return new PolytopeC(newElementList);
+	//Dyad * dyad = rectangle.
+	if(P.dimensions === 1 && Q.dimensions === 1)
+		name = "Rectangle";
+	else {
+		//Polytope * dyad = Polytope prism.
+		if(P.dimensions === 1)
+			name = Names.toAdjective(Q.name) + " prism";
+		else if(Q.dimensions === 1)
+			name = Names.toAdjective(P.name) + " prism";
+		//TBA if an m-prism and an n-prism are multiplied together, the result should be an (m + n)-prism!
+		else {
+			name = Names.toAdjective(P.name) + "-" + Names.firstToLower(Names.toAdjective(Q.name)) + " duoprism";
+		}
+	}
+	return new PolytopeC(newElementList, name);
 };
 
 //Helper function for prismProduct.
@@ -280,57 +353,6 @@ PolytopeC.prototype.setSpaceDimensions = function(dim) {
 				this.elementList[0][i].coordinates.push(0);
 	}
 	this.spaceDimensions = dim;
-};
-	
-//The name for an i-element, according to http://os2fan2.com/gloss/pglosstu.html.
-//Works for up to 20 dimensions, we very probably don't need more than that.
-PolytopeC.elementName = function(i, plural) {
-	switch(i) {
-		case 0:
-			if(plural) return "Vertices"; return "Vertex";
-		case 1:
-			if(plural) return "Edges"; return "Edge";
-		case 2:
-			if(plural) return "Faces"; return "Face";
-		case 3:
-			if(plural) return "Cells"; return "Cell";
-		case 4:
-			if(plural) return "Tera"; return "Teron";
-		case 5:
-			if(plural) return "Peta"; return "Peton";
-		case 6:
-			if(plural) return "Exa"; return "Exon";
-		case 7:
-			if(plural) return "Zetta"; return "Zetton";
-		case 8:
-			if(plural) return "Yotta"; return "Yotton";
-		case 9:
-			if(plural) return "Xenna"; return "Xennon";
-		case 10:
-			if(plural) return "Daka"; return "Dakon";
-		case 11:
-			if(plural) return "Hendaka"; return "Hendakon";
-		case 12:
-			if(plural) return "Doka"; return "Dokon";
-		case 13:
-			if(plural) return "Tradaka"; return "Tradakon";
-		case 14:
-			if(plural) return "Teradaka"; return "Teradakon";
-		case 15:
-			if(plural) return "Petadaka"; return "Petadakon";
-		case 16:
-			if(plural) return "Exdaka"; return "Exdakon";
-		case 17:
-			if(plural) return "Zettadaka"; return "Zettadakon";
-		case 18:
-			if(plural) return "Yottadaka"; return "Yottadakon";
-		case 19:
-			if(plural) return "Xendaka"; return "Xendakon";
-		case 20:
-			if(plural) return "Ica"; return "Icon";				
-		default:
-			if(plural) return i + "-elements"; return i + "-element";
-	}
 };
 	
 //Converts the edge representation of the i-th face to an ordered array of vertices.
@@ -383,15 +405,22 @@ PolytopeC.prototype.extrudeToPyramid = function(apex) {
 			this.elementList[d].push(els);
 		}
 	}
+	
+	this.name = Names.toAdjective(this.name) + " pyramid";
+	return this;
+};
+
+PolytopeC.prototype.extrudeToPrism = function(height) {
+	return PolytopeC.prismProduct(this, PolytopeC.dyad(height));
 };
 
 //Creates a dyad of the given length.
 PolytopeC.dyad = function(length) {
-	return new PolytopeC([[new Point([-length / 2]), new Point([length / 2])], [[0, 1]]]);
+	return new PolytopeC([[new Point([-length / 2]), new Point([length / 2])], [[0, 1]]], "Dyad");
 };
 	
-	//Saves the current polytope as an OFF file.
-	//If comments, the OFF file will contain comments dividing the different element types.
+//Saves the current polytope as an OFF file.
+//If comments, the OFF file will contain comments dividing the different element types.
 PolytopeC.prototype.saveAsOFF = function(comments) {
 	var i, j, coord, vertices;
 	
@@ -435,7 +464,7 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 			if(comments) {
 				data.push("# Vertices, Faces, Edges, Cells");
 				for(i = 4; i < this.dimensions; i++)
-					data.push(", " + PolytopeC.elementName(i, true));
+					data.push(", " + Names.elementName(i, PLURAL ^ UPPERCASE));
 				data.push("\n");
 			}
 			data.push(this.elementList[0].length + " ");
@@ -503,7 +532,7 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 	for(var d = 3; d < this.dimensions; d++) {
 		if(comments) {
 			data.push("\n# ");
-			data.push(PolytopeC.elementName(d, true));
+			data.push(Names.elementName(d, PLURAL ^ UPPERCASE));
 			data.push("\n");
 		}
 		for(i = 0; i < this.elementList[d].length; i++) {
@@ -514,13 +543,17 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 		}
 	}
 	
-	//Saves the file.
-	//Adapted from https://stackoverflow.com/a/45120037/ (by Thomas Praxl),
-	//and from https://stackoverflow.com/a/46233123/12419072 (by Jaromanda X)
-	//to deal with the IE case.
+	PolytopeC._saveFile(data, "text/plain", this.name + ".off");
+};
+
+//Saves the file with the given data, the given MIME type, and the given extension.
+//Adapted from https://stackoverflow.com/a/45120037/ (by Thomas Praxl),
+//and from https://stackoverflow.com/a/46233123/12419072 (by Jaromanda X)
+//to deal with the IE case.
+PolytopeC._saveFile = function(data, type, fileName) {
 	var blob;
 	try {
-		blob = new Blob(data, {type: "text/plain"});
+		blob = new Blob(data, {type: type});
 	}
 	//Old browser!
 	catch(e) {
@@ -528,17 +561,19 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 		if (window.BlobBuilder) {
 		   var bb = new BlobBuilder();
 		   bb.append(data);
-		   blob = bb.getBlob("text/plain");
+		   blob = bb.getBlob(type);
 		}
 	}
 	
+	fileName = fileName.replace("/", "_");
+	
 	//Old browser again!
 	if(navigator.msSaveOrOpenBlob)
-		navigator.msSaveOrOpenBlob(blob, this.name + ".off");
+		navigator.msSaveOrOpenBlob(blob, fileName);
 	else {
 		var a = document.getElementById("download");
 		a.href = window.URL.createObjectURL(blob);
-		a.download = this.name + ".off";
+		a.download = fileName;
 		a.click();
 		window.URL.revokeObjectURL(a.href);
 	}
