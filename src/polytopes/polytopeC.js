@@ -12,7 +12,7 @@ function PolytopeC(elementList, name) {
 	this.elementList = elementList;
 	this.dimensions = elementList.length - 1; //The combinatorial dimension.
 	this.spaceDimensions = this.elementList[0][0].dimensions(); //The space's dimension.
-	this.name = (name === undefined ? Names.plain(elementList[elementList.length - 1].length, this.dimensions) : name); //If no name is given, uses simply the plain name constructor.
+	this.name = (name === undefined ? Translation.plain(elementList[elementList.length - 1].length, this.dimensions) : name); //If no name is given, uses simply the plain name constructor.
 };
 	
 //Builds a hypercube in the specified amount of dimensions.
@@ -213,7 +213,7 @@ PolytopeC.regularPolygon = function(n, d) {
 		x++; y++;
 	}
 	
-	return new PolytopeC(els, Names.regularPolygonName(n, d));
+	return new PolytopeC(els, Translation.regularPolygonName(n, d));
 };
 
 //Helper function for star.
@@ -247,7 +247,7 @@ PolytopeC.regularPolygonG = function(n, d) {
 		els[1].push([i, i + 1]); //Edges
 	els[1].push([els[0].length - 1, 0]);
 	
-	return new PolytopeC(els, Names.regularPolygonName(n, d));
+	return new PolytopeC(els, Translation.regularPolygonName(n, d));
 };
 	
 //Calculates the prism product, or rather Cartesian product, of P and Q.
@@ -304,35 +304,27 @@ PolytopeC.prismProduct = function(P, Q) {
 	}
 	
 	//Dyad * dyad = rectangle.
-	if(P.dimensions === 1 && Q.dimensions === 1) {
-		switch(LANGUAGE) {
-			case ENGLISH:
-				name = "Rectangle";
-				break;
-			case SPANISH:
-				name = "Rectángulo";
-				break;
-		}
-	}
+	if(P.dimensions === 1 && Q.dimensions === 1)
+		name = Translation.get("rectangle");
 	else {
 		//Polytope * dyad = Polytope prism.
 		if(P.dimensions === 1) {
 			switch(LANGUAGE) {
 				case ENGLISH:
-					name = Names.toAdjective(Q.name) + " prism";
+					name = Translation.toAdjective(Q.name) + " " + Translation.get("prism");
 					break;
 				case SPANISH:
-					name = "Prisma " + Names.toAdjective(Names.firstToLower(Q.name), MALE);
+					name = Translation.get("prism") + " " + Translation.toAdjective(Q.name, MALE);
 					break;
 			}
 		}
 		else if(Q.dimensions === 1){
 			switch(LANGUAGE) {
 				case ENGLISH:
-					name = Names.toAdjective(P.name) + " prism";
+					name = Translation.toAdjective(P.name) + " " + Translation.get("prism");
 					break;
 				case SPANISH:
-					name = "Prisma " + Names.toAdjective(Names.firstToLower(P.name), MALE);
+					name = Translation.get("prism") + " " + Translation.toAdjective(P.name, MALE);
 					break;
 			}
 		}
@@ -340,10 +332,10 @@ PolytopeC.prismProduct = function(P, Q) {
 		else {
 			switch(LANGUAGE) {
 				case ENGLISH:
-					name = Names.toAdjective(P.name) + "-" + Names.toAdjective(Names.firstToLower(Q.name)) + " duoprism";
+					name = Translation.toAdjective(P.name) + "-" + Translation.toAdjective(Q.name) + " duoprism";
 					break;
 				case SPANISH:
-					name = "Duoprisma " + Names.toAdjective(Names.firstToLower(P.name), MALE) + "-" + Names.toAdjective(Names.firstToLower(Q.name), MALE);
+					name = "duoprisma " + Translation.toAdjective(P.name, MALE) + "-" + Translation.toAdjective(Translation.firstToLower(Q.name), MALE);
 					break;
 			}
 		}
@@ -442,10 +434,10 @@ PolytopeC.prototype.extrudeToPyramid = function(apex) {
 	
 	switch(LANGUAGE) {
 		case ENGLISH:
-			this.name = Names.toAdjective(this.name) + " pyramid";
+			this.name = Translation.toAdjective(this.name) + " " + translations.get("pyramid");
 			break;
 		case SPANISH:
-			this.name = "Pirámide " + Names.toAdjective(Names.firstToLower(this.name), FEMALE);
+			this.name = translations.get("pyramid") + " " + Translation.toAdjective(this.name, FEMALE);
 			break;
 	}
 	return this;
@@ -457,7 +449,7 @@ PolytopeC.prototype.extrudeToPrism = function(height) {
 
 //Creates a dyad of the given length.
 PolytopeC.dyad = function(length) {
-	return new PolytopeC([[new Point([-length / 2]), new Point([length / 2])], [[0, 1]]], TRANSLATIONS[DYAD][LANGUAGE]);
+	return new PolytopeC([[new Point([-length / 2]), new Point([length / 2])], [[0, 1]]], Translation.get("dyad"));
 };
 	
 //Saves the current polytope as an OFF file.
@@ -505,7 +497,7 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 			if(comments) {
 				data.push("# Vertices, Faces, Edges, Cells");
 				for(i = 4; i < this.dimensions; i++)
-					data.push(", " + Names.elementName(i, PLURAL ^ UPPERCASE));
+					data.push(", " + Translation.elementName(i, PLURAL ^ UPPERCASE));
 				data.push("\n");
 			}
 			data.push(this.elementList[0].length + " ");
@@ -573,7 +565,7 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 	for(var d = 3; d < this.dimensions; d++) {
 		if(comments) {
 			data.push("\n# ");
-			data.push(Names.elementName(d, PLURAL ^ UPPERCASE));
+			data.push(Translation.elementName(d, PLURAL ^ UPPERCASE));
 			data.push("\n");
 		}
 		for(i = 0; i < this.elementList[d].length; i++) {
@@ -584,7 +576,7 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 		}
 	}
 	
-	PolytopeC._saveFile(data, "text/plain", this.name + ".off");
+	PolytopeC._saveFile(data, "text/plain", Name.firstToUpper(this.name) + ".off");
 };
 
 //Saves the file with the given data, the given MIME type, and the given extension.
