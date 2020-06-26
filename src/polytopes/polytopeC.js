@@ -304,19 +304,51 @@ PolytopeC.prismProduct = function(P, Q) {
 	}
 	
 	//Dyad * dyad = rectangle.
-	if(P.dimensions === 1 && Q.dimensions === 1)
-		name = "Rectangle";
-	else {
-		//Polytope * dyad = Polytope prism.
-		if(P.dimensions === 1)
-			name = Names.toAdjective(Q.name) + " prism";
-		else if(Q.dimensions === 1)
-			name = Names.toAdjective(P.name) + " prism";
-		//TBA if an m-prism and an n-prism are multiplied together, the result should be an (m + n)-prism!
-		else {
-			name = Names.toAdjective(P.name) + "-" + Names.firstToLower(Names.toAdjective(Q.name)) + " duoprism";
+	if(P.dimensions === 1 && Q.dimensions === 1) {
+		switch(LANGUAGE) {
+			case ENGLISH:
+				name = "Rectangle";
+				break;
+			case SPANISH:
+				name = "Rectángulo";
+				break;
 		}
 	}
+	else {
+		//Polytope * dyad = Polytope prism.
+		if(P.dimensions === 1) {
+			switch(LANGUAGE) {
+				case ENGLISH:
+					name = Names.toAdjective(Q.name) + " prism";
+					break;
+				case SPANISH:
+					name = "Prisma " + Names.toAdjective(Names.firstToLower(Q.name), MALE);
+					break;
+			}
+		}
+		else if(Q.dimensions === 1){
+			switch(LANGUAGE) {
+				case ENGLISH:
+					name = Names.toAdjective(P.name) + " prism";
+					break;
+				case SPANISH:
+					name = "Prisma " + Names.toAdjective(Names.firstToLower(P.name), MALE);
+					break;
+			}
+		}
+		//TBA if an m-prism and an n-prism are multiplied together, the result should be an (m + n)-prism!
+		else {
+			switch(LANGUAGE) {
+				case ENGLISH:
+					name = Names.toAdjective(P.name) + "-" + Names.toAdjective(Names.firstToLower(Q.name)) + " duoprism";
+					break;
+				case SPANISH:
+					name = "Duoprisma " + Names.toAdjective(Names.firstToLower(P.name), MALE) + "-" + Names.toAdjective(Names.firstToLower(Q.name), MALE);
+					break;
+			}
+		}
+	}
+	
 	return new PolytopeC(newElementList, name);
 };
 
@@ -408,7 +440,14 @@ PolytopeC.prototype.extrudeToPyramid = function(apex) {
 		}
 	}
 	
-	this.name = Names.toAdjective(this.name) + " pyramid";
+	switch(LANGUAGE) {
+		case ENGLISH:
+			this.name = Names.toAdjective(this.name) + " pyramid";
+			break;
+		case SPANISH:
+			this.name = "Pirámide " + Names.toAdjective(Names.firstToLower(this.name), FEMALE);
+			break;
+	}
 	return this;
 };
 
@@ -418,7 +457,7 @@ PolytopeC.prototype.extrudeToPrism = function(height) {
 
 //Creates a dyad of the given length.
 PolytopeC.dyad = function(length) {
-	return new PolytopeC([[new Point([-length / 2]), new Point([length / 2])], [[0, 1]]], "Dyad");
+	return new PolytopeC([[new Point([-length / 2]), new Point([length / 2])], [[0, 1]]], TRANSLATIONS[DYAD][LANGUAGE]);
 };
 	
 //Saves the current polytope as an OFF file.
