@@ -193,7 +193,7 @@ PolytopeC.regularPolygon = function(n, d) {
 	
 	for(i = 0; i < n; i++) {
 		var angle = 2 * Math.PI * i / n;
-		els[0].push(new Point([Math.cos(angle) / invRad, Math.sin(angle) / invRad]); //Vertices
+		els[0].push(new Point([Math.cos(angle) / invRad, Math.sin(angle) / invRad])); //Vertices
 	}
 	
 	//i is the component number.

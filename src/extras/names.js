@@ -170,20 +170,22 @@ Names.toAdjective = function(name) {
 //Sorted by alphabetical order of the strings, backwards!
 //cba is sorted before dcba.
 Names._endings = [
-	new Ending("a", 0, "ic"), //Rotunda(ic)
-	new Ending("la", 0, "ic"), //Cupola(ic)
+	new Ending("da", 0, "ic"), //Rotunda(ic)
+	new Ending("ola", 0, "ic"), //Cupola(ic)
 	new Ending("ula", 0, "r"), //Stella octangula(r)
 	new Ending("na", 0, "l"), //Sphenocorona(l)
-	new Ending("b", 0, "ic"), //Cube honeycomb(ic)
-	new Ending("d", 0, "ic"), //Dyad(ic)
-	new Ending("id", 0, "al"), //Triangular pyramid(al)
-	//new Ending("e", 0, ""), //Square
+	new Ending("mb", 0, "ic"), //Cube honeycomb(ic)
+	new Ending("ad", 0, "ic"), //Dyad(ic)
+	new Ending("id", 0, "al"), //Pyramid(al)
+	new Ending("od", 0, "al"), //Tripod(al)
 	new Ending("be", -1, "ic"), //Cub(e/ic)
+	new Ending("ce", -1, "ial"), //Essenc(e/ial)
 	new Ending("le", -2, "ular"), //Triang(le/ular)
 	new Ending("pe", -1, "ic"), //Pentatop(e/ic)
+	//new Ending("re", 0, ""), //Square
 	new Ending("ure", -1, "al"), //Skilling's figur(e/al)
-	new Ending("l", 0, "ular"), //5-cell(ular)
-	new Ending("m", 0, "atic"), //Triangular prism(atic)
+	new Ending("ll", 0, "ular"), //5-cell(ular)
+	new Ending("sm", 0, "atic"), //Triangular prism(atic)
 	new Ending("um", -2, "matic"), //Duoteg(um/matic)
 	new Ending("ium", -2, "al"), //Gyrobifastigi(um/al)
 	new Ending("lum", -2, "ar"), //Disphenocingul(um/ar)
@@ -191,12 +193,13 @@ Names._endings = [
 	new Ending("ion", -3, "e"), //Square tesselat(ion/e)
 	new Ending("gon", 0, "al"), //Pentagon(al)
 	new Ending("lon", -2, "ar"), //Ditel(on/ar)
-	//new Ending("s", 0, ""), // Pentacross
-	//new Ending("t", 0, ""), // Point
+	//new Ending("ss", 0, ""), // Pentacross
+	//new Ending("nt", 0, ""), // Point
 	new Ending("ct", 0, "ic"), //Tesseract(ic)
-	new Ending("x", -2, "icial"), //Simpl(ex/icial)
+	new Ending("nt", 0, "al"), //3-element(al)
+	new Ending("ex", -2, "icial"), //Simpl(ex/icial)
 	new Ending("ix", -1, "cal"), //Square heli(x/cal)
-	new Ending("y", -1, "ical") //Octagonn(y/ical)
+	new Ending("ny", -1, "ical") //Octagonn(y/ical)
 ];
 
 //A plain name for the polytope is simply [greek facet count prefix] [greek dimension Ending].
