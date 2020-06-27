@@ -375,7 +375,8 @@ Translation.plain = function(n, dimension, options) {
 	}
 };
 
-Translation.pyramid = function(name) {
+Translation.pyramid = function(node) {
+	var name = node.getName();
 	switch(LANGUAGE) {
 		case ENGLISH:
 			return Translation.toAdjective(name) + " " + Translation.get("pyramid");
@@ -384,15 +385,45 @@ Translation.pyramid = function(name) {
 	}
 }
 
-Translation.multiprism = function(names) {
-	/*switch(LANGUAGE) {
+Translation.multiprism = function(nodes) {
+	var names = [], node;
+	
+	//Multiprisms of multiprisms are just larger multiprisms.
+	for(var i = 0; i < nodes.length; i++) {
+		node = nodes[i];
+		if(nodes.type === MULTIPRISM) {
+			for(var j = 0; i < node.children.length; nodes++) 
+				names.push(node.children[j].getName());
+		}
+		else
+			names.push(node.getName());
+	}
+	
+	if(names.length === 1)
+		return names[0];
+	
+	var prefix; //The prism before prefix, e.g. *duo*prism, *trio*prism, ...
+	switch(names.length) {
+		case 1:
+			return names[0];
+		case 2:
+			prefix = "duo"; break;
+		case 3:
+			prefix = "trio"; break;
+		default:
+			prefix = Translations.greekPrefix(names.length); break;
+	}
+	
+	return prefix;
+	
+	switch(LANGUAGE) {
 		case ENGLISH:
 			this.name = Translation.toAdjective(this.name) + " " + translations.get("pyramid");
 			break;
 		case SPANISH:
 			this.name = translations.get("pyramid") + " " + Translation.toAdjective(this.name, FEMALE);
 			break;
-	}	*/
+	}
 	
 	return names[0] + "-" + names[1];
 }

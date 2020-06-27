@@ -583,7 +583,7 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 		}
 	}
 	
-	PolytopeC._saveFile(data, "text/plain", Name.firstToUpper(this.name) + ".off");
+	PolytopeC._saveFile(data, "text/plain", Translation.firstToUpper(this.getName()) + ".off");
 };
 
 //Saves the file with the given data, the given MIME type, and the given extension.

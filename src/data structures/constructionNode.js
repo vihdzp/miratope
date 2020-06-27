@@ -29,9 +29,9 @@ ConstructionNode.prototype.getName = function() {
 			var poly = this.children[0];
 			return Translation.plain(poly.elementList[poly.elementList.length - 1].length, poly.dimensions);
 		case MULTIPRISM:
-			return Translation.multiprism(this.getChildrenNames());
+			return Translation.multiprism(this.children);
 		case PYRAMID:
-			return Translation.pyramid(this.children[0].getName());
+			return Translation.pyramid(this.children[0]);
 		case POLYGON:
 			return Translation.regularPolygonName(this.children[0], this.children[1]);
 		case NAME:
