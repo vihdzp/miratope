@@ -713,6 +713,12 @@ Translation.regularPolygonName = function(n, d, options) {
 					res = "giant heptadecagram"; break;
 				case 617:
 					res = "grand heptadecagram"; break;
+				case 643:
+					res = "small icosagram"; break;
+				case 647:
+					res = "icosagram"; break;
+				case 649:
+					res = "great icosagram"; break;
 				default:
 					var gcd = PolytopeC._gcd(n, d);
 					if(gcd !== 1)
