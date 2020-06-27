@@ -724,7 +724,7 @@ Translation.regularPolygonName = function(n, d, options) {
 					if(gcd !== 1)
 						res = "compound" + (options & PLURAL ? "s" : "") + " of " + gcd + " " + Translation.regularPolygonName(n / gcd, d / gcd, PLURAL);
 					else
-						res = Translation.plain(n, 2);
+						res = Translation.plain(n, 2) + (options & PLURAL ? "s" : "");
 					
 					//The plural has already been added, so we just uppercase it if necessary and return.
 					if(options & UPPERCASE)
