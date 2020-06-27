@@ -375,6 +375,28 @@ Translation.plain = function(n, dimension, options) {
 	}
 };
 
+Translation.pyramid = function(name) {
+	switch(LANGUAGE) {
+		case ENGLISH:
+			return Translation.toAdjective(name) + " " + Translation.get("pyramid");
+		case SPANISH:
+			return Translation.get("pyramid") + " " + Translation.toAdjective(name, FEMALE);
+	}
+}
+
+Translation.multiprism = function(names) {
+	/*switch(LANGUAGE) {
+		case ENGLISH:
+			this.name = Translation.toAdjective(this.name) + " " + translations.get("pyramid");
+			break;
+		case SPANISH:
+			this.name = translations.get("pyramid") + " " + Translation.toAdjective(this.name, FEMALE);
+			break;
+	}	*/
+	
+	return names[0] + "-" + names[1];
+}
+
 //https://stackoverflow.com/a/1431113
 Translation._replaceAt = function(str, index, replacement) {
     return str.substr(0, index) + replacement + str.substr(index + replacement.length);

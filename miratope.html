@@ -12,8 +12,10 @@
 	<script src="src/data structures/avl-tree.js"></script> <!--An implementation of the AVL tree data structure.-->
 	<script src="src/geometry/point.js"></script> <!--Class for points.-->
 	<script src="src/geometry/space.js"></script> <!--Class for calculations related to points.-->
-	<script src="src/polytopes/PolytopeC.js"></script> <!--The class for polytopes in combinatorial representation.-->
-	<script src="src/polytopes/PolytopeS.js"></script> <!--The class for polytopes in symmetry representation.-->
+	<script src="src/data structures/constructionNode.js"></script> <!--Representation of how a polytope is built.-->
+	<script src="src/polytopes/polytope.js"></script> <!--Polytope master class.-->
+	<script src="src/polytopes/polytopeC.js"></script> <!--The class for polytopes in combinatorial representation.-->
+	<script src="src/polytopes/polytopeS.js"></script> <!--The class for polytopes in symmetry representation.-->
 	<script src="src/rendering/scene.js"></script> <!--A class for scenes.-->
 	<script src="src/rendering/three.js"></script> <!--A 3D rendering library.-->
 </head>
@@ -53,10 +55,11 @@
 		var faces=[[0,1,2,3,4,5,6,7],[8,9,10,11,12,13,14,15],[0,8,16,17],[1,9,17,18],[2,10,18,19],[3,11,19,20],[4,12,20,21],[5,13,21,22],[6,14,22,23],[7,15,23,0]];
 		new PolytopeC([pts,edges,faces],3).renderTo(scene);*/
 		
+		var poly = PolytopeC.regularPolygon(6).extrudeToPrism(1).extrudeToPyramid(new Point([0,0,0,1]));
 		LANGUAGE = SPANISH;
-		console.log(PolytopeC.regularPolygon(6).extrudeToPrism(1).name);		
+		console.log(poly.getName());		
 		LANGUAGE = ENGLISH;
-		console.log(PolytopeC.regularPolygon(6).extrudeToPrism(1).name);
+		console.log(poly.getName());
 		
 		//Render loop.
 		/*function animate() { 

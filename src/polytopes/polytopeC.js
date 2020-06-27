@@ -8,12 +8,14 @@
 //We don't only store the facets, because we don't want to deal with O(2^n) code.
 //Subelements stored as indices.
 //All points assumed to be of the same dimension.
-function PolytopeC(elementList, name) {
+function PolytopeC(elementList, constructionRoot) {
+	Polytope.call(this, constructionRoot);
 	this.elementList = elementList;
 	this.dimensions = elementList.length - 1; //The combinatorial dimension.
 	this.spaceDimensions = this.elementList[0][0].dimensions(); //The space's dimension.
-	this.name = (name === undefined ? Translation.plain(elementList[elementList.length - 1].length, this.dimensions) : name); //If no name is given, uses simply the plain name constructor.
 };
+
+PolytopeC.prototype = new Polytope();
 	
 //Builds a hypercube in the specified amount of dimensions.
 //Positioned in the standard orientation with edge length 1.
@@ -213,7 +215,7 @@ PolytopeC.regularPolygon = function(n, d) {
 		x++; y++;
 	}
 	
-	return new PolytopeC(els, Translation.regularPolygonName(n, d));
+	return new PolytopeC(els, new ConstructionNode(POLYGON, [n, d]));
 };
 
 //Helper function for star.
@@ -247,14 +249,16 @@ PolytopeC.regularPolygonG = function(n, d) {
 		els[1].push([i, i + 1]); //Edges
 	els[1].push([els[0].length - 1, 0]);
 	
-	return new PolytopeC(els, Translation.regularPolygonName(n, d));
+	return new PolytopeC(els, new ConstructionNode(POLYGON, [n, d]));
 };
 	
 //Calculates the prism product, or rather Cartesian product, of P and Q.
 //Q can be excluded if P is instead the array of polytopes to multiply.
 //Vertices are the products of vertices, edges are the products of vertices with edges or viceversa, and so on.
+PolytopeC._constructionsTMP = [];
 PolytopeC.prismProduct = function(P, Q) {
 	if(Q === undefined) {
+		PolytopeC._constructionsTMP.push(P.peek().construction);
 		if(P.length === 1)
 			return P[0];
 		return PolytopeC.prismProduct(P.pop(), PolytopeC.prismProduct(P));
@@ -303,6 +307,7 @@ PolytopeC.prismProduct = function(P, Q) {
 		}
 	}
 	
+	/*
 	//Dyad * dyad = rectangle.
 	if(P.dimensions === 1 && Q.dimensions === 1)
 		name = Translation.get("rectangle");
@@ -340,8 +345,16 @@ PolytopeC.prismProduct = function(P, Q) {
 			}
 		}
 	}
+	*/
+	if(PolytopeC._constructionsTMP.length > 0) {
+		var constructions = [];
+		do
+			constructions.push(PolytopeC._constructionsTMP.pop());	
+		while(PolytopeC._constructionsTMP.length > 0);
 	
-	return new PolytopeC(newElementList, name);
+		return new PolytopeC(newElementList, new ConstructionNode(MULTIPRISM, constructions));
+	}
+	return new PolytopeC(newElementList, new ConstructionNode(MULTIPRISM, [P.construction, Q.construction]));
 };
 
 //Helper function for prismProduct.
@@ -432,14 +445,8 @@ PolytopeC.prototype.extrudeToPyramid = function(apex) {
 		}
 	}
 	
-	switch(LANGUAGE) {
-		case ENGLISH:
-			this.name = Translation.toAdjective(this.name) + " " + translations.get("pyramid");
-			break;
-		case SPANISH:
-			this.name = translations.get("pyramid") + " " + Translation.toAdjective(this.name, FEMALE);
-			break;
-	}
+	var construction = new ConstructionNode(PYRAMID, [this.construction]);
+	this.construction = construction;
 	return this;
 };
 
@@ -449,7 +456,7 @@ PolytopeC.prototype.extrudeToPrism = function(height) {
 
 //Creates a dyad of the given length.
 PolytopeC.dyad = function(length) {
-	return new PolytopeC([[new Point([-length / 2]), new Point([length / 2])], [[0, 1]]], Translation.get("dyad"));
+	return new PolytopeC([[new Point([-length / 2]), new Point([length / 2])], [[0, 1]]], new ConstructionNode(NAME, ["dyad"]));
 };
 	
 //Saves the current polytope as an OFF file.
