@@ -486,9 +486,9 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 		case 2:
 			data.push("2OFF\n");
 			if(comments)
-				data.push("# Vertices, Edges\n");
+				data.push("# Vertices, Components\n");
 			data.push(this.elementList[0].length + " ");
-			data.push(this.elementList[1].length + "\n");
+			data.push(this.elementList[2].length + "\n");
 			break;
 		case 3:
 			data.push("OFF\n"); //For compatibility.
@@ -516,49 +516,31 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 	}
 	
 	//Adds vertices. Fills in zeros if spaceDimensions < dimensions.
-	if(this.dimensions === 1 || this.dimensions >= 3) {
-		if(comments)
-			data.push("\n# Vertices\n");
-		for(i = 0; i < this.elementList[0].length; i++) {
-			for(j = 0; j < this.dimensions - 1; j++) {
-				coord = this.elementList[0][i].coordinates[j];
-				if(coord === undefined)
-					data.push("0 ");
-				else
-					data.push(coord + " ");
-			}
-			coord = this.elementList[0][i].coordinates[this.dimensions - 1];
-			if(coord === undefined)
-				data.push("0\n");
-			else
-				data.push(coord + "\n");
-		}
-	}
-	
-	//In this special case, the vertices need to be in order.
-	else if(this.dimensions === 2) {
-		vertices = this.faceToVertices(0);
-		if(comments)
-			data.push("\n# Vertices\n");
-		for(i = 0; i < this.elementList[0].length; i++) {
-			coord = this.elementList[0][vertices[i]].coordinates[0];
+	if(comments)
+		data.push("\n# Vertices\n");
+	for(i = 0; i < this.elementList[0].length; i++) {
+		for(j = 0; j < this.dimensions - 1; j++) {
+			coord = this.elementList[0][i].coordinates[j];
 			if(coord === undefined)
 				data.push("0 ");
 			else
 				data.push(coord + " ");
-			
-			coord = this.elementList[0][vertices[i]].coordinates[1];
-			if(coord === undefined)
-				data.push("0\n");
-			else
-				data.push(coord + "\n");
 		}
+		coord = this.elementList[0][i].coordinates[this.dimensions - 1];
+		if(coord === undefined)
+			data.push("0\n");
+		else
+			data.push(coord + "\n");
 	}
 	
-	//Adds faces.
-	if(this.dimensions >= 3) {
-		if(comments)
-			data.push("\n# Faces\n");
+	//Adds faces, or copmonents for compound polygons.
+	if(this.dimensions >= 2) {
+		if(comments) {
+			if(this.dimensions === 2)
+				data.push("\n# Components\n");
+			else
+				data.push("\n# Faces\n");
+		}
 		for(i = 0; i < this.elementList[2].length; i++) {
 			vertices = this.faceToVertices(i);
 			data.push(this.elementList[2][i].length);

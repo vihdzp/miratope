@@ -353,8 +353,7 @@ Translation.toAdjective = function(name, gender) {
 	return name;
 };
 
-//The ID of a word/message is determined by its index in the TRANSLATIONS array.
-//Please don't put them out of order!
+//The ID of a word/message is determined by its property name in the TRANSLATIONS object.
 Translation.get = function(id) {
 	var translation = TRANSLATIONS[id];
 	if(translation) {
@@ -375,6 +374,7 @@ Translation.plain = function(n, dimension, options) {
 	}
 };
 
+//Converts a constructionNode into its pyramid's name.
 Translation.pyramid = function(node) {
 	var name = node.getName();
 	switch(LANGUAGE) {
@@ -382,11 +382,15 @@ Translation.pyramid = function(node) {
 			return Translation.toAdjective(name) + " " + Translation.get("pyramid");
 		case SPANISH:
 			return Translation.get("pyramid") + " " + Translation.toAdjective(name, FEMALE);
+		default:
+			return name;
 	}
 }
 
+//Converts a set of constructionNodes into their prism product's name.
+//I still have to deal with merging dyads.
 Translation.multiprism = function(nodes) {
-	var names = [], node;
+	var names = [], node, tempName, concatName, allNamesSame = true;
 	
 	//Multiprisms of multiprisms are just larger multiprisms.
 	for(var i = 0; i < nodes.length; i++) {
@@ -408,24 +412,43 @@ Translation.multiprism = function(nodes) {
 			return names[0];
 		case 2:
 			prefix = "duo"; break;
-		case 3:
-			prefix = "trio"; break;
 		default:
 			prefix = Translations.greekPrefix(names.length); break;
 	}
 	
-	return prefix;
 	
 	switch(LANGUAGE) {
 		case ENGLISH:
-			this.name = Translation.toAdjective(this.name) + " " + translations.get("pyramid");
-			break;
+			concatName = Translate.toAdjective(names.peek());
+			tempName = names.pop();
+			
+			while(names.length > 0) {
+				concatName += "-" + Translate.toAdjective(names.peek());
+				if(names.pop() !== tempName)
+					allNamesSame = false;
+			}
+			
+			//An X-X-...-X multiprism is simply an X multiprism.
+			if(allNamesSame)
+				return prefix + Translation.get("prism") + " " + Translation.toAdjective(tempName, FEMALE);
+		
+			return concatName + " " + prefix + translations.get("prism");
 		case SPANISH:
-			this.name = translations.get("pyramid") + " " + Translation.toAdjective(this.name, FEMALE);
-			break;
+			concatName = Translate.toAdjective(names.peek(), FEMALE);
+			tempName = names.pop();
+			
+			while(names.length > 0) {
+				concatName += "-" + Translate.toAdjective(names.peek(), FEMALE);
+				if(names.pop() !== tempName)
+					allNamesSame = false;
+			}
+			
+			//An X-X-...-X multiprism is simply an X multiprism.
+			if(allNamesSame)
+				return prefix + Translation.get("prism") + " " + Translation.toAdjective(tempName, FEMALTE);
+			
+			return prefix + Translation.get("prism") + " " + concatName;
 	}
-	
-	return names[0] + "-" + names[1];
 }
 
 //https://stackoverflow.com/a/1431113
