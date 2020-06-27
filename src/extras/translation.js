@@ -16,7 +16,7 @@ const MALE = 0;
 const FEMALE = 1;
 const NEUTER = 2;
 
-var LANGUAGE = SPANISH;
+var LANGUAGE = ENGLISH;
 
 //The TRANSLATIONS object contains Translation of all words or messages not covered by other functions.
 //Each entry consists in an array of Translation, in the order of the constants ENGLISH, SPANISH, ...
@@ -722,7 +722,7 @@ Translation.regularPolygonName = function(n, d, options) {
 				default:
 					var gcd = PolytopeC._gcd(n, d);
 					if(gcd !== 1)
-						res = "compound" + (options & PLURAL ? "s" : "") + " of " + gcd + " " + Translation.regularPolygonName(n / gcd, d, PLURAL);
+						res = "compound" + (options & PLURAL ? "s" : "") + " of " + gcd + " " + Translation.regularPolygonName(n / gcd, d / gcd, PLURAL);
 					else
 						res = Translation.plain(n, 2);
 					
