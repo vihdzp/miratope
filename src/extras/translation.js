@@ -18,17 +18,20 @@ const NEUTER = 2;
 
 var LANGUAGE = SPANISH;
 
+//The TRANSLATIONS object contains Translation of all words or messages not covered by other functions.
+//Each entry consists in an array of Translation, in the order of the constants ENGLISH, SPANISH, ...
+//An entry with a capital P at the end represents the plural.
 var TRANSLATIONS = {
 	polytope: ["polytope", "politopo", "Polytop"],
-	polytopes: ["polytopes", "politopos", "Polytope"],
+	polytopeP: ["polytopes", "politopos", "Polytope"],
 	dyad: ["dyad", "díada", "Dyade"],
-	dyads: ["dyads", "díadas", "Dyaden"],
+	dyadP: ["dyads", "díadas", "Dyaden"],
 	prism: ["prism", "prisma", "Prisma"],
-	prisms: ["prisms", "prismas", "Prismen"],
+	prismP: ["prisms", "prismas", "Prismen"],
 	pyramid: ["pyramid", "pirámide", "Pyramide"],
-	pyramids: ["pyramids", "pirámides", "Pyramiden"],
+	pyramidP: ["pyramids", "pirámides", "Pyramiden"],
 	rectangle: ["rectangle", "rectángulo", "Rechteck"],
-	rectangles: ["rectangles", "rectángulos", "Rechtecke"]
+	rectangleP: ["rectangles", "rectángulos", "Rechtecke"]
 };
 
 //The name for an d-element, according to http://os2fan2.com/gloss/pglosstu.html
@@ -255,6 +258,7 @@ Translation._endings = [
 		new Ending("ia", -1, "ial"), //Essenc(e/ial)
 		new Ending("la", -1, "éic", SPANISH_MODIFIER), //Cupol(a/éic[o/a])
 		new Ending("ula", -6, "angular"), //Estrella oct(ángula/angular)
+		new Ending("ma", -1, "átic", SPANISH_MODIFIER), //Prism(a/átic[o/a])
 		new Ending("na", 0, "l"), //Esfenocorona(l)
 		new Ending("ide", -5, "amidal"), //Pir(ámide/amidal)
 		new Ending("oide", -1, "al"), //Disfenoid(e/al)
@@ -354,8 +358,12 @@ Translation.toAdjective = function(name, gender) {
 };
 
 //The ID of a word/message is determined by its property name in the TRANSLATIONS object.
-Translation.get = function(id) {
-	var translation = TRANSLATIONS[id];
+Translation.get = function(id, options) {
+	var translation;
+	if(options & UPPERCASE)
+		translation = Translation.firstToUpper(TRANSLATIONS[id + (options & PLURAL ? "P" : "")]);
+	else
+		translation = TRANSLATIONS[id + (options & PLURAL ? "P" : "")];
 	if(translation) {
 		translation = translation[LANGUAGE];	
 		if(translation)
@@ -371,6 +379,8 @@ Translation.plain = function(n, dimension, options) {
 			return Translation.greekPrefix(n, options & UPPERCASE) + Translation.polytopeEnding(dimension, options & PLURAL);
 		case SPANISH:			
 			return Translation._lastVowelTilde(Translation.greekPrefix(n, options & UPPERCASE)) + Translation.polytopeEnding(dimension, options & PLURAL);
+		default:
+			return n;
 	}
 };
 
@@ -388,66 +398,86 @@ Translation.pyramid = function(node) {
 }
 
 //Converts a set of constructionNodes into their prism product's name.
-//I still have to deal with merging dyads.
+//Dyads are written as plain prisms.
 Translation.multiprism = function(nodes) {
-	var names = [], node, tempName, concatName, allNamesSame = true;
+	var names = [], DYAD = Translation.get("dyad"), dyadCount = 0, tempName, concatName, allNamesSame = true;
 	
 	//Multiprisms of multiprisms are just larger multiprisms.
 	for(var i = 0; i < nodes.length; i++) {
-		node = nodes[i];
-		if(nodes.type === MULTIPRISM) {
-			for(var j = 0; i < node.children.length; nodes++) 
-				names.push(node.children[j].getName());
-		}
-		else
-			names.push(node.getName());
+		tempName = nodes[i].getName();
+		if(tempName === DYAD)
+			dyadCount++;
+		else 
+			names.push(tempName);
 	}
 	
-	if(names.length === 1)
-		return names[0];
-	
-	var prefix; //The prism before prefix, e.g. *duo*prism, *trio*prism, ...
+	var prefix; //The prefix before prism, e.g. *duo*prism, *trio*prism, ...
 	switch(names.length) {
 		case 1:
-			return names[0];
+			prefix = ""; break;
 		case 2:
 			prefix = "duo"; break;
 		default:
-			prefix = Translations.greekPrefix(names.length); break;
+			prefix = Translation.greekPrefix(names.length);	break;
 	}
-	
 	
 	switch(LANGUAGE) {
 		case ENGLISH:
-			concatName = Translate.toAdjective(names.peek());
+			concatName = Translation.toAdjective(names[names.length - 1]);
 			tempName = names.pop();
 			
 			while(names.length > 0) {
-				concatName += "-" + Translate.toAdjective(names.peek());
+				concatName += "-" + Translation.toAdjective(names[names.length - 1]);
 				if(names.pop() !== tempName)
 					allNamesSame = false;
 			}
 			
-			//An X-X-...-X multiprism is simply an X multiprism.
+			if(!dyadCount) {				
+				//X multiprism
+				if(allNamesSame)
+					return Translation.toAdjective(tempName)+ " " + prefix + Translation.get("prism");
+				
+				//X-Y-Z multiprism
+				return concatName + " " + prefix + Translation.get("prism");
+			}
+			
+			//Same as before, but adds as many ...prismatic prism as needed at the end.
 			if(allNamesSame)
-				return prefix + Translation.get("prism") + " " + Translation.toAdjective(tempName, FEMALE);
-		
-			return concatName + " " + prefix + translations.get("prism");
+				concatName = Translation.toAdjective(tempName)+ " " + prefix + Translation.toAdjective(Translation.get("prism")) + " ";
+			else
+				concatName = concatName + " " + prefix + Translation.toAdjective(Translation.get("prism")) + " ";
+			
+			while(--dyadCount)
+				concatName += Translation.toAdjective(Translation.get("prism")) + " ";
+			return concatName + Translation.get("prism");
 		case SPANISH:
-			concatName = Translate.toAdjective(names.peek(), FEMALE);
+			concatName = Translation.toAdjective(names[names.length - 1], MALE);
 			tempName = names.pop();
 			
 			while(names.length > 0) {
-				concatName += "-" + Translate.toAdjective(names.peek(), FEMALE);
+				concatName += "-" + Translation.toAdjective(names[names.length - 1], MALE);
 				if(names.pop() !== tempName)
 					allNamesSame = false;
 			}
 			
-			//An X-X-...-X multiprism is simply an X multiprism.
-			if(allNamesSame)
-				return prefix + Translation.get("prism") + " " + Translation.toAdjective(tempName, FEMALTE);
+			if(!dyadCount) {
+				//Multiprisma X
+				if(allNamesSame)
+					return prefix + Translation.get("prism") + " " + Translation.toAdjective(tempName, MALE);
+				
+				//Multiprisma X-Y-Z
+				return prefix + Translation.get("prism") + " " + concatName;
+			}
 			
-			return prefix + Translation.get("prism") + " " + concatName;
+			//Igual que antes, pero con tantos prisma prismático... como se requieran al inicio.
+			if(allNamesSame)
+				concatName = prefix + Translation.toAdjective(Translation.get("prism"), MALE) + " " + Translation.toAdjective(tempName, MALE);
+			else
+				concatName = prefix + Translation.toAdjective(Translation.get("prism"), MALE) + " " + concatName;
+			
+			while(--dyadCount)
+				concatName = Translation.toAdjective(Translation.get("prism"), MALE) + " " + concatName;
+			return Translation.get("prism") + " " + concatName;
 	}
 }
 
@@ -585,41 +615,156 @@ Translation.greekPrefix = function(n, options) {
 	return res;
 };
 
-//TBA some more star names.
-Translation.regularPolygonName = function(n, d) {
+//Gives a name for {n / d}.
+//Based on the naming scheme by Username5243 (given on the Discord server).
+//If anyone has anything better, please tell us.
+Translation.regularPolygonName = function(n, d, options) {
+	var res;
 	//I just need a quick to calculate function on n and d
 	//to distinguish the stars with up to 19 sides.
 	switch(LANGUAGE) {
 		case ENGLISH:
 			switch(32 * n + d) {
 				case 97:
-					return "triangle";
+					res = "triangle"; break;
 				case 129:
-					return "square";
+					res = "square"; break;
 				case 162:
-					return "pentagram";
+					res = "pentagram"; break;
+				case 194:
+					res = "hexagram"; break;
 				case 226:
-					return "heptagram";
+					res = "heptagram"; break;
 				case 227:
-					return "great heptagram";
-				default: 
-					return Translation.plain(n, 2);
+					res = "great heptagram"; break;
+				case 259:
+					res = "octagram"; break;
+				case 290:
+					res = "enneagram"; break;
+				case 292:
+					res = "great enneagram"; break;
+				case 323:
+					res = "decagram"; break;
+				case 354:
+					res = "small hendecagram"; break;
+				case 355:
+					res = "hendecagram"; break;
+				case 356:
+					res = "great hendecagram"; break;
+				case 357:
+					res = "grand hendecagram"; break;
+				case 418:
+					res = "small tridecagram"; break;
+				case 419:
+					res = "tridecagram"; break;
+				case 420: //Nice
+					res = "medial tridecagram"; break;
+				case 421:
+					res = "great tridecagram"; break;
+				case 422:
+					res = "grand tridecagram"; break;
+				case 451:
+					res = "tetradecagram"; break;
+				case 453:
+					res = "great tetradecagram"; break;
+				case 482:
+					res = "small pentadecagram"; break;
+				case 484:
+					res = "pentadecagram"; break;
+				case 487:
+					res = "great pentadecagram"; break;
+				case 515:
+					res = "small hexadecagram"; break;
+				case 517:
+					res = "hexadecagram"; break;
+				case 519:
+					res = "great hexadecagram"; break;
+				case 546:
+					res = "tiny heptadecagram"; break;
+				case 547:
+					res = "small heptadecagram"; break;
+				case 548:
+					res = "heptadecagram"; break;
+				case 549:
+					res = "medial heptadecagram"; break;
+				case 550:
+					res = "great heptadecagram"; break;
+				case 551:
+					res = "giant heptadecagram"; break;
+				case 552:
+					res = "grand heptadecagram"; break;
+				case 581:
+					res = "octadecagram"; break;
+				case 583:
+					res = "great octadecagram"; break;
+				case 610:
+					res = "tiny enneadecagram"; break;
+				case 611:
+					res = "small enneadecagram"; break;
+				case 612:
+					res = "enneadecagram"; break;
+				case 613:
+					res = "medial enneadecagram"; break;
+				case 614:
+					res = "great heptadecagram"; break;
+				case 615:
+					res = "large heptadecagram"; break;
+				case 616:
+					res = "giant heptadecagram"; break;
+				case 617:
+					res = "grand heptadecagram"; break;
+				default:
+					var gcd = PolytopeC._gcd(n, d);
+					if(gcd !== 1)
+						res = "compound" + (options & PLURAL ? "s" : "") + " of " + gcd + " " + Translation.regularPolygonName(n / gcd, d, PLURAL);
+					else
+						res = Translation.plain(n, 2);
+					
+					//The plural has already been added, so we just uppercase it if necessary and return.
+					if(options & UPPERCASE)
+						return Translation.firstToUpper(res);
+					return res;
 			}
+			
+			//Adds plural and uppercase.
+			if(options & PLURAL)
+				res += "s";
+			if(options & UPPERCASE)
+				return Translation.firstToUpper(res);
+			return res;
 		case SPANISH:
 			switch(32 * n + d) {
 				case 97:
-					return "triángulo";
+					res = "triángulo"; break;
 				case 129:
-					return "cuadrado";
+					res = "cuadrado"; break;
 				case 162:
-					return "pentagrama";
+					res = "pentagrama"; break;
+				case 194:
+					res = "hexagram"; break;
 				case 226:
-					return "heptagrama";
+					res = "heptagrama"; break;
 				case 227:
-					return "gran heptagrama";
-				default: 
-					return Translation.plain(n, 2);
+					res = "gran heptagrama"; break;
+				default:
+					var gcd = PolytopeC._gcd(n, d);
+					if(gcd !== 1)
+						res = "compuesto" + (options & PLURAL ? "s" : "") + " de " + gcd + " " + Translation.regularPolygonName(n / gcd, d, PLURAL);
+					else
+						res = Translation.plain(n, 2);
+					
+					if(options & UPPERCASE)
+						return Translation.firstToUpper(res);
+					return res;
 			}
+			
+			if(options & PLURAL)
+				res += "s";
+			if(options & UPPERCASE)
+				return Translation.firstToUpper(res);
+			return res;
+		default:
+			return "{" + n + "/" + d + "}";
 	}
 };
 

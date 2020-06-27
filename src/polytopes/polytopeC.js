@@ -479,21 +479,36 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 			break;
 		case 1: //Also LOL
 			data.push("1OFF\n");
-			if(comments)
-				data.push("# Vertices\n");
+			if(comments) {
+				data.push("# ");
+				data.push(Translation.elementName(0, PLURAL ^ UPPERCASE));
+				data.push("\n");
+			}
 			data.push(this.elementList[0].length + "\n");
 			break;
 		case 2:
 			data.push("2OFF\n");
-			if(comments)
-				data.push("# Vertices, Components\n");
+			if(comments) {
+				data.push("# ");
+				data.push(Translation.elementName(0, PLURAL ^ UPPERCASE));
+				data.push(", ");
+				data.push(Translation.get("component", PLURAL ^ UPPERCASE));
+				data.push("\n");
+			}
 			data.push(this.elementList[0].length + " ");
 			data.push(this.elementList[2].length + "\n");
 			break;
 		case 3:
 			data.push("OFF\n"); //For compatibility.
-			if(comments)
-				data.push("# Vertices, Faces, Edges\n");
+			if(comments) {				
+				data.push("# ");
+				data.push(Translation.elementName(0, PLURAL ^ UPPERCASE));
+				data.push(", ");
+				data.push(Translation.elementName(2, PLURAL ^ UPPERCASE));
+				data.push(", ");
+				data.push(Translation.elementName(1, PLURAL ^ UPPERCASE));
+				data.push("\n");
+			}
 			data.push(this.elementList[0].length + " ");
 			data.push(this.elementList[2].length + " ");
 			data.push(this.elementList[1].length + "\n");
@@ -501,9 +516,14 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 		default:
 			data.push(this.dimensions);
 			data.push("OFF\n");
-			if(comments) {
-				data.push("# Vertices, Faces, Edges, Cells");
-				for(i = 4; i < this.dimensions; i++)
+			if(comments) {				
+				data.push("# ");
+				data.push(Translation.elementName(0, PLURAL ^ UPPERCASE));
+				data.push(", ");
+				data.push(Translation.elementName(2, PLURAL ^ UPPERCASE));
+				data.push(", ");
+				data.push(Translation.elementName(1, PLURAL ^ UPPERCASE));
+				for(i = 3; i < this.dimensions; i++)
 					data.push(", " + Translation.elementName(i, PLURAL ^ UPPERCASE));
 				data.push("\n");
 			}
@@ -516,8 +536,11 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 	}
 	
 	//Adds vertices. Fills in zeros if spaceDimensions < dimensions.
-	if(comments)
-		data.push("\n# Vertices\n");
+	if(comments) {
+		data.push("\n# ");
+		data.push(Translation.elementName(0, PLURAL ^ UPPERCASE));
+		data.push("\n");
+	}
 	for(i = 0; i < this.elementList[0].length; i++) {
 		for(j = 0; j < this.dimensions - 1; j++) {
 			coord = this.elementList[0][i].coordinates[j];
@@ -536,10 +559,16 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 	//Adds faces, or copmonents for compound polygons.
 	if(this.dimensions >= 2) {
 		if(comments) {
-			if(this.dimensions === 2)
-				data.push("\n# Components\n");
-			else
-				data.push("\n# Faces\n");
+			if(this.dimensions === 2) {
+				data.push("\n# ");
+				data.push(Translation.get("component", PLURAL ^ UPPERCASE));
+				data.push("\n");
+			}
+			else {
+				data.push("\n# ");
+				data.push(Translation.elementName(2, PLURAL ^ UPPERCASE));
+				data.push("\n");
+			}
 		}
 		for(i = 0; i < this.elementList[2].length; i++) {
 			vertices = this.faceToVertices(i);

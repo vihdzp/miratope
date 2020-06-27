@@ -29,6 +29,15 @@ ConstructionNode.prototype.getName = function() {
 			var poly = this.children[0];
 			return Translation.plain(poly.elementList[poly.elementList.length - 1].length, poly.dimensions);
 		case MULTIPRISM:
+			//A multiprism of multiprisms is just a larger multiprism.
+			var oldLength = this.children.length;
+			for(var i = 0; i < oldLength; i++) {
+				if(this.children[i].type === MULTIPRISM) {
+					for(var j = 0; j < this.children[i].children.length - 1; j++)
+						this.children.push(this.children[i].children.pop());
+					this.children[i] = this.children[i].children.pop();
+				}
+			}
 			return Translation.multiprism(this.children);
 		case PYRAMID:
 			return Translation.pyramid(this.children[0]);
