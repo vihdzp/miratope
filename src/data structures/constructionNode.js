@@ -27,7 +27,7 @@ ConstructionNode.prototype.getName = function() {
 	switch(this.type) {		
 		case POLYTOPEC:
 			var poly = this.children[0];
-			return Translation.plain(poly.elementList[poly.elementList.length - 1].length, poly.dimensions);
+			return Translation.plain(poly.elementList[poly.elementList.length - 2].length, poly.dimensions);
 		case MULTIPRISM:
 			//A multiprism of multiprisms is just a larger multiprism.
 			var oldLength = this.children.length;

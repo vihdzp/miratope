@@ -2,7 +2,7 @@
 
 function Polytope(construction) {
 	if(!construction)
-		this.construction = new ConstructionNode(this);
+		this.construction = new ConstructionNode(POLYTOPEC, [this]);
 	else
 		this.construction = construction;
 };

@@ -33,7 +33,9 @@ var TRANSLATIONS = {
 	rectangle: ["rectangle", "rectángulo", "Rechteck"],
 	rectangleP: ["rectangles", "rectángulos", "Rechtecke"],
 	component: ["component", "componente"],
-	componentP: ["components", "componentes"]
+	componentP: ["components", "componentes"],
+	compound: ["compound", "compuesto", "Verbund"],
+	compoundP: ["compounds", "compuestos", "Verbunde"]
 };
 
 //The name for an d-element, according to http://os2fan2.com/gloss/pglosstu.html
