@@ -31,7 +31,9 @@ var TRANSLATIONS = {
 	pyramid: ["pyramid", "pirámide", "Pyramide"],
 	pyramidP: ["pyramids", "pirámides", "Pyramiden"],
 	rectangle: ["rectangle", "rectángulo", "Rechteck"],
-	rectangleP: ["rectangles", "rectángulos", "Rechtecke"]
+	rectangleP: ["rectangles", "rectángulos", "Rechtecke"],
+	component: ["component", "componente"],
+	componentP: ["components", "componentes"]
 };
 
 //The name for an d-element, according to http://os2fan2.com/gloss/pglosstu.html
@@ -359,15 +361,15 @@ Translation.toAdjective = function(name, gender) {
 
 //The ID of a word/message is determined by its property name in the TRANSLATIONS object.
 Translation.get = function(id, options) {
-	var translation;
-	if(options & UPPERCASE)
-		translation = Translation.firstToUpper(TRANSLATIONS[id + (options & PLURAL ? "P" : "")]);
-	else
-		translation = TRANSLATIONS[id + (options & PLURAL ? "P" : "")];
+	var translation = TRANSLATIONS[id + (options & PLURAL ? "P" : "")];
+	
 	if(translation) {
 		translation = translation[LANGUAGE];	
-		if(translation)
+		if(translation) {			
+			if(options & UPPERCASE)
+				return Translation.firstToUpper(translation);
 			return translation;
+		}
 	}
 	return id; //This hasn't been translated!
 }
@@ -653,6 +655,8 @@ Translation.regularPolygonName = function(n, d, options) {
 					res = "great hendecagram"; break;
 				case 357:
 					res = "grand hendecagram"; break;
+				case 389:
+					res = "dodecagram"; break;
 				case 418:
 					res = "small tridecagram"; break;
 				case 419:
