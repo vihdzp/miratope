@@ -463,9 +463,12 @@ Translation.multiprism = function(nodes) {
 			
 			//Same as before, but adds as many ...prismatic prism as needed at the end.
 			if(allNamesSame)
-				concatName = Translation.toAdjective(tempName)+ " " + prefix + Translation.toAdjective(Translation.get("prism")) + " ";
+				concatName = Translation.toAdjective(tempName) + " ";
 			else
-				concatName = concatName + " " + prefix + Translation.toAdjective(Translation.get("prism")) + " ";
+				concatName = concatName + " " + prefix;
+			
+			if(prefix)
+				concatName += prefix + Translation.toAdjective(Translation.get("prism")) + " ";
 			
 			while(--dyadCount)
 				concatName += Translation.toAdjective(Translation.get("prism")) + " ";
@@ -491,8 +494,9 @@ Translation.multiprism = function(nodes) {
 			
 			//Igual que antes, pero con tantos prisma prismático... como se requieran al inicio.
 			if(allNamesSame)
-				concatName = prefix + Translation.toAdjective(Translation.get("prism"), MALE) + " " + Translation.toAdjective(tempName, MALE);
-			else
+				concatName =  Translation.toAdjective(tempName, MALE);
+			
+			if(prefix)
 				concatName = prefix + Translation.toAdjective(Translation.get("prism"), MALE) + " " + concatName;
 			
 			while(--dyadCount)
