@@ -465,7 +465,7 @@ Translation.multiprism = function(nodes) {
 			if(allNamesSame)
 				concatName = Translation.toAdjective(tempName) + " ";
 			else
-				concatName = concatName + " " + prefix;
+				concatName = concatName + " ";
 			
 			if(prefix)
 				concatName += prefix + Translation.toAdjective(Translation.get("prism")) + " ";

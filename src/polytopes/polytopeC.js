@@ -218,7 +218,7 @@ PolytopeC.regularPolygon = function(n, d) {
 	return new PolytopeC(els, new ConstructionNode(POLYGON, [n, d]));
 };
 
-//Helper function for star.
+//Helper function for regularPolygon.
 //Just the most basic form of the Euclidean algorithm.
 PolytopeC._gcd = function(n, d) {
 	var t;
@@ -352,14 +352,15 @@ PolytopeC.uniformAntiprism = function(n, d) {
 	if(d === undefined)
 		d = 1;
 	var x = n / d,
-	height = Math.sqrt((Math.cos(Math.PI / x) - Math.cos(2 * Math.PI / x)) / 2),
+	scale = 2 * Math.sin(Math.PI / x), //Guarantees an unit edge length polytope.
+	height = Math.sqrt((Math.cos(Math.PI / x) - Math.cos(2 * Math.PI / x)) / 2) / scale, //Half of the distance between bases.
 	newElementList = [[], [], [], [[]]],
 	i = 0,
-	base1 = [], base2 = [];
+	base1 = [], base2 = []; //The edges in the bases.
 	
 	while(i < 2 * (n - 1)) {
 		//Vertices.
-		newElementList[0].push(new Point([Math.cos(Math.PI * (i / x)), Math.sin(Math.PI * (i / x)), height]));
+		newElementList[0].push(new Point([Math.cos(Math.PI * (i / x)) / scale, Math.sin(Math.PI * (i / x)) / scale, height]));
 		//Equatorial edges, top & bottom edges.
 		newElementList[1].push([i, i + 1], [i, i + 2]);
 		//Triangular faces.
@@ -369,7 +370,7 @@ PolytopeC.uniformAntiprism = function(n, d) {
 		i++;
 		
 		//Same thing down here:
-		newElementList[0].push(new Point([Math.cos(Math.PI * (i / x)), Math.sin(Math.PI * (i / x)), -height]));
+		newElementList[0].push(new Point([Math.cos(Math.PI * (i / x)) / scale, Math.sin(Math.PI * (i / x)) / scale, -height]));
 		newElementList[1].push([i, i + 1]);
 		newElementList[1].push([i, i + 2]);
 		newElementList[2].push([2 * i, 2 * i + 1, 2 * i + 2]);
@@ -378,14 +379,14 @@ PolytopeC.uniformAntiprism = function(n, d) {
 	}
 	
 	//Adds last elements.
-	newElementList[0].push(new Point([Math.cos(Math.PI * (i / x)), Math.sin(Math.PI * (i / x)), height]));
+	newElementList[0].push(new Point([Math.cos(Math.PI * (i / x)) / scale, Math.sin(Math.PI * (i / x)) / scale, height]));
 	newElementList[1].push([i, i + 1]);
 	newElementList[1].push([i, 0]);
 	newElementList[2].push([2 * i, 2 * i + 1, 2 * i + 2]);
 	base1.push(2 * i + 1);
 	i++;
 	
-	newElementList[0].push(new Point([Math.cos(Math.PI * (i / x)), Math.sin(Math.PI * (i / x)), -height]));
+	newElementList[0].push(new Point([Math.cos(Math.PI * (i / x)) / scale, Math.sin(Math.PI * (i / x)) / scale, -height]));
 	newElementList[1].push([i, 0], [i, 1]);
 	newElementList[2].push([2 * i, 2 * i + 1, 0]);
 	base2.push(2 * i + 1);
