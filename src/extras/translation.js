@@ -229,6 +229,7 @@ Translation._endings = [
 		//new Ending("re", 0, ""), //Square
 		new Ending("ure", -1, "al"), //Skilling's figur(e/al)
 		new Ending("ll", 0, "ular"), //5-cell(ular)
+		new Ending("am", 0, "mic"), //Pentagram(mic)
 		new Ending("sm", 0, "atic"), //Triangular prism(atic)
 		new Ending("um", -2, "matic"), //Duoteg(um/matic)
 		new Ending("ium", -2, "al"), //Gyrobifastigi(um/al)
@@ -259,10 +260,11 @@ Translation._endings = [
 		new Ending("da", -4, "iádic", SPANISH_MODIFIER), //D(íada/iádic[o/a])
 		new Ending("lda", -2, "ular"), //5-cel(da/ular)
 		new Ending("nda", -1, "áic", SPANISH_MODIFIER), //Rotund(a/áic[o/a])
-		new Ending("ia", -1, "ial"), //Essenc(e/ial)
+		new Ending("ia", 0, "l"), //Essenc(ia/ial)
 		new Ending("la", -1, "éic", SPANISH_MODIFIER), //Cupol(a/éic[o/a])
 		new Ending("ula", -6, "angular"), //Estrella oct(ángula/angular)
-		new Ending("ma", -1, "átic", SPANISH_MODIFIER), //Prism(a/átic[o/a])
+		new Ending("ma", -3, "ámic", SPANISH_MODIFIER), //Pentagr(ama/ámic[o/a])
+		new Ending("sma", -1, "átic", SPANISH_MODIFIER), //Prism(a/átic[o/a])
 		new Ending("na", 0, "l"), //Esfenocorona(l)
 		new Ending("ide", -5, "amidal"), //Pir(ámide/amidal)
 		new Ending("oide", -1, "al"), //Disfenoid(e/al)
@@ -303,7 +305,7 @@ Translation.toAdjective = function(name, gender) {
 	//Adds one letter of name at a time.
 	//Searches for the least and greatest elements of _endings that are compatible with the observed letters.
 	//Will not compare the first match, if all others have been discarded. That way, the "longest match" functionality works.
-	while(lastMatch > firstMatch) {
+	while(true) {
 		//Finds lastMatch.
 		first = firstMatch;
 		last = lastMatch;
@@ -317,7 +319,12 @@ Translation.toAdjective = function(name, gender) {
 		if(Ending.compare(name, last, k) === 0)
 			lastMatch = last;
 		else
-			lastMatch = first;
+			lastMatch = first;		
+		
+		//HERE IS WHERE THE WHILE LOOP CAN STOP!
+		//If only the first match remains to be discarded, it's checked outside the while loop.
+		if(lastMatch === firstMatch)
+			break;
 		
 		//Finds firstMatch.
 		//If lastMatch - firstMatch > 1, at least another match other than the first remains, so we can safely compare the first.
@@ -329,19 +336,12 @@ Translation.toAdjective = function(name, gender) {
 				last = mid;
 			else
 				first = mid;
-		}
-		
-		//If only the first match remains to be discarded, it's checked outside the while loop.
-		if(lastMatch - firstMatch === 1 && Ending.compare(name, lastMatch, k) !== 0) {
-			lastMatch = firstMatch;
-			break;
-		}
-		
-		//At least another match other than the first remains, so we can safely compare the first.
+		}		
 		if(Ending.compare(name, first, k) === 0)
 			firstMatch = first;
 		else
 			firstMatch = last;
+		
 		k++;
 	}	
 	
@@ -396,6 +396,22 @@ Translation.pyramid = function(node) {
 			return Translation.toAdjective(name) + " " + Translation.get("pyramid");
 		case SPANISH:
 			return Translation.get("pyramid") + " " + Translation.toAdjective(name, FEMALE);
+		case GERMAN:
+			return Translation.toAdjective(name, FEMALE) + " " + Translation.get("Pyramide");
+		default:
+			return name;
+	}
+}
+
+Translation.antiprism = function(node) {
+	var name = node.getName();
+	switch(LANGUAGE) {
+		case ENGLISH:
+			return Translation.toAdjective(name) + " " + Translation.get("antiprism");
+		case SPANISH:
+			return Translation.get("antiprisma") + " " + Translation.toAdjective(name, MALE);
+		case GERMAN:
+			return Translation.toAdjective(name, NEUTER) + " " + Translation.get("Prisma");
 		default:
 			return name;
 	}
@@ -712,13 +728,13 @@ Translation.regularPolygonName = function(n, d, options) {
 				case 613:
 					res = "medial enneadecagram"; break;
 				case 614:
-					res = "great heptadecagram"; break;
+					res = "great enneadecagram"; break;
 				case 615:
-					res = "large heptadecagram"; break;
+					res = "large enneadecagram"; break;
 				case 616:
-					res = "giant heptadecagram"; break;
+					res = "giant enneadecagram"; break;
 				case 617:
-					res = "grand heptadecagram"; break;
+					res = "grand enneadecagram"; break;
 				case 643:
 					res = "small icosagram"; break;
 				case 647:

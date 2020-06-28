@@ -255,10 +255,13 @@ PolytopeC.regularPolygonG = function(n, d) {
 //Calculates the prism product, or rather Cartesian product, of P and Q.
 //Q can be excluded if P is instead the array of polytopes to multiply.
 //Vertices are the products of vertices, edges are the products of vertices with edges or viceversa, and so on.
+//This could be made slightly more efficient without recursion.
 PolytopeC._constructionsTMP = [];
 PolytopeC.prismProduct = function(P, Q) {
-	if(Q === undefined) {
-		PolytopeC._constructionsTMP.push(P.peek().construction);
+	//If P is an array:
+	if(P.length) {
+		//Stores the elements of P in a temporary array.
+		PolytopeC._constructionsTMP.push(P[P.length - 1].construction);
 		if(P.length === 1)
 			return P[0];
 		return PolytopeC.prismProduct(P.pop(), PolytopeC.prismProduct(P));
@@ -307,45 +310,6 @@ PolytopeC.prismProduct = function(P, Q) {
 		}
 	}
 	
-	/*
-	//Dyad * dyad = rectangle.
-	if(P.dimensions === 1 && Q.dimensions === 1)
-		name = Translation.get("rectangle");
-	else {
-		//Polytope * dyad = Polytope prism.
-		if(P.dimensions === 1) {
-			switch(LANGUAGE) {
-				case ENGLISH:
-					name = Translation.toAdjective(Q.name) + " " + Translation.get("prism");
-					break;
-				case SPANISH:
-					name = Translation.get("prism") + " " + Translation.toAdjective(Q.name, MALE);
-					break;
-			}
-		}
-		else if(Q.dimensions === 1){
-			switch(LANGUAGE) {
-				case ENGLISH:
-					name = Translation.toAdjective(P.name) + " " + Translation.get("prism");
-					break;
-				case SPANISH:
-					name = Translation.get("prism") + " " + Translation.toAdjective(P.name, MALE);
-					break;
-			}
-		}
-		//TBA if an m-prism and an n-prism are multiplied together, the result should be an (m + n)-prism!
-		else {
-			switch(LANGUAGE) {
-				case ENGLISH:
-					name = Translation.toAdjective(P.name) + "-" + Translation.toAdjective(Q.name) + " duoprism";
-					break;
-				case SPANISH:
-					name = "duoprisma " + Translation.toAdjective(P.name, MALE) + "-" + Translation.toAdjective(Translation.firstToLower(Q.name), MALE);
-					break;
-			}
-		}
-	}
-	*/
 	if(PolytopeC._constructionsTMP.length > 0) {
 		var constructions = [];
 		do
@@ -381,6 +345,59 @@ PolytopeC._getIndexOfProduct = function(m, i, n, j, P, Q, memoizer) {
 		memoizer[m][n] = memoizer[m - 1][n + 1] + P.elementList[m - 1].length * Q.elementList[n + 1].length;
 	return memoizer[m][n] + offset;
 };
+
+//Creates a uniform {n / d} antiprism.
+//Only meant for when (n, d) = 1.
+PolytopeC.uniformAntiprism = function(n, d) {
+	if(d === undefined)
+		d = 1;
+	var x = n / d,
+	height = Math.sqrt((Math.cos(Math.PI / x) - Math.cos(2 * Math.PI / x)) / 2),
+	newElementList = [[], [], [], [[]]],
+	i = 0,
+	base1 = [], base2 = [];
+	
+	while(i < 2 * (n - 1)) {
+		//Vertices.
+		newElementList[0].push(new Point([Math.cos(Math.PI * (i / x)), Math.sin(Math.PI * (i / x)), height]));
+		//Equatorial edges, top & bottom edges.
+		newElementList[1].push([i, i + 1], [i, i + 2]);
+		//Triangular faces.
+		newElementList[2].push([2 * i, 2 * i + 1, 2 * i + 2]);
+		//Polygonal faces.
+		base1.push(2 * i + 1);
+		i++;
+		
+		//Same thing down here:
+		newElementList[0].push(new Point([Math.cos(Math.PI * (i / x)), Math.sin(Math.PI * (i / x)), -height]));
+		newElementList[1].push([i, i + 1]);
+		newElementList[1].push([i, i + 2]);
+		newElementList[2].push([2 * i, 2 * i + 1, 2 * i + 2]);
+		base2.push(2 * i + 1);
+		i++;
+	}
+	
+	//Adds last elements.
+	newElementList[0].push(new Point([Math.cos(Math.PI * (i / x)), Math.sin(Math.PI * (i / x)), height]));
+	newElementList[1].push([i, i + 1]);
+	newElementList[1].push([i, 0]);
+	newElementList[2].push([2 * i, 2 * i + 1, 2 * i + 2]);
+	base1.push(2 * i + 1);
+	i++;
+	
+	newElementList[0].push(new Point([Math.cos(Math.PI * (i / x)), Math.sin(Math.PI * (i / x)), -height]));
+	newElementList[1].push([i, 0], [i, 1]);
+	newElementList[2].push([2 * i, 2 * i + 1, 0]);
+	base2.push(2 * i + 1);
+	
+	newElementList[2].push(base1, base2);
+	
+	//Adds component.
+	for(i = 0; i < 2 * (n + 1); i++)
+		newElementList[3][0].push(i);
+	
+	return new PolytopeC(newElementList, new ConstructionNode(ANTIPRISM, [new ConstructionNode(POLYGON, [n, d])]));
+}	
 
 //Makes every vertex have dim coordinates either by adding zeros or removing numbers.
 PolytopeC.prototype.setSpaceDimensions = function(dim) {

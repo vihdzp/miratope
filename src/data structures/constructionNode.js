@@ -11,12 +11,14 @@ const POLYTOPEC = 0;
 const POLYTOPES = 1;
 //Has the nodes representing the factors of a prism product as children.
 const MULTIPRISM = 2;
+//Represents an antiprism based on the child node.
+const ANTIPRISM = 3;
 //Has a single child from which a pyramid is built.
-const PYRAMID = 3;
+const PYRAMID = 4;
 //Has two children n, d, representing the regular polygon {n/d}.
-const POLYGON = 4;
+const POLYGON = 5;
 //Has a single string as a child, representing a polytope's name in Miratope's library.
-const NAME = 5;
+const NAME = 6;
 
 function ConstructionNode(type, children) {
 	this.type = type;
@@ -39,6 +41,8 @@ ConstructionNode.prototype.getName = function() {
 				}
 			}
 			return Translation.multiprism(this.children);
+		case ANTIPRISM:
+			return Translation.antiprism(this.children[0]);
 		case PYRAMID:
 			return Translation.pyramid(this.children[0]);
 		case POLYGON:
