@@ -16,6 +16,13 @@ const MALE = 0;
 const FEMALE = 1;
 const NEUTER = 2;
 
+//Polygram modifiers.
+const NONE = -1;
+const SMALL = 0;
+const MEDIAL = 1;
+const GREAT = 2;
+const GRAND = 3;
+
 var LANGUAGE = ENGLISH;
 
 //The TRANSLATIONS object contains Translation of all words or messages not covered by other functions.
@@ -35,7 +42,11 @@ var TRANSLATIONS = {
 	component: ["component", "componente"],
 	componentP: ["components", "componentes"],
 	compound: ["compound", "compuesto", "Verbund"],
-	compoundP: ["compounds", "compuestos", "Verbunde"]
+	compoundP: ["compounds", "compuestos", "Verbunde"],
+	triangle: ["triangle", "triángulo", "Dreieck"],
+	triangleP: ["triangles", "triángulos", "Dreiecke"],
+	square: ["square", "cuadrado", "Quadrat"],
+	squareP: ["squares", "cuadrados", "Quadrate"]
 };
 
 //The name for an d-element, according to http://os2fan2.com/gloss/pglosstu.html
@@ -103,46 +114,97 @@ Translation.elementName = function(d, options) {
 				case 3:
 					res = "celda"; break;
 				case 4:
-					res = "tero"; break;
+					res = "tera"; break;
 				case 5:
-					res = "peto"; break;
+					res = "peta"; break;
 				case 6:
-					res = "exo"; break;
+					res = "exa"; break;
 				case 7:
-					res = "zeto"; break;
+					res = "zeta"; break;
 				case 8:
-					res = "yoto"; break;
+					res = "yota"; break;
 				case 9:
-					res = "xeno"; break;
+					res = "xena"; break;
 				case 10:
-					res = "daco"; break;
+					res = "daca"; break;
 				case 11:
-					res = "hendaco"; break;
+					res = "hendaca"; break;
 				case 12:
-					res = "doco"; break;
+					res = "doca"; break;
 				case 13:
-					res = "tradaco"; break;
+					res = "tradaca"; break;
 				case 14:
-					res = "teradaco"; break;
+					res = "teradaca"; break;
 				case 15:
-					res = "petadaco"; break;
+					res = "petadaca"; break;
 				case 16:
-					res = "exdaco"; break;
+					res = "exadaca"; break;
 				case 17:
-					res = "zettadaco"; break;
+					res = "zettadaca"; break;
 				case 18:
-					res = "yottadaco"; break;
+					res = "yottadaca"; break;
 				case 19:
-					res = "xendaco"; break;
+					res = "xendaca"; break;
 				case 20:
-					res = "ico"; break;
+					res = "ica"; break;
 				default:
 					res = d + "-elemento"; break;
 			}
 			
 			if(options & PLURAL)
 				res += "s";
-			break;			
+			break;
+		case GERMAN:
+			switch(d) {
+				case 0:
+					if(options & PLURAL) res = "Eck"; else res = "Ecke"; break;
+				case 1:
+					if(options & PLURAL) res = "Kante"; else res = "Kanten"; break;
+				case 2:
+					if(options & PLURAL) res = "Fläche"; else res = "Flächen"; break;
+				case 3:
+					if(options & PLURAL) res = "Zell"; else res = "Zellen"; break;
+				case 4:
+					if(options & PLURAL) res = "Tera"; else res = "Teras"; break;
+				case 5:
+					res = "Peta"; break;
+				case 6:
+					res = "Exa"; break;
+				case 7:
+					res = "Zetta"; break;
+				case 8:
+					res = "Yotta"; break;
+				case 9:
+					res = "Xena"; break;
+				case 10:
+					res = "Daka"; break;
+				case 11:
+					res = "Hendaka"; break;
+				case 12:
+					res = "Doka"; break;
+				case 13:
+					res = "Tradaka"; break;
+				case 14:
+					res = "Teradaka"; break;
+				case 15:
+					res = "Petadaka"; break;
+				case 16:
+					res = "Exadaka"; break;
+				case 17:
+					res = "Zettadaka"; break;
+				case 18:
+					res = "Yottadaka"; break;
+				case 19:
+					res = "Xendaka"; break;
+				case 20:
+					res = "Ika"; break;
+				default:
+					res = d + "-Element"; break;
+			}
+			
+			if(options & PLURAL)
+				res += "s";
+			break;
 	}	
 	
 	if(options & UPPERCASE)		
@@ -191,6 +253,23 @@ Translation.polytopeEnding = function(d, options) {
 			
 			if(options & PLURAL)
 				res += "s";
+			break;
+		case GERMAN:
+			switch(d) {
+				case 1:
+					if(options & PLURAL) res = "tela"; else res = "telon"; break;
+				case 2:
+					if(options & PLURAL) res = "gone"; else res = "gon"; break;
+				case 3:
+					res = "eder"; break;
+				case 4:
+					if(options & PLURAL) res = "chora"; else res = "choron"; break;
+				default:
+					if(d > 20)
+						return n + "-polytop" + (options & PLURAL ? "en" : "");
+					return Translation.elementName(d - 1, options);
+			}
+			
 			break;
 	}
 	
@@ -381,6 +460,8 @@ Translation.plain = function(n, dimension, options) {
 	switch(LANGUAGE) {
 		case ENGLISH:
 			return Translation.greekPrefix(n, options & UPPERCASE) + Translation.polytopeEnding(dimension, options & PLURAL);
+		case GERMAN:		
+			return Translation.greekPrefix(n, UPPERCASE) + Translation.polytopeEnding(dimension, options & PLURAL);
 		case SPANISH:			
 			return Translation._lastVowelTilde(Translation.greekPrefix(n, options & UPPERCASE)) + Translation.polytopeEnding(dimension, options & PLURAL);
 		default:
@@ -467,6 +548,7 @@ Translation.multiprism = function(nodes) {
 			else
 				concatName = concatName + " ";
 			
+			//We aren't calling a single polytope X an "X monoprism", are we?
 			if(prefix)
 				concatName += prefix + Translation.toAdjective(Translation.get("prism")) + " ";
 			
@@ -496,6 +578,7 @@ Translation.multiprism = function(nodes) {
 			if(allNamesSame)
 				concatName =  Translation.toAdjective(tempName, MALE);
 			
+			//No estamos llamando a un politopo X un "monoprisma X", ¿o sí?
 			if(prefix)
 				concatName = prefix + Translation.toAdjective(Translation.get("prism"), MALE) + " " + concatName;
 			
@@ -532,14 +615,18 @@ Translation._lastVowelTilde = function(str) {
 	throw new Error("No vowel to replace!");
 }	
 
+//-, one, two, three, four, five, six, seven, eight, nine, to Greek, back to each language.
 Translation._units = [
-["", "mono", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "ennea"], //English
-["", "mono", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "enea"] //Spanish
+["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "ennea"], //English
+["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "enea"], //Spanish
+["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "okto", "ennea"], //German
 ];
 
-Translation._powersOfTen = [
-[, "conta", "hecto", "chilia", "myria"], //English
-[, "conta", "hecta", "chilia", "miria"] //Spanish
+//ten, tenfold, twenty, twenty-, hundredfold, thousandfold, ten-thousandfold, to Greek, back to each language.
+Translation._joiners = [
+["deca", "conta", "icosa", "icosi", "hecto", "chilia", "myria"], //English
+["deca", "conta", "icosa", "icosi", "hecta", "chilia", "miria"], //Spanish
+["deka", "conta", "ikosa", "ikosi", "hekto", "chilia", "myria"] //German
 ];
 
 //Converts n into a greek prefix.
@@ -550,6 +637,7 @@ Translation.greekPrefix = function(n, options) {
 	if(n === 0) {
 		switch(LANGUAGE) {
 			case ENGLISH:
+			case GERMAN:
 				if(options & UPPERCASE)
 					return "Nulli";
 				return "nulli";
@@ -558,6 +646,12 @@ Translation.greekPrefix = function(n, options) {
 					return "Nuli";
 				return "nuli";
 		}
+	}
+	
+	if(n === 1) {		
+		if(options & UPPERCASE)
+			return "Mono";
+		return "mono";
 	}
 	
 	if(n >= 100000)
@@ -574,10 +668,10 @@ Translation.greekPrefix = function(n, options) {
 		case 0:
 			break;
 		case 1:
-			res += Translation._powersOfTen[LANGUAGE][4];
+			res += Translation._joiners[LANGUAGE][6];
 			break;
 		default:
-			res += Translation._units[LANGUAGE][tenThousands] + Translation._powersOfTen[LANGUAGE][4];
+			res += Translation._units[LANGUAGE][tenThousands] + Translation._joiners[LANGUAGE][6];
 			break;
 	}
 	
@@ -585,10 +679,10 @@ Translation.greekPrefix = function(n, options) {
 		case 0:
 			break;
 		case 1:
-			res += Translation._powersOfTen[LANGUAGE][3];
+			res += Translation._joiners[LANGUAGE][5];
 			break;
 		default:
-			res += Translation._units[LANGUAGE][thousands] + Translation._powersOfTen[LANGUAGE][3];
+			res += Translation._units[LANGUAGE][thousands] + Translation._joiners[LANGUAGE][5];
 			break;
 	}
 	
@@ -596,10 +690,10 @@ Translation.greekPrefix = function(n, options) {
 		case 0:
 			break;
 		case 1:
-			res += Translation._powersOfTen[LANGUAGE][2];
+			res += Translation._joiners[LANGUAGE][4];
 			break;
 		default:
-			res += Translation._units[LANGUAGE][hundreds] + Translation._powersOfTen[LANGUAGE][2];
+			res += Translation._units[LANGUAGE][hundreds] + Translation._joiners[LANGUAGE][4];
 			break;
 	}
 	
@@ -610,27 +704,24 @@ Translation.greekPrefix = function(n, options) {
 		case 1:
 			switch(units) {
 				case 0:
-					res += "deca";
-					break;
-				case 1:
-					res += "hendeca";
+					res += Translation._joiners[LANGUAGE][0];
 					break;
 				case 2:
-					res += "dodeca";
+					res += "do" + Translation._joiners[LANGUAGE][0];
 					break;
 				default:
-					res += Translation._units[LANGUAGE][units] + "deca";
+					res += Translation._units[LANGUAGE][units] + Translation._joiners[LANGUAGE][0];
 					break;
 			}
 			break;
 		case 2:
 			if(units)
-				res += "icosi" + Translation._units[LANGUAGE][units];
+				res += Translation._joiners[LANGUAGE][2] + Translation._units[LANGUAGE][units];
 			else
-				res += "icosa";			
+				res += Translation._joiners[LANGUAGE][1];			
 			break;
 		default:
-			res += Translation._units[LANGUAGE][tens] + Translation._powersOfTen[LANGUAGE][1] + Translation._units[LANGUAGE][units];
+			res += Translation._units[LANGUAGE][tens] + Translation._joiners[LANGUAGE][1] + Translation._units[LANGUAGE][units];
 			break;
 	}
 	
@@ -640,163 +731,207 @@ Translation.greekPrefix = function(n, options) {
 };
 
 //Gives a name for {n / d}.
-//Based on the naming scheme by Username5243 (given on the Discord server).
-//If anyone has anything better, please tell us.
+//For polygons with up to five non-compound stellations, uses the [small/-/medial/great/grand] n-gram naming scheme.
+//For everything else, uses d-stellated n-gon.
 Translation.regularPolygonName = function(n, d, options) {
+	if(d === undefined)
+		d = 1;
+	
 	var res;
 	//I just need a quick to calculate function on n and d
-	//to distinguish the stars with up to 19 sides.
-	switch(LANGUAGE) {
-		case ENGLISH:
-			switch(32 * n + d) {
-				case 97:
-					res = "triangle"; break;
-				case 129:
-					res = "square"; break;
-				case 162:
-					res = "pentagram"; break;
-				case 194:
-					res = "hexagram"; break;
-				case 226:
-					res = "heptagram"; break;
-				case 227:
-					res = "great heptagram"; break;
-				case 259:
-					res = "octagram"; break;
-				case 290:
-					res = "enneagram"; break;
-				case 292:
-					res = "great enneagram"; break;
-				case 323:
-					res = "decagram"; break;
-				case 354:
-					res = "small hendecagram"; break;
-				case 355:
-					res = "hendecagram"; break;
-				case 356:
-					res = "great hendecagram"; break;
-				case 357:
-					res = "grand hendecagram"; break;
-				case 389:
-					res = "dodecagram"; break;
-				case 418:
-					res = "small tridecagram"; break;
-				case 419:
-					res = "tridecagram"; break;
-				case 420: //Nice
-					res = "medial tridecagram"; break;
-				case 421:
-					res = "great tridecagram"; break;
-				case 422:
-					res = "grand tridecagram"; break;
-				case 451:
-					res = "tetradecagram"; break;
-				case 453:
-					res = "great tetradecagram"; break;
-				case 482:
-					res = "small pentadecagram"; break;
-				case 484:
-					res = "pentadecagram"; break;
-				case 487:
-					res = "great pentadecagram"; break;
-				case 515:
-					res = "small hexadecagram"; break;
-				case 517:
-					res = "hexadecagram"; break;
-				case 519:
-					res = "great hexadecagram"; break;
-				case 546:
-					res = "tiny heptadecagram"; break;
-				case 547:
-					res = "small heptadecagram"; break;
-				case 548:
-					res = "heptadecagram"; break;
-				case 549:
-					res = "medial heptadecagram"; break;
-				case 550:
-					res = "great heptadecagram"; break;
-				case 551:
-					res = "giant heptadecagram"; break;
-				case 552:
-					res = "grand heptadecagram"; break;
-				case 581:
-					res = "octadecagram"; break;
-				case 583:
-					res = "great octadecagram"; break;
-				case 610:
-					res = "tiny enneadecagram"; break;
-				case 611:
-					res = "small enneadecagram"; break;
-				case 612:
-					res = "enneadecagram"; break;
-				case 613:
-					res = "medial enneadecagram"; break;
-				case 614:
-					res = "great enneadecagram"; break;
-				case 615:
-					res = "large enneadecagram"; break;
-				case 616:
-					res = "giant enneadecagram"; break;
-				case 617:
-					res = "grand enneadecagram"; break;
-				case 643:
-					res = "small icosagram"; break;
-				case 647:
-					res = "icosagram"; break;
-				case 649:
-					res = "great icosagram"; break;
-				default:
-					var gcd = PolytopeC._gcd(n, d);
-					if(gcd !== 1)
-						res = "compound" + (options & PLURAL ? "s" : "") + " of " + gcd + " " + Translation.regularPolygonName(n / gcd, d / gcd, PLURAL);
-					else
-						res = Translation.plain(n, 2) + (options & PLURAL ? "s" : "");
-					
-					//The plural has already been added, so we just uppercase it if necessary and return.
-					if(options & UPPERCASE)
-						return Translation.firstToUpper(res);
-					return res;
-			}
-			
-			//Adds plural and uppercase.
-			if(options & PLURAL)
-				res += "s";
-			if(options & UPPERCASE)
-				return Translation.firstToUpper(res);
-			return res;
-		case SPANISH:
-			switch(32 * n + d) {
-				case 97:
-					res = "triángulo"; break;
-				case 129:
-					res = "cuadrado"; break;
-				case 162:
-					res = "pentagrama"; break;
-				case 194:
-					res = "hexagram"; break;
-				case 226:
-					res = "heptagrama"; break;
-				case 227:
-					res = "gran heptagrama"; break;
-				default:
-					var gcd = PolytopeC._gcd(n, d);
-					if(gcd !== 1)
-						res = "compuesto" + (options & PLURAL ? "s" : "") + " de " + gcd + " " + Translation.regularPolygonName(n / gcd, d, PLURAL);
-					else
-						res = Translation.plain(n, 2);
-					
-					if(options & UPPERCASE)
-						return Translation.firstToUpper(res);
-					return res;
-			}
-			
-			if(options & PLURAL)
-				res += "s";
-			if(options & UPPERCASE)
-				return Translation.firstToUpper(res);
-			return res;
+	//to distinguish the stars with up to 42 sides.
+	//I could just use the Euler totient function to give names without this enormous switch,
+	//but this is ever so slightly faster so whatever.
+	switch(64 * n + d) {
+		case 193:
+			return Translation.get("triangle", options);
+		case 257:
+			return Translation.get("square", options);
+		case 322:
+			res = Translation._starName(NONE, 5); break;
+		case 386:
+			res = Translation._starName(NONE, 6); break;
+		case 450:
+			res = Translation._starName(NONE, 7); break;
+		case 451:
+			res = Translation._starName(GREAT, 7); break;
+		case 515:
+			res = Translation._starName(NONE, 8); break;
+		case 578:
+			res = Translation._starName(NONE, 9); break;
+		case 580:
+			res = Translation._starName(GREAT, 5); break;
+		case 643:
+			res = Translation._starName(NONE, 10); break;
+		case 706:
+			res = Translation._starName(SMALL, 11); break;
+		case 707:
+			res = Translation._starName(NONE, 11); break;
+		case 708:
+			res = Translation._starName(GREAT, 11); break;
+		case 709:
+			res = Translation._starName(GRAND, 11); break;
+		case 773:
+			res = Translation._starName(NONE, 12); break;
+		case 834:
+			res = Translation._starName(SMALL, 13); break;
+		case 835:
+			res = Translation._starName(NONE, 13); break;
+		case 836:
+			res = Translation._starName(MEDIAL, 13); break;
+		case 837:
+			res = Translation._starName(GREAT, 13); break;
+		case 838:
+			res = Translation._starName(GRAND, 13); break;
+		case 899:
+			res = Translation._starName(NONE, 14); break;
+		case 901:
+			res = Translation._starName(GREAT, 14); break;
+		case 962:
+			res = Translation._starName(SMALL, 15); break;
+		case 964:
+			res = Translation._starName(NONE, 15); break;
+		case 967:
+			res = Translation._starName(GREAT, 15); break;
+		case 1027:
+			res = Translation._starName(SMALL, 16); break;
+		case 1029:
+			res = Translation._starName(NONE, 16); break;
+		case 1031:
+			res = Translation._starName(GREAT, 16); break;
+		case 1157:
+			res = Translation._starName(NONE, 18); break;
+		case 1159:
+			res = Translation._starName(GREAT, 18); break;
+		case 1283:
+			res = Translation._starName(SMALL, 20); break;
+		case 1287:
+			res = Translation._starName(NONE, 20); break;
+		case 1289:
+			res = Translation._starName(GREAT, 20); break;
+		case 1346:
+			res = Translation._starName(SMALL, 21); break;
+		case 1348:
+			res = Translation._starName(NONE, 21); break;
+		case 1349:
+			res = Translation._starName(MEDIAL, 21); break;
+		case 1352:
+			res = Translation._starName(GREAT, 21); break;
+		case 1354:
+			res = Translation._starName(GRAND, 21); break
+		case 1411:
+			res = Translation._starName(SMALL, 22); break;
+		case 1413:
+			res = Translation._starName(NONE, 22); break;					
+		case 1415:
+			res = Translation._starName(GREAT, 22); break;
+		case 1417:
+			res = Translation._starName(GRAND, 22); break;
+		case 1541:
+			res = Translation._starName(SMALL, 24); break;
+		case 1543:
+			res = Translation._starName(NONE, 24); break;
+		case 1547:
+			res = Translation._starName(GREAT, 24); break;
+		case 1667:
+			res = Translation._starName(SMALL, 26); break;
+		case 1669:
+			res = Translation._starName(NONE, 26); break;
+		case 1671:
+			res = Translation._starName(MEDIAL, 26); break;
+		case 1673:
+			res = Translation._starName(GREAT, 26); break;
+		case 1675:
+			res = Translation._starName(GRAND, 26); break;
+		case 1795:
+			res = Translation._starName(SMALL, 28); break;
+		case 1797:
+			res = Translation._starName(NONE, 28); break;
+		case 1801:
+			res = Translation._starName(MEDIAL, 28); break;
+		case 1803:
+			res = Translation._starName(GREAT, 28); break;
+		case 1805:
+			res = Translation._starName(GRAND, 28); break;
+		case 1927:
+			res = Translation._starName(SMALL, 30); break;
+		case 1931:
+			res = Translation._starName(NONE, 30); break;
+		case 1933:
+			res = Translation._starName(GREAT, 30); break;
+		case 2309:
+			res = Translation._starName(SMALL, 36); break;
+		case 2311:
+			res = Translation._starName(NONE, 36); break;
+		case 2315:
+			res = Translation._starName(MEDIAL, 36); break;
+		case 2317:
+			res = Translation._starName(GREAT, 36); break;
+		case 2321:
+			res = Translation._starName(GRAND, 36); break;
+		case 2693:
+			res = Translation._starName(SMALL, 42); break;
+		case 2699:
+			res = Translation._starName(NONE, 42); break;
+		case 2701:
+			res = Translation._starName(MEDIAL, 42); break;
+		case 2705:
+			res = Translation._starName(GREAT, 42); break;
+		case 2707:
+			res = Translation._starName(GRAND, 42); break;
 		default:
-			return "{" + n + "/" + d + "}";
+			if(d === 1)
+				return Translation.plain(n, 2, options);
+			
+			switch(LANGUAGE) {
+				case ENGLISH:
+					res = Translation.greekPrefix(d) + "stellated " + Translation.greekPrefix(n) + "gram"; break;
+				case SPANISH:
+					res = Translation.greekPrefix(n) + "grama "; Translation.greekPrefix(d) + "estrellado"; break;
+				case GERMAN:
+					res = Translation.firstToUpper(Translation.greekPrefix(d)) + "stern " + Translation.firstToUpper(Translation.greekPrefix(n)) + "gramm"; break;
+			}
 	}
+	
+	//Adds plural and uppercase.
+	if(options & PLURAL) {
+		switch(LANGUAGE) {
+			case ENGLISH:
+			case SPANISH:
+				res += "s"; break;
+			case GERMAN:
+				res += "e"; break;
+		}
+	}
+	if(options & UPPERCASE)
+		return Translation.firstToUpper(res);
+	return res;
 };
 
+Translation._starModifiers = [
+["small", "medial", "great", "grand"], //English
+["pequeño", "mediano", "grande", "mayor"], //Spanish
+["Kleines", "Mittel", "Großes", "Größtes"] //German THE LAST ONE IS PROBABLY WRONG
+];
+
+Translation._starName = function(mod, n) {
+	if(mod === NONE) {
+		switch(LANGUAGE) {
+			case ENGLISH:
+				return Translation.greekPrefix(n) + "gram";
+			case GERMAN:
+				return Translation.firstToUpper(Translation.greekPrefix(n)) + "gramm";
+			case SPANISH:
+				return Translation.greekPrefix(n) + "grama";
+		}
+	}
+	
+	switch(LANGUAGE) {
+		case ENGLISH:
+			return Translation._starModifiers[LANGUAGE][mod] + " " + Translation.greekPrefix(n) + "gram";
+		case GERMAN:
+			return Translation._starModifiers[LANGUAGE][mod] + " " + Translation.firstToUpper(Translation.greekPrefix(n)) + "gramm";
+		case SPANISH:
+			return Translation.greekPrefix(n) + "grama" + " " + Translation._starModifiers[LANGUAGE][mod];
+	}
+}
