@@ -52,8 +52,7 @@ Ending.prototype.changeEnding = function(name, gender) {
 
 //Compares the kth to last (and therefore the last k characters backwards) of name with _endings kth entry, 
 //in alphabetical order.
-Ending.compare = function(name, indx, k) {
-	var endingStr = Translation._endings[LANGUAGE][indx].string,
+Ending.compare = function(name, endingStr, k) {
 	i = name.length - k,
 	j = endingStr.length - k;
 	

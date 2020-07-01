@@ -347,21 +347,26 @@ Translation._endings = [
 		new Ending("na", 0, "l"), //Esfenocorona(l)
 		new Ending("ide", -5, "amidal"), //Pir(ámide/amidal)
 		new Ending("oide", -1, "al"), //Disfenoid(e/al)
+		new Ending("nde", Translation._toAdjectiveBeforeLastWord), //Heptagrama grande
 		new Ending("ng", -12, "l de Skilling"), //Figura( de Skilling/l de Skilling)
 		new Ending("ium", -2, "al"), //Girobifastigi(um/al)
 		new Ending("bo", -3, "úbic", SPANISH_MODIFIER), //C(ubo/úbic[o/a])
-		new Ending("do", -1, "", SPANISH_MODIFIER), //Cuadrad(o/[o/a])
+		new Ending("rado", -1, "", SPANISH_MODIFIER), //Cuadrad(o/[o/a])
+		new Ending("zado", Translation._toAdjectiveBeforeLastWord), //Pentagrama cruzado
 		new Ending("jo", -3, "icial"), //Simpl(ejo/icial)
 		new Ending("io", -1, "al"), //Girobifastigi(o/al)
 		new Ending("lo", -1, "ar"), //Ditel(o/ar)
 		new Ending("ángulo", -6, "angular"), //Tri(ángulo/angular)
 		new Ending("íngulo", -6, "ingular"), //Dispfnoc(íngulo/ingular)
+		new Ending("ano", Translation._toAdjectiveBeforeLastWord), //Tridecagrama mediano
 		new Ending("ono", -5, "agonal"), //Pent(ágono/agonal)
 		new Ending("po", -3, "ópic", SPANISH_MODIFIER), //Pentat(opo/ópic[o/a])
 		new Ending("ro", -1, "al"), //Tetrahedr(on/al)
 		new Ending("to", -4, "áctic", SPANISH_MODIFIER), //Teseract(o/ic[o/a])
 		new Ending("nto", -1, "al"), //3-element(o/al)
-		new Ending("unto", 1, "ual"), //Punt(o/ual)
+		new Ending("unto", 1, "ual"), //Punt(o/ual)		
+		new Ending("ño", Translation._toAdjectiveBeforeLastWord), //Hendecagrama pequeño
+		new Ending("or", Translation._toAdjectiveBeforeLastWord), //Hendecagrama mayor
 		new Ending("is", Translation._toAdjectiveBeforeLastWord), //Dodecaedral pentakis
 		new Ending("ex", -2, "icial"), //Simpl(ex/icial)
 		new Ending("uz", 0, "ad", SPANISH_MODIFIER), //Pentacruz(ad[o/a])
@@ -426,12 +431,12 @@ Translation._findEnding = function (name, endings) {
 		last = lastMatch;
 		while(last - first > 1) {
 			mid = Math.floor((first + last) / 2);
-			if(Ending.compare(name, mid, k) < 0)
+			if(Ending.compare(name, endings[mid].string, k) < 0)
 				last = mid;
 			else
 				first = mid;
 		}
-		if(Ending.compare(name, last, k) === 0)
+		if(Ending.compare(name, endings[last].string, k) === 0)
 			lastMatch = last;
 		else
 			lastMatch = first;		
@@ -447,12 +452,12 @@ Translation._findEnding = function (name, endings) {
 		last = lastMatch;		
 		while(last - first > 1) {
 			mid = Math.floor((first + last) / 2);
-			if(Ending.compare(name, mid, k) <= 0)
+			if(Ending.compare(name, endings[mid].string, k) <= 0)
 				last = mid;
 			else
 				first = mid;
 		}		
-		if(Ending.compare(name, first, k) === 0)
+		if(Ending.compare(name, endings[first].string, k) === 0)
 			firstMatch = first;
 		else
 			firstMatch = last;
