@@ -351,8 +351,10 @@ Translation._endings = [
 		new Ending("ng", -12, "l de Skilling"), //Figura( de Skilling/l de Skilling)
 		new Ending("ium", -2, "al"), //Girobifastigi(um/al)
 		new Ending("bo", -3, "úbic", SPANISH_MODIFIER), //C(ubo/úbic[o/a])
+		new Ending("co", Translation._toAdjectiveBeforeLastWord), //Heptadecaedro diestrófico
+		new Ending("ado", Translation._toAdjectiveBeforeLastWord), //Pentagrama cruzado
+		//Icosaedro estrellado
 		new Ending("rado", -1, "", SPANISH_MODIFIER), //Cuadrad(o/[o/a])
-		new Ending("zado", Translation._toAdjectiveBeforeLastWord), //Pentagrama cruzado
 		new Ending("jo", -3, "icial"), //Simpl(ejo/icial)
 		new Ending("io", -1, "al"), //Girobifastigi(o/al)
 		new Ending("lo", -1, "ar"), //Ditel(o/ar)
@@ -772,7 +774,7 @@ Translation.greekPrefix = function(n, options) {
 
 //Gives a name for {n / d}.
 //For polygons with up to five non-compound stellations, uses the [small/-/medial/great/grand] n-gram naming scheme.
-//For everything else, uses d-stellated n-gon.
+//For everything else, uses d-strophic n-gon.
 Translation.regularPolygonName = function(n, d, options) {
 	if(d === undefined)
 		d = 1;
@@ -936,11 +938,11 @@ Translation.regularPolygonName = function(n, d, options) {
 			
 			switch(LANGUAGE) {
 				case ENGLISH:
-					res = Translation.greekPrefix(d) + "stellated " + Translation.greekPrefix(n) + "gram"; break;
+					res = Translation.greekPrefix(d) + "strophic " + Translation.greekPrefix(n) + "gram"; break;
 				case SPANISH:
-					res = Translation.greekPrefix(n) + "grama "; Translation.greekPrefix(d) + "estrellado"; break;
+					res = Translation.greekPrefix(n) + "grama " + Translation.greekPrefix(d) + "estrófico"; break;
 				case GERMAN:
-					res = Translation.firstToUpper(Translation.greekPrefix(d)) + "stern " + Translation.firstToUpper(Translation.greekPrefix(n)) + "gramm"; break;
+					res = Translation.firstToUpper(Translation.greekPrefix(d)) + "strophisches " + Translation.greekPrefix(n, UPPERCASE) + "gramm"; break;
 			}
 	}
 	
