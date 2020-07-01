@@ -497,102 +497,68 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 			break;
 		case 1: //Also LOL
 			data.push("1OFF\n");
-			if(comments) {
-				data.push("# ");
-				data.push(Translation.elementName(0, PLURAL ^ UPPERCASE));
-				data.push("\n");
-			}
-			data.push(this.elementList[0].length + "\n");
+			if(comments)
+				data.push("# ", Translation.elementName(0, PLURAL ^ UPPERCASE), "\n");
+			data.push(this.elementList[0].length, "\n");
 			break;
 		case 2:
 			data.push("2OFF\n");
-			if(comments) {
-				data.push("# ");
-				data.push(Translation.elementName(0, PLURAL ^ UPPERCASE));
-				data.push(", ");
-				data.push(Translation.get("component", PLURAL ^ UPPERCASE));
-				data.push("\n");
-			}
-			data.push(this.elementList[0].length + " ");
-			data.push(this.elementList[2].length + "\n");
+			if(comments)
+				data.push("# ", Translation.elementName(0, PLURAL ^ UPPERCASE), ", ", Translation.get("component", PLURAL ^ UPPERCASE), "\n");
+			data.push(this.elementList[0].length, " ", this.elementList[2].length, "\n");
 			break;
 		case 3:
 			data.push("OFF\n"); //For compatibility.
-			if(comments) {				
-				data.push("# ");
-				data.push(Translation.elementName(0, PLURAL ^ UPPERCASE));
-				data.push(", ");
-				data.push(Translation.elementName(2, PLURAL ^ UPPERCASE));
-				data.push(", ");
-				data.push(Translation.elementName(1, PLURAL ^ UPPERCASE));
-				data.push("\n");
-			}
-			data.push(this.elementList[0].length + " ");
-			data.push(this.elementList[2].length + " ");
-			data.push(this.elementList[1].length + "\n");
+			if(comments)			
+				data.push("# ", Translation.elementName(0, PLURAL ^ UPPERCASE), ", ", Translation.elementName(2, PLURAL ^ UPPERCASE), ", ", Translation.elementName(1, PLURAL ^ UPPERCASE), "\n");
+			data.push(this.elementList[0].length, " ", this.elementList[2].length, " ", this.elementList[1].length, "\n");
 			break;
 		default:
-			data.push(this.dimensions);
-			data.push("OFF\n");
+			data.push(this.dimensions, "OFF\n");
 			if(comments) {				
-				data.push("# ");
-				data.push(Translation.elementName(0, PLURAL ^ UPPERCASE));
-				data.push(", ");
-				data.push(Translation.elementName(2, PLURAL ^ UPPERCASE));
-				data.push(", ");
-				data.push(Translation.elementName(1, PLURAL ^ UPPERCASE));
+				data.push("# ", Translation.elementName(0, PLURAL ^ UPPERCASE), ", ", Translation.elementName(2, PLURAL ^ UPPERCASE), ", ", Translation.elementName(1, PLURAL ^ UPPERCASE));
 				for(i = 3; i < this.dimensions; i++)
-					data.push(", " + Translation.elementName(i, PLURAL ^ UPPERCASE));
+					data.push(", ", Translation.elementName(i, PLURAL ^ UPPERCASE));
 				data.push("\n");
 			}
-			data.push(this.elementList[0].length + " ");
-			data.push(this.elementList[2].length + " ");
-			data.push(this.elementList[1].length + " ");
+			data.push(this.elementList[0].length, " ", this.elementList[2].length, " ", this.elementList[1].length, " ");
 			for(i = 3; i < this.dimensions - 1; i++)					
-				data.push(this.elementList[i].length + " ");
-			data.push(this.elementList[this.dimensions - 1].length + "\n");
+				data.push(this.elementList[i].length, " ");
+			data.push(this.elementList[this.dimensions - 1].length, "\n");
 	}
 	
 	//Adds vertices. Fills in zeros if spaceDimensions < dimensions.
-	if(comments) {
-		data.push("\n# ");
-		data.push(Translation.elementName(0, PLURAL ^ UPPERCASE));
-		data.push("\n");
-	}
+	if(comments)
+		data.push("\n# ", Translation.elementName(0, PLURAL ^ UPPERCASE), "\n");
+
 	for(i = 0; i < this.elementList[0].length; i++) {
 		for(j = 0; j < this.dimensions - 1; j++) {
 			coord = this.elementList[0][i].coordinates[j];
 			if(coord === undefined)
 				data.push("0 ");
 			else
-				data.push(coord + " ");
+				data.push(coord, " ");
 		}
 		coord = this.elementList[0][i].coordinates[this.dimensions - 1];
 		if(coord === undefined)
 			data.push("0\n");
 		else
-			data.push(coord + "\n");
+			data.push(coord, "\n");
 	}
 	
 	//Adds faces, or copmonents for compound polygons.
 	if(this.dimensions >= 2) {
 		if(comments) {
-			if(this.dimensions === 2) {
-				data.push("\n# ");
-				data.push(Translation.get("component", PLURAL ^ UPPERCASE));
-				data.push("\n");
-			}
-			else {
-				data.push("\n# ");
-				data.push(Translation.elementName(2, PLURAL ^ UPPERCASE));
-				data.push("\n");
-			}
+			if(this.dimensions === 2)
+				data.push("\n# ", Translation.get("component", PLURAL ^ UPPERCASE), "\n");
+			else 
+				data.push("\n# ", Translation.elementName(2, PLURAL ^ UPPERCASE), "\n");
 		}
 		for(i = 0; i < this.elementList[2].length; i++) {
 			vertices = this.faceToVertices(i);
 			data.push(this.elementList[2][i].length);
 			for(j = 0; j < this.elementList[2][i].length; j++)
-				data.push(" " + vertices[j]);
+				data.push(" ", vertices[j]);
 			data.push("\n");
 		}
 	}
@@ -600,14 +566,12 @@ PolytopeC.prototype.saveAsOFF = function(comments) {
 	//Adds the rest of the elements.
 	for(var d = 3; d < this.dimensions; d++) {
 		if(comments) {
-			data.push("\n# ");
-			data.push(Translation.elementName(d, PLURAL ^ UPPERCASE));
-			data.push("\n");
+			data.push("\n# ", Translation.elementName(d, PLURAL ^ UPPERCASE), "\n");
 		}
 		for(i = 0; i < this.elementList[d].length; i++) {
 			data.push(this.elementList[d][i].length);
 			for(j = 0; j < this.elementList[d][i].length; j++)
-				data.push(" " + this.elementList[d][i][j]);
+				data.push(" ", this.elementList[d][i][j]);
 			data.push("\n");
 		}
 	}

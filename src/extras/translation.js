@@ -286,6 +286,15 @@ Translation.firstToUpper = function(str) {
 	return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+//Helper function for toAdjective.
+//To be called within the Ending class.
+//Turns everything except for the last word into an adjective and adds the last word unchanged.
+Translation._toAdjectiveBeforeLastWord = function(name, gender) {
+	var i = name.lastIndexOf(" ");
+	
+	return Translation.toAdjective(name.substr(0, i), gender) + name.substr(i);
+};
+
 //Helper array for toAdjective.
 //Stores some endings and what to do with them.
 //Sorted by alphabetical order of the strings, backwards!
@@ -326,21 +335,12 @@ Translation._endings = [
 		new Ending("ix", -1, "cal"), //Square heli(x/cal)
 		new Ending("ny", -1, "ical") //Octagonn(y/ical)
 	],
-	
-	//Spanish
-	//I HAVE TO DEAL WITH SOME CASES SEPARATELY!
-	/*Prisma X
-	Pirámide X
-	X -kis/-quis
-	Tego X
-	Teselación X
-	Hélice X*/
 	[
 		new Ending("da", -4, "iádic", SPANISH_MODIFIER), //D(íada/iádic[o/a])
 		new Ending("lda", -2, "ular"), //5-cel(da/ular)
 		new Ending("nda", -1, "áic", SPANISH_MODIFIER), //Rotund(a/áic[o/a])
 		new Ending("ia", 0, "l"), //Essenc(ia/ial)
-		new Ending("la", -1, "éic", SPANISH_MODIFIER), //Cupol(a/éic[o/a])
+		new Ending("la", -2, "idal"), //Cupo(la/idal)
 		new Ending("ula", -6, "angular"), //Estrella oct(ángula/angular)
 		new Ending("ma", -3, "ámic", SPANISH_MODIFIER), //Pentagr(ama/ámic[o/a])
 		new Ending("sma", -1, "átic", SPANISH_MODIFIER), //Prism(a/átic[o/a])
@@ -352,6 +352,7 @@ Translation._endings = [
 		new Ending("bo", -3, "úbic", SPANISH_MODIFIER), //C(ubo/úbic[o/a])
 		new Ending("do", -1, "", SPANISH_MODIFIER), //Cuadrad(o/[o/a])
 		new Ending("jo", -3, "icial"), //Simpl(ejo/icial)
+		new Ending("io", -1, "al"), //Girobifastigi(o/al)
 		new Ending("lo", -1, "ar"), //Ditel(o/ar)
 		new Ending("ángulo", -6, "angular"), //Tri(ángulo/angular)
 		new Ending("íngulo", -6, "ingular"), //Dispfnoc(íngulo/ingular)
@@ -361,24 +362,59 @@ Translation._endings = [
 		new Ending("to", -4, "áctic", SPANISH_MODIFIER), //Teseract(o/ic[o/a])
 		new Ending("nto", -1, "al"), //3-element(o/al)
 		new Ending("unto", 1, "ual"), //Punt(o/ual)
+		new Ending("is", Translation._toAdjectiveBeforeLastWord), //Dodecaedral pentakis
 		new Ending("ex", -2, "icial"), //Simpl(ex/icial)
 		new Ending("uz", 0, "ad", SPANISH_MODIFIER), //Pentacruz(ad[o/a])
-		new Ending("ié", -2, "odal"), //Trip(ié/odal)
+		new Ending("ié", -2, "odal") //Trip(ié/odal)
 	]
+];
+	
+//I have to deal with some special cases in toAdjective.
+//Some Spanish words have to be modified at the beginning.
+//E,g, Prisma triangular -> Prismático triangular.
+Translation._spanishFirstWordEndings = [
+	new Ending("nda", -1, "áic", SPANISH_MODIFIER), //Rotund(a/áic[o/a])
+	new Ending("ola", -2, "idal"), //Cupo(la/idal)
+	new Ending("sma", -1, "átic", SPANISH_MODIFIER), //Prism(a/átic[o/a])
+	new Ending("ce", -5, "elicoidal"), //H(élice/elicoidal)
+	new Ending("mide", -5, "amidal"), //Pir(ámide/amidal)
+	new Ending("ón", -4, "d", SPANISH_MODIFIER), //Tesela(ción/d[o/a])
+	new Ending("go", -1, "átic", SPANISH_MODIFIER) //Teg(o/mátic[o/a])
 ];
 
 //Converts a polytope name into an adjective, possibly depending on the gender of the substantive it modifies (e.g. in Spanish or German).
 //E.g. cube -> cubical, sphenocorona -> sphenocoronal, etc.
-//Goes through _endings in a modified binary search.
 //If there's an ending match, the transformation done will correspond to the longest match.
 //If no ending matches, the default is to leave the name as is.
 Translation.toAdjective = function(name, gender) {
+	var endingIndx;
+	
+	//Checks a few special cases in Spanish.
+	if(LANGUAGE === SPANISH) {
+		var i = name.indexOf(" "), firstWord = name.substr(0, i);
+		endingIndx = Translation._findEnding(firstWord, Translation._spanishFirstWordEndings);
+		if(endingIndx !== -1)
+			return Translation._spanishFirstWordEndings[endingIndx].changeEnding(firstWord, gender) + name.substr(i);
+	}
+		
+	endingIndx = Translation._findEnding(name, Translation._endings[LANGUAGE])
+	
+	if(endingIndx !== -1)		
+		return Translation._endings[LANGUAGE][endingIndx].changeEnding(name, gender);
+	return name;
+};
+
+//Helper function for toAdjective.
+//Finds the ending that fits a string among a list of endings.
+//Returns its index. -1 if no ending fits.
+//Uses a modified binary search.
+Translation._findEnding = function (name, endings) {
 	var first,
 	mid,
 	last,
 	firstMatch = 0, 
-	lastMatch = Translation._endings[LANGUAGE].length - 1,
-	ending, endingStr,
+	lastMatch = endings.length - 1,
+	endingStr,
 	k = 1;
 	
 	//Adds one letter of name at a time.
@@ -425,19 +461,18 @@ Translation.toAdjective = function(name, gender) {
 	}	
 	
 	//If at some point, only one match fits, we check if it fits the whole string.
-	ending = Translation._endings[LANGUAGE][firstMatch],
-	endingStr = ending.string;
+	endingStr = endings[firstMatch].string;
 	if(firstMatch === lastMatch) {
-		for(; k <= ending.string.length; k++)
+		for(; k <= endingStr.length; k++)
 			//No match.
 			if(name.charAt(name.length - k).toLowerCase() !== endingStr.charAt(endingStr.length - k).toLowerCase())
-				return name;
+				return -1;
 		//If the match does fit, we do the corresponding ending change.
-		return Translation._endings[LANGUAGE][firstMatch].changeEnding(name, gender);
+		return firstMatch;
 	}
 	
 	//No match either.
-	return name;
+	return -1;
 };
 
 //The ID of a word/message is determined by its property name in the TRANSLATIONS object.
@@ -736,6 +771,17 @@ Translation.greekPrefix = function(n, options) {
 Translation.regularPolygonName = function(n, d, options) {
 	if(d === undefined)
 		d = 1;
+	//"Crossed" polygons, as in the crossed pentagrammic antiprism.
+	else if(d > n / 2) {
+		switch(LANGUAGE) {
+			case ENGLISH:
+				if(options & UPPERCASE)
+					return "Crossed " + Translation.regularPolygonName(n, n-d, options & PLURAL);
+				return "crossed " + Translation.regularPolygonName(n, n-d, options & PLURAL);
+			case SPANISH:
+				return Translation.regularPolygonName(n, n - d, options) + " cruzado" + (options & PLURAL ? "s" : "");
+		}
+	}
 	
 	var res;
 	//I just need a quick to calculate function on n and d
@@ -894,6 +940,7 @@ Translation.regularPolygonName = function(n, d, options) {
 	}
 	
 	//Adds plural and uppercase.
+	//The plurals aren't always like this in the languages below, but they work for all polygon names.
 	if(options & PLURAL) {
 		switch(LANGUAGE) {
 			case ENGLISH:

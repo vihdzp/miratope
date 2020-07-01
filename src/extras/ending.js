@@ -4,23 +4,37 @@
 //sliceDepth: The negative of how many characters at the end are removed.
 //newEnding: the new characters added.
 //genderModificationType: Does different things depending of the gender of the substantive.
+
+//There's a second constructor, that takes only a string and a custom function.
+//sliceDepth doubles as this custom function if newEnding is undefined.
 function Ending(string, sliceDepth, newEnding, genderModificationType) {
 	this.string = string;
-	this.sliceDepth = sliceDepth;
-	this.newEnding = newEnding;
-	this.genderModificationType = genderModificationType;
+	if(newEnding === undefined)
+		this.customFunction = sliceDepth;
+	else {
+		this.sliceDepth = sliceDepth;
+		this.newEnding = newEnding;
+		this.genderModificationType = genderModificationType;
+	}
 };
 
 const SPANISH_MODIFIER = 0;
+const GERMAN_MODIFIER = 1;
 //Adds a gender modifier at the end of a word.
+//May require some extra logic in case some words behave weirdly.
 Ending.prototype.genderModifier = function(gender) {
 	switch(this.genderModificationType) {
-		case undefined:
+		case undefined: //Does not modify a word at all.
 			return "";
-		case SPANISH_MODIFIER:
-			if(gender === MALE)
-				return "o";
+		case SPANISH_MODIFIER: //Adds an o for masculine nouns, an a for femenine nouns.
+			if(gender === MALE)	return "o";
 			return "a";
+		case GERMAN_MODIFIER: //Adds an er for masculine nouns, an e for femenine nouns, and an es for netural nouns.
+			switch(gender) {
+				case MALE: return "er";
+				case FEMALE: return "e";
+				default: return "es";
+			}
 		default:
 			throw new Error("Invalid gender modifier!");
 	}
@@ -28,9 +42,12 @@ Ending.prototype.genderModifier = function(gender) {
 
 //Changes the ending of a word, depending on the slice depth and the new ending.
 Ending.prototype.changeEnding = function(name, gender) {
-	if(!this.sliceDepth)
-		return name + this.newEnding;
-	return name.slice(0, this.sliceDepth) + this.newEnding + this.genderModifier(gender);
+	if(this.customFunction === undefined) {
+		if(this.sliceDepth === 0)
+			return name + this.newEnding;
+		return name.slice(0, this.sliceDepth) + this.newEnding + this.genderModifier(gender);
+	}
+	return this.customFunction(name, gender);
 };
 
 //Compares the kth to last (and therefore the last k characters backwards) of name with _endings kth entry, 
