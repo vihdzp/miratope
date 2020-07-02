@@ -249,6 +249,7 @@ PolytopeS.prototype.toPolytopeC = function(maxDomains) {
 		console.log(simplifier, this.simplifierCosets(simplifier));
 		elementSimplifiers.push(simplifier);
 	}
+	elementSimplifiers.push(ascendingSimplifiers[this.dimensions]);
 	//Maps each flag to a representative flag of the subwhatever
 	//fixing that flag's vertex-edge/edge-face/etc pair.
 	var intersectionSimplifiers = [];
@@ -258,6 +259,7 @@ PolytopeS.prototype.toPolytopeC = function(maxDomains) {
 		console.log(simplifier, this.simplifierCosets(simplifier));
 		intersectionSimplifiers.push(simplifier);
 	}
+	intersectionSimplifiers.push(ascendingSimplifiers[this.dimensions - 1]);
 	//Vertices are inherently different from other elements, so compute them separately.
 	var vertices = [];
 	for(var i = 0; i < domains.length; i++) {
@@ -276,7 +278,7 @@ PolytopeS.prototype.toPolytopeC = function(maxDomains) {
 	//Map representatives to IDs.
 	var locations = [];
 	var locationsLengths = [];
-	for(var i = 0; i < this.dimensions; i++) {
+	for(var i = 0; i < this.dimensions + 1; i++) {
 		var locationsRow = {};
 		var nextID = 0;
 		for(var j = 0; j < domains.length; j++) {
@@ -295,7 +297,7 @@ PolytopeS.prototype.toPolytopeC = function(maxDomains) {
 	console.log(locations, locationsLengths);
 	console.log("Higher elements")
 	var elems = [vertices];
-	for(var i = 1; i < this.dimensions; i++) {
+	for(var i = 1; i < this.dimensions + 1; i++) {
 		//TODO rename this to something better
 		var someElems = [];
 		for(var j = 0; j < locationsLengths[i]; j++)
