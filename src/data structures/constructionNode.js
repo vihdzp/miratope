@@ -15,14 +15,55 @@ const MULTIPRISM = 2;
 const ANTIPRISM = 3;
 //Has a single child from which a pyramid is built.
 const PYRAMID = 4;
-//Has two children n, d, representing the regular polygon {n/d}.
-const POLYGON = 5;
+//Has a single child from which a cupola is built.
+const CUPOLA = 5;
+//Has two children n, d, representing the regular polygonal small base {n/d}.
+const CUPLOID = 6;
+//Has two children n, d, representing the regular polygonal base {n/d}.
+const CUPBLEND = 7;
+//Has two children n, d, representing the regular polygonal base {n/d}.
+const POLYGON = 8;
 //Has a single string as a child, representing a polytope's name in Miratope's library.
-const NAME = 6;
+const NAME = 9;
 
 function ConstructionNode(type, children) {
 	this.type = type;
 	this.children = children;
+	
+	switch(type) {
+		case POLYGON: //The gender of the plain polygon names
+		case POLYTOPEC: //The gender of the plain n-tope names.
+		case MULTIPRISM: //The gender of the word "multiprism".
+		case ANTIPRISM: //The gender of the word "antiprism".
+			switch(LANGUAGE) {
+				case SPANISH: this.gender = MALE; break;
+				case GERMAN: this.gender = NEUTER; break;
+				default: break;
+			}
+			break;
+		case PYRAMID: //The gender of the word "pyramid".
+		case CUPOLA: //The gender of the word "cupola".
+			switch(LANGUAGE) {
+				case SPANISH:
+				case GERMAN: this.gender = FEMALE; break;
+				default: break;;
+			}
+			break;
+		case CUPBLEND: //The gender of the word "cupolaic blend".
+			switch(LANGUAGE) {
+				case SPANISH: this.gender = FEMALE; break;
+				default: break;;
+			}
+			break;
+		case CUPLOID: //The gender of the word "cuploid".
+			switch(LANGUAGE) {
+				case SPANISH: this.gender = MALE; break;
+				default: break;;
+			}
+			break;
+	}
+	
+	this.setGenders();
 };
 
 ConstructionNode.prototype.getName = function() {
@@ -42,11 +83,17 @@ ConstructionNode.prototype.getName = function() {
 			}
 			return Translation.multiprism(this.children);
 		case ANTIPRISM:
-			return Translation.antiprism(this.children[0]);
+			return Translation.familyMember(this.children[0], "antiprism", this.gender);
 		case PYRAMID:
-			return Translation.pyramid(this.children[0]);
+			return Translation.familyMember(this.children[0], "pyramid", this.gender);
+		case CUPOLA:		
+			return Translation.familyMember(this.children[0], "cupola", this.gender);
+		case CUPLOID:		
+			return Translation.familyMember(this.children[0], "cuploid", this.gender);
+		case CUPBLEND:		
+			return Translation.familyMember(this.children[0], "cupolaicBlend", this.gender);
 		case POLYGON:
-			return Translation.regularPolygonName(this.children[0], this.children[1]);
+			return Translation.regularPolygonName(this.children[0], this.children[1], 0, this.gender);
 		case NAME:
 			return Translation.get(this.children[0]);
 		default:
@@ -54,9 +101,16 @@ ConstructionNode.prototype.getName = function() {
 	}
 };
 
-ConstructionNode.prototype.getChildrenNames = function() {
-	var childrenNames = [];
-	for(var i = 0; i < this.children.length; i++)
-		childrenNames.push(this.children[i].getName());
-	return childrenNames;
+//Sets the gender of the noun representing the polytope type at all children nodes.
+//e.g. in Spanish, we'd say "prisma cupoidal pentagrámico cruzado", not 
+//"prisma cupoidal pentagrámica cruzada"; even though "cúpula" is femenine,
+//the male "prisma" takes over.
+ConstructionNode.prototype.setGenders = function() {
+	for(var i = 0; i < this.children.length; i++) {
+		var child = this.children[i];
+		if(child.setGenders) {
+			child.gender = this.gender;
+			child.setGenders();
+		}
+	}
 };

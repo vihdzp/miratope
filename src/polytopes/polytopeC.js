@@ -329,7 +329,7 @@ PolytopeC._getIndexOfProduct = function(m, i, n, j, P, Q, memoizer) {
 	//memoizer[m][n] counts the number of such elements that we have to skip before we reach the multiplication we actually care about.
 	//This number is found recursively, so we memoize to calculate it more efficiently.
 	//offset calculates the index of our product within the products of elements of the same dimensions,
-	//simply by recalling this last ordering is lexicographic.
+	//simply by recalling that this last ordering is lexicographic.
 	var offset = (i * Q.elementList[n].length) + j;
 	
 	if(memoizer[m]) {
@@ -354,9 +354,8 @@ PolytopeC.uniformAntiprism = function(n, d) {
 	var x = n / d,
 	scale = 2 * Math.sin(Math.PI / x), //Guarantees an unit edge length polytope.
 	height = Math.sqrt((Math.cos(Math.PI / x) - Math.cos(2 * Math.PI / x)) / 2) / scale, //Half of the distance between bases.
-	newElementList = [[], [], [], [[]]],
-	i = 0,
-	base1 = [], base2 = []; //The edges in the bases.
+	base1 = [], base2 = [], newElementList = [[], [], [base1, base2], [[]]],
+	i = 0; //The edges in the bases.
 	
 	while(i < 2 * (n - 1)) {
 		//Vertices.
@@ -391,14 +390,193 @@ PolytopeC.uniformAntiprism = function(n, d) {
 	newElementList[2].push([2 * i, 2 * i + 1, 0]);
 	base2.push(2 * i + 1);
 	
-	newElementList[2].push(base1, base2);
-	
 	//Adds component.
 	for(i = 0; i < 2 * (n + 1); i++)
 		newElementList[3][0].push(i);
 	
 	return new PolytopeC(newElementList, new ConstructionNode(ANTIPRISM, [new ConstructionNode(POLYGON, [n, d])]));
-}	
+};
+
+//Creates an {n / d} cupola with regular faces.
+PolytopeC.cupola = function(n, d) {
+	if(d === undefined)
+		d = 1;
+	var x = n / d,
+	r1 = 1 / (2 * Math.sin(Math.PI / x)), //Radius of the smaller base.
+	r2 = 1 / (2 * Math.sin(Math.PI / (2 * x))), //Radius of the larger base.
+	t = 1 / (2 * Math.tan(Math.PI / x)) - 1 / (2 * Math.tan(Math.PI / (2 * x))), //Temporary variable.
+	h0 = Math.sqrt(1 - t * t), //Distance between bases.
+	h1 = ((r2 * r2 - r1 * r1) / h0 + h0) / 2, //Distance between circumcenter and smaller base.
+	h2 = h1 - h0, //Distance between circumcenter and larger base.
+	base1 = [], base2 = [], newElementList = [[], [], [base1, base2], [[]]], //List of elements of the cupola.
+	i;
+	
+	for(i = 0; i < n - 1; i++) {
+		//Small base's vertices.
+		newElementList[0].push(new Point([r1 * Math.cos(2 * Math.PI * (i / x)), r1 * Math.sin(2 * Math.PI * (i / x)), h1]));
+		//Small base's edges.
+		newElementList[1].push([i, i + 1]);
+		//Connecting edges.
+		newElementList[1].push([i, n + 2 * i]);
+		newElementList[1].push([i, n + 2 * i + 1]);
+		//Triangles.
+		newElementList[2].push([3 * i + 1, 3 * i + 2, 3 * n + 2 * i]);
+		//Squares.		
+		newElementList[2].push([3 * i + 2, 3 * n + 2 * i + 1, 3 * i + 4, 3 * i]);
+		//Small base.
+		base1.push(3 * i);
+	}
+	
+	//Adds last elements.
+	newElementList[0].push(new Point([r1 * Math.cos(2 * Math.PI * (i / x)), r1 * Math.sin(2 * Math.PI * (i / x)), h1]));
+	newElementList[1].push([i, 0]);
+	newElementList[1].push([i, n + 2 * i]);
+	newElementList[1].push([i, n + 2 * i + 1]);
+	newElementList[2].push([3 * i + 1, 3 * i + 2, 3 * n + 2 * i]);
+	newElementList[2].push([3 * i + 2, 3 * n + 2 * i + 1, 1, 3 * i]);
+	base1.push(3 * i);
+	
+	for(i = 0; i < 2 * n - 1; i++) {
+		//Big base's vertices.
+		newElementList[0].push(new Point([r2 * Math.cos(Math.PI * ((i - 0.5) / x)), r2 * Math.sin(Math.PI * ((i - 0.5) / x)), h2]));
+		//Big base's edges.
+		newElementList[1].push([n + i, n + i + 1]);
+		//Big base.
+		base2.push(3 * n + i);
+	}
+	//Adds last elements.
+	newElementList[0].push(new Point([r2 * Math.cos(Math.PI * ((i - 0.5) / x)), r2 * Math.sin(Math.PI * ((i - 0.5) / x)), h2]));
+	newElementList[1].push([n + i, n]);
+	base2.push(3 * n + i);
+	
+	for(i = 0; i < 2 * n + 2; i++)
+		newElementList[3][0].push(i);
+	
+	return new PolytopeC(newElementList, new ConstructionNode(CUPOLA, [new ConstructionNode(POLYGON, [n, d])]));
+};
+
+//Creates an {n / d} cuploid with regular faces.
+PolytopeC.cuploid = function(n, d) {
+	if(d === undefined)
+		d = 1;
+	var x = n / d,
+	r1 = 1 / (2 * Math.sin(Math.PI / x)), //Radius of the smaller base.
+	r2 = 1 / (2 * Math.sin(Math.PI / (2 * x))), //Radius of the larger base.
+	t = 1 / (2 * Math.tan(Math.PI / x)) - 1 / (2 * Math.tan(Math.PI / (2 * x))), //Temporary variable.
+	h0 = Math.sqrt(1 - t * t), //Distance between bases.
+	h1 = ((r2 * r2 - r1 * r1) / h0 + h0) / 2, //Distance between circumcenter and smaller base.
+	h2 = h1 - h0, //Distance between circumcenter and larger base.
+	base = [], newElementList = [[], [], [base], [[]]], //List of elements of the cupola.
+	i;
+	
+	for(i = 0; i < n - 1; i++) {
+		//Small base's vertices.
+		newElementList[0].push(new Point([r1 * Math.cos(2 * Math.PI * (i / x)), r1 * Math.sin(2 * Math.PI * (i / x)), h1]));
+		//Small base's edges.
+		newElementList[1].push([i, i + 1]);
+		//Connecting edges.
+		newElementList[1].push([i, n + 2 * i]);
+		newElementList[1].push([i, n + 2 * i + 1]);
+		//Triangles.
+		newElementList[2].push([3 * i + 1, 3 * i + 2, 3 * n + 2 * i]);
+		//Squares.		
+		newElementList[2].push([3 * i + 2, 3 * n + 2 * i + 1, 3 * i + 4, 3 * i]);
+		//Small base.
+		base.push(3 * i);
+	}
+	
+	//Adds last elements.
+	newElementList[0].push(new Point([r1 * Math.cos(2 * Math.PI * (i / x)), r1 * Math.sin(2 * Math.PI * (i / x)), h1]));
+	newElementList[1].push([i, 0]);
+	newElementList[1].push([i, n + 2 * i]);
+	newElementList[1].push([i, n + 2 * i + 1]);
+	newElementList[2].push([3 * i + 1, 3 * i + 2, 3 * n + 2 * i]);
+	newElementList[2].push([3 * i + 2, 3 * n + 2 * i + 1, 1, 3 * i]);
+	base.push(3 * i);
+	
+	for(i = 0; i < 2 * n - 1; i++) {
+		//Big base's vertices.
+		newElementList[0].push(new Point([r2 * Math.cos(Math.PI * ((i - 0.5) / x)), r2 * Math.sin(Math.PI * ((i - 0.5) / x)), h2]));
+		//Big base's edges.
+		newElementList[1].push([n + i, n + i + 1]);
+	}
+	//Adds last elements.
+	newElementList[0].push(new Point([r2 * Math.cos(Math.PI * ((i - 0.5) / x)), r2 * Math.sin(Math.PI * ((i - 0.5) / x)), h2]));
+	newElementList[1].push([n + i, n]);
+	
+	for(i = 0; i < 2 * n + 1; i++)
+		newElementList[3][0].push(i);
+	
+	return new PolytopeC(newElementList, new ConstructionNode(CUPLOID, [new ConstructionNode(POLYGON, [n, d])]));
+};
+
+//Creates an {n / d} cupolaic blend with regular faces.
+PolytopeC.cupolaicBlend = function(n, d) {
+	if(d === undefined)
+		d = 1;
+	var x = n / d,
+	r1 = 1 / (2 * Math.sin(Math.PI / x)), //Radius of the smaller base.
+	r2 = 1 / (2 * Math.sin(Math.PI / (2 * x))), //Radius of the larger base.
+	t = 1 / (2 * Math.tan(Math.PI / x)) - 1 / (2 * Math.tan(Math.PI / (2 * x))), //Temporary variable.
+	h0 = Math.sqrt(1 - t * t), //Distance between bases.
+	h1 = ((r2 * r2 - r1 * r1) / h0 + h0) / 2, //Distance between circumcenter and smaller base.
+	h2 = h1 - h0, //Distance between circumcenter and larger base.
+	base1 = [], base2 = [], newElementList = [[], [], [base1, base2], [[]]], //List of elements of the cupola.
+	i, even = true;
+	
+	for(i = 0; i < 2 * (n - 1); i++) {
+		//Small bases' vertices.
+		newElementList[0].push(new Point([r1 * Math.cos(Math.PI * (i / x)), r1 * Math.sin(Math.PI * (i / x)), h1]));
+		//Small bases' edges.
+		newElementList[1].push([i, i + 2]);
+		//Connecting edges.
+		newElementList[1].push([i, 2 * n + i]);
+		newElementList[1].push([i, 2 * n + i + 1]);
+		//Triangles.
+		newElementList[2].push([3 * i + 1, 3 * i + 2, 6 * n + i]);
+		//Squares.		
+		newElementList[2].push([3 * i + 2, 6 * n + i + 1, 3 * i + 7, 3 * i]);
+		//Small base.
+		if(even)
+			base1.push(3 * i);
+		else			
+			base2.push(3 * i);
+		even = !even;
+	}
+	
+	//Adds last elements.
+	newElementList[0].push(new Point([r1 * Math.cos(Math.PI * (i / x)), r1 * Math.sin(Math.PI * (i / x)), h1]));
+	newElementList[1].push([i, 0]);
+	newElementList[1].push([i, 2 * n + i]);
+	newElementList[1].push([i, 2 * n + i + 1]);
+	newElementList[2].push([3 * i + 1, 3 * i + 2, 6 * n + i]);	
+	newElementList[2].push([3 * i + 2, 6 * n + i + 1, 1, 3 * i]);
+	base1.push(3 * i);
+	i++;
+	
+	newElementList[0].push(new Point([r1 * Math.cos(Math.PI * (i / x)), r1 * Math.sin(Math.PI * (i / x)), h1]));
+	newElementList[1].push([i, 1]);
+	newElementList[1].push([i, 2 * n + i]);
+	newElementList[1].push([i, 2 * n]);
+	newElementList[2].push([3 * i + 1, 3 * i + 2, 6 * n + i]);	
+	newElementList[2].push([3 * i + 2, 6 * n, 4, 3 * i]);
+	base2.push(3 * i);
+	
+	for(i = 0; i < 2 * n - 1; i++) {
+		//Big base's vertices.
+		newElementList[0].push(new Point([r2 * Math.cos(Math.PI * ((i - 0.5) / x)), r2 * Math.sin(Math.PI * ((i - 0.5) / x)), h2]));
+		//Big base's edges.
+		newElementList[1].push([2 * n + i, 2 * n + i + 1]);
+	}
+	//Adds last elements.
+	newElementList[0].push(new Point([r2 * Math.cos(Math.PI * ((i - 0.5) / x)), r2 * Math.sin(Math.PI * ((i - 0.5) / x)), h2]));
+	newElementList[1].push([2 * n + i, 2 * n]);
+	
+	for(i = 0; i < 2 * n + 1; i++)
+		newElementList[3][0].push(i);
+	
+	return new PolytopeC(newElementList, new ConstructionNode(CUPBLEND, [new ConstructionNode(POLYGON, [n, d])]));
+};
 
 //Makes every vertex have dim coordinates either by adding zeros or removing numbers.
 PolytopeC.prototype.setSpaceDimensions = function(dim) {

@@ -46,7 +46,14 @@ var TRANSLATIONS = {
 	triangle: ["triangle", "triángulo", "Dreieck"],
 	triangleP: ["triangles", "triángulos", "Dreiecke"],
 	square: ["square", "cuadrado", "Quadrat"],
-	squareP: ["squares", "cuadrados", "Quadrate"]
+	squareP: ["squares", "cuadrados", "Quadrate"],
+	antiprism: ["antiprism", "antiprisma", "Antiprisma"],
+	antiprismP: ["antiprisms", "antiprismas", "Antiprismen"],
+	cupola: ["cupola", "cúpula", "Kuppel"],
+	cupolaP: ["cupolae", "cúpulas", "Kuppeln"],
+	cuploid: ["cuploid", "cuploide"],
+	cuploidP: ["cuploids", "cuploides"],
+	cupolaicBlend: ["cupolaic blend", "mezcla cupular"]
 };
 
 //The name for an d-element, according to http://os2fan2.com/gloss/pglosstu.html
@@ -291,8 +298,16 @@ Translation.firstToUpper = function(str) {
 //Turns everything except for the last word into an adjective and adds the last word unchanged.
 Translation._toAdjectiveBeforeLastWord = function(name, gender) {
 	var i = name.lastIndexOf(" ");
-	
 	return Translation.toAdjective(name.substr(0, i), gender) + name.substr(i);
+};
+
+//Helper function for toAdjective.
+//Meant for Spanish.
+//To be called within the Ending class.
+//Turns everything except for the last word into an adjective and adds the last word with its grammatical gender modified accordingly.
+Translation._toAdjectiveBeforeLastWordGendered = function(name, gender) {
+	var i = name.lastIndexOf(" ");
+	return Translation.toAdjective(name.substr(0, i), gender) + name.substr(i, name.length - i - 1) + (gender === MALE ? "o" : "a");
 };
 
 //Helper array for toAdjective.
@@ -336,7 +351,8 @@ Translation._endings = [
 		new Ending("ny", -1, "ical") //Octagonn(y/ical)
 	],
 	[
-		new Ending("da", -4, "iádic", SPANISH_MODIFIER), //D(íada/iádic[o/a])
+		new Ending("zada", Translation._toAdjectiveBeforeLastWord), //Cúpula pentagrámica cruzada
+		new Ending("íada", -4, "iádic", SPANISH_MODIFIER), //D(íada/iádic[o/a])
 		new Ending("lda", -2, "ular"), //5-cel(da/ular)
 		new Ending("nda", -1, "áic", SPANISH_MODIFIER), //Rotund(a/áic[o/a])
 		new Ending("ia", 0, "l"), //Essenc(ia/ial)
@@ -352,7 +368,7 @@ Translation._endings = [
 		new Ending("ium", -2, "al"), //Girobifastigi(um/al)
 		new Ending("bo", -3, "úbic", SPANISH_MODIFIER), //C(ubo/úbic[o/a])
 		new Ending("co", Translation._toAdjectiveBeforeLastWord), //Heptadecaedro diestrófico
-		new Ending("ado", Translation._toAdjectiveBeforeLastWord), //Pentagrama cruzado
+		new Ending("ado", Translation._toAdjectiveBeforeLastWordGendered), //Pentagrama cruzado
 		//Icosaedro estrellado
 		new Ending("rado", -1, "", SPANISH_MODIFIER), //Cuadrad(o/[o/a])
 		new Ending("jo", -3, "icial"), //Simpl(ejo/icial)
@@ -381,7 +397,7 @@ Translation._endings = [
 //E,g, Prisma triangular -> Prismático triangular.
 Translation._spanishFirstWordEndings = [
 	new Ending("nda", -1, "áic", SPANISH_MODIFIER), //Rotund(a/áic[o/a])
-	new Ending("ola", -2, "idal"), //Cupo(la/idal)
+	new Ending("ula", -5, "upular"), //C(úpula/upular)
 	new Ending("sma", -1, "átic", SPANISH_MODIFIER), //Prism(a/átic[o/a])
 	new Ending("ce", -5, "elicoidal"), //H(élice/elicoidal)
 	new Ending("mide", -5, "amidal"), //Pir(ámide/amidal)
@@ -513,30 +529,16 @@ Translation.plain = function(n, dimension, options) {
 	}
 };
 
-//Converts a constructionNode into its pyramid's name.
-Translation.pyramid = function(node) {
+//Converts a constructionNode into its the corresponding member of the specified family's name.
+Translation.familyMember = function(node, family, gender) {
 	var name = node.getName();
 	switch(LANGUAGE) {
 		case ENGLISH:
-			return Translation.toAdjective(name) + " " + Translation.get("pyramid");
+			return Translation.toAdjective(name) + " " + Translation.get(family);
 		case SPANISH:
-			return Translation.get("pyramid") + " " + Translation.toAdjective(name, FEMALE);
+			return Translation.get(family) + " " + Translation.toAdjective(name, gender);
 		case GERMAN:
-			return Translation.toAdjective(name, FEMALE) + " " + Translation.get("Pyramide");
-		default:
-			return name;
-	}
-}
-
-Translation.antiprism = function(node) {
-	var name = node.getName();
-	switch(LANGUAGE) {
-		case ENGLISH:
-			return Translation.toAdjective(name) + " " + Translation.get("antiprism");
-		case SPANISH:
-			return Translation.get("antiprisma") + " " + Translation.toAdjective(name, MALE);
-		case GERMAN:
-			return Translation.toAdjective(name, NEUTER) + " " + Translation.get("Prisma");
+			return Translation.toAdjective(name, gender) + " " + Translation.get(family);
 		default:
 			return name;
 	}
@@ -777,7 +779,7 @@ Translation.greekPrefix = function(n, options) {
 //Gives a name for {n / d}.
 //For polygons with up to five non-compound stellations, uses the [small/-/medial/great/grand] n-gram naming scheme.
 //For everything else, uses d-strophic n-gon.
-Translation.regularPolygonName = function(n, d, options) {
+Translation.regularPolygonName = function(n, d, options, gender) {
 	if(d === undefined)
 		d = 1;
 	//"Crossed" polygons, as in the crossed pentagrammic antiprism.
@@ -785,10 +787,10 @@ Translation.regularPolygonName = function(n, d, options) {
 		switch(LANGUAGE) {
 			case ENGLISH:
 				if(options & UPPERCASE)
-					return "Crossed " + Translation.regularPolygonName(n, n-d, options & PLURAL);
-				return "crossed " + Translation.regularPolygonName(n, n-d, options & PLURAL);
+					return "Crossed " + Translation.regularPolygonName(n, n - d, options & PLURAL);
+				return "crossed " + Translation.regularPolygonName(n, n - d, options & PLURAL);
 			case SPANISH:
-				return Translation.regularPolygonName(n, n - d, options) + " cruzado" + (options & PLURAL ? "s" : "");
+				return Translation.regularPolygonName(n, n - d, options) + " cruzad" + (gender === MALE ? "o" : "a") + (options & PLURAL ? "s" : "");
 		}
 	}
 	
@@ -942,8 +944,8 @@ Translation.regularPolygonName = function(n, d, options) {
 				case ENGLISH:
 					res = Translation.greekPrefix(d) + "strophic " + Translation.greekPrefix(n) + "gram"; break;
 				case SPANISH:
-					res = Translation.greekPrefix(n) + "grama " + Translation.greekPrefix(d) + "estrófico"; break;
-				case GERMAN:
+					res = Translation.greekPrefix(n) + "grama " + Translation.greekPrefix(d) + "estrófic" + (gender === MALE ? "o" : "a"); break;
+				case GERMAN: //Todo: conjugate strophisch.
 					res = Translation.firstToUpper(Translation.greekPrefix(d)) + "strophisches " + Translation.greekPrefix(n, UPPERCASE) + "gramm"; break;
 			}
 	}
