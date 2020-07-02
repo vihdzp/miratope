@@ -504,8 +504,10 @@ Translation.plain = function(n, dimension, options) {
 			return Translation.greekPrefix(n, options & UPPERCASE) + Translation.polytopeEnding(dimension, options & PLURAL);
 		case GERMAN:		
 			return Translation.greekPrefix(n, UPPERCASE) + Translation.polytopeEnding(dimension, options & PLURAL);
-		case SPANISH:			
-			return Translation._lastVowelTilde(Translation.greekPrefix(n, options & UPPERCASE)) + Translation.polytopeEnding(dimension, options & PLURAL);
+		case SPANISH:
+			if(dimension === 2) //"Pentágono" en vez de "pentagono".
+				return Translation._lastVowelTilde(Translation.greekPrefix(n, options & UPPERCASE)) + "gono" + (options & PLURAL ? "s" : "");
+			return Translation.greekPrefix(n, options & UPPERCASE) + Translation.polytopeEnding(dimension, options & PLURAL);
 		default:
 			return n;
 	}
