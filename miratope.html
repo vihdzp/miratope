@@ -13,6 +13,7 @@
 	<script src="src/geometry/point.js"></script> <!--Class for points.-->
 	<script src="src/geometry/space.js"></script> <!--Class for calculations related to points.-->
 	<script src="src/data structures/constructionNode.js"></script> <!--Representation of how a polytope is built.-->
+	<script src="src/extras/caret.js"></script> <!--Helper class for OFF importing.-->
 	<script src="src/polytopes/polytope.js"></script> <!--Polytope master class.-->
 	<script src="src/polytopes/polytopeC.js"></script> <!--The class for polytopes in combinatorial representation.-->
 	<script src="src/polytopes/polytopeS.js"></script> <!--The class for polytopes in symmetry representation.-->
@@ -22,7 +23,12 @@
 <body>
 	<!-- Used to download files. -->
 	<a id = "download"></a>
+	<!--For OFF import, should get placed somewhere more appropriate eventually-->
+	OFF import:<input type="file" id="file-input"/>
 	<script>
+		//Configure OFF import button.
+		document.getElementById('file-input').addEventListener('change', PolytopeC.openOFF, false);
+		var P; //Test variable. OFF imports to here.
 		//Basic variables.
 		var fillType = 0;
 		var matrix;

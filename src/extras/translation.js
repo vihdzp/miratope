@@ -28,6 +28,8 @@ var LANGUAGE = ENGLISH;
 //The TRANSLATIONS object contains Translation of all words or messages not covered by other functions.
 //Each entry consists in an array of Translation, in the order of the constants ENGLISH, SPANISH, ...
 //An entry with a capital P at the end represents the plural.
+//I don't know if I should remove the plurals (maybe I should remove options altogether)...
+//I'll do so if I don't see a use for them.
 var TRANSLATIONS = {
 	polytope: ["polytope", "politopo", "Polytop"],
 	polytopeP: ["polytopes", "politopos", "Polytope"],
@@ -53,7 +55,13 @@ var TRANSLATIONS = {
 	cupolaP: ["cupolae", "cúpulas", "Kuppeln"],
 	cuploid: ["cuploid", "cuploide"],
 	cuploidP: ["cuploids", "cuploides"],
-	cupolaicBlend: ["cupolaic blend", "mezcla cupular"]
+	cupolaicBlend: ["cupolaic blend", "mezcla cupular"],
+	cupolaicBlends: ["cupolaic blends", "mezclas cupulares"],
+	invalidNumber: ["Invalid number!", "¡Número inválido!", "Ungültige Zahl!"],
+	invalidFile: ["Invalid file!", "¡Archivo inválido!", "Ungültige Datei!"],
+	unexpectedEOF: ["Unexpected end of file!", "¡Fin del archivo no esperado!", "Unerwartetes Ende der Datei!"],
+	line: ["line", "línea", "Zeile"],
+	column: ["column", "columna", "Spalte"]
 };
 
 //The name for an d-element, according to http://os2fan2.com/gloss/pglosstu.html

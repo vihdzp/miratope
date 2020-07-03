@@ -578,6 +578,137 @@ PolytopeC.cupolaicBlend = function(n, d) {
 	return new PolytopeC(newElementList, new ConstructionNode(CUPBLEND, [new ConstructionNode(POLYGON, [n, d])]));
 };
 
+PolytopeC.openOFF = function(e) {	
+	var file = e.target.files[0];
+	if (!file)
+		return;
+	var reader = new FileReader(),
+	contents, //Contents of OFF file.	
+	caret, //Caret for reading the OFF file.
+	dimensions, //The number of dimensions of the OFF file's polytope.
+	elementList = [[]], //The elements of the described polytope.
+	elementCount = [], //The amount of vertices, edges, faces... elementCount[1] goes unused except for the special case of 2D components.
+	elCount = 0, //The number of facets in an element.
+	el, //An element.
+	face, //A face.
+	edgeList = [], //A dictionary mapping hashes of pairs of integers to edge indices.
+	fileName = e.target.files[0].name, //File name.
+	i, j, x, y, t; //Temp variables.
+	
+	reader.onload = function(e) {
+		caret = new Caret(e.target.result);
+		
+		dimensions = caret.readNumber();
+		//The file just starts with OFF.
+		if(isNaN(dimensions))
+			dimensions = 3;
+		
+		//Checks that the word OFF is the next thing on the file.
+		if(caret.readWord() !== "OFF")
+			caret.throwError("invalidFile");
+		
+		//Reads vertex amount.
+		if(dimensions >= 1) {
+			elementCount.push(caret.readNumber());
+			elementList.push([]);
+		}
+		//Reads face and edge amounts.
+		if(dimensions >= 3) {
+			elementCount.push(null, caret.readNumber());
+			caret.readWord(); //We can't actually care about the edge amount, since Stella itself ignores it.
+			elementList.push([], []);
+		}
+		//Reads component amount in the special 2OFF case.
+		else if(dimensions === 2) {
+			elementCount.push(caret.readNumber());
+			elementList.push([]);
+		}
+		//Reads higher element amounts.
+		for(i = 3; i < dimensions; i++) {
+			elementCount.push(caret.readNumber());
+			elementList.push([]);
+		}
+		
+		//Adds vertices.
+		for(i = 0; i < elementCount[0]; i++) {
+			el = [];
+			for(j = 0; j < dimensions; j++)
+				el.push(caret.readNumber());
+			elementList[0].push(new Point(el));
+		}
+		
+		if(dimensions >= 2) {
+			//Adds faces and edges (or compounds in the special case).
+			for(i = 0; i < elementCount[2]; i++) {
+				el = [];
+				face = [];
+				elCount = caret.readNumber();
+				
+				//Retrieves vertices.
+				for(j = 0; j < elCount; j++)
+					el.push(caret.readNumber());
+				
+				//Creates edges.
+				for(j = 0; j < elCount - 1; j++) {
+					//Orders the edge's vertices.
+					x = el[j];
+					y = el[j + 1];
+					if(x < y) {
+						t = x;
+						x = y;
+						y = t;
+					}
+					t = (x + y + 1) * (x + y) / 2 + y; //Cantor pairing function.
+					if(edgeList[t] === undefined) {
+						edgeList[t] = elementList[1].length;
+						elementList[1].push([x, y]);
+					}
+					face.push(edgeList[t]);
+				}
+				//Last edge.
+				x = el[0];
+				y = el[el.length - 1];
+				if(x < y) {
+					t = x;
+					x = y;
+					y = t;
+				}
+				t = (x + y + 1) * (x + y) / 2 + y; //Cantor pairing function.
+				if(edgeList[t] === undefined) {
+					edgeList[t] = elementList[1].length;
+					elementList[1].push([x, y]);
+				}
+				face.push(edgeList[t]);
+				
+				elementList[2].push(face);
+			}
+		}
+		
+		//Adds higher-dimensional elements.
+		for(i = 3; i < dimensions; i++) {
+			for(j = 0; j < elementCount[i]; j++) {
+				el = [];
+				elCount = caret.readNumber();
+				for(t = 0; t < elCount; t++)
+					el.push(caret.readNumber());
+				elementList[i].push(el);
+			}
+		}
+		
+		//THIS IS WRONG.
+		//I CAN'T JUST ASSUME THE POLYTOPE IS NOT A COMPOUND.
+		//I'LL FIX IT AS SOON AS I TEST THE REST OF THE CODE.
+		el = [];
+		for(i = 0; i < elementList[elementList.length - 2].length; i++)
+			el.push(i);
+		elementList[elementList.length - 1].push(el);
+		
+		P = new PolytopeC(elementList, new ConstructionNode(NAME, fileName));
+	};
+	
+	reader.readAsText(file);
+};
+
 //Makes every vertex have dim coordinates either by adding zeros or removing numbers.
 PolytopeC.prototype.setSpaceDimensions = function(dim) {
 	for(var i = 0; i < this.elementList[0].length; i++) {
