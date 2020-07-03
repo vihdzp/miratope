@@ -7,26 +7,39 @@
 
 //Has a single PolytopeC as a child.
 const POLYTOPEC = 0;
+
 //Has a single PolytopeS as a child.
 const POLYTOPES = 1;
+
 //Has the nodes representing the factors of a prism product as children.
 const MULTIPRISM = 2;
-//Represents an antiprism based on the child node.
+
+//Has the nodes representing the factors of a tegum product as children.
 const MULTITEGUM = 3;
+
+//Has the nodes representing the factors of a pyramid product as children.
+const MULTIPYRAMID = 4;
+
 //Represents an antiprism based on the child node.
-const ANTIPRISM = 4;
+const ANTIPRISM = 5;
+
 //Has a single child from which a pyramid is built.
-const PYRAMID = 5;
+const PYRAMID = 6;
+
 //Has a single child from which a cupola is built.
-const CUPOLA = 6;
+const CUPOLA = 7;
+
 //Has two children n, d, representing the regular polygonal small base {n/d}.
-const CUPLOID = 7;
+const CUPLOID = 8;
+
 //Has two children n, d, representing the regular polygonal base {n/d}.
-const CUPBLEND = 8;
+const CUPBLEND = 9;
+
 //Has two children n, d, representing the regular polygonal base {n/d}.
-const POLYGON = 9;
+const POLYGON = 10;
+
 //Has a single string as a child, representing a polytope's name in Miratope's library.
-const NAME = 10;
+const NAME = 11;
 
 function ConstructionNode(type, children) {
 	this.type = type;
@@ -75,21 +88,14 @@ ConstructionNode.prototype.getName = function() {
 			var poly = this.children[0];
 			return Translation.plain(poly.elementList[poly.elementList.length - 2].length, poly.dimensions);
 		case MULTIPRISM:
+			this.mergeChildren();
+			return Translation.multiFamily(this.children, "prism", "dyad", "prism", this.gender);
 		case MULTITEGUM:
-			//A multiprism of multiprisms is just a larger multiprism.
-			//Same for multitegums.
-			var oldLength = this.children.length;
-			for(var i = 0; i < oldLength; i++) {
-				if(this.children[i].type === this.type) {
-					for(var j = 0; j < this.children[i].children.length - 1; j++)
-						this.children.push(this.children[i].children.pop());
-					this.children[i] = this.children[i].children.pop();
-				}
-			}
-			if(this.type === MULTIPRISM)
-				return Translation.multiprism(this.children, this.gender);
-			else				
-				return Translation.multitegum(this.children, this.gender);
+			this.mergeChildren();
+			return Translation.multiFamily(this.children, "tegum", "dyad", "bipyramid", this.gender);
+		case MULTIPYRAMID:
+			this.mergeChildren();
+			return Translation.multiFamily(this.children, "pyramid", "point", "pyramid", this.gender);
 		case ANTIPRISM:
 			return Translation.familyMember(this.children[0], "antiprism", this.gender);
 		case PYRAMID:
@@ -122,3 +128,18 @@ ConstructionNode.prototype.setGenders = function() {
 		}
 	}
 };
+
+//A multiprism of multiprisms is just a larger multiprism, 
+//a multitegum of multitegums is just a larger multitegum, etc.
+//This function removes children nodes of the same type,
+//and replaces them by their children.
+ConstructionNode.prototype.mergeChildren = function() {
+	var oldLength = this.children.length;
+	for(var i = 0; i < oldLength; i++) {
+		if(this.children[i].type === this.type) {
+			for(var j = 0; j < this.children[i].children.length - 1; j++)
+				this.children.push(this.children[i].children.pop());
+			this.children[i] = this.children[i].children.pop();
+		}
+	}
+}

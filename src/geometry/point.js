@@ -103,6 +103,12 @@ Point.padRight = function(point, n) {
 		coordinates.push(0);
 	return new Point(coordinates);
 };
+
+//Adds the given coordinate at the end of the coordinate list.
+Point.prototype.addCoordinate = function(coord) {
+	this.coordinates.push(coord);
+	return this;
+};
 	
 //Converts to the Vector3 class used by three.js.
 //Meant only for 3D points.

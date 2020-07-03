@@ -254,21 +254,37 @@ PolytopeC.regularPolygonG = function(n, d) {
 	
 	return new PolytopeC(els, new ConstructionNode(POLYGON, [n, d]));
 };
+
+//PolytopeC._prismProduct, but also supports P being an array.
+PolytopeC.prismProduct = function(P, Q) {
+	if(P.length === 0)
+		return PolytopeC.nullitope();
 	
+	var constructions = [], res;
+	
+	//If P is an array:
+	if(P.length && P.length >= 1) {
+		res = P.pop();
+		constructions.push(res.construction);
+		while(P.length) {
+			//Stores the constructions of the elements of P in a temporary array.
+			constructions.push(P[P.length - 1].construction);
+			res = PolytopeC._prismProduct(P.pop(), res);
+		}
+		res.construction = new ConstructionNode(MULTIPRISM, constructions);
+		return res;
+	}
+	
+	//If P and Q are just two polytopes:
+	res = PolytopeC._prismProduct(P, Q);
+	res.construction = new ConstructionNode(MULTIPRISM, [P.construction, Q.construction]);
+	return res;
+};
+
 //Calculates the prism product, or rather Cartesian product, of P and Q.
 //Q can be excluded if P is instead the array of polytopes to multiply.
 //Vertices are the products of vertices, edges are the products of vertices with edges or viceversa, and so on.
-PolytopeC._constructionsTMP = [];
-PolytopeC.prismProduct = function(P, Q) {
-	//If P is an array:
-	if(P.length) {
-		//Stores the constructions of the elements of P in a temporary array.
-		PolytopeC._constructionsTMP.push(P[P.length - 1].construction);
-		if(P.length === 1)
-			return P[0];
-		return PolytopeC.prismProduct(P.pop(), PolytopeC.prismProduct(P));
-	}
-	
+PolytopeC._prismProduct = function(P, Q) {	
 	//Deals with the point, nullitope cases.
 	if(P.dimensions === 0)
 		return Q;
@@ -314,16 +330,7 @@ PolytopeC.prismProduct = function(P, Q) {
 		}
 	}
 	
-	//Empties the temporary construction array, creates the construction node.
-	if(PolytopeC._constructionsTMP.length > 0) {
-		var constructions = [];
-		do
-			constructions.push(PolytopeC._constructionsTMP.pop());	
-		while(PolytopeC._constructionsTMP.length > 0);
-	
-		return new PolytopeC(newElementList, new ConstructionNode(MULTIPRISM, constructions));
-	}
-	return new PolytopeC(newElementList, new ConstructionNode(MULTIPRISM, [P.construction, Q.construction]));
+	return new PolytopeC(newElementList); //The construction gets added in the main function.
 };
 
 //Helper function for prismProduct.
@@ -351,19 +358,36 @@ PolytopeC._getIndexOfPrismProduct = function(m, i, n, j, P, Q, memoizer) {
 	return memoizer[m][n] + offset;
 };
 
+//PolytopeC._tegumProduct, but also supports P being an array.
+PolytopeC.tegumProduct = function(P, Q) {
+	if(P.length === 0)
+		return PolytopeC.nullitope();
+	
+	var constructions = [], res;
+	
+	//If P is an array:
+	if(P.length && P.length >= 1) {
+		res = P.pop();
+		constructions.push(res.construction);
+		while(P.length) {
+			//Stores the constructions of the elements of P in a temporary array.
+			constructions.push(P[P.length - 1].construction);
+			res = PolytopeC._tegumProduct(P.pop(), res);
+		}
+		res.construction = new ConstructionNode(MULTITEGUM, constructions);
+		return res;
+	}
+	
+	//If P and Q are just two polytopes:
+	res = PolytopeC._tegumProduct(P, Q);
+	res.construction = new ConstructionNode(MULTITEGUM, [P.construction, Q.construction]);
+	return res;
+};
+
 //Calculates the tegum product, or rather the dual of the Cartesian product, of P and Q.
 //Q can be excluded if P is instead the array of polytopes to multiply.
 //Edges are the products of vertices, faces are the products of vertices with edges or viceversa, and so on.
-PolytopeC.tegumProduct = function(P, Q) {
-	//If P is an array:
-	if(P.length) {
-		//Stores the constructions of the elements of P in a temporary array.
-		PolytopeC._constructionsTMP.push(P[P.length - 1].construction);
-		if(P.length === 1)
-			return P[0];
-		return PolytopeC.tegumProduct(P.pop(), PolytopeC.tegumProduct(P));
-	}
-	
+PolytopeC._tegumProduct = function(P, Q) {	
 	//Deals with the point, nullitope cases.
 	if(P.dimensions <= 0)
 		return Q;
@@ -438,7 +462,7 @@ PolytopeC.tegumProduct = function(P, Q) {
 						else
 							elIndx = P.elementList[m][i][k];
 						
-						els.push(PolytopeC._getIndexOfTegumProduct(m - 1, elIndx, n, j, P, Q, memoizer));
+						els.push(PolytopeC._getIndexOfTegumProduct(m - 1, elIndx, n, j, P, Q, memoizer, true));
 					}
 					//Same thing for n down here.
 					for(k = 0; k < jElCount; k++) {
@@ -447,7 +471,7 @@ PolytopeC.tegumProduct = function(P, Q) {
 						else
 							elIndx = Q.elementList[n][j][k];
 						
-						els.push(PolytopeC._getIndexOfTegumProduct(m, i, n - 1, elIndx, P, Q, memoizer));
+						els.push(PolytopeC._getIndexOfTegumProduct(m, i, n - 1, elIndx, P, Q, memoizer, true));
 					}
 					
 					newElementList[m + n + 1].push(els);
@@ -499,7 +523,7 @@ PolytopeC.tegumProduct = function(P, Q) {
 					else
 						elIndx2 = Q.elementList[n][j][k];
 				
-					els.push(PolytopeC._getIndexOfTegumProduct(m - 1, elIndx, n - 1, elIndx2, P, Q, memoizer));
+					els.push(PolytopeC._getIndexOfTegumProduct(m - 1, elIndx, n - 1, elIndx2, P, Q, memoizer, true));
 				}
 			}
 			
@@ -507,22 +531,156 @@ PolytopeC.tegumProduct = function(P, Q) {
 		}
 	}
 	
-	//Empties the temporary construction array, creates the construction node.
-	if(PolytopeC._constructionsTMP.length > 0) {
-		var constructions = [];
-		do
-			constructions.push(PolytopeC._constructionsTMP.pop());	
-		while(PolytopeC._constructionsTMP.length > 0);
-	
-		return new PolytopeC(newElementList, new ConstructionNode(MULTITEGUM, constructions));
-	}
-	return new PolytopeC(newElementList, new ConstructionNode(MULTITEGUM, [P.construction, Q.construction]));
+	return new PolytopeC(newElementList); //The construction gets added in the main function.
 };
 
-//Helper function for tegumProduct.
+//PolytopeC._pyramidProduct, but also supports P being an array.
+PolytopeC.pyramidProduct = function(P, Q) {
+	if(P.length === 0)
+		return PolytopeC.nullitope();
+	
+	var constructions = [], res;
+	
+	//If P is an array:
+	if(P.length && P.length >= 1) {
+		res = P.pop();
+		constructions.push(res.construction);
+		while(P.length) {
+			//Stores the constructions of the elements of P in a temporary array.
+			constructions.push(P[P.length - 1].construction);
+			res = PolytopeC._pyramidProduct(P.pop(), res);
+		}
+		res.construction = new ConstructionNode(MULTIPYRAMID, constructions);
+		return res;
+	}
+	
+	//If P and Q are just two polytopes:
+	res = PolytopeC._pyramidProduct(P, Q);
+	res.construction = new ConstructionNode(MULTIPYRAMID, [P.construction, Q.construction]);
+	return res;
+};
+
+//Calculates the pyramid product of P and Q.
+//Q can be excluded if P is instead the array of polytopes to multiply.
+//Edges are the products of vertices, faces are the products of vertices with edges or viceversa, and so on.
+//Very similar to the tegum code.
+PolytopeC._pyramidProduct = function(P, Q, height) {
+	//If P is an array:
+	if(P.length) {
+		//Stores the constructions of the elements of P in a temporary array.
+		PolytopeC._constructionsTMP.push(P[P.length - 1].construction);
+		if(P.length === 1)
+			return P[0];
+		return PolytopeC.pyramidProduct(P.pop(), PolytopeC.pyramidProduct(P));
+	}
+	
+	if(height === undefined)
+		height = 0.5;
+	else
+		height /= 2;
+	
+	//Deals with the point, nullitope cases.
+	if(P.dimensions <= 0)
+		return Q;
+	if(Q.dimensions <= 0)
+		return P;
+	
+	var i, j, k, l, m, n, elIndx, elIndx2, iElCount, jElCount, mDimCount, nDimCount, els,
+	newElementList = [[]],
+	memoizer = [];
+	
+	//Adds vertices.
+	for(i = 0; i < Q.elementList[0].length; i++)
+		newElementList[0].push(Point.padLeft(Q.elementList[0][i], P.spaceDimensions).addCoordinate(height));
+	height = -height; //Super trivial optimization.
+	for(i = 0; i < P.elementList[0].length; i++)
+		newElementList[0].push(Point.padRight(P.elementList[0][i], Q.spaceDimensions).addCoordinate(height));
+	
+	//Fills up newElementList.
+	for(i = 1; i <= P.dimensions + Q.dimensions + 1; i++) 
+		newElementList.push([]);
+	
+	//The dimensions of the subelements we're multiplying.
+	for (m = -1; m <= P.dimensions; m++) {
+		//Every polytope has a single nullitope.
+		if(m === -1)
+			mDimCount = 1;
+		else
+			mDimCount = P.elementList[m].length;
+		
+		for (n = -1; n <= Q.dimensions; n++) {
+			//We don't care about adding the nullitope,
+			//and we already dealt with vertices.
+			if(m + n < 0)
+				continue;
+			
+			//Same thing for n down here.
+			if(n === -1)
+				nDimCount = 1;
+			else
+				nDimCount = Q.elementList[n].length;
+			
+			//The indices of the elements we're multiplying.
+			for(i = 0; i < mDimCount; i++) {
+				//Nullitopes have no subelements.
+				if(m === -1)
+					iElCount = 0;
+				//Points have only a single nullitope as a subelement.
+				else if(m === 0)
+					iElCount = 1;
+				else
+					iElCount = P.elementList[m][i].length;
+				
+				for(j = 0; j < nDimCount; j++) {
+					//Same thing for n down here.
+					if(n === -1)
+						jElCount = 0;
+					else if(n === 0)
+						jElCount = 1;
+					else
+						jElCount = Q.elementList[n][j].length;
+					
+					//Adds the pyramid product of the ith m-element and the j-th n-element to the newElementList.
+					//The elements of this product are the pyramid products of each of the first polytope's facets with the other polytope, and viceversa.
+					//The pyramid product of a polytope and the nullitope is just the polytope itself.
+					els = [];					
+					
+					//This loop won't be entered if m = -1.
+					for(k = 0; k < iElCount; k++) {
+						//A vertex has only a single nullitope, we index it as "the zeroth nullitope".
+						if(m === 0)
+							elIndx = 0;
+						//We retrieve the index of the element's kth subelement.
+						else
+							elIndx = P.elementList[m][i][k];
+						
+						//We use an ever-so-slightly modified version of the tegum product function, since it's so similar to what we need.
+						els.push(PolytopeC._getIndexOfTegumProduct(m - 1, elIndx, n, j, P, Q, memoizer, false));
+					}
+					//Same thing for n down here.
+					for(k = 0; k < jElCount; k++) {
+						if(n === 0)
+							elIndx = 0;
+						else
+							elIndx = Q.elementList[n][j][k];
+						
+						els.push(PolytopeC._getIndexOfTegumProduct(m, i, n - 1, elIndx, P, Q, memoizer, false));
+					}
+					
+					newElementList[m + n + 1].push(els);
+				}
+			}
+		}
+	}
+	
+	return new PolytopeC(newElementList); //The construction gets added in the main function.
+};
+
+//Helper function for tegumProduct and pyramidProduct.
 //Gets the index of the product of the ith m-element and the jth n-element in the new polytope.
 //Takes into account the order in which the elements are calculated and added.
-PolytopeC._getIndexOfTegumProduct = function(m, i, n, j, P, Q, memoizer) {
+//The only difference between the tegum case and the pyramid case is that for pyramids, we need to consider an extra column in memoizer.
+PolytopeC._getIndexOfTegumProduct = function(m, i, n, j, P, Q, memoizer, tegum) {
 	//Recall that the elements of a single dimension are added in order nullitope * facet, vertex * ridge, ...
 	//memoizer[m][n] counts the number of such elements that we have to skip before we reach the multiplication we actually care about.
 	//This number is found recursively, so we memoize to calculate it more efficiently.
@@ -536,7 +694,7 @@ PolytopeC._getIndexOfTegumProduct = function(m, i, n, j, P, Q, memoizer) {
 	else
 		offset = (i * Q.elementList[n].length) + j;
 	
-	//I can use negative indices: they just behave like object properties, after all.
+	m++; n++; //To avoid wacky negative indices
 	if(memoizer[m]) {
 		if(memoizer[m][n])
 			return memoizer[m][n] + offset;
@@ -544,12 +702,12 @@ PolytopeC._getIndexOfTegumProduct = function(m, i, n, j, P, Q, memoizer) {
 	else 
 		memoizer[m] = [];
 	
-	if(m === -1 || n === Q.elementList.length - 2)
+	if(m === 0 || n === Q.elementList.length - (tegum ? 1 : 0))
 		memoizer[m][n] = 0;
-	else if (m === 0)
-		memoizer[m][n] = memoizer[m - 1][n + 1] + Q.elementList[n + 1].length;
+	else if (m === 1)
+		memoizer[m][n] = memoizer[m - 1][n + 1] + Q.elementList[n].length;
 	else
-		memoizer[m][n] = memoizer[m - 1][n + 1] + P.elementList[m - 1].length * Q.elementList[n + 1].length;
+		memoizer[m][n] = memoizer[m - 1][n + 1] + P.elementList[m - 2].length * Q.elementList[n].length;
 	return memoizer[m][n] + offset;
 };
 
