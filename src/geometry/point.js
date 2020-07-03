@@ -73,13 +73,34 @@ Point.divideBy = function(x, t) {
 		coordinates[i] = x.coordinates[i] / t;
 	return new Point(coordinates);
 };
-	
+
+//Takes the Cartesian product of two points.
 Point.product = function(p, q) {
 	var coordinates = [], i;
 	for(i = 0; i < p.coordinates.length; i++)
 		coordinates.push(p.coordinates[i]);
 	for(i = 0; i < q.coordinates.length; i++)
 		coordinates.push(q.coordinates[i]);
+	return new Point(coordinates);
+};
+
+//Adds n zeros to the left of the point's coordinates.
+Point.padLeft = function(point, n) {
+	var coordinates = [], i;
+	for(i = 0; i < n; i++)
+		coordinates.push(0);
+	for(i = 0; i < point.coordinates.length; i++)
+		coordinates.push(point.coordinates[i]);
+	return new Point(coordinates);
+};
+
+//Adds n zeros to the right of the point's coordinates.
+Point.padRight = function(point, n) {
+	var coordinates = [], i;
+	for(i = 0; i < point.coordinates.length; i++)
+		coordinates.push(point.coordinates[i]);
+	for(i = 0; i < n; i++)
+		coordinates.push(0);
 	return new Point(coordinates);
 };
 	
@@ -99,7 +120,8 @@ Point.equal = function(a, b) {
 	
 	return true;
 };
-	
+
+//TODO: work on this, make it its own class.
 //Calculates the specified permutations of a point in a given format.
 //The string needs to start with the coordinates of the point in parentheses, separated by commas.
 //These are followed by permutation and sign "modifiers", such as allPerms(0, 1) for all permutations of the first and second coordinates,

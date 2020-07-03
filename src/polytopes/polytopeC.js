@@ -258,24 +258,26 @@ PolytopeC.regularPolygonG = function(n, d) {
 //Calculates the prism product, or rather Cartesian product, of P and Q.
 //Q can be excluded if P is instead the array of polytopes to multiply.
 //Vertices are the products of vertices, edges are the products of vertices with edges or viceversa, and so on.
-//This could be made slightly more efficient without recursion.
 PolytopeC._constructionsTMP = [];
 PolytopeC.prismProduct = function(P, Q) {
 	//If P is an array:
 	if(P.length) {
-		//Stores the elements of P in a temporary array.
+		//Stores the constructions of the elements of P in a temporary array.
 		PolytopeC._constructionsTMP.push(P[P.length - 1].construction);
 		if(P.length === 1)
 			return P[0];
 		return PolytopeC.prismProduct(P.pop(), PolytopeC.prismProduct(P));
 	}
-
+	
+	//Deals with the point, nullitope cases.
 	if(P.dimensions === 0)
 		return Q;
 	if(Q.dimensions === 0)
 		return P;
+	if(P.dimensions === -1 || Q.dimensions === -1)
+		return PolytopeC.nullitope();
 	
-	var i, j, k, m, n, d, els, name,
+	var i, j, k, m, n, els,
 	newElementList = [[]],
 	memoizer = [];
 	
@@ -285,10 +287,9 @@ PolytopeC.prismProduct = function(P, Q) {
 			newElementList[0].push(Point.product(P.elementList[0][i], Q.elementList[0][j]));
 	
 	//Fills up newElementList.
-	for(d = 1; d <= P.dimensions + Q.dimensions; d++) 
+	for(i = 1; i <= P.dimensions + Q.dimensions; i++) 
 		newElementList.push([]);
 	
-	//We take products of 0-elements * m-elements, 1-elements * (m-1)-elements, ..., in order.
 	//The dimensions of the subelements we're multiplying.
 	for (m = 0; m <= P.dimensions; m++) {
 		for (n = (m === 0 ? 1 : 0); n <= Q.dimensions; n++) {
@@ -296,16 +297,16 @@ PolytopeC.prismProduct = function(P, Q) {
 			for(i = 0; i < P.elementList[m].length; i++) {
 				for(j = 0; j < Q.elementList[n].length; j++) {
 					//Adds the Cartesian product of the ith m-element and the j-th n-element to the newElementList.
-					//The elements of this product are the products of each of the first polytope's ridges with the other polytope, and viceversa.
+					//The elements of this product are the prism products of each of the first polytope's facets with the other polytope, and viceversa.
 					els = [];
 					
-					//Vertices don't have ridges!
+					//Vertices don't have facets!
 					if(m !== 0)
 						for(k = 0; k < P.elementList[m][i].length; k++)
-							els.push(PolytopeC._getIndexOfProduct(m - 1, P.elementList[m][i][k], n, j, P, Q, memoizer));
+							els.push(PolytopeC._getIndexOfPrismProduct(m - 1, P.elementList[m][i][k], n, j, P, Q, memoizer));
 					if(n !== 0)
 						for(k = 0; k < Q.elementList[n][j].length; k++)
-							els.push(PolytopeC._getIndexOfProduct(m, i, n - 1, Q.elementList[n][j][k], P, Q, memoizer));
+							els.push(PolytopeC._getIndexOfPrismProduct(m, i, n - 1, Q.elementList[n][j][k], P, Q, memoizer));
 
 					newElementList[m + n].push(els);
 				}
@@ -313,6 +314,7 @@ PolytopeC.prismProduct = function(P, Q) {
 		}
 	}
 	
+	//Empties the temporary construction array, creates the construction node.
 	if(PolytopeC._constructionsTMP.length > 0) {
 		var constructions = [];
 		do
@@ -327,7 +329,7 @@ PolytopeC.prismProduct = function(P, Q) {
 //Helper function for prismProduct.
 //Gets the index of the product of the ith m-element and the jth n-element in the new polytope.
 //Takes into account the order in which the elements are calculated and added.
-PolytopeC._getIndexOfProduct = function(m, i, n, j, P, Q, memoizer) {
+PolytopeC._getIndexOfPrismProduct = function(m, i, n, j, P, Q, memoizer) {
 	//Recall that the elements of a single dimension are added in order vertex * facet, edge * ridge, ...
 	//memoizer[m][n] counts the number of such elements that we have to skip before we reach the multiplication we actually care about.
 	//This number is found recursively, so we memoize to calculate it more efficiently.
@@ -344,6 +346,208 @@ PolytopeC._getIndexOfProduct = function(m, i, n, j, P, Q, memoizer) {
 	
 	if(m === 0 || n === Q.elementList.length - 1)
 		memoizer[m][n] = 0;
+	else
+		memoizer[m][n] = memoizer[m - 1][n + 1] + P.elementList[m - 1].length * Q.elementList[n + 1].length;
+	return memoizer[m][n] + offset;
+};
+
+//Calculates the tegum product, or rather the dual of the Cartesian product, of P and Q.
+//Q can be excluded if P is instead the array of polytopes to multiply.
+//Edges are the products of vertices, faces are the products of vertices with edges or viceversa, and so on.
+PolytopeC.tegumProduct = function(P, Q) {
+	//If P is an array:
+	if(P.length) {
+		//Stores the constructions of the elements of P in a temporary array.
+		PolytopeC._constructionsTMP.push(P[P.length - 1].construction);
+		if(P.length === 1)
+			return P[0];
+		return PolytopeC.tegumProduct(P.pop(), PolytopeC.tegumProduct(P));
+	}
+	
+	//Deals with the point, nullitope cases.
+	if(P.dimensions <= 0)
+		return Q;
+	if(Q.dimensions <= 0)
+		return P;
+	
+	var i, j, k, l, m, n, elIndx, elIndx2, iElCount, jElCount, mDimCount, nDimCount, els,
+	newElementList = [[]],
+	memoizer = [];
+	
+	//Adds vertices.
+	for(i = 0; i < Q.elementList[0].length; i++)
+		newElementList[0].push(Point.padLeft(Q.elementList[0][i], P.spaceDimensions));	
+	for(i = 0; i < P.elementList[0].length; i++)
+		newElementList[0].push(Point.padRight(P.elementList[0][i], Q.spaceDimensions));
+	
+	//Fills up newElementList.
+	for(i = 1; i <= P.dimensions + Q.dimensions; i++) 
+		newElementList.push([]);
+	
+	//The dimensions of the subelements we're multiplying.
+	for (m = -1; m < P.dimensions; m++) {
+		//Every polytope has a single nullitope.
+		if(m === -1)
+			mDimCount = 1;
+		else
+			mDimCount = P.elementList[m].length;
+		
+		for (n = -1; n < Q.dimensions; n++) {
+			//We don't care about adding the nullitope,
+			//and we already dealt with vertices.
+			if(m + n < 0)
+				continue;
+			
+			//Same thing for n down here.
+			if(n === -1)
+				nDimCount = 1;
+			else
+				nDimCount = Q.elementList[n].length;
+			
+			//The indices of the elements we're multiplying.
+			for(i = 0; i < mDimCount; i++) {
+				//Nullitopes have no subelements.
+				if(m === -1)
+					iElCount = 0;
+				//Points have only a single nullitope as a subelement.
+				else if(m === 0)
+					iElCount = 1;
+				else
+					iElCount = P.elementList[m][i].length;
+				
+				for(j = 0; j < nDimCount; j++) {
+					//Same thing for n down here.
+					if(n === -1)
+						jElCount = 0;
+					else if(n === 0)
+						jElCount = 1;
+					else
+						jElCount = Q.elementList[n][j].length;
+					
+					//Adds the pyramid product of the ith m-element and the j-th n-element to the newElementList.
+					//The elements of this product are the pyramid products of each of the first polytope's facets with the other polytope, and viceversa.
+					//The pyramid product of a polytope and the nullitope is just the polytope itself.
+					els = [];					
+					
+					//This loop won't be entered if m = -1.
+					for(k = 0; k < iElCount; k++) {
+						//A vertex has only a single nullitope, we index it as "the zeroth nullitope".
+						if(m === 0)
+							elIndx = 0;
+						//We retrieve the index of the element's kth subelement.
+						else
+							elIndx = P.elementList[m][i][k];
+						
+						els.push(PolytopeC._getIndexOfTegumProduct(m - 1, elIndx, n, j, P, Q, memoizer));
+					}
+					//Same thing for n down here.
+					for(k = 0; k < jElCount; k++) {
+						if(n === 0)
+							elIndx = 0;
+						else
+							elIndx = Q.elementList[n][j][k];
+						
+						els.push(PolytopeC._getIndexOfTegumProduct(m, i, n - 1, elIndx, P, Q, memoizer));
+					}
+					
+					newElementList[m + n + 1].push(els);
+				}
+			}
+		}
+	}
+	
+	//Calculating the components is a special case.
+	//We'll just tegum multiply the compounds of the first polytope with the compounds of the second.
+	
+	//m must be at least 0, since we already dealt with the case where P was a point.
+	m = P.elementList.length - 1;
+	mDimCount = mDimCount = P.elementList[m].length;
+	n = Q.elementList.length - 1;
+	nDimCount = nDimCount = Q.elementList[n].length;
+	//The indices of the elements we're multiplying.
+	for(i = 0; i < mDimCount; i++) {
+		//Points have only a single nullitope as a subelement.
+		if(m === 0)
+			iElCount = 1;
+		else
+			iElCount = P.elementList[m][i].length;
+		
+		for(j = 0; j < nDimCount; j++) {
+			//Same thing for n down here.
+			if(n === 0)
+				jElCount = 1;
+			else
+				jElCount = Q.elementList[n][j].length;
+			
+			//Adds the pyramid product of the ith m-element and the j-th n-element to the newElementList.
+			//The elements of this product are the pyramid products of each of the first polytope's facets with the other polytope, and viceversa.
+			//The pyramid product of a polytope and the nullitope is just the polytope itself.
+			els = [];					
+			
+			for(k = 0; k < iElCount; k++) {
+				//A vertex has only a single nullitope, we index it as "the zeroth nullitope".
+				if(m === 0)
+					elIndx = 0;
+				//We retrieve the index of the element's kth subelement.
+				else
+					elIndx = P.elementList[m][i][k];
+				
+				for(l = 0; l < jElCount; l++) {
+					//Same thing for n.
+					if(n === 0)
+						elIndx2 = 0;
+					else
+						elIndx2 = Q.elementList[n][j][k];
+				
+					els.push(PolytopeC._getIndexOfTegumProduct(m - 1, elIndx, n - 1, elIndx2, P, Q, memoizer));
+				}
+			}
+			
+			newElementList[m + n].push(els);
+		}
+	}
+	
+	//Empties the temporary construction array, creates the construction node.
+	if(PolytopeC._constructionsTMP.length > 0) {
+		var constructions = [];
+		do
+			constructions.push(PolytopeC._constructionsTMP.pop());	
+		while(PolytopeC._constructionsTMP.length > 0);
+	
+		return new PolytopeC(newElementList, new ConstructionNode(MULTITEGUM, constructions));
+	}
+	return new PolytopeC(newElementList, new ConstructionNode(MULTITEGUM, [P.construction, Q.construction]));
+};
+
+//Helper function for tegumProduct.
+//Gets the index of the product of the ith m-element and the jth n-element in the new polytope.
+//Takes into account the order in which the elements are calculated and added.
+PolytopeC._getIndexOfTegumProduct = function(m, i, n, j, P, Q, memoizer) {
+	//Recall that the elements of a single dimension are added in order nullitope * facet, vertex * ridge, ...
+	//memoizer[m][n] counts the number of such elements that we have to skip before we reach the multiplication we actually care about.
+	//This number is found recursively, so we memoize to calculate it more efficiently.
+	//offset calculates the index of our product within the products of elements of the same dimensions,
+	//simply by recalling that this last ordering is lexicographic.
+	var offset;
+	if(m === -1)
+		offset = j;
+	else if(n === -1)
+		offset = i;
+	else
+		offset = (i * Q.elementList[n].length) + j;
+	
+	//I can use negative indices: they just behave like object properties, after all.
+	if(memoizer[m]) {
+		if(memoizer[m][n])
+			return memoizer[m][n] + offset;
+	}
+	else 
+		memoizer[m] = [];
+	
+	if(m === -1 || n === Q.elementList.length - 2)
+		memoizer[m][n] = 0;
+	else if (m === 0)
+		memoizer[m][n] = memoizer[m - 1][n + 1] + Q.elementList[n + 1].length;
 	else
 		memoizer[m][n] = memoizer[m - 1][n + 1] + P.elementList[m - 1].length * Q.elementList[n + 1].length;
 	return memoizer[m][n] + offset;
@@ -632,17 +836,20 @@ PolytopeC.openOFF = function(e) {
 			elementCount.push(caret.readNumber());
 			elementList.push([]);
 		}
+		
 		//Reads face and edge amounts.
 		if(dimensions >= 3) {
 			elementCount.push(null, caret.readNumber());
 			caret.readWord(); //We can't actually care about the edge amount, since Stella itself ignores it.
 			elementList.push([], []);
 		}
+		
 		//Reads component amount in the special 2OFF case.
 		else if(dimensions === 2) {
 			elementCount.push(null, caret.readNumber());
 			elementList.push([]);
 		}
+		
 		//Reads higher element amounts.
 		for(i = 3; i < dimensions; i++) {
 			elementCount.push(caret.readNumber());
@@ -715,12 +922,14 @@ PolytopeC.openOFF = function(e) {
 			}
 		}
 		
-		//Gets components, except in 2D, where they've already been retrieved.
+		//Gets components. The 1D case is trivial.
 		if(dimensions === 1) {
 			elementList[1].push([]);
 			for(i = 0; i < elementCount[0]; i++)
 				elementList[1][0].push(i);
 		}
+		
+		//Gets components in higher dimensions, except in 2D, where they've already been retrieved.
 		else if(dimensions >= 3) {
 			//Reuses for graph of incidences between facets.
 			el = [];
@@ -765,6 +974,8 @@ PolytopeC._checkCommonElements = function(a, b) {
 	return false;
 };
 
+//The two elephants in the room.
+//Using these is probably buggy, and we should check this eventually.
 PolytopeC.nullitope = function() {
 	return new PolytopeC([], new ConstructionNode(NAME, ["nullitope"]));
 };

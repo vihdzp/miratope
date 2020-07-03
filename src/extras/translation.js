@@ -61,7 +61,9 @@ var TRANSLATIONS = {
 	invalidFile: ["Invalid file!", "¡Archivo inválido!", "Ungültige Datei!"],
 	unexpectedEOF: ["Unexpected end of file!", "¡Fin del archivo no esperado!", "Unerwartetes Ende der Datei!"],
 	line: ["line", "línea", "Zeile"],
-	column: ["column", "columna", "Spalte"]
+	column: ["column", "columna", "Spalte"],
+	bipyramid: ["bipyramid", "bipirámide", "Bipyramide"],
+	tegum: ["tegum", "tego", "Tegum"]
 };
 
 //The name for an d-element, according to http://os2fan2.com/gloss/pglosstu.html
@@ -555,7 +557,7 @@ Translation.familyMember = function(node, family, gender) {
 
 //Converts a set of constructionNodes into their prism product's name.
 //Dyads are written as plain prisms.
-Translation.multiprism = function(nodes) {
+Translation.multiprism = function(nodes, gender) {
 	var names = [], DYAD = Translation.get("dyad"), dyadCount = 0, tempName, concatName, allNamesSame = true;
 	
 	//Multiprisms of multiprisms are just larger multiprisms.
@@ -611,11 +613,11 @@ Translation.multiprism = function(nodes) {
 				concatName += Translation.toAdjective(Translation.get("prism")) + " ";
 			return concatName + Translation.get("prism");
 		case SPANISH:
-			concatName = Translation.toAdjective(names[names.length - 1], MALE);
+			concatName = Translation.toAdjective(names[names.length - 1], gender);
 			tempName = names.pop();
 			
 			while(names.length > 0) {
-				concatName += "-" + Translation.toAdjective(names[names.length - 1], MALE);
+				concatName += "-" + Translation.toAdjective(names[names.length - 1], gender);
 				if(names.pop() !== tempName)
 					allNamesSame = false;
 			}
@@ -623,7 +625,7 @@ Translation.multiprism = function(nodes) {
 			if(!dyadCount) {
 				//Multiprisma X
 				if(allNamesSame)
-					return prefix + Translation.get("prism") + " " + Translation.toAdjective(tempName, MALE);
+					return prefix + Translation.get("prism") + " " + Translation.toAdjective(tempName, gender);
 				
 				//Multiprisma X-Y-Z
 				return prefix + Translation.get("prism") + " " + concatName;
@@ -631,15 +633,105 @@ Translation.multiprism = function(nodes) {
 			
 			//Igual que antes, pero con tantos prisma prismático... como se requieran al inicio.
 			if(allNamesSame)
-				concatName =  Translation.toAdjective(tempName, MALE);
+				concatName =  Translation.toAdjective(tempName, gender);
 			
 			//No estamos llamando a un politopo X un "monoprisma X", ¿o sí?
 			if(prefix)
-				concatName = prefix + Translation.toAdjective(Translation.get("prism"), MALE) + " " + concatName;
+				concatName = prefix + Translation.toAdjective(Translation.get("prism"), gender) + " " + concatName;
 			
 			while(--dyadCount)
-				concatName = Translation.toAdjective(Translation.get("prism"), MALE) + " " + concatName;
+				concatName = Translation.toAdjective(Translation.get("prism"), gender) + " " + concatName;
 			return Translation.get("prism") + " " + concatName;
+	}
+}
+
+//Converts a set of constructionNodes into their tegum product's name.
+//Dyads are written as plain prisms.
+Translation.multitegum = function(nodes, gender) {
+	var names = [], DYAD = Translation.get("dyad"), dyadCount = 0, tempName, concatName, allNamesSame = true;
+	
+	//Multiprisms of multiprisms are just larger multiprisms.
+	for(var i = 0; i < nodes.length; i++) {
+		tempName = nodes[i].getName();
+		if(tempName === DYAD)
+			dyadCount++;
+		else 
+			names.push(tempName);
+	}
+	
+	var prefix; //The prefix before prism, e.g. *duo*tegum, *trio*tegum, ...
+	switch(names.length) {
+		case 1:
+			prefix = ""; break;
+		case 2:
+			prefix = "duo"; break;
+		default:
+			prefix = Translation.greekPrefix(names.length);	break;
+	}
+	
+	switch(LANGUAGE) {
+		case ENGLISH:
+			concatName = Translation.toAdjective(names[names.length - 1]);
+			tempName = names.pop();
+			
+			while(names.length > 0) {
+				concatName += "-" + Translation.toAdjective(names[names.length - 1]);
+				if(names.pop() !== tempName)
+					allNamesSame = false;
+			}
+			
+			if(!dyadCount) {				
+				//X multiprism
+				if(allNamesSame)
+					return Translation.toAdjective(tempName)+ " " + prefix + Translation.get("tegum");
+				
+				//X-Y-Z multiprism
+				return concatName + " " + prefix + Translation.get("tegum");
+			}
+			
+			//Same as before, but adds as many ...tegmatic tegum as needed at the end.
+			if(allNamesSame)
+				concatName = Translation.toAdjective(tempName) + " ";
+			else
+				concatName = concatName + " ";
+			
+			//We aren't calling a single polytope X an "X monoprism", are we?
+			if(prefix)
+				concatName += prefix + Translation.toAdjective(Translation.get("tegum")) + " ";
+			
+			while(--dyadCount)
+				concatName += Translation.toAdjective(Translation.get("bipyramid")) + " ";
+			return concatName + Translation.get("bipyramid");
+		case SPANISH:
+			concatName = Translation.toAdjective(names[names.length - 1], MALE);
+			tempName = names.pop();
+			
+			while(names.length > 0) {
+				concatName += "-" + Translation.toAdjective(names[names.length - 1], gender);
+				if(names.pop() !== tempName)
+					allNamesSame = false;
+			}
+			
+			if(!dyadCount) {
+				//Multiprisma X
+				if(allNamesSame)
+					return prefix + Translation.get("tegum") + " " + Translation.toAdjective(tempName, gender);
+				
+				//Multiprisma X-Y-Z
+				return prefix + Translation.get("tegum") + " " + concatName;
+			}
+			
+			//Igual que antes, pero con tantos prisma prismático... como se requieran al inicio.
+			if(allNamesSame)
+				concatName =  Translation.toAdjective(tempName, gender);
+			
+			//No estamos llamando a un politopo X un "monoprisma X", ¿o sí?
+			if(prefix)
+				concatName = prefix + Translation.toAdjective(Translation.get("prism"), gender) + " " + concatName;
+			
+			while(--dyadCount)
+				concatName = Translation.toAdjective(Translation.get("bypiramid"), gender) + " " + concatName;
+			return Translation.get("bipyramid") + " " + concatName;
 	}
 }
 

@@ -12,19 +12,21 @@ const POLYTOPES = 1;
 //Has the nodes representing the factors of a prism product as children.
 const MULTIPRISM = 2;
 //Represents an antiprism based on the child node.
-const ANTIPRISM = 3;
+const MULTITEGUM = 3;
+//Represents an antiprism based on the child node.
+const ANTIPRISM = 4;
 //Has a single child from which a pyramid is built.
-const PYRAMID = 4;
+const PYRAMID = 5;
 //Has a single child from which a cupola is built.
-const CUPOLA = 5;
+const CUPOLA = 6;
 //Has two children n, d, representing the regular polygonal small base {n/d}.
-const CUPLOID = 6;
+const CUPLOID = 7;
 //Has two children n, d, representing the regular polygonal base {n/d}.
-const CUPBLEND = 7;
+const CUPBLEND = 8;
 //Has two children n, d, representing the regular polygonal base {n/d}.
-const POLYGON = 8;
+const POLYGON = 9;
 //Has a single string as a child, representing a polytope's name in Miratope's library.
-const NAME = 9;
+const NAME = 10;
 
 function ConstructionNode(type, children) {
 	this.type = type;
@@ -35,6 +37,7 @@ function ConstructionNode(type, children) {
 		case POLYTOPEC: //The gender of the plain n-tope names.
 		case MULTIPRISM: //The gender of the word "multiprism".
 		case ANTIPRISM: //The gender of the word "antiprism".
+		case MULTITEGUM: //The gender of the word "multitegum".
 			switch(LANGUAGE) {
 				case SPANISH: this.gender = MALE; break;
 				case GERMAN: this.gender = NEUTER; break;
@@ -72,16 +75,21 @@ ConstructionNode.prototype.getName = function() {
 			var poly = this.children[0];
 			return Translation.plain(poly.elementList[poly.elementList.length - 2].length, poly.dimensions);
 		case MULTIPRISM:
+		case MULTITEGUM:
 			//A multiprism of multiprisms is just a larger multiprism.
+			//Same for multitegums.
 			var oldLength = this.children.length;
 			for(var i = 0; i < oldLength; i++) {
-				if(this.children[i].type === MULTIPRISM) {
+				if(this.children[i].type === this.type) {
 					for(var j = 0; j < this.children[i].children.length - 1; j++)
 						this.children.push(this.children[i].children.pop());
 					this.children[i] = this.children[i].children.pop();
 				}
 			}
-			return Translation.multiprism(this.children);
+			if(this.type === MULTIPRISM)
+				return Translation.multiprism(this.children, this.gender);
+			else				
+				return Translation.multitegum(this.children, this.gender);
 		case ANTIPRISM:
 			return Translation.familyMember(this.children[0], "antiprism", this.gender);
 		case PYRAMID:
