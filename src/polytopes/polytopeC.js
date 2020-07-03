@@ -12,7 +12,10 @@ function PolytopeC(elementList, constructionRoot) {
 	Polytope.call(this, constructionRoot);
 	this.elementList = elementList;
 	this.dimensions = elementList.length - 1; //The combinatorial dimension.
-	this.spaceDimensions = this.elementList[0][0].dimensions(); //The space's dimension.
+	if(this.elementList[0])
+		this.spaceDimensions = this.elementList[0][0].dimensions(); //The space's dimension.
+	else
+		this.spaceDimensions = -1; //Nullitope.
 };
 
 PolytopeC.prototype = new Polytope();
@@ -591,9 +594,13 @@ PolytopeC.openOFF = function(e) {
 	elCount = 0, //The number of facets in an element.
 	el, //An element.
 	face, //A face.
+	component, //A component.
+	facets, //The list of facets.
 	edgeList = [], //A dictionary mapping hashes of pairs of integers to edge indices.
 	fileName = e.target.files[0].name, //File name.
 	i, j, x, y, t; //Temp variables.
+	
+	fileName = fileName.substr(0, fileName.lastIndexOf(".")); //Removes extension from file name.
 	
 	reader.onload = function(e) {
 		caret = new Caret(e.target.result);
@@ -606,6 +613,17 @@ PolytopeC.openOFF = function(e) {
 		//Checks that the word OFF is the next thing on the file.
 		if(caret.readWord() !== "OFF")
 			caret.throwError("invalidFile");
+		
+		//Nullitope
+		if(dimensions === -1) {
+			P = PolytopeC.nullitope();
+			return;
+		}
+		//Point
+		if(dimensions === 0) {
+			P = PolytopeC.point();
+			return;
+		}
 		
 		//Reads vertex amount.
 		if(dimensions >= 1) {
@@ -620,7 +638,7 @@ PolytopeC.openOFF = function(e) {
 		}
 		//Reads component amount in the special 2OFF case.
 		else if(dimensions === 2) {
-			elementCount.push(caret.readNumber());
+			elementCount.push(null, caret.readNumber());
 			elementList.push([]);
 		}
 		//Reads higher element amounts.
@@ -695,18 +713,62 @@ PolytopeC.openOFF = function(e) {
 			}
 		}
 		
-		//THIS IS WRONG.
-		//I CAN'T JUST ASSUME THE POLYTOPE IS NOT A COMPOUND.
-		//I'LL FIX IT AS SOON AS I TEST THE REST OF THE CODE.
-		el = [];
-		for(i = 0; i < elementList[elementList.length - 2].length; i++)
-			el.push(i);
-		elementList[elementList.length - 1].push(el);
+		//Gets components, except in 2D, where they've already been retrieved.
+		if(dimensions === 1) {
+			elementList[1].push([]);
+			for(i = 0; i < elementCount[0]; i++)
+				elementList[1][0].push(i);
+		}
+		else if(dimensions >= 3) {
+			//Reuses for graph of incidences between facets.
+			el = [];
+			facets = elementList[elementList.length - 2];
+			for(i = 0; i < facets.length; i++)
+				el.push(new Node(i));
+			//Calculates incidences.
+			for(i = 0; i < facets.length; i++)
+				for(j = i + 1; j < facets.length; j++)
+					if(PolytopeC._checkCommonElements(facets[i], facets[j]))
+						el[i].connectTo(el[j]);
+					
+			//Gets components.
+			for(i = 0; i < facets.length; i++) {
+				component = el[i].getComponent();
+				if(component)
+					elementList[elementList.length - 1].push(component);
+			}
+		}
 		
-		P = new PolytopeC(elementList, new ConstructionNode(NAME, fileName));
+		P = new PolytopeC(elementList, new ConstructionNode(NAME, [fileName]));
 	};
 	
 	reader.readAsText(file);
+};
+
+//Helper function for OFF importing.
+//Checks whether two arrays have a common element.
+PolytopeC._checkCommonElements = function(a, b) {
+	var vals = [], i;
+	for(i = 0; i < a.length; i++) {
+		if(vals[a[i]])
+			return true;
+		vals[a[i]] = true;
+	}
+	for(i = 0; i < b.length; i++) {
+		if(vals[b[i]])
+			return true;
+		vals[b[i]] = true;
+	}
+	
+	return false;
+};
+
+PolytopeC.nullitope = function() {
+	return new PolytopeC([], new ConstructionNode(NAME, ["nullitope"]));
+};
+
+PolytopeC.point = function() {
+	return new PolytopeC([[new Point([])]], new ConstructionNode(NAME, ["point"]));
 };
 
 //Makes every vertex have dim coordinates either by adding zeros or removing numbers.
