@@ -446,34 +446,20 @@ Translation._findEnding = function (name, endings) {
 	firstMatch = 0, 
 	lastMatch = endings.length - 1,
 	endingStr,
+	backup,
 	k = 1;
 	
 	//Adds one letter of name at a time.
 	//Searches for the least and greatest elements of _endings that are compatible with the observed letters.
-	//Will not compare the first match, if all others have been discarded. That way, the "longest match" functionality works.
-	while(true) {
-		//Finds lastMatch.
-		first = firstMatch;
-		last = lastMatch;
-		while(last - first > 1) {
-			mid = Math.floor((first + last) / 2);
-			if(Ending.compare(name, endings[mid].string, k) < 0)
-				last = mid;
-			else
-				first = mid;
-		}
-		if(Ending.compare(name, endings[last].string, k) === 0)
-			lastMatch = last;
-		else
-			lastMatch = first;		
+	while(lastMatch !== firstMatch) {
+		//If the first (shorter) possibility fits, and no other (longer one) does, we'll use that one.
 		
-		//HERE IS WHERE THE WHILE LOOP CAN STOP!
-		//If only the first match remains to be discarded, it's checked outside the while loop.
-		if(lastMatch === firstMatch)
-			break;
+		if(endings[firstMatch].string.length < k)
+			backup = firstMatch;
+		else
+			backup = null;
 		
 		//Finds firstMatch.
-		//If lastMatch - firstMatch > 1, at least another match other than the first remains, so we can safely compare the first.
 		first = firstMatch;
 		last = lastMatch;		
 		while(last - first > 1) {
@@ -488,22 +474,37 @@ Translation._findEnding = function (name, endings) {
 		else
 			firstMatch = last;
 		
+		//Finds lastMatch.
+		first = firstMatch;
+		last = lastMatch;
+		while(last - first > 1) {
+			mid = Math.floor((first + last) / 2);
+			if(Ending.compare(name, endings[mid].string, k) < 0)
+				last = mid;
+			else
+				first = mid;
+		}
+		if(Ending.compare(name, endings[last].string, k) === 0)
+			lastMatch = last;
+		else
+			lastMatch = first;	
+		
 		k++;
 	}	
 	
 	//If at some point, only one match fits, we check if it fits the whole string.
+	//Note: we haven't checked if the (k - 1)th character is correct.
 	endingStr = endings[firstMatch].string;
-	if(firstMatch === lastMatch) {
-		for(; k <= endingStr.length; k++)
-			//No match.
-			if(name.charAt(name.length - k).toLowerCase() !== endingStr.charAt(endingStr.length - k).toLowerCase())
-				return -1;
-		//If the match does fit, we do the corresponding ending change.
-		return firstMatch;
-	}
-	
-	//No match either.
-	return -1;
+	for(k--; k <= endingStr.length; k++)
+		//No match.
+		if(name.charAt(name.length - k).toLowerCase() !== endingStr.charAt(endingStr.length - k).toLowerCase()) {
+			if(backup)
+				return backup;
+			return -1;
+		}
+		
+	//If the match does fit, we return it.
+	return firstMatch;
 };
 
 //The ID of a word/message is determined by its property name in the TRANSLATIONS object.

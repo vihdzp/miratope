@@ -601,6 +601,8 @@ PolytopeC.openOFF = function(e) {
 	i, j, x, y, t; //Temp variables.
 	
 	fileName = fileName.substr(0, fileName.lastIndexOf(".")); //Removes extension from file name.
+	if(LANGUAGE !== GERMAN)
+		fileName = Translation.firstToLower(fileName); //Lowercase name.
 	
 	reader.onload = function(e) {
 		caret = new Caret(e.target.result);

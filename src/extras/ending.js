@@ -56,8 +56,8 @@ Ending.compare = function(name, endingStr, k) {
 	i = name.length - k,
 	j = endingStr.length - k;
 	
-	//This can only happen if there's another longer matching string.
-	if(k > endingStr.length + 1)
+	//This must be the backup ending, so let's check to the right of that.
+	if(j <= -1)
 		return 1;
 	
 	//We only really need to check the kth character; the rest have been checked before.
