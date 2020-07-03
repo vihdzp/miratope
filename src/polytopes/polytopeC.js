@@ -257,32 +257,10 @@ PolytopeC.regularPolygonG = function(n, d) {
 
 //PolytopeC._prismProduct, but also supports P being an array.
 PolytopeC.prismProduct = function(P, Q) {
-	if(P.length === 0)
-		return PolytopeC.nullitope();
-	
-	var constructions = [], res;
-	
-	//If P is an array:
-	if(P.length && P.length >= 1) {
-		res = P.pop();
-		constructions.push(res.construction);
-		while(P.length) {
-			//Stores the constructions of the elements of P in a temporary array.
-			constructions.push(P[P.length - 1].construction);
-			res = PolytopeC._prismProduct(P.pop(), res);
-		}
-		res.construction = new ConstructionNode(MULTIPRISM, constructions);
-		return res;
-	}
-	
-	//If P and Q are just two polytopes:
-	res = PolytopeC._prismProduct(P, Q);
-	res.construction = new ConstructionNode(MULTIPRISM, [P.construction, Q.construction]);
-	return res;
+	return PolytopeC._product(P, Q, MULTIPRISM, PolytopeC._multiprism);
 };
 
 //Calculates the prism product, or rather Cartesian product, of P and Q.
-//Q can be excluded if P is instead the array of polytopes to multiply.
 //Vertices are the products of vertices, edges are the products of vertices with edges or viceversa, and so on.
 PolytopeC._prismProduct = function(P, Q) {	
 	//Deals with the point, nullitope cases.
@@ -360,32 +338,10 @@ PolytopeC._getIndexOfPrismProduct = function(m, i, n, j, P, Q, memoizer) {
 
 //PolytopeC._tegumProduct, but also supports P being an array.
 PolytopeC.tegumProduct = function(P, Q) {
-	if(P.length === 0)
-		return PolytopeC.nullitope();
-	
-	var constructions = [], res;
-	
-	//If P is an array:
-	if(P.length && P.length >= 1) {
-		res = P.pop();
-		constructions.push(res.construction);
-		while(P.length) {
-			//Stores the constructions of the elements of P in a temporary array.
-			constructions.push(P[P.length - 1].construction);
-			res = PolytopeC._tegumProduct(P.pop(), res);
-		}
-		res.construction = new ConstructionNode(MULTITEGUM, constructions);
-		return res;
-	}
-	
-	//If P and Q are just two polytopes:
-	res = PolytopeC._tegumProduct(P, Q);
-	res.construction = new ConstructionNode(MULTITEGUM, [P.construction, Q.construction]);
-	return res;
+	return PolytopeC._product(P, Q, MULTITEGUM, PolytopeC._tegumProduct);
 };
 
 //Calculates the tegum product, or rather the dual of the Cartesian product, of P and Q.
-//Q can be excluded if P is instead the array of polytopes to multiply.
 //Edges are the products of vertices, faces are the products of vertices with edges or viceversa, and so on.
 PolytopeC._tegumProduct = function(P, Q) {	
 	//Deals with the point, nullitope cases.
@@ -536,32 +492,10 @@ PolytopeC._tegumProduct = function(P, Q) {
 
 //PolytopeC._pyramidProduct, but also supports P being an array.
 PolytopeC.pyramidProduct = function(P, Q) {
-	if(P.length === 0)
-		return PolytopeC.nullitope();
-	
-	var constructions = [], res;
-	
-	//If P is an array:
-	if(P.length && P.length >= 1) {
-		res = P.pop();
-		constructions.push(res.construction);
-		while(P.length) {
-			//Stores the constructions of the elements of P in a temporary array.
-			constructions.push(P[P.length - 1].construction);
-			res = PolytopeC._pyramidProduct(P.pop(), res);
-		}
-		res.construction = new ConstructionNode(MULTIPYRAMID, constructions);
-		return res;
-	}
-	
-	//If P and Q are just two polytopes:
-	res = PolytopeC._pyramidProduct(P, Q);
-	res.construction = new ConstructionNode(MULTIPYRAMID, [P.construction, Q.construction]);
-	return res;
+	return PolytopeC._product(P, Q, MULTIPYRAMID, PolytopeC._pyramidProduct);
 };
 
 //Calculates the pyramid product of P and Q.
-//Q can be excluded if P is instead the array of polytopes to multiply.
 //Edges are the products of vertices, faces are the products of vertices with edges or viceversa, and so on.
 //Very similar to the tegum code.
 PolytopeC._pyramidProduct = function(P, Q, height) {
@@ -709,6 +643,34 @@ PolytopeC._getIndexOfTegumProduct = function(m, i, n, j, P, Q, memoizer, tegum) 
 	else
 		memoizer[m][n] = memoizer[m - 1][n + 1] + P.elementList[m - 2].length * Q.elementList[n].length;
 	return memoizer[m][n] + offset;
+};
+
+//Helper function.
+//If P is not an array, performs the product dicated by type and fun of P and Q.
+//If P is an array, same thing, but among P's elements.
+PolytopeC._product = function(P, Q, type, fun) {
+	if(P.length === 0)
+		return PolytopeC.nullitope();
+	
+	var constructions = [], res;
+	
+	//If P is an array:
+	if(P.length && P.length >= 1) {
+		res = P.pop();
+		constructions.push(res.construction);
+		while(P.length) {
+			//Stores the constructions of the elements of P in a temporary array.
+			constructions.push(P[P.length - 1].construction);
+			res = fun(P.pop(), res);
+		}
+		res.construction = new ConstructionNode(type, constructions);
+		return res;
+	}
+	
+	//If P and Q are just two polytopes:
+	res = fun(P, Q);
+	res.construction = new ConstructionNode(type, [P.construction, Q.construction]);
+	return res;
 };
 
 //Creates a uniform {n / d} antiprism.
