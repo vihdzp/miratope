@@ -5,11 +5,8 @@
 //They're essentially what the node "operates" on.
 //The types are given below:
 
-//Has a single PolytopeC as a child.
-const POLYTOPEC = 0;
-
-//Has a single PolytopeS as a child.
-const POLYTOPES = 1;
+//Has a single Polytope as a child.
+const POLYTOPE = 0;
 
 //Has the nodes representing the factors of a prism product as children.
 const MULTIPRISM = 2;
@@ -47,7 +44,7 @@ function ConstructionNode(type, children) {
 	
 	switch(type) {
 		case POLYGON: //The gender of the plain polygon names
-		case POLYTOPEC: //The gender of the plain n-tope names.
+		case POLYTOPE: //The gender of the plain polytope names.
 		case MULTIPRISM: //The gender of the word "multiprism".
 		case ANTIPRISM: //The gender of the word "antiprism".
 		case MULTITEGUM: //The gender of the word "multitegum".
@@ -84,7 +81,7 @@ function ConstructionNode(type, children) {
 
 ConstructionNode.prototype.getName = function() {
 	switch(this.type) {		
-		case POLYTOPEC:
+		case POLYTOPE:
 			var poly = this.children[0];
 			return Translation.plain(poly.elementList[poly.elementList.length - 2].length, poly.dimensions);
 		case MULTIPRISM:
