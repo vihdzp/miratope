@@ -1,6 +1,6 @@
 //A class for operations on points.
 var Space = {};
-
+	
 //Calculates the intersection of ab with cd.
 //Assumes that all points lie on the same plane, but not on the same line.
 //Returns null if this does not exist.
@@ -13,8 +13,8 @@ Space.intersect = function(a, b, c, d) {
 	//That way, we avoid projecting lines into points.
 	//No need to do it in 2D, though.
 	var ab_MAX = 0, ab_MAX_indx = 0, cd_MAX = 0, cd_MAX_indx = 1;
-	if(a.dimensions() !== 2) {
-		
+	
+	if(a.dimensions() !== 2) {		
 		for(var i = 0; i < a.dimensions(); i++) {
 			var ab = Math.abs(a.coordinates[i] - b.coordinates[i]);
 			var cd = Math.abs(c.coordinates[i] - d.coordinates[i]);
@@ -39,16 +39,21 @@ Space.intersect = function(a, b, c, d) {
 		
 	//Projects a, b - a, c, d - c onto the a plane.
 	//Then, adapts the method from https://stackoverflow.com/a/565282 (by Gareth Rees)
-	var p = [a.coordinates[ab_MAX_indx], a.coordinates[cd_MAX_indx]];
-	var r = [b.coordinates[ab_MAX_indx] - a.coordinates[ab_MAX_indx], b.coordinates[cd_MAX_indx] - a.coordinates[cd_MAX_indx]];
-	var q = [c.coordinates[ab_MAX_indx], c.coordinates[cd_MAX_indx]];
-	var s = [d.coordinates[ab_MAX_indx] - c.coordinates[ab_MAX_indx], d.coordinates[cd_MAX_indx] - c.coordinates[cd_MAX_indx]];
+	var p = [a.coordinates[ab_MAX_indx], a.coordinates[cd_MAX_indx]],
+	r = [b.coordinates[ab_MAX_indx] - a.coordinates[ab_MAX_indx], b.coordinates[cd_MAX_indx] - a.coordinates[cd_MAX_indx]],
+	q = [c.coordinates[ab_MAX_indx], c.coordinates[cd_MAX_indx]],
+	s = [d.coordinates[ab_MAX_indx] - c.coordinates[ab_MAX_indx], d.coordinates[cd_MAX_indx] - c.coordinates[cd_MAX_indx]];
 	
-	var t = ((p[0] - q[0]) * s[1] - (p[1] - q[1]) * s[0])/(r[1] * s[0] - r[0] * s[1]);
-	var u = ((p[0] - q[0]) * r[1] - (p[1] - q[1]) * r[0])/(r[1] * s[0] - r[0] * s[1]);
+	//If the two lines' slopes are very similar, do nothing.
+	//They either not intersect or are too similar for us to care.
+	if(Space.sameSlope(r[0], r[1], s[0], s[1]))
+		return null;
+	
+	var t = ((p[0] - q[0]) * s[1] - (p[1] - q[1]) * s[0])/(r[1] * s[0] - r[0] * s[1]),
+	u = ((p[0] - q[0]) * r[1] - (p[1] - q[1]) * r[0])/(r[1] * s[0] - r[0] * s[1]);
 	
 	//The intersection lies outside of the segments, or at infinity.
-	if(t <= 0 || t >= 1 || u <= 0 || u >= 1 || isNaN(t) || isNaN(u))
+	if(!(t > EPS) || t >= 1 - EPS || !(u > EPS) || u >= 1 - EPS)
 		return null;
 	
 	var pt = [];
@@ -59,7 +64,6 @@ Space.intersect = function(a, b, c, d) {
 	
 //Calculates the angle between b - a and c - a, and check if it's straight to a given precision.
 Space.collinear = function(a, b, c) {
-	var eps = 0.0000001;
 	if(Point.equal(a, b) || Point.equal(a, c))
 		return true;
 	
@@ -74,5 +78,12 @@ Space.collinear = function(a, b, c) {
 		norm1 += sub1 * sub1;
 	}
 
-	return 1 - Math.abs(dot / Math.sqrt(norm0 * norm1)) <= eps;
+	return 1 - Math.abs(dot / Math.sqrt(norm0 * norm1)) <= EPS;
+};
+
+//Returns whether the line from (0, 0) to (a, b) and the line from (0, 0) to (c, d)
+//have the same (neglibly different) slopes.
+Space.sameSlope = function(a, b, c, d) {
+	var s = Math.atan(a / b) - Math.atan(c / d);
+	return (s + Math.PI + EPS) % Math.PI < 2 * EPS;
 };

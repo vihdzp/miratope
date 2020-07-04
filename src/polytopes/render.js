@@ -19,9 +19,9 @@ Polytope.prototype.renderTo = function(scene) {
 	//Uses the IDs of the vertices to order them consistently if their coordinates are identical.
 	function order(a, b) {
 		var c = a.value.coordinates[indx0] - b.value.coordinates[indx0];
-		if(c === 0) {
+		if(Math.abs(c) < EPS) {
 			c = a.value.coordinates[indx1] - b.value.coordinates[indx1];
-			if(c === 0)
+			if(Math.abs(c) < EPS)
 				return a.id - b.id;
 		}
 		return c;
@@ -49,8 +49,7 @@ Polytope.prototype.renderTo = function(scene) {
 		var res = (a.coordinates[indx1] * lambda0 + b.coordinates[indx1] * (1 - lambda0)) - (c.coordinates[indx1] * lambda1 + d.coordinates[indx1] * (1 - lambda1));
 		
 		//If the intersections are the same:
-		//Maybe we should replace P by "if res is close to zero", and the lambdas to "is close to 0 or 1"?
-		if (res === 0) {	
+		if (Math.abs(res) < EPS) {	
 			//If the first edge starts at a point, and the second ends at that point, the former gets sorted after the latter.
 			if(lambda0 === 1 && lambda1 === 0)
 				return 1;
@@ -74,7 +73,8 @@ Polytope.prototype.renderTo = function(scene) {
 			res = slopeMod * (lambda0 - lambda1);
 			
 			//If both lines are the same, might as well compare using indices.
-			if(res === 0)
+			if(Space.sameSlope(a.coordinates[indx0] - b.coordinates[indx0], a.coordinates[indx1] - b.coordinates[indx1],
+			c.coordinates[indx0] - d.coordinates[indx0], c.coordinates[indx1] - d.coordinates[indx1]))
 				return x.id - y.id;
 		}
 		return res;
@@ -177,7 +177,7 @@ Polytope.prototype.renderTo = function(scene) {
 					node = SL.getNode(edge);
 					if(!node) {
 						console.log("SL retrieval failed! This isn't supposed to happen!");
-						console.log("Edge searched for: "+edge.toString());
+						console.log("Edge searched for: " + edge.toString());
 						console.log("Debug stuff:");
 						debug();
 					}

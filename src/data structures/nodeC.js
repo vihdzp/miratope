@@ -42,42 +42,6 @@ const NAME = 11;
 function NodeC(type, children) {
 	this.type = type;
 	this.children = children;
-	
-	switch(type) {
-		case POLYGON: //The gender of the plain polygon names
-		case POLYTOPE: //The gender of the plain polytope names.
-		case MULTIPRISM: //The gender of the word "multiprism".
-		case ANTIPRISM: //The gender of the word "antiprism".
-		case MULTITEGUM: //The gender of the word "multitegum".
-			switch(LANGUAGE) {
-				case SPANISH: this.gender = MALE; break;
-				case GERMAN: this.gender = NEUTER; break;
-				default: break;
-			}
-			break;
-		case PYRAMID: //The gender of the word "pyramid".
-		case CUPOLA: //The gender of the word "cupola".
-			switch(LANGUAGE) {
-				case SPANISH:
-				case GERMAN: this.gender = FEMALE; break;
-				default: break;;
-			}
-			break;
-		case CUPBLEND: //The gender of the word "cupolaic blend".
-			switch(LANGUAGE) {
-				case SPANISH: this.gender = FEMALE; break;
-				default: break;;
-			}
-			break;
-		case CUPLOID: //The gender of the word "cuploid".
-			switch(LANGUAGE) {
-				case SPANISH: this.gender = MALE; break;
-				default: break;;
-			}
-			break;
-	}
-	
-	this.setGenders();
 };
 
 NodeC.prototype.getName = function() {
@@ -117,15 +81,53 @@ NodeC.prototype.getName = function() {
 //e.g. in Spanish, we'd say "prisma cupoidal pentagrámico cruzado", not 
 //"prisma cupoidal pentagrámica cruzada"; even though "cúpula" is femenine,
 //the male "prisma" takes over.
-NodeC.prototype.setGenders = function() {
+NodeC.prototype.setGenders = function() {	
+	switch(type) {
+		case POLYGON: //The gender of the plain polygon names
+		case POLYTOPE: //The gender of the plain polytope names.
+		case MULTIPRISM: //The gender of the word "multiprism".
+		case ANTIPRISM: //The gender of the word "antiprism".
+		case MULTITEGUM: //The gender of the word "multitegum".
+			switch(LANGUAGE) {
+				case SPANISH: this.gender = MALE; break;
+				case GERMAN: this.gender = NEUTER; break;
+				default: break;
+			}
+			break;
+		case PYRAMID: //The gender of the word "pyramid".
+		case CUPOLA: //The gender of the word "cupola".
+			switch(LANGUAGE) {
+				case SPANISH:
+				case GERMAN: this.gender = FEMALE; break;
+				default: break;;
+			}
+			break;
+		case CUPBLEND: //The gender of the word "cupolaic blend".
+			switch(LANGUAGE) {
+				case SPANISH: this.gender = FEMALE; break;
+				default: break;;
+			}
+			break;
+		case CUPLOID: //The gender of the word "cuploid".
+			switch(LANGUAGE) {
+				case SPANISH: this.gender = MALE; break;
+				default: break;
+			}
+			break;
+	}
+	
+	this._setGenders();
+};
+
+NodeC.prototype._setGenders = function() {
 	for(var i = 0; i < this.children.length; i++) {
 		var child = this.children[i];
-		if(child.setGenders) {
+		if(child._setGenders) {
 			child.gender = this.gender;
-			child.setGenders();
+			child._setGenders();
 		}
 	}
-};
+}
 
 //A multiprism of multiprisms is just a larger multiprism, 
 //a multitegum of multitegums is just a larger multitegum, etc.

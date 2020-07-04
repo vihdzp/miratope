@@ -88,3 +88,8 @@ Translation.firstToLower = function(str) {
 Translation.firstToUpper = function(str) {
 	return str.charAt(0).toUpperCase() + str.slice(1);
 };
+
+Translation.setLanguage = function(lang) {
+	LANGUAGE = lang;
+	//We also need to run setGenders on every scene's polytope's construction node.
+};

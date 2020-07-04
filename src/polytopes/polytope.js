@@ -493,6 +493,23 @@ Polytope.prototype.extrudeToPrism = function(height) {
 	return PolytopeC.prismProduct(this.toPolytopeC(), PolytopeC.dyad(height));
 };
 
+//Builds a polygon from the vertices given in order.
+Polytope.polygon = function(points) {
+	var newElementList = [[], [], [[]]], i = 0;
+	
+	for(; i < points.length - 1; i++) {
+		newElementList[0].push(points[i]);
+		newElementList[1].push([i, i + 1]);
+		newElementList[2][0].push(i);
+	}
+	
+	newElementList[0].push(points[i]);
+	newElementList[1].push([i, 0]);
+	newElementList[2][0].push(i);
+	
+	return new PolytopeC(newElementList, new NodeC(POLYGON, [points.length, 1]));
+};
+
 //Builds a n/d star.
 //If n and d are not coprime, a regular polygon compound is made instead.
 //In the future, should be replaced by the PolytopeS version.
@@ -548,6 +565,29 @@ Polytope._gcd = function(n, d) {
 	}
 	return n;
 };	
+
+//Builds a Grünbaumian n/d star.
+//In the future, should be replaced by the PolytopeS version.
+Polytope.regularPolygonG = function(n, d) {
+	if(d === undefined)
+		d = 1;
+	
+	var els = [[], [], [[]]],
+	i,
+	invRad = 2 * Math.sin(Math.PI * d / n); //1 / the circumradius
+	
+	for(i = 0; i < n; i++) {
+		var angle = 2 * Math.PI * i * d / n;
+		els[0].push(new Point([Math.cos(angle) / invRad, Math.sin(angle) / invRad])); //Vertices
+		els[2][0].push(i); //Face.
+	}
+	
+	for(i = 0; i < n - 1; i++)
+		els[1].push([i, i + 1]); //Edges
+	els[1].push([els[0].length - 1, 0]);
+	
+	return new PolytopeC(els, new NodeC(POLYGON, [n, d]));
+};
 
 //Builds a hypercube in the specified amount of dimensions.
 //Positioned in the standard orientation with edge length 1.
@@ -698,29 +738,6 @@ Polytope.cross = function(dimensions) {
 	els[dimensions].push(facets);
 	
 	return new PolytopeC(els);
-};
-
-//Builds a Grünbaumian n/d star.
-//In the future, should be replaced by the PolytopeS version.
-Polytope.regularPolygonG = function(n, d) {
-	if(d === undefined)
-		d = 1;
-	
-	var els = [[], [], [[]]],
-	i,
-	invRad = 2 * Math.sin(Math.PI * d / n); //1 / the circumradius
-	
-	for(i = 0; i < n; i++) {
-		var angle = 2 * Math.PI * i * d / n;
-		els[0].push(new Point([Math.cos(angle) / invRad, Math.sin(angle) / invRad])); //Vertices
-		els[2][0].push(i); //Face.
-	}
-	
-	for(i = 0; i < n - 1; i++)
-		els[1].push([i, i + 1]); //Edges
-	els[1].push([els[0].length - 1, 0]);
-	
-	return new Polytope(els, new NodeC(POLYGON, [n, d]));
 };
 
 //Creates a uniform {n / d} antiprism.

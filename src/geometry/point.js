@@ -118,9 +118,8 @@ Point.prototype.toVector3 = function() {
 	
 //Checks if two points are equal, to a predetermined precision.
 Point.equal = function(a, b) {
-	var eps = 0.0000001;
 	for(var i = 0; i < a.coordinates.length; i++) {
-		if(Math.abs(a.coordinates[i] - b.coordinates[i]) > Math.abs(a.coordinates[i] * eps))
+		if(Math.abs(a.coordinates[i] - b.coordinates[i]) > Math.abs(a.coordinates[i] * EPS))
 			return false;
 	}
 	
