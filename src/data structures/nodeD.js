@@ -1,3 +1,5 @@
+"use strict";
+
 //A node, for usage in a doubly linked list
 //Each NodeD is linked to two other nodes: linkage should be reflexive.
 //NodeDs don't *necessarily* have a notion of a "previous" and a "next" node.

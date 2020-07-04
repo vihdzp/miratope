@@ -1,4 +1,5 @@
 "use strict";
+
 //A nodeC represents how a polytope has been built up.
 //It consists of a type and children.
 //Children are arrays of objects, oftentimes nodes, the specific objects depend on the node type.

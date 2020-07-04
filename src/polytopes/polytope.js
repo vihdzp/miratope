@@ -19,11 +19,11 @@ Polytope.prototype.getName = function() {
 //The two elephants in the room.
 //Using these is probably buggy, and we should check this eventually.
 Polytope.nullitope = function() {
-	return new Polytope([], new NodeC(NAME, ["nullitope"]));
+	return new PolytopeC([], new NodeC(NAME, ["nullitope"]));
 };
 
 Polytope.point = function() {
-	return new Polytope([[new Point([])]], new NodeC(NAME, ["point"]));
+	return new PolytopeC([[new Point([])]], new NodeC(NAME, ["point"]));
 };
 
 //Creates a dyad of the given length.
@@ -449,6 +449,280 @@ Polytope._product = function(P, Q, type, fun) {
 	return res;
 };
 
+//Extrudes a polytope to a pyramid with an apex at the specified point.
+//Constructs pyramids out of elements recursively.
+//The ith n-element in the original polytope gets extruded to the 
+//(i+[(n+1)-elements in the original polytope])th element in the new polytope.
+//TODO: Use the pyramid product for this instead.
+Polytope.prototype.extrudeToPyramid = function(apex) {
+	var P = this.toPolytopeC(),
+	els, i;
+	
+	P.dimensions++;
+	P.elementList.push([]);
+	
+	var oldElNumbers = [];
+	for(i = 0; i <= P.dimensions; i++)
+		oldElNumbers.push(P.elementList[i].length);
+	
+	//Adds apex.
+	P.elementList[0].push(apex);		
+	P.setSpaceDimensions(Math.max(apex.dimensions(), P.spaceDimensions));
+	
+	//Adds edges.
+	for(i = 0; i < oldElNumbers[0]; i++)
+		P.elementList[1].push([i, oldElNumbers[0]]);
+	
+	//Adds remaining elements.
+	for(var d = 2; d <= P.dimensions; d++) {
+		for(i = 0; i < oldElNumbers[d - 1]; i++) {
+			els = [i];
+			for(var j = 0; j < P.elementList[d - 1][i].length; j++)
+				els.push(P.elementList[d - 1][i][j] + oldElNumbers[d - 1]);
+			P.elementList[d].push(els);
+		}
+	}
+	
+	var construction = new NodeC(PYRAMID, [P.construction]);
+	P.construction = construction;
+	return P;
+};
+
+//TODO: Add a PolytopeS version.
+Polytope.prototype.extrudeToPrism = function(height) {
+	return PolytopeC.prismProduct(this.toPolytopeC(), PolytopeC.dyad(height));
+};
+
+//Builds a n/d star.
+//If n and d are not coprime, a regular polygon compound is made instead.
+//In the future, should be replaced by the PolytopeS version.
+Polytope.regularPolygon = function(n, d) {
+	var gcd;
+	if(d === undefined) {
+		d = 1;
+		gcd = 1;
+	}
+	else
+		gcd = Polytope._gcd(n, d);
+	
+	var els = [[], [], []],
+	n_gcd = n / gcd,
+	counter = 0,
+	comp,
+	i, j, x = 0, y = d,
+	invRad = 2 * Math.sin(Math.PI * d / n); //1 / the circumradius.
+	
+	for(i = 0; i < n; i++) {
+		var angle = 2 * Math.PI * i / n;
+		els[0].push(new Point([Math.cos(angle) / invRad, Math.sin(angle) / invRad])); //Vertices
+	}
+	
+	//i is the component number.
+	for(i = 0; i < gcd; i++) {
+		//x and y keep track of the vertices that are being connected.
+		comp = [];
+		//j is the edge.
+		for(j = 0; j < n_gcd; j++) {
+			els[1].push([x, y]); //Edges
+			x = y;
+			y += d;
+			if(y >= n)
+				y -= n;
+			comp.push(counter++); //Components
+		}
+		els[2].push(comp);
+		x++; y++;
+	}
+	
+	return new PolytopeC(els, new NodeC(POLYGON, [n, d]));
+};
+
+//Helper function for regularPolygon.
+//Just the most basic form of the Euclidean algorithm.
+Polytope._gcd = function(n, d) {
+	var t;
+	while (d !== 0) {
+		t = d;
+		d = n % d;
+		n = t;
+	}
+	return n;
+};	
+
+//Builds a hypercube in the specified amount of dimensions.
+//Positioned in the standard orientation with edge length 1.
+//In the future, will be replaced by the PolytopeS version.
+Polytope.hypercube = function(dimensions) {
+	var els = []; //Elements is a reserved word.
+	for(var i = 0; i <= dimensions; i++)
+		els.push([]);
+	//Mapping from pairs of the indices below to indices of the corresponding els.
+	var locations = {};
+	//i and i^j are the indices of the vertices of the current subelement.
+	//i^j is used instead of j to ensure that facets of els
+	//are generated before the corresponding element.
+	for(var i = 0; i < Math.pow(2, dimensions); i++) {
+		for(var j = 0; j < Math.pow(2, dimensions); j++) {
+			//If the indices are the same, this is a vertex
+			if(i == 0) {
+				var coordinates = [];
+				for(var k = 1; k <= dimensions; k++) 
+					coordinates.push(j % (Math.pow(2, k)) < Math.pow(2, k - 1) ? 0.5 : -0.5);
+				locations[j] = {0:els[0].length};
+				els[0].push(new Point(coordinates));
+				continue;
+			}
+			//To avoid redundancy, i^j should be >=i using the obvious partial ordering on bitstrings.
+			//This is equivalent to i and j being disjoint
+			if((j & i) != 0)
+				continue;
+			//Everything else is a higher-dimensional element
+			var elementDimension = 0;
+			var difference = i;
+			var differences = [];
+			while(difference > 0) {
+				elementDimension++;
+				differences.push(difference & ~(difference - 1));
+				difference = difference & (difference - 1);
+			}
+			var facets = [];
+			//facets connected to i
+			for(var k = 0; k < differences.length; k++)
+				facets.push(locations[j][i ^ differences[k]]);
+			//facets connected to i^j
+			for(var k = 0; k < differences.length; k++)
+				facets.push(locations[j ^ differences[k]][i ^ differences[k]]);
+			locations[j][i] = els[elementDimension].length;
+			els[elementDimension].push(facets);
+		}
+	}
+
+	return new PolytopeC(els);
+};
+	
+//Builds a simplex in the specified amount of dimensions.
+//Implements the more complicated coordinates in the space of the same dimension.
+//In the future, will be replaced by the PolytopeS version.
+Polytope.simplex = function(dimensions) {
+	var vertices = [];
+	var aux = [Infinity]; //Memoizes some square roots, tiny optimization.
+	for(var i = 1; i <= dimensions; i++) 
+		aux.push(1 / Math.sqrt(2 * i * (i + 1)));
+	
+	for(var i = 0; i <= dimensions ; i++) {
+		var coordinates = [];
+		for(var j = 1; j <= dimensions; j++) {
+			if(j > i)
+				coordinates.push(-aux[j]);
+			else if(j === i)
+				coordinates.push(j * aux[j]);
+			else
+				coordinates.push(0);
+		}
+		vertices.push(new Point(coordinates));
+	}
+
+	var els = [vertices];
+	for(var i = 1; i <= dimensions; i++)
+		els.push([]);
+	var locations = {};
+	for(var i = 0; i < dimensions + 1; i++)
+		locations[Math.pow(2, i)] = i;
+	for(var i = 1; i < Math.pow(2, dimensions + 1); i++) {
+		//Vertices were generated earlier
+		if (!(i & (i - 1)))
+			continue;
+		var elementDimension = -1;
+		var t = i;
+		var elemVertices = [];
+		while(t > 0) {
+			elementDimension++;
+			elemVertices.push(t & ~(t - 1));
+			t = t & (t - 1);
+		}
+		var facets = [];
+		for(var k = 0; k < elemVertices.length; k++)
+			facets.push(locations[i ^ elemVertices[k]]);
+		locations[i] = els[elementDimension].length;
+		els[elementDimension].push(facets);
+	}
+	
+	return new PolytopeC(els);
+};
+
+//Builds a cross-polytope in the specified amount of dimensions.
+//Positioned in the standard orientation with edge length 1.
+//In the future, will be replaced by the PolytopeS version.
+Polytope.cross = function(dimensions) {
+	//i is the set of nonzero dimensions, j is the set of negative dimensions
+	var els = [];
+	for(var i = 0; i <= dimensions; i++)
+		els.push([]);
+	var locations = {};
+	//The full polytope is best handled separately
+	for(var i = 1; i < Math.pow(2, dimensions); i++) {
+		for(var j = 0; j < Math.pow(2, dimensions); j++) {
+			//No negative zero dimensions
+			if((i & j) != j)
+				continue;
+			if(!j)
+				locations[i] = {};
+			if(!(i & (i - 1))) {
+				var coordinates = [];
+				var sign = j ? -1 : 1;
+				for(var k = 0; k < dimensions; k++) 
+					coordinates.push((Math.pow(2, k)) == i ? sign * Math.SQRT1_2 : 0);
+				locations[i][j] = els[0].length;
+				els[0].push(new Point(coordinates));
+				continue;
+			}
+			var elementDimension = -1;
+			var t = i;
+			var elemVertices = [];
+			while(t > 0) {
+				elementDimension++;
+				elemVertices.push(t & ~(t - 1));
+				t = t & (t - 1);
+			}
+			var facets = [];
+			for(var k = 0; k < elemVertices.length; k++)
+				facets.push(locations[i ^ elemVertices[k]][j & ~elemVertices[k]]);
+			locations[i][j] = els[elementDimension].length;
+			els[elementDimension].push(facets);
+		}
+	}
+	var facets = [];
+	for(var i = 0; i < els[dimensions - 1].length; i++) {
+		facets.push(i);
+	}
+	els[dimensions].push(facets);
+	
+	return new PolytopeC(els);
+};
+
+//Builds a Grünbaumian n/d star.
+//In the future, should be replaced by the PolytopeS version.
+Polytope.regularPolygonG = function(n, d) {
+	if(d === undefined)
+		d = 1;
+	
+	var els = [[], [], [[]]],
+	i,
+	invRad = 2 * Math.sin(Math.PI * d / n); //1 / the circumradius
+	
+	for(i = 0; i < n; i++) {
+		var angle = 2 * Math.PI * i * d / n;
+		els[0].push(new Point([Math.cos(angle) / invRad, Math.sin(angle) / invRad])); //Vertices
+		els[2][0].push(i); //Face.
+	}
+	
+	for(i = 0; i < n - 1; i++)
+		els[1].push([i, i + 1]); //Edges
+	els[1].push([els[0].length - 1, 0]);
+	
+	return new Polytope(els, new NodeC(POLYGON, [n, d]));
+};
+
 //Creates a uniform {n / d} antiprism.
 //Only meant for when (n, d) = 1.
 Polytope.uniformAntiprism = function(n, d) {
@@ -858,20 +1132,24 @@ Polytope._readerOnload = function(e) {
 };
 
 //Helper function for OFF importing.
-//Checks whether two arrays have a common element.
+//Checks whether two arrays have a common element using a dictionary.
 Polytope._checkCommonElements = function(a, b) {
-	var vals = [], i;
-	for(i = 0; i < a.length; i++) {
+	var vals = {}, i;
+	vals[a[i]] = true;
+	
+	for(i = 1; i < a.length; i++) {
 		if(vals[a[i]])
 			return true;
 		vals[a[i]] = true;
 	}
-	for(i = 0; i < b.length; i++) {
+	for(i = 0; i < b.length - 1; i++) {
 		if(vals[b[i]])
 			return true;
 		vals[b[i]] = true;
 	}
 	
+	if(vals[b[i]])
+		return true;
 	return false;
 };
 
@@ -1009,278 +1287,4 @@ Polytope._saveFile = function(data, type, fileName) {
 		a.click();
 		window.URL.revokeObjectURL(a.href);
 	}
-};
-
-//Builds a n/d star.
-//If n and d are not coprime, a regular polygon compound is made instead.
-//In the future, should be replaced by the PolytopeS version.
-Polytope.regularPolygon = function(n, d) {
-	var gcd;
-	if(d === undefined) {
-		d = 1;
-		gcd = 1;
-	}
-	else
-		gcd = Polytope._gcd(n, d);
-	
-	var els = [[], [], []],
-	n_gcd = n / gcd,
-	counter = 0,
-	comp,
-	i, j, x = 0, y = d,
-	invRad = 2 * Math.sin(Math.PI * d / n); //1 / the circumradius.
-	
-	for(i = 0; i < n; i++) {
-		var angle = 2 * Math.PI * i / n;
-		els[0].push(new Point([Math.cos(angle) / invRad, Math.sin(angle) / invRad])); //Vertices
-	}
-	
-	//i is the component number.
-	for(i = 0; i < gcd; i++) {
-		//x and y keep track of the vertices that are being connected.
-		comp = [];
-		//j is the edge.
-		for(j = 0; j < n_gcd; j++) {
-			els[1].push([x, y]); //Edges
-			x = y;
-			y += d;
-			if(y >= n)
-				y -= n;
-			comp.push(counter++); //Components
-		}
-		els[2].push(comp);
-		x++; y++;
-	}
-	
-	return new PolytopeC(els, new NodeC(POLYGON, [n, d]));
-};
-
-//Helper function for regularPolygon.
-//Just the most basic form of the Euclidean algorithm.
-Polytope._gcd = function(n, d) {
-	var t;
-	while (d !== 0) {
-		t = d;
-		d = n % d;
-		n = t;
-	}
-	return n;
-};	
-
-//Builds a Grünbaumian n/d star.
-//In the future, should be replaced by the PolytopeS version.
-Polytope.regularPolygonG = function(n, d) {
-	if(d === undefined)
-		d = 1;
-	
-	var els = [[], [], [[]]],
-	i,
-	invRad = 2 * Math.sin(Math.PI * d / n); //1 / the circumradius
-	
-	for(i = 0; i < n; i++) {
-		var angle = 2 * Math.PI * i * d / n;
-		els[0].push(new Point([Math.cos(angle) / invRad, Math.sin(angle) / invRad])); //Vertices
-		els[2][0].push(i); //Face.
-	}
-	
-	for(i = 0; i < n - 1; i++)
-		els[1].push([i, i + 1]); //Edges
-	els[1].push([els[0].length - 1, 0]);
-	
-	return new Polytope(els, new NodeC(POLYGON, [n, d]));
-};
-
-//Builds a hypercube in the specified amount of dimensions.
-//Positioned in the standard orientation with edge length 1.
-//In the future, will be replaced by the PolytopeS version.
-Polytope.hypercube = function(dimensions) {
-	var els = []; //Elements is a reserved word.
-	for(var i = 0; i <= dimensions; i++)
-		els.push([]);
-	//Mapping from pairs of the indices below to indices of the corresponding els.
-	var locations = {};
-	//i and i^j are the indices of the vertices of the current subelement.
-	//i^j is used instead of j to ensure that facets of els
-	//are generated before the corresponding element.
-	for(var i = 0; i < Math.pow(2, dimensions); i++) {
-		for(var j = 0; j < Math.pow(2, dimensions); j++) {
-			//If the indices are the same, this is a vertex
-			if(i == 0) {
-				var coordinates = [];
-				for(var k = 1; k <= dimensions; k++) 
-					coordinates.push(j % (Math.pow(2, k)) < Math.pow(2, k - 1) ? 0.5 : -0.5);
-				locations[j] = {0:els[0].length};
-				els[0].push(new Point(coordinates));
-				continue;
-			}
-			//To avoid redundancy, i^j should be >=i using the obvious partial ordering on bitstrings.
-			//This is equivalent to i and j being disjoint
-			if((j & i) != 0)
-				continue;
-			//Everything else is a higher-dimensional element
-			var elementDimension = 0;
-			var difference = i;
-			var differences = [];
-			while(difference > 0) {
-				elementDimension++;
-				differences.push(difference & ~(difference - 1));
-				difference = difference & (difference - 1);
-			}
-			var facets = [];
-			//facets connected to i
-			for(var k = 0; k < differences.length; k++)
-				facets.push(locations[j][i ^ differences[k]]);
-			//facets connected to i^j
-			for(var k = 0; k < differences.length; k++)
-				facets.push(locations[j ^ differences[k]][i ^ differences[k]]);
-			locations[j][i] = els[elementDimension].length;
-			els[elementDimension].push(facets);
-		}
-	}
-
-	return new PolytopeC(els);
-};
-	
-//Builds a simplex in the specified amount of dimensions.
-//Implements the more complicated coordinates in the space of the same dimension.
-//In the future, will be replaced by the PolytopeS version.
-Polytope.simplex = function(dimensions) {
-	var vertices = [];
-	var aux = [Infinity]; //Memoizes some square roots, tiny optimization.
-	for(var i = 1; i <= dimensions; i++) 
-		aux.push(1 / Math.sqrt(2 * i * (i + 1)));
-	
-	for(var i = 0; i <= dimensions ; i++) {
-		var coordinates = [];
-		for(var j = 1; j <= dimensions; j++) {
-			if(j > i)
-				coordinates.push(-aux[j]);
-			else if(j === i)
-				coordinates.push(j * aux[j]);
-			else
-				coordinates.push(0);
-		}
-		vertices.push(new Point(coordinates));
-	}
-
-	var els = [vertices];
-	for(var i = 1; i <= dimensions; i++)
-		els.push([]);
-	var locations = {};
-	for(var i = 0; i < dimensions + 1; i++)
-		locations[Math.pow(2, i)] = i;
-	for(var i = 1; i < Math.pow(2, dimensions + 1); i++) {
-		//Vertices were generated earlier
-		if (!(i & (i - 1)))
-			continue;
-		var elementDimension = -1;
-		var t = i;
-		var elemVertices = [];
-		while(t > 0) {
-			elementDimension++;
-			elemVertices.push(t & ~(t - 1));
-			t = t & (t - 1);
-		}
-		var facets = [];
-		for(var k = 0; k < elemVertices.length; k++)
-			facets.push(locations[i ^ elemVertices[k]]);
-		locations[i] = els[elementDimension].length;
-		els[elementDimension].push(facets);
-	}
-	
-	return new PolytopeC(els);
-};
-
-//Builds a cross-polytope in the specified amount of dimensions.
-//Positioned in the standard orientation with edge length 1.
-//In the future, will be replaced by the PolytopeS version.
-Polytope.cross = function(dimensions) {
-	//i is the set of nonzero dimensions, j is the set of negative dimensions
-	var els = [];
-	for(var i = 0; i <= dimensions; i++)
-		els.push([]);
-	var locations = {};
-	//The full polytope is best handled separately
-	for(var i = 1; i < Math.pow(2, dimensions); i++) {
-		for(var j = 0; j < Math.pow(2, dimensions); j++) {
-			//No negative zero dimensions
-			if((i & j) != j)
-				continue;
-			if(!j)
-				locations[i] = {};
-			if(!(i & (i - 1))) {
-				var coordinates = [];
-				var sign = j ? -1 : 1;
-				for(var k = 0; k < dimensions; k++) 
-					coordinates.push((Math.pow(2, k)) == i ? sign * Math.SQRT1_2 : 0);
-				locations[i][j] = els[0].length;
-				els[0].push(new Point(coordinates));
-				continue;
-			}
-			var elementDimension = -1;
-			var t = i;
-			var elemVertices = [];
-			while(t > 0) {
-				elementDimension++;
-				elemVertices.push(t & ~(t - 1));
-				t = t & (t - 1);
-			}
-			var facets = [];
-			for(var k = 0; k < elemVertices.length; k++)
-				facets.push(locations[i ^ elemVertices[k]][j & ~elemVertices[k]]);
-			locations[i][j] = els[elementDimension].length;
-			els[elementDimension].push(facets);
-		}
-	}
-	var facets = [];
-	for(var i = 0; i < els[dimensions - 1].length; i++) {
-		facets.push(i);
-	}
-	els[dimensions].push(facets);
-	
-	return new PolytopeC(els);
-};
-
-//Extrudes a polytope to a pyramid with an apex at the specified point.
-//Constructs pyramids out of elements recursively.
-//The ith n-element in the original polytope gets extruded to the 
-//(i+[(n+1)-elements in the original polytope])th element in the new polytope.
-//TODO: Use the pyramid product for this instead.
-Polytope.prototype.extrudeToPyramid = function(apex) {
-	var P = this.toPolytopeC(),
-	els, i;
-	
-	P.dimensions++;
-	P.elementList.push([]);
-	
-	var oldElNumbers = [];
-	for(i = 0; i <= P.dimensions; i++)
-		oldElNumbers.push(P.elementList[i].length);
-	
-	//Adds apex.
-	P.elementList[0].push(apex);		
-	P.setSpaceDimensions(Math.max(apex.dimensions(), P.spaceDimensions));
-	
-	//Adds edges.
-	for(i = 0; i < oldElNumbers[0]; i++)
-		P.elementList[1].push([i, oldElNumbers[0]]);
-	
-	//Adds remaining elements.
-	for(var d = 2; d <= P.dimensions; d++) {
-		for(i = 0; i < oldElNumbers[d - 1]; i++) {
-			els = [i];
-			for(var j = 0; j < P.elementList[d - 1][i].length; j++)
-				els.push(P.elementList[d - 1][i][j] + oldElNumbers[d - 1]);
-			P.elementList[d].push(els);
-		}
-	}
-	
-	var construction = new NodeC(PYRAMID, [P.construction]);
-	P.construction = construction;
-	return P;
-};
-
-//TODO: Add a PolytopeS version.
-Polytope.prototype.extrudeToPrism = function(height) {
-	return PolytopeC.prismProduct(this.toPolytopeC(), PolytopeC.dyad(height));
 };
