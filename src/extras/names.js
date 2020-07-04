@@ -362,7 +362,7 @@ Translation.plain = function(n, dimension, options) {
 	}
 };
 
-//Converts a constructionNode into its the corresponding member of the specified family's name.
+//Converts a nodeC into its the corresponding member of the specified family's name.
 Translation.familyMember = function(node, family, gender) {
 	var name = node.getName();
 	switch(LANGUAGE) {
@@ -377,7 +377,7 @@ Translation.familyMember = function(node, family, gender) {
 	}
 };
 
-//Converts a set of constructionNodes into their prism product/tegum product/pyramid product's name.
+//Converts a set of nodeCs into their prism product/tegum product/pyramid product's name.
 //The family is which product is used ("prism", "tegum", "pyramid").
 //specialFactor is an element that, when in the product, is considered differently.
 //specialFactorModify specifies what this element becomes into within the product.

@@ -6,7 +6,7 @@
 //Those are set in the PolytopeC (combinatorial) and PolytopeS (symmetry) subclasses.
 function Polytope(construction) {
 	if(!construction)
-		this.construction = new ConstructionNode(POLYTOPE, [this]);
+		this.construction = new NodeC(POLYTOPE, [this]);
 	else
 		this.construction = construction;
 };
@@ -19,11 +19,11 @@ Polytope.prototype.getName = function() {
 //The two elephants in the room.
 //Using these is probably buggy, and we should check this eventually.
 Polytope.nullitope = function() {
-	return new Polytope([], new ConstructionNode(NAME, ["nullitope"]));
+	return new Polytope([], new NodeC(NAME, ["nullitope"]));
 };
 
 Polytope.point = function() {
-	return new Polytope([[new Point([])]], new ConstructionNode(NAME, ["point"]));
+	return new Polytope([[new Point([])]], new NodeC(NAME, ["point"]));
 };
 
 //Creates a dyad of the given length.
@@ -32,7 +32,7 @@ Polytope.dyad = function(length) {
 		length = 0.5;
 	else
 		length /= 2;
-	return new PolytopeC([[new Point([-length]), new Point([length])], [[0, 1]]], new ConstructionNode(NAME, ["dyad"]));
+	return new PolytopeC([[new Point([-length]), new Point([length])], [[0, 1]]], new NodeC(NAME, ["dyad"]));
 };
 
 //Polytope._prismProduct, but also supports P being an array.
@@ -439,13 +439,13 @@ Polytope._product = function(P, Q, type, fun) {
 			constructions.push(P[P.length - 1].construction);
 			res = fun(P.pop(), res);
 		}
-		res.construction = new ConstructionNode(type, constructions);
+		res.construction = new NodeC(type, constructions);
 		return res;
 	}
 	
 	//If P and Q are just two polytopes:
 	res = fun(P, Q);
-	res.construction = new ConstructionNode(type, [P.construction, Q.construction]);
+	res.construction = new NodeC(type, [P.construction, Q.construction]);
 	return res;
 };
 
@@ -497,7 +497,7 @@ Polytope.uniformAntiprism = function(n, d) {
 	for(i = 0; i < 2 * (n + 1); i++)
 		newElementList[3][0].push(i);
 	
-	return new PolytopeC(newElementList, new ConstructionNode(ANTIPRISM, [new ConstructionNode(POLYGON, [n, d])]));
+	return new PolytopeC(newElementList, new NodeC(ANTIPRISM, [new NodeC(POLYGON, [n, d])]));
 };
 
 //Creates an {n / d} cupola with regular faces.
@@ -555,7 +555,7 @@ Polytope.cupola = function(n, d) {
 	for(i = 0; i < 2 * n + 2; i++)
 		newElementList[3][0].push(i);
 	
-	return new PolytopeC(newElementList, new ConstructionNode(CUPOLA, [new ConstructionNode(POLYGON, [n, d])]));
+	return new PolytopeC(newElementList, new NodeC(CUPOLA, [new NodeC(POLYGON, [n, d])]));
 };
 
 //Creates an {n / d} cuploid with regular faces.
@@ -610,7 +610,7 @@ Polytope.cuploid = function(n, d) {
 	for(i = 0; i < 2 * n + 1; i++)
 		newElementList[3][0].push(i);
 	
-	return new PolytopeC(newElementList, new ConstructionNode(CUPLOID, [new ConstructionNode(POLYGON, [n, d])]));
+	return new PolytopeC(newElementList, new NodeC(CUPLOID, [new NodeC(POLYGON, [n, d])]));
 };
 
 //Creates an {n / d} cupolaic blend with regular faces.
@@ -678,7 +678,7 @@ Polytope.cupolaicBlend = function(n, d) {
 	for(i = 0; i < 2 * n + 1; i++)
 		newElementList[3][0].push(i);
 	
-	return new PolytopeC(newElementList, new ConstructionNode(CUPBLEND, [new ConstructionNode(POLYGON, [n, d])]));
+	return new PolytopeC(newElementList, new NodeC(CUPBLEND, [new NodeC(POLYGON, [n, d])]));
 };
 
 //The event triggered by the OFF import button.
@@ -839,7 +839,7 @@ Polytope._readerOnload = function(e) {
 		el = [];
 		facets = elementList[elementList.length - 2];
 		for(i = 0; i < facets.length; i++)
-			el.push(new Node(i));
+			el.push(new NodeG(i));
 		//Calculates incidences.
 		for(i = 0; i < facets.length; i++)
 			for(j = i + 1; j < facets.length; j++)
@@ -854,7 +854,7 @@ Polytope._readerOnload = function(e) {
 		}
 	}
 	
-	P = new PolytopeC(elementList, new ConstructionNode(NAME, [fileName]));
+	P = new PolytopeC(elementList, new NodeC(NAME, [fileName]));
 };
 
 //Helper function for OFF importing.
@@ -1052,7 +1052,7 @@ Polytope.regularPolygon = function(n, d) {
 		x++; y++;
 	}
 	
-	return new PolytopeC(els, new ConstructionNode(POLYGON, [n, d]));
+	return new PolytopeC(els, new NodeC(POLYGON, [n, d]));
 };
 
 //Helper function for regularPolygon.
@@ -1087,7 +1087,7 @@ Polytope.regularPolygonG = function(n, d) {
 		els[1].push([i, i + 1]); //Edges
 	els[1].push([els[0].length - 1, 0]);
 	
-	return new Polytope(els, new ConstructionNode(POLYGON, [n, d]));
+	return new Polytope(els, new NodeC(POLYGON, [n, d]));
 };
 
 //Builds a hypercube in the specified amount of dimensions.
@@ -1275,7 +1275,7 @@ Polytope.prototype.extrudeToPyramid = function(apex) {
 		}
 	}
 	
-	var construction = new ConstructionNode(PYRAMID, [P.construction]);
+	var construction = new NodeC(PYRAMID, [P.construction]);
 	P.construction = construction;
 	return P;
 };

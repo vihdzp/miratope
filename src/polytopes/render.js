@@ -90,9 +90,9 @@ Polytope.prototype.renderTo = function(scene) {
 		
 		//Makes a doubly-linked list vertexDLL for the polygon's vertices and the new vertices created.
 		//node0 is always the "next" vertex.
-		var vertexDLL = [new DLLNode(P.elementList[0][cycle[0]])];
+		var vertexDLL = [new NodeD(P.elementList[0][cycle[0]])];
 		for(j = 0; j < cycle.length - 1; j++) {
-			vertexDLL[j + 1] = new DLLNode(P.elementList[0][cycle[j + 1]]);			
+			vertexDLL[j + 1] = new NodeD(P.elementList[0][cycle[j + 1]]);			
 			vertexDLL[j].linkToNext(vertexDLL[j + 1]);
 		}						
 		vertexDLL[vertexDLL.length - 1].linkToNext(vertexDLL[0]);
@@ -245,7 +245,7 @@ Polytope._divide = function(edgeA, edgeB, vertexDLL, EQ) {
 	//Add the intersection and a point at "infinitesimal distance" to the vertex list.
 	//They don't actually have to be different in this implementation of the algorithm.
 	//In fact, the algorithm (as implemented) will fail if both nodes don't reference the same point.
-	var newNode1 = new DLLNode(inter); var newNode2 = new DLLNode(inter);
+	var newNode1 = new NodeD(inter); var newNode2 = new NodeD(inter);
 	vertexDLL.push(newNode1); vertexDLL.push(newNode2);
 	
 	//Re-links the vertices.

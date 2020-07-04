@@ -1,5 +1,5 @@
 "use strict";
-//A constructionNode represents how a polytope has been built up.
+//A nodeC represents how a polytope has been built up.
 //It consists of a type and children.
 //Children are arrays of objects, oftentimes nodes, the specific objects depend on the node type.
 //They're essentially what the node "operates" on.
@@ -38,7 +38,7 @@ const POLYGON = 10;
 //Has a single string as a child, representing a polytope's name in Miratope's library.
 const NAME = 11;
 
-function ConstructionNode(type, children) {
+function NodeC(type, children) {
 	this.type = type;
 	this.children = children;
 	
@@ -79,7 +79,7 @@ function ConstructionNode(type, children) {
 	this.setGenders();
 };
 
-ConstructionNode.prototype.getName = function() {
+NodeC.prototype.getName = function() {
 	switch(this.type) {		
 		case POLYTOPE:
 			var poly = this.children[0];
@@ -116,7 +116,7 @@ ConstructionNode.prototype.getName = function() {
 //e.g. in Spanish, we'd say "prisma cupoidal pentagrámico cruzado", not 
 //"prisma cupoidal pentagrámica cruzada"; even though "cúpula" is femenine,
 //the male "prisma" takes over.
-ConstructionNode.prototype.setGenders = function() {
+NodeC.prototype.setGenders = function() {
 	for(var i = 0; i < this.children.length; i++) {
 		var child = this.children[i];
 		if(child.setGenders) {
@@ -130,7 +130,7 @@ ConstructionNode.prototype.setGenders = function() {
 //a multitegum of multitegums is just a larger multitegum, etc.
 //This function removes children nodes of the same type,
 //and replaces them by their children.
-ConstructionNode.prototype.mergeChildren = function() {
+NodeC.prototype.mergeChildren = function() {
 	var oldLength = this.children.length;
 	for(var i = 0; i < oldLength; i++) {
 		if(this.children[i].type === this.type) {
