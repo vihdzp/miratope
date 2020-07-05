@@ -37,7 +37,7 @@ Polytope.dyad = function(length) {
 
 //Polytope._prismProduct, but also supports P being an array.
 Polytope.prismProduct = function(P, Q) {
-	return Polytope._product(P, Q, MULTIPRISM, Polytope._multiprism);
+	return Polytope._product(P, Q, MULTIPRISM, Polytope._prismProduct);
 };
 
 //Calculates the prism product, or rather Cartesian product, of P and Q.
@@ -490,7 +490,7 @@ Polytope.prototype.extrudeToPyramid = function(apex) {
 
 //TODO: Add a PolytopeS version.
 Polytope.prototype.extrudeToPrism = function(height) {
-	return PolytopeC.prismProduct(this.toPolytopeC(), PolytopeC.dyad(height));
+	return Polytope.prismProduct(this.toPolytopeC(), Polytope.dyad(height));
 };
 
 //Builds a polygon from the vertices given in order.
