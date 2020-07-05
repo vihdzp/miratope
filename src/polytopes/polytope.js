@@ -527,11 +527,12 @@ Polytope.regularPolygon = function(n, d) {
 	counter = 0,
 	comp,
 	i, j, x = 0, y = d,
+	angle = 0,
 	invRad = 2 * Math.sin(Math.PI * d / n); //1 / the circumradius.
 	
 	for(i = 0; i < n; i++) {
-		var angle = 2 * Math.PI * i / n;
 		els[0].push(new Point([Math.cos(angle) / invRad, Math.sin(angle) / invRad])); //Vertices
+		angle += 2 * Math.PI / n;
 	}
 	
 	//i is the component number.
@@ -574,12 +575,13 @@ Polytope.regularPolygonG = function(n, d) {
 	
 	var els = [[], [], [[]]],
 	i,
+	angle = 0,
 	invRad = 2 * Math.sin(Math.PI * d / n); //1 / the circumradius
 	
 	for(i = 0; i < n; i++) {
-		var angle = 2 * Math.PI * i * d / n;
 		els[0].push(new Point([Math.cos(angle) / invRad, Math.sin(angle) / invRad])); //Vertices
 		els[2][0].push(i); //Face.
+		angle += 2 * Math.PI * d / n;
 	}
 	
 	for(i = 0; i < n - 1; i++)

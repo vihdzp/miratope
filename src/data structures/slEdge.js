@@ -8,11 +8,17 @@
 function SLEdge(leftVertex, rightVertexIndex) {
 	this.leftVertex = leftVertex;
 	this.rightVertexIndex = rightVertexIndex;
+	var rightVertex = this.rightVertex();
+	
+	//Calculates the slope.
+	//This won't change even if the edge gets cut down to zero length, thus making the ordering consistent.
+	this.slope = (leftVertex.value.coordinates[SLEdge.indx1] - rightVertex.value.coordinates[SLEdge.indx1])
+	/ (leftVertex.value.coordinates[SLEdge.indx0] - rightVertex.value.coordinates[SLEdge.indx0]);
 	
 	//Gives the edge an immutable ID in terms of its vertices.
 	//Uses the redirect table (read below).
-	var x = this.leftVertex.id;
-	var y = this.rightVertex().id;
+	var x = leftVertex.id;
+	var y = rightVertex.id;
 	var newID = (x + y) * (x + y + 1) / 2 + y;
 	this.id = (SLEdge.redirectTable[newID] === undefined ? newID : SLEdge.redirectTable[newID]);
 };

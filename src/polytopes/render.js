@@ -11,17 +11,17 @@ Polytope.prototype.renderTo = function(scene) {
 	
 	function debug() {
 		var x = 0;
-		console.log(E.value.coordinates[indx0].toString());
+		console.log(E.value.coordinates[SLEdge.indx0].toString());
 		console.log(SL.toString());
 	}
 	
 	//Orders two points lexicographically based on the coordinates on indices 0 and 1.
 	//Uses the IDs of the vertices to order them consistently if their coordinates are identical.
 	function order(a, b) {
-		var c = a.value.coordinates[indx0] - b.value.coordinates[indx0];
-		if(Math.abs(c) < EPS) {
-			c = a.value.coordinates[indx1] - b.value.coordinates[indx1];
-			if(Math.abs(c) < EPS)
+		var c = a.value.coordinates[SLEdge.indx0] - b.value.coordinates[SLEdge.indx0];
+		if(c === 0) { //DO NOT REPLACE BY Math.abs(c) < EPS
+			c = a.value.coordinates[SLEdge.indx1] - b.value.coordinates[SLEdge.indx1];
+			if(c === 0)
 				return a.id - b.id;
 		}
 		return c;
@@ -39,42 +39,40 @@ Polytope.prototype.renderTo = function(scene) {
 		b = x.rightVertex().value,
 		c = y.leftVertex.value,
 		d = y.rightVertex().value,
-		k = E.value.coordinates[indx0], slopeMod;
+		k = E.value.coordinates[SLEdge.indx0], slopeMod;
 		
 		//Calculates where in the segments the intersection with the sweepline lies.
-		var lambda0 = (k - b.coordinates[indx0])/(a.coordinates[indx0] - b.coordinates[indx0]);		
-		var lambda1 = (k - d.coordinates[indx0])/(c.coordinates[indx0] - d.coordinates[indx0]);
+		var lambda0 = (k - b.coordinates[SLEdge.indx0])/(a.coordinates[SLEdge.indx0] - b.coordinates[SLEdge.indx0]);		
+		var lambda1 = (k - d.coordinates[SLEdge.indx0])/(c.coordinates[SLEdge.indx0] - d.coordinates[SLEdge.indx0]);
 		
 		//The height difference between the intersections.
-		var res = (a.coordinates[indx1] * lambda0 + b.coordinates[indx1] * (1 - lambda0)) - (c.coordinates[indx1] * lambda1 + d.coordinates[indx1] * (1 - lambda1));
+		var res = (a.coordinates[SLEdge.indx1] * lambda0 + b.coordinates[SLEdge.indx1] * (1 - lambda0)) - (c.coordinates[SLEdge.indx1] * lambda1 + d.coordinates[SLEdge.indx1] * (1 - lambda1));
 		
-		//If the intersections are the same:
-		if (Math.abs(res) < EPS) {	
+		//If the intersections are so similar, we also need to consider the possibility
+		//that the edges actually have a common endpoint.
+		if (Math.abs(res) < EPS) {
 			//If the first edge starts at a point, and the second ends at that point, the former gets sorted after the latter.
-			if(lambda0 === 1 && lambda1 === 0)
+			if(lambda0 > 1 - EPS && lambda1 < EPS)
 				return 1;
 			//And viceversa.
-			if(lambda0 === 0 && lambda1 === 1)
+			if(lambda0 < EPS && lambda1 > 1 - EPS)
 				return -1;
 			
 			//If both edges start at the same point, sort by increasing slope.
-			if(lambda0 === 1)
+			if(lambda0 > 1 - EPS)
 				slopeMod = 1;				
 			//If both edges end at the same point, sort by decreasing slope.
-			else
+			else if(lambda0 < EPS)
 				slopeMod = -1;
-			
-			//lambda0, lambda1 are recycled as slopes.
-			//These shouldn't be NaNs, that case is handled separately in the main code.
-			lambda0 = (a.coordinates[indx1] - b.coordinates[indx1])/(a.coordinates[indx0] - b.coordinates[indx0]);
-			lambda1 = (c.coordinates[indx1] - d.coordinates[indx1])/(c.coordinates[indx0] - d.coordinates[indx0]);
+			//The edges are just really close, so compare them normally.
+			else
+				return res;
 			
 			//The difference between the slopes.
-			res = slopeMod * (lambda0 - lambda1);
+			res = slopeMod * (Math.atan(x.slope) - Math.atan(y.slope));
 			
 			//If both lines are the same, might as well compare using indices.
-			if(Space.sameSlope(a.coordinates[indx0] - b.coordinates[indx0], a.coordinates[indx1] - b.coordinates[indx1],
-			c.coordinates[indx0] - d.coordinates[indx0], c.coordinates[indx1] - d.coordinates[indx1]))
+			if(Math.abs(res) < EPS)
 				return x.id - y.id;
 		}
 		return res;
@@ -85,6 +83,10 @@ Polytope.prototype.renderTo = function(scene) {
 	//For each face:
 	faceLoop:
 	for(var i = 0; i < P.elementList[2].length; i++){
+		//Let's not even bother with digons and monogons.
+		if(P.elementList[2][i].length <= 3)
+			continue faceLoop;
+		
 		//Enumerates the vertices in order.
 		var cycle = P.faceToVertices(i);
 		
@@ -100,27 +102,29 @@ Polytope.prototype.renderTo = function(scene) {
 		//Tries to find two non-equal points. If all points are the same, doesn't render the face.
 		var a = 1;
 		while(Point.equal(vertexDLL[0].value, vertexDLL[a].value))
-			if(a++ >= vertexDLL.length)
+			if(++a >= vertexDLL.length)
 				continue faceLoop;
 		
 		//Tries to find three non-collinear points. If all points are collinear, doesn't render the face.
-		var b = (a == 1 ? 2 : 1);
+		var b = (a === 1 ? 2 : 1);
 		while(Space.collinear(vertexDLL[0].value, vertexDLL[a].value, vertexDLL[b].value))
-			if(b++ >= vertexDLL.length)
+			if(++b >= vertexDLL.length)
 				continue faceLoop;
 		
 		//Calculates the coordinates such that the projection of our three non-collinear points onto their 2D plane has the highest area.
 		//Uses the shoelace formula.
-		//Stores such coordinates' indices in indx0, indx1.
-		var maxArea = 0, indx0 = 0, indx1 = 1;
+		//Stores such coordinates' indices in SLEdge.indx0, SLEdge.indx1.
+		var maxArea = 0;
+		SLEdge.indx0 = 0;
+		SLEdge.indx1 = 1;
 		for(j = 0; j < vertexDLL[0].value.dimensions(); j++) {
 			for(k = j + 1; k < vertexDLL[0].value.dimensions(); k++) {
 				if(vertexDLL[0].value.coordinates[j] * (vertexDLL[a].value.coordinates[k] - vertexDLL[b].value.coordinates[k])
 				+ vertexDLL[a].value.coordinates[j] * (vertexDLL[b].value.coordinates[k] - vertexDLL[0].value.coordinates[k])
 				+ vertexDLL[b].value.coordinates[j] * (vertexDLL[0].value.coordinates[k] - vertexDLL[a].value.coordinates[k])
 				> maxArea) {
-					indx0 = j;
-					indx1 = k;
+					SLEdge.indx0 = j;
+					SLEdge.indx1 = k;
 				}						
 			}
 		}
@@ -137,22 +141,25 @@ Polytope.prototype.renderTo = function(scene) {
 		//This format is useful because an edge on the sweep line can only be cut to the right.
 		//That way, we don't need to modify the SL objects after the division process: only the nodes' connections change.
 		
-		var SL = new AvlTree(SLSort);
+		var SL = new AvlTree(SLSort),counter=0;
 
 		//Bentley-Ottmann:
-		while(!EQ.isEmpty()) {				
+		while(!EQ.isEmpty()) {
+			counter++;			
 			var E = EQ.findMinimum(); //The next "event" in the event queue.
 			EQ.delete(E);
+			if(!SL.checkSorted())
+				alert(I + ", " + J + ": " + counter);
 			
 			//Runs P code on both edges adjacent to E's vertex.
 			for(j = 0; j <= 1; j++) {
 				var edge; //E's edge in the SL format.
-				var ord = E.value.coordinates[indx0] - E.getNode(j).value.coordinates[indx0];
+				var ord = E.value.coordinates[SLEdge.indx0] - E.getNode(j).value.coordinates[SLEdge.indx0];
 				var pos = 0;
 				var node, prevNode, nextNode;
 				
 				//Vertex E is a left endpoint of the edge:
-				if(ord < 0) {
+				if(ord < -EPS) {
 					edge = new SLEdge(E, j);
 					node = SL.insert(edge);
 					if(!node) {
@@ -170,7 +177,7 @@ Polytope.prototype.renderTo = function(scene) {
 						Polytope._divide(edge, nextNode.key, vertexDLL, EQ); //Checks for an intersection with the edge above edgeE.
 				}
 				//Vertex E is a right endpoint of the edge:
-				else if (ord > 0) {
+				else if (ord > EPS) {
 					edge = new SLEdge(E.getNode(j), 1 - j);
 					
 					//Deletes edge from the sweep line.
@@ -190,7 +197,7 @@ Polytope.prototype.renderTo = function(scene) {
 				}
 				//The edge is perpendicular to the first coordinate's axis:
 				//Runs only once per such an edge.
-				else if(E.value.coordinates[indx1] > E.getNode(j).value.coordinates[indx1]) {
+				else if(E.value.coordinates[SLEdge.indx1] > E.getNode(j).value.coordinates[SLEdge.indx1]) {
 					edge = new SLEdge(E, j);
 				
 					//I really should only check intersections with segments at the "correct height".

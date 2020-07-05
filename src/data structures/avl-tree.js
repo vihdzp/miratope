@@ -47,7 +47,7 @@ AvlTree.prototype._compare = function (a, b) {
 AvlTree.prototype.insert = function (key, value) {
   this._root = this._insert(key, value, this._root);
   this._size++;
-  return insertedNode;
+  return AvlTree.insertedNode;
 };
 
 /**
@@ -59,12 +59,11 @@ AvlTree.prototype.insert = function (key, value) {
  * @param {Node} root The root of the tree to insert in.
  * @return {Node} The new tree root.
  */
-var insertedNode;
 AvlTree.prototype._insert = function (key, value, root) {
   // Perform regular BST insertion
   if (root === null) {
-    insertedNode = new Node(key, value);
-	return insertedNode;
+    AvlTree.insertedNode = new Node(key, value);
+	return AvlTree.insertedNode;
   }
 
   if (this._compare(key, root.key) < 0) {
@@ -165,10 +164,11 @@ AvlTree.prototype._delete = function (key, root) {
     return root;
   }
 
-  if (this._compare(key, root.key) < 0) {
+  var compare = this._compare(key, root.key);
+  if (compare < 0) {
     // The key to be deleted is in the left sub-tree
     root.linkLeft(this._delete(key, root.left));
-  } else if (this._compare(key, root.key) > 0) {
+  } else if (compare > 0) {
     // The key to be deleted is in the right sub-tree
     root.linkRight(this._delete(key, root.right));
   } else {
@@ -177,14 +177,16 @@ AvlTree.prototype._delete = function (key, root) {
       root = null;
     } else if (!root.left && root.right) {
       root = root.right;
+	  root.parent = null;
     } else if (root.left && !root.right) {
       root = root.left;
+	  root.parent = null;
     } else {
       // Node has 2 children, get the in-order successor
       var inOrderSuccessor = minValueNode(root.right);
       root.key = inOrderSuccessor.key;
       root.value = inOrderSuccessor.value;
-      root.right = this._delete(inOrderSuccessor.key, root.right);
+      root.linkRight(this._delete(inOrderSuccessor.key, root.right));
     }
   }
 
