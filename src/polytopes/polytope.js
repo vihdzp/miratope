@@ -987,23 +987,14 @@ Polytope.openOFF = function(e) {
 	if (!file)
 		return;
 	var reader = new FileReader(),
-	contents, //Contents of OFF file.	
-	caret, //Caret for reading the OFF file.
-	dimensions, //The number of dimensions of the OFF file's polytope.
-	elementList = [[]], //The elements of the described polytope.
-	elementCount = [], //The amount of vertices, edges, faces... elementCount[1] goes unused except for the special case of 2D components.
-	elCount = 0, //The number of facets in an element.
-	el, //An element.
-	face, //A face.
-	component, //A component.
-	facets, //The list of facets.
-	edgeList = [], //A dictionary mapping hashes of pairs of integers to edge indices.
-	fileName = e.target.files[0].name, //File name.
-	i, j, x, y, t; //Temp variables.
+	contents; //Contents of OFF file.
 	
-	fileName = fileName.substr(0, fileName.lastIndexOf(".")); //Removes extension from file name.
+	//File name of imported polytope. Stored in a global variable so it can be accessed from Polytope._readerOnload.
+	Polytope.fileName = e.target.files[0].name; 
+	
+	Polytope.fileName = Polytope.fileName.substr(0, Polytope.fileName.lastIndexOf(".")); //Removes extension from file name.
 	if(LANGUAGE !== GERMAN)
-		fileName = Translation.firstToLower(fileName); //Lowercase name.
+		Polytope.fileName = Translation.firstToLower(Polytope.fileName); //Lowercase name.
 	
 	reader.onload = Polytope._readerOnload;
 	
@@ -1012,9 +1003,18 @@ Polytope.openOFF = function(e) {
 
 //Helper function for OFF importing.
 Polytope._readerOnload = function(e) {
-	caret = new Caret(e.target.result);
+	var caret = new Caret(e.target.result), //Caret for reading the OFF file.	
+	component, //A component of the polytope.
+	dimensions = caret.readNumber(), //The number of dimensions of the OFF file's polytope.
+	el, //An element of the polytope.
+	elCount = 0, //The number of facets in an element of the polytope.
+	edgeList = [], //A dictionary mapping hashes of pairs of integers to edge indices.
+	elementCount = [], //The amount of vertices, edges, faces... elementCount[1] goes unused except for the special case of 2D components.
+	elementList = [[]], //The elements of the described polytope.
+	face, //A face of the polytope.
+	facets, //The list of facets of the polytope.
+	i, j, x, y, t; //Temporary variables used in for loops.
 	
-	dimensions = caret.readNumber();
 	//The file just starts with OFF.
 	if(isNaN(dimensions))
 		dimensions = 3;
@@ -1028,6 +1028,7 @@ Polytope._readerOnload = function(e) {
 		P = Polytope.nullitope();
 		return;
 	}
+	
 	//Point
 	if(dimensions === 0) {
 		P = Polytope.point();
@@ -1153,7 +1154,7 @@ Polytope._readerOnload = function(e) {
 		}
 	}
 	
-	P = new PolytopeC(elementList, new NodeC(NAME, [fileName]));
+	P = new PolytopeC(elementList, new NodeC(NAME, [Polytope.fileName]));
 };
 
 //Helper function for OFF importing.
