@@ -3,27 +3,34 @@
 <head>
 	<meta charset="utf-8" />
 	<title>Miratope</title>
+	<!--Yo, if you want to figure out what Miratope is doing code-wise, start off in src/polytopes/polytope.js, the main classes are defined there-->
 	<style> body { margin: 0; } canvas { display: block; } </style>
-	<script src="src/extras/ending.js"></script> <!--A helper class for Translation.toAdjective.-->
-	<script src="src/extras/translation.js"></script> <!--A class for translating stuff in general.-->
-	<script src="src/extras/names.js"></script> <!--The part of the Translation class focused on names.-->
-	<script src="src/extras/toAdjective.js"></script> <!--The part of the Translation class focused on adjectives.-->
-	<script src="src/data structures/group.js"></script> <!--An implementation of symmetry groups.-->
-	<script src="src/data structures/matrix.js"></script> <!--An implementation of matrices.-->
-	<script src="src/data structures/nodeC.js"></script> <!--Nodes for the representation of how a polytope is built.-->
-	<script src="src/data structures/nodeD.js"></script> <!--Nodes for a doubly-linked list.-->
-	<script src="src/data structures/nodeG.js"></script> <!--Nodes in a graph.-->
-	<script src="src/data structures/avl-tree.js"></script> <!--An implementation of the AVL tree data structure.-->
-	<script src="src/geometry/point.js"></script> <!--Class for points.-->
-	<script src="src/geometry/space.js"></script> <!--Class for calculations related to points.-->
-	<script src="src/extras/caret.js"></script> <!--Helper class for OFF importing.-->
-	<script src="src/data structures/slEdge.js"></script> <!--Helper class for PolytopeC rendering.-->
-	<script src="src/polytopes/polytope.js"></script> <!--Polytope master class.-->
-	<script src="src/polytopes/polytopeC.js"></script> <!--The class for polytopes in combinatorial representation.-->
-	<script src="src/polytopes/polytopeS.js"></script> <!--The class for polytopes in symmetry representation.-->
-	<script src="src/polytopes/render.js"></script> <!--The rendering bit of the Polytope class.-->
-	<script src="src/rendering/scene.js"></script> <!--A class for scenes.-->
-	<script src="src/rendering/three.js"></script> <!--A 3D rendering library.-->
+		<!--Files found in /data structures/-->
+	<script src="src/data structures/nodeC.js"></script>    <!--Nodes for the representation of how a polytope is built-->
+	<script src="src/data structures/nodeD.js"></script>    <!--Nodes for a doubly-linked list-->
+	<script src="src/data structures/nodeG.js"></script>    <!--Nodes for a graph-->
+	<script src="src/data structures/group.js"></script>    <!--Implementation of symmetry groups-->
+	<script src="src/data structures/matrix.js"></script>   <!--Implementation of matrices-->
+	<script src="src/data structures/avl-tree.js"></script> <!--Implementation of the AVL tree data structure-->
+	<script src="src/data structures/slEdge.js"></script>   <!--Helper class for PolytopeC rendering-->
+		<!--Files found in /translation/-->
+	<script src="src/translation/translation.js"></script>  <!--Class for translating words in general.-->
+	<script src="src/translation/names.js"></script>        <!--Part of translation class, used for specific names-->
+	<script src="src/translation/toAdjective.js"></script>  <!--Part of translation class, used for adjectives-->
+	<script src="src/translation/ending.js"></script>       <!--Helper class for toAdjective, used for adjective endings-->
+		<!--Files found in /geometry/-->
+	<script src="src/geometry/point.js"></script>           <!--Class for points-->
+	<script src="src/geometry/space.js"></script>           <!--Class for calculations related to points-->
+		<!--Files found in /importing/-->
+	<script src="src/importing/caret.js"></script>          <!--Helper class for OFF importing-->
+		<!--Files found in /polytopes/-->
+	<script src="src/polytopes/polytope.js"></script>       <!--Master class for polytopes-->
+	<script src="src/polytopes/render.js"></script>         <!--Renderer bit of the Polytope class-->
+	<script src="src/polytopes/polytopeC.js"></script>      <!--Class for polytopes in Combinatorial representation-->
+	<script src="src/polytopes/polytopeS.js"></script>      <!--Class for polytopes in Symmetry representation.-->
+		<!--Files found in /rendering/-->
+	<script src="src/rendering/scene.js"></script>          <!--Class for scenes-->
+	<script src="src/rendering/three.js"></script>          <!--Library for 3D rendering library-->
 </head>
 <body>
 	<!-- Used to download files. -->
@@ -38,7 +45,7 @@
 		//Basic variables.
 		var fillType = 0;
 		var matrix;
-		const EPS = 0.000000000001;
+		const epsilon = 0.000000000001;
 		
 		//Configures the basic attributes of the scene.
 		var scene = new Scene(new THREE.Scene());
@@ -69,11 +76,11 @@
 		new PolytopeC([pts,edges,faces],3).renderTo(scene);*/
 		
 		//Test {100/49}
-		Polytope.regularPolygon(101,50).renderTo(scene);
+		/*Polytope.regularPolygon(101,50).renderTo(scene);*/
 		
-		//Polytope.polygon([new Point([-1,-1]), new Point([-1,0]), new Point([-1,1]), new Point([0,-1]), new Point([0,1]), new Point([1,-1]), new Point([1,0]), new Point([1,1])]).renderTo(scene);
+		Polytope.polygon([new Point([-1,-1]), new Point([-1,0]), new Point([-1,1]), new Point([0,-1]), new Point([0,1]), new Point([1,-1]), new Point([1,0]), new Point([1,1])]).renderTo(scene);
 		//Render loop.
-		/*function animate() { 
+		function animate() { 
 			requestAnimationFrame( animate );
 			for(var i=0;i<scene.children.length;i++) {
 				if(scene.children[i].type==="Mesh") {
@@ -82,6 +89,6 @@
 			}
 			renderer.render( scene, camera ); 
 		} 
-		animate();*/
+		animate();
 	</script>
 </body>

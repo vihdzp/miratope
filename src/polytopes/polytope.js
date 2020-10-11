@@ -1,38 +1,44 @@
 "use strict";
 
-//A class for general polytopes, and functions thereof.
-//Other than the construction property, which stores how the polytope was created,
-//the class doesn't contain any other property.
-//Those are set in the PolytopeC (combinatorial) and PolytopeS (symmetry) subclasses.
+//A class for general polytopes, and functions of general polytopes
+//Other than the construction property (which stores how the polytope was created),
+//the class doesn't contain any properties (but it does contain methods)
+//Those are set in the PolytopeC (combinatorial) and PolytopeS (symmetry) subclasses
+
+//This constructor function sets the value of Polytope.construction based on an input variable "construction"
 function Polytope(construction) {
-	if(!construction)
-		this.construction = new NodeC(POLYTOPE, [this]);
-	else
-		this.construction = construction;
+	if(!construction)                                    //If "construction" is false (aka, if Polytope is called without defining "construction"),
+		this.construction = new NodeC(POLYTOPE, [this]); //Then (using the NodeC function) Polytope.construction.type is set to 0 (as the constant POLYTOPE = 0) and 
+		                                                 //Polytope.construction.children is set to the single item array [Polytope]
+	else                                                 //Otherwise,
+		this.construction = construction;                //Polytope.construction is set to the input variable "construction"
+		                                                 //Note: Don't confuse the variable "construction" and the property name construction, these are two seperate things
 };
 
-//Gets the polytope's name from its construction, in the current language.
+//This gets the polytope's name from its construction (in the current language) and sets it to Polytope.getName
 Polytope.prototype.getName = function() {
 	return this.construction.getName();
 };
 
 //The two elephants in the room.
-//Using these is probably buggy, and we should check this eventually.
+//Using these two is probably buggy, and we should check this eventually.
+//This sets Polytope.nullitope as.
 Polytope.nullitope = function() {
 	return new PolytopeC([], new NodeC(NAME, ["nullitope"]));
 };
 
+//This sets Polytope.point as.
 Polytope.point = function() {
 	return new PolytopeC([[new Point([])]], new NodeC(NAME, ["point"]));
 };
 
-//Creates a dyad of the given length.
+//This sets Polytope.dyad to a dyad of half a given size, using the variable "length"
 Polytope.dyad = function(length) {
-	if(length === undefined)
-		length = 0.5;
-	else
-		length /= 2;
-	return new PolytopeC([[new Point([-length]), new Point([length])], [[0, 1]]], new NodeC(NAME, ["dyad"]));
+	if(length === undefined) //If "length" is not specified,
+		length = 0.5;        //Default "length" to 0.5
+	else                     //Otherwise,
+		length /= 2;         //Set "length" to the input "length" value divided by 2
+	return new PolytopeC([[new Point([-length]), new Point([length])], [[0, 1]]], new NodeC(NAME, ["dyad"])); //Then.
 };
 
 //Polytope._prismProduct, but also supports P being an array.
@@ -40,7 +46,7 @@ Polytope.prismProduct = function(P, Q) {
 	return Polytope._product(P, Q, MULTIPRISM, Polytope._prismProduct);
 };
 
-//Calculates the prism product, or rather Cartesian product, of P and Q.
+//Calculates the prism product (Cartesian product) of P and Q
 //Vertices are the products of vertices, edges are the products of vertices with edges or viceversa, and so on.
 Polytope._prismProduct = function(P, Q) {	
 	//Deals with the point, nullitope cases.

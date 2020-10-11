@@ -1,21 +1,21 @@
 "use strict";
 
-//TBA: A polytopeV class.
-//It would represent a polytope as a convex hull.
-//Alternatively, we could make that into "another" constructor for PolytopeC.
+//Coming soon to theaters near you: A polytopeV class
+//PolytopeV would represent a polytope as a convex hull
+//Or, we could make that into "another" constructor for PolytopeC
 
-//Represents a polytope as a list of elements, in ascending order of dimensions, similar to (but not the same as) an OFF file.
-//We don't only store the facets, because we don't want to deal with O(2^n) code.
-//Subelements stored as indices.
-//All points assumed to be of the same dimension.
+//Represents a polytope as a list of elements, in ascending order of dimensions, similar (but not identical) to an OFF file
+//We don't only store the facets, because we don't want to deal with O(2^n) code
+//Subelements are stored as indices
+//All points are assumed to be of the same dimension
 function PolytopeC(elementList, constructionRoot) {
-	Polytope.call(this, constructionRoot);
+	Polytope.call(this, constructionRoot);                          //Calls the Polytope constructor function using PolytopeC as the object and "constructionRoot" as the parameter "construction"
 	this.elementList = elementList;
-	this.dimensions = elementList.length - 1; //The combinatorial dimension.
+	this.dimensions = elementList.length - 1;                       //The combinatorial dimension
 	if(this.elementList[0])
-		this.spaceDimensions = this.elementList[0][0].dimensions(); //The space's dimension.
+		this.spaceDimensions = this.elementList[0][0].dimensions(); //The space's dimension
 	else
-		this.spaceDimensions = -1; //Nullitope.
+		this.spaceDimensions = -1;                                  //The almighty nullitope (aka nothing)
 };
 
 PolytopeC.prototype = new Polytope();
