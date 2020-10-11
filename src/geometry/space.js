@@ -53,7 +53,7 @@ Space.intersect = function(a, b, c, d) {
 	u = ((p[0] - q[0]) * r[1] - (p[1] - q[1]) * r[0])/(r[1] * s[0] - r[0] * s[1]);
 	
 	//The intersection lies outside of the segments, or at infinity.
-	if(!(t > EPS) || t >= 1 - EPS || !(u > EPS) || u >= 1 - EPS)
+	if(!(t > epsilon) || t >= 1 - epsilon || !(u > epsilon) || u >= 1 - epsilon)
 		return null;
 	
 	var pt = [];
@@ -78,12 +78,12 @@ Space.collinear = function(a, b, c) {
 		norm1 += sub1 * sub1;
 	}
 
-	return 1 - Math.abs(dot / Math.sqrt(norm0 * norm1)) <= EPS;
+	return 1 - Math.abs(dot / Math.sqrt(norm0 * norm1)) <= epsilon;
 };
 
 //Returns whether the line from (0, 0) to (a, b) and the line from (0, 0) to (c, d)
 //have the same (neglibly different) slopes.
 Space.sameSlope = function(a, b, c, d) {
 	var s = Math.atan(a / b) - Math.atan(c / d);
-	return (s + Math.PI + EPS) % Math.PI < 2 * EPS;
+	return (s + Math.PI + epsilon) % Math.PI < 2 * epsilon;
 };

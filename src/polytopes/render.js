@@ -19,7 +19,7 @@ Polytope.prototype.renderTo = function(scene) {
 	//Uses the IDs of the vertices to order them consistently if their coordinates are identical.
 	function order(a, b) {
 		var c = a.value.coordinates[SLEdge.indx0] - b.value.coordinates[SLEdge.indx0];
-		if(c === 0) { //DO NOT REPLACE BY Math.abs(c) < EPS
+		if(c === 0) { //DO NOT REPLACE BY Math.abs(c) < epsilon
 			c = a.value.coordinates[SLEdge.indx1] - b.value.coordinates[SLEdge.indx1];
 			if(c === 0)
 				return a.id - b.id;
@@ -50,19 +50,19 @@ Polytope.prototype.renderTo = function(scene) {
 		
 		//If the intersections are so similar, we also need to consider the possibility
 		//that the edges actually have a common endpoint.
-		if (Math.abs(res) < EPS) {
+		if (Math.abs(res) < epsilon) {
 			//If the first edge starts at a point, and the second ends at that point, the former gets sorted after the latter.
-			if(lambda0 > 1 - EPS && lambda1 < EPS)
+			if(lambda0 > 1 - epsilon && lambda1 < epsilon)
 				return 1;
 			//And viceversa.
-			if(lambda0 < EPS && lambda1 > 1 - EPS)
+			if(lambda0 < epsilon && lambda1 > 1 - epsilon)
 				return -1;
 			
 			//If both edges start at the same point, sort by increasing slope.
-			if(lambda0 > 1 - EPS)
+			if(lambda0 > 1 - epsilon)
 				slopeMod = 1;				
 			//If both edges end at the same point, sort by decreasing slope.
-			else if(lambda0 < EPS)
+			else if(lambda0 < epsilon)
 				slopeMod = -1;
 			//The edges are just really close, so compare them normally.
 			else
@@ -72,7 +72,7 @@ Polytope.prototype.renderTo = function(scene) {
 			res = slopeMod * (Math.atan(x.slope) - Math.atan(y.slope));
 			
 			//If both lines are the same, might as well compare using indices.
-			if(Math.abs(res) < EPS)
+			if(Math.abs(res) < epsilon)
 				return x.id - y.id;
 		}
 		return res;
@@ -159,7 +159,7 @@ Polytope.prototype.renderTo = function(scene) {
 				var node, prevNode, nextNode;
 				
 				//Vertex E is a left endpoint of the edge:
-				if(ord < -EPS) {
+				if(ord < -epsilon) {
 					edge = new SLEdge(E, j);
 					node = SL.insert(edge);
 					if(!node) {
@@ -177,7 +177,7 @@ Polytope.prototype.renderTo = function(scene) {
 						Polytope._divide(edge, nextNode.key, vertexDLL, EQ); //Checks for an intersection with the edge above edgeE.
 				}
 				//Vertex E is a right endpoint of the edge:
-				else if (ord > EPS) {
+				else if (ord > epsilon) {
 					edge = new SLEdge(E.getNode(j), 1 - j);
 					
 					//Deletes edge from the sweep line.

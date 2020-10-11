@@ -1,42 +1,43 @@
 "use strict";
 
-//A nodeC represents how a polytope has been built up.
-//It consists of a type and children.
-//Children are arrays of objects, oftentimes nodes, the specific objects depend on the node type.
-//They're essentially what the node "operates" on.
-//The types are given below:
+//A nodeC represents how a polytope has been built up
+//NodeCs come in types, and can have children
+//"Children" are arrays containing objects, the specific objects depend on the node type
+//Usually these objects are other nodes
+//Children are essentially what a nodeC operates on
+//The types of nodeC and their case number are given below:
 
-//Has a single Polytope as a child.
+//Has a single polytope as a child
 const POLYTOPE = 0;
 
-//Has the nodes representing the factors of a prism product as children.
+//Has the factors of a prism product as children
 const MULTIPRISM = 2;
 
-//Has the nodes representing the factors of a tegum product as children.
+//Has the factors of a tegum product as children
 const MULTITEGUM = 3;
 
-//Has the nodes representing the factors of a pyramid product as children.
+//Has the factors of a pyramid product as children
 const MULTIPYRAMID = 4;
 
-//Represents an antiprism based on the child node.
+//Has an antiprism based on the child node
 const ANTIPRISM = 5;
 
-//Has a single child from which a pyramid is built.
+//Has a pyramid based on the child node
 const PYRAMID = 6;
 
-//Has a single child from which a cupola is built.
+//Has a cupola based on the child node
 const CUPOLA = 7;
 
-//Has two children n, d, representing the regular polygonal small base {n/d}.
+//Has two children n, d, representing the regular polygonal small base {n/d}
 const CUPLOID = 8;
 
-//Has two children n, d, representing the regular polygonal base {n/d}.
+//Has two children n, d, representing the regular polygonal base {n/d}
 const CUPBLEND = 9;
 
-//Has two children n, d, representing the regular polygonal base {n/d}.
+//Has two children n, d, representing the regular polygonal base {n/d}
 const POLYGON = 10;
 
-//Has a single string as a child, representing a polytope's name in Miratope's library.
+//Has a polytope's name in Miratope's library (a single string) as a child
 const NAME = 11;
 
 function NodeC(type, children) {
