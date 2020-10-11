@@ -50,9 +50,9 @@ PolytopeC.prototype.faceToVertices = function(i) {
 	for(var j = 0; j < this.elementList[2][i].length; j++) {
 		var edge = this.elementList[1][this.elementList[2][i][j]];
 		if(vertexDLL[edge[0]] === undefined)
-			vertexDLL[edge[0]] = new NodeD(edge[0]);
+			vertexDLL[edge[0]] = new LinkedListNode(edge[0]);
 		if(vertexDLL[edge[1]] === undefined)
-			vertexDLL[edge[1]] = new NodeD(edge[1]);
+			vertexDLL[edge[1]] = new LinkedListNode(edge[1]);
 		
 		vertexDLL[edge[0]].linkTo(vertexDLL[edge[1]]);				
 	}			

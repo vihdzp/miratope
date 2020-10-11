@@ -11,16 +11,16 @@ Polytope.prototype.renderTo = function(scene) {
 	
 	function debug() {
 		var x = 0;
-		console.log(E.value.coordinates[SLEdge.indx0].toString());
+		console.log(E.value.coordinates[SweeplineEdge.indx0].toString());
 		console.log(SL.toString());
 	}
 	
 	//Orders two points lexicographically based on the coordinates on indices 0 and 1.
 	//Uses the IDs of the vertices to order them consistently if their coordinates are identical.
 	function order(a, b) {
-		var c = a.value.coordinates[SLEdge.indx0] - b.value.coordinates[SLEdge.indx0];
+		var c = a.value.coordinates[SweeplineEdge.indx0] - b.value.coordinates[SweeplineEdge.indx0];
 		if(c === 0) { //DO NOT REPLACE BY Math.abs(c) < epsilon
-			c = a.value.coordinates[SLEdge.indx1] - b.value.coordinates[SLEdge.indx1];
+			c = a.value.coordinates[SweeplineEdge.indx1] - b.value.coordinates[SweeplineEdge.indx1];
 			if(c === 0)
 				return a.id - b.id;
 		}
@@ -39,14 +39,14 @@ Polytope.prototype.renderTo = function(scene) {
 		b = x.rightVertex().value,
 		c = y.leftVertex.value,
 		d = y.rightVertex().value,
-		k = E.value.coordinates[SLEdge.indx0], slopeMod;
+		k = E.value.coordinates[SweeplineEdge.indx0], slopeMod;
 		
 		//Calculates where in the segments the intersection with the sweepline lies.
-		var lambda0 = (k - b.coordinates[SLEdge.indx0])/(a.coordinates[SLEdge.indx0] - b.coordinates[SLEdge.indx0]);		
-		var lambda1 = (k - d.coordinates[SLEdge.indx0])/(c.coordinates[SLEdge.indx0] - d.coordinates[SLEdge.indx0]);
+		var lambda0 = (k - b.coordinates[SweeplineEdge.indx0])/(a.coordinates[SweeplineEdge.indx0] - b.coordinates[SweeplineEdge.indx0]);		
+		var lambda1 = (k - d.coordinates[SweeplineEdge.indx0])/(c.coordinates[SweeplineEdge.indx0] - d.coordinates[SweeplineEdge.indx0]);
 		
 		//The height difference between the intersections.
-		var res = (a.coordinates[SLEdge.indx1] * lambda0 + b.coordinates[SLEdge.indx1] * (1 - lambda0)) - (c.coordinates[SLEdge.indx1] * lambda1 + d.coordinates[SLEdge.indx1] * (1 - lambda1));
+		var res = (a.coordinates[SweeplineEdge.indx1] * lambda0 + b.coordinates[SweeplineEdge.indx1] * (1 - lambda0)) - (c.coordinates[SweeplineEdge.indx1] * lambda1 + d.coordinates[SweeplineEdge.indx1] * (1 - lambda1));
 		
 		//If the intersections are so similar, we also need to consider the possibility
 		//that the edges actually have a common endpoint.
@@ -92,9 +92,9 @@ Polytope.prototype.renderTo = function(scene) {
 		
 		//Makes a doubly-linked list vertexDLL for the polygon's vertices and the new vertices created.
 		//node0 is always the "next" vertex.
-		var vertexDLL = [new NodeD(P.elementList[0][cycle[0]])];
+		var vertexDLL = [new LinkedListNode(P.elementList[0][cycle[0]])];
 		for(j = 0; j < cycle.length - 1; j++) {
-			vertexDLL[j + 1] = new NodeD(P.elementList[0][cycle[j + 1]]);			
+			vertexDLL[j + 1] = new LinkedListNode(P.elementList[0][cycle[j + 1]]);			
 			vertexDLL[j].linkToNext(vertexDLL[j + 1]);
 		}						
 		vertexDLL[vertexDLL.length - 1].linkToNext(vertexDLL[0]);
@@ -113,18 +113,18 @@ Polytope.prototype.renderTo = function(scene) {
 		
 		//Calculates the coordinates such that the projection of our three non-collinear points onto their 2D plane has the highest area.
 		//Uses the shoelace formula.
-		//Stores such coordinates' indices in SLEdge.indx0, SLEdge.indx1.
+		//Stores such coordinates' indices in SweeplineEdge.indx0, SweeplineEdge.indx1.
 		var maxArea = 0;
-		SLEdge.indx0 = 0;
-		SLEdge.indx1 = 1;
+		SweeplineEdge.indx0 = 0;
+		SweeplineEdge.indx1 = 1;
 		for(j = 0; j < vertexDLL[0].value.dimensions(); j++) {
 			for(k = j + 1; k < vertexDLL[0].value.dimensions(); k++) {
 				if(vertexDLL[0].value.coordinates[j] * (vertexDLL[a].value.coordinates[k] - vertexDLL[b].value.coordinates[k])
 				+ vertexDLL[a].value.coordinates[j] * (vertexDLL[b].value.coordinates[k] - vertexDLL[0].value.coordinates[k])
 				+ vertexDLL[b].value.coordinates[j] * (vertexDLL[0].value.coordinates[k] - vertexDLL[a].value.coordinates[k])
 				> maxArea) {
-					SLEdge.indx0 = j;
-					SLEdge.indx1 = k;
+					SweeplineEdge.indx0 = j;
+					SweeplineEdge.indx1 = k;
 				}						
 			}
 		}
@@ -154,13 +154,13 @@ Polytope.prototype.renderTo = function(scene) {
 			//Runs P code on both edges adjacent to E's vertex.
 			for(j = 0; j <= 1; j++) {
 				var edge; //E's edge in the SL format.
-				var ord = E.value.coordinates[SLEdge.indx0] - E.getNode(j).value.coordinates[SLEdge.indx0];
+				var ord = E.value.coordinates[SweeplineEdge.indx0] - E.getNode(j).value.coordinates[SweeplineEdge.indx0];
 				var pos = 0;
 				var node, prevNode, nextNode;
 				
 				//Vertex E is a left endpoint of the edge:
 				if(ord < -epsilon) {
-					edge = new SLEdge(E, j);
+					edge = new SweeplineEdge(E, j);
 					node = SL.insert(edge);
 					if(!node) {
 						console.log("SL insertion failed! This isn't supposed to happen!");
@@ -178,7 +178,7 @@ Polytope.prototype.renderTo = function(scene) {
 				}
 				//Vertex E is a right endpoint of the edge:
 				else if (ord > epsilon) {
-					edge = new SLEdge(E.getNode(j), 1 - j);
+					edge = new SweeplineEdge(E.getNode(j), 1 - j);
 					
 					//Deletes edge from the sweep line.
 					node = SL.getNode(edge);
@@ -197,8 +197,8 @@ Polytope.prototype.renderTo = function(scene) {
 				}
 				//The edge is perpendicular to the first coordinate's axis:
 				//Runs only once per such an edge.
-				else if(E.value.coordinates[SLEdge.indx1] > E.getNode(j).value.coordinates[SLEdge.indx1]) {
-					edge = new SLEdge(E, j);
+				else if(E.value.coordinates[SweeplineEdge.indx1] > E.getNode(j).value.coordinates[SweeplineEdge.indx1]) {
+					edge = new SweeplineEdge(E, j);
 				
 					//I really should only check intersections with segments at the "correct height".
 					node = SL.findMinimumNode();
@@ -252,7 +252,7 @@ Polytope._divide = function(edgeA, edgeB, vertexDLL, EQ) {
 	//Add the intersection and a point at "infinitesimal distance" to the vertex list.
 	//They don't actually have to be different in this implementation of the algorithm.
 	//In fact, the algorithm (as implemented) will fail if both nodes don't reference the same point.
-	var newNode1 = new NodeD(inter); var newNode2 = new NodeD(inter);
+	var newNode1 = new LinkedListNode(inter); var newNode2 = new LinkedListNode(inter);
 	vertexDLL.push(newNode1); vertexDLL.push(newNode2);
 	
 	//Re-links the vertices.

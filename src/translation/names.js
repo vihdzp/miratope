@@ -529,6 +529,7 @@ Translation.regularPolygonName = function(n, d, options, gender) {
 		}
 	}
 	
+	//THIS CODE IS CURSED AND SHOULD PROBABLY BE REPLACED REGARDLESS OF WHATEVER EXPLANATION I GAVE BELOW.
 	var res;
 	//I just need a quick to calculate function on n and d
 	//to distinguish the stars with up to 42 sides.

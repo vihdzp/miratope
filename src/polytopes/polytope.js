@@ -8,7 +8,7 @@
 //This constructor function sets the value of Polytope.construction based on an input variable "construction"
 function Polytope(construction) {
 	if(!construction)                                    //If "construction" is false (aka, if Polytope is called without defining "construction"),
-		this.construction = new NodeC(POLYTOPE, [this]); //Then (using the NodeC function) Polytope.construction.type is set to 0 (as the constant POLYTOPE = 0) and 
+		this.construction = new ConstructionNode(POLYTOPE, [this]); //Then (using the ConstructionNode function) Polytope.construction.type is set to 0 (as the constant POLYTOPE = 0) and 
 		                                                 //Polytope.construction.children is set to the single item array [Polytope]
 	else                                                 //Otherwise,
 		this.construction = construction;                //Polytope.construction is set to the input variable "construction"
@@ -24,12 +24,12 @@ Polytope.prototype.getName = function() {
 //Using these two is probably buggy, and we should check this eventually.
 //This sets Polytope.nullitope as.
 Polytope.nullitope = function() {
-	return new PolytopeC([], new NodeC(NAME, ["nullitope"]));
+	return new PolytopeC([], new ConstructionNode(NAME, ["nullitope"]));
 };
 
 //This sets Polytope.point as.
 Polytope.point = function() {
-	return new PolytopeC([[new Point([])]], new NodeC(NAME, ["point"]));
+	return new PolytopeC([[new Point([])]], new ConstructionNode(NAME, ["point"]));
 };
 
 //This sets Polytope.dyad to a dyad of half a given size, using the variable "length"
@@ -38,7 +38,7 @@ Polytope.dyad = function(length) {
 		length = 0.5;        //Default "length" to 0.5
 	else                     //Otherwise,
 		length /= 2;         //Set "length" to the input "length" value divided by 2
-	return new PolytopeC([[new Point([-length]), new Point([length])], [[0, 1]]], new NodeC(NAME, ["dyad"])); //Then.
+	return new PolytopeC([[new Point([-length]), new Point([length])], [[0, 1]]], new ConstructionNode(NAME, ["dyad"])); //Then.
 };
 
 //Polytope._prismProduct, but also supports P being an array.
@@ -445,13 +445,13 @@ Polytope._product = function(P, Q, type, fun) {
 			constructions.push(P[P.length - 1].construction);
 			res = fun(P.pop(), res);
 		}
-		res.construction = new NodeC(type, constructions);
+		res.construction = new ConstructionNode(type, constructions);
 		return res;
 	}
 	
 	//If P and Q are just two polytopes:
 	res = fun(P, Q);
-	res.construction = new NodeC(type, [P.construction, Q.construction]);
+	res.construction = new ConstructionNode(type, [P.construction, Q.construction]);
 	return res;
 };
 
@@ -489,7 +489,7 @@ Polytope.prototype.extrudeToPyramid = function(apex) {
 		}
 	}
 	
-	var construction = new NodeC(PYRAMID, [P.construction]);
+	var construction = new ConstructionNode(PYRAMID, [P.construction]);
 	P.construction = construction;
 	return P;
 };
@@ -513,7 +513,7 @@ Polytope.polygon = function(points) {
 	newElementList[1].push([i, 0]);
 	newElementList[2][0].push(i);
 	
-	return new PolytopeC(newElementList, new NodeC(POLYGON, [points.length, 1]));
+	return new PolytopeC(newElementList, new ConstructionNode(POLYGON, [points.length, 1]));
 };
 
 //Builds a n/d star.
@@ -558,7 +558,7 @@ Polytope.regularPolygon = function(n, d) {
 		x++; y++;
 	}
 	
-	return new PolytopeC(els, new NodeC(POLYGON, [n, d]));
+	return new PolytopeC(els, new ConstructionNode(POLYGON, [n, d]));
 };
 
 //Helper function for regularPolygon.
@@ -594,7 +594,7 @@ Polytope.regularPolygonG = function(n, d) {
 		els[1].push([i, i + 1]); //Edges
 	els[1].push([els[0].length - 1, 0]);
 	
-	return new PolytopeC(els, new NodeC(POLYGON, [n, d]));
+	return new PolytopeC(els, new ConstructionNode(POLYGON, [n, d]));
 };
 
 //Builds a hypercube in the specified amount of dimensions.
@@ -796,7 +796,7 @@ Polytope.uniformAntiprism = function(n, d) {
 	for(i = 0; i < 2 * (n + 1); i++)
 		newElementList[3][0].push(i);
 	
-	return new PolytopeC(newElementList, new NodeC(ANTIPRISM, [new NodeC(POLYGON, [n, d])]));
+	return new PolytopeC(newElementList, new ConstructionNode(ANTIPRISM, [new ConstructionNode(POLYGON, [n, d])]));
 };
 
 //Creates an {n / d} cupola with regular faces.
@@ -854,7 +854,7 @@ Polytope.cupola = function(n, d) {
 	for(i = 0; i < 2 * n + 2; i++)
 		newElementList[3][0].push(i);
 	
-	return new PolytopeC(newElementList, new NodeC(CUPOLA, [new NodeC(POLYGON, [n, d])]));
+	return new PolytopeC(newElementList, new ConstructionNode(CUPOLA, [new ConstructionNode(POLYGON, [n, d])]));
 };
 
 //Creates an {n / d} cuploid with regular faces.
@@ -909,7 +909,7 @@ Polytope.cuploid = function(n, d) {
 	for(i = 0; i < 2 * n + 1; i++)
 		newElementList[3][0].push(i);
 	
-	return new PolytopeC(newElementList, new NodeC(CUPLOID, [new NodeC(POLYGON, [n, d])]));
+	return new PolytopeC(newElementList, new ConstructionNode(CUPLOID, [new ConstructionNode(POLYGON, [n, d])]));
 };
 
 //Creates an {n / d} cupolaic blend with regular faces.
@@ -977,11 +977,12 @@ Polytope.cupolaicBlend = function(n, d) {
 	for(i = 0; i < 2 * n + 1; i++)
 		newElementList[3][0].push(i);
 	
-	return new PolytopeC(newElementList, new NodeC(CUPBLEND, [new NodeC(POLYGON, [n, d])]));
+	return new PolytopeC(newElementList, new ConstructionNode(CUPBLEND, [new ConstructionNode(POLYGON, [n, d])]));
 };
 
 //The event triggered by the OFF import button.
-//Reads the OFF file into the variable P.
+//Reads the OFF file into the global variable P.
+//Eventually, P should be replaced by scene.Polytope or something of the sort.
 Polytope.openOFF = function(e) {	
 	var file = e.target.files[0];
 	if (!file)
@@ -1139,7 +1140,7 @@ Polytope._readerOnload = function(e) {
 		el = [];
 		facets = elementList[elementList.length - 2];
 		for(i = 0; i < facets.length; i++)
-			el.push(new NodeG(i));
+			el.push(new GraphNode(i));
 		//Calculates incidences.
 		for(i = 0; i < facets.length; i++)
 			for(j = i + 1; j < facets.length; j++)
@@ -1154,7 +1155,7 @@ Polytope._readerOnload = function(e) {
 		}
 	}
 	
-	P = new PolytopeC(elementList, new NodeC(NAME, [Polytope.fileName]));
+	P = new PolytopeC(elementList, new ConstructionNode(NAME, [Polytope.fileName]));
 };
 
 //Helper function for OFF importing.
