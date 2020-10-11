@@ -14,10 +14,10 @@
 	<script src="src/data structures/avl-tree.js"></script> <!--Implementation of the AVL tree data structure-->
 	<script src="src/data structures/slEdge.js"></script>   <!--Helper class for PolytopeC rendering-->
 		<!--Files found in /translation/-->
+	<script src="src/translation/ending.js"></script>       <!--Helper class for toAdjective, used for adjective endings-->
 	<script src="src/translation/translation.js"></script>  <!--Class for translating words in general.-->
 	<script src="src/translation/names.js"></script>        <!--Part of translation class, used for specific names-->
 	<script src="src/translation/toAdjective.js"></script>  <!--Part of translation class, used for adjectives-->
-	<script src="src/translation/ending.js"></script>       <!--Helper class for toAdjective, used for adjective endings-->
 		<!--Files found in /geometry/-->
 	<script src="src/geometry/point.js"></script>           <!--Class for points-->
 	<script src="src/geometry/space.js"></script>           <!--Class for calculations related to points-->
@@ -25,12 +25,12 @@
 	<script src="src/importing/caret.js"></script>          <!--Helper class for OFF importing-->
 		<!--Files found in /polytopes/-->
 	<script src="src/polytopes/polytope.js"></script>       <!--Master class for polytopes-->
-	<script src="src/polytopes/render.js"></script>         <!--Renderer bit of the Polytope class-->
 	<script src="src/polytopes/polytopeC.js"></script>      <!--Class for polytopes in Combinatorial representation-->
 	<script src="src/polytopes/polytopeS.js"></script>      <!--Class for polytopes in Symmetry representation.-->
 		<!--Files found in /rendering/-->
 	<script src="src/rendering/scene.js"></script>          <!--Class for scenes-->
 	<script src="src/rendering/three.js"></script>          <!--Library for 3D rendering library-->
+	<script src="src/rendering/render.js"></script>         <!--Renderer bit of the Polytope class-->
 </head>
 <body>
 	<!-- Used to download files. -->
@@ -79,8 +79,8 @@
 		/*Polytope.regularPolygon(101,50).renderTo(scene);*/
 		
 		Polytope.polygon([new Point([-1,-1]), new Point([-1,0]), new Point([-1,1]), new Point([0,-1]), new Point([0,1]), new Point([1,-1]), new Point([1,0]), new Point([1,1])]).renderTo(scene);
-		//Render loop.
-		function animate() { 
+		//Render loop. NOT YET FUNCTIONAL!
+		/*function animate() { 
 			requestAnimationFrame( animate );
 			for(var i=0;i<scene.children.length;i++) {
 				if(scene.children[i].type==="Mesh") {
@@ -89,6 +89,6 @@
 			}
 			renderer.render( scene, camera ); 
 		} 
-		animate();
+		animate();*/
 	</script>
 </body>
