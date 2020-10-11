@@ -6,62 +6,41 @@
 	<!--Yo, if you want to figure out what Miratope is doing code-wise, start off in src/polytopes/polytope.js, the main classes are defined there-->
 	<style> body { margin: 0; } canvas { display: block; } </style>
 		<!--Files found in /data structures/-->
-	<script src="src/data structures/constructionNode.js"></script>    <!--Nodes for the representation of how a polytope is built-->
-	<script src="src/data structures/linkedListNode.js"></script>      <!--Nodes for a doubly-linked list-->
-	<script src="src/data structures/graphNode.js"></script>           <!--Nodes for a graph-->
-	<script src="src/data structures/group.js"></script>               <!--Implementation of symmetry groups-->
+	<script src="src/data structures/constructionNode.js"></script>    <!--Nodes for the representation of how a polytope is built.-->
+	<script src="src/data structures/linkedListNode.js"></script>      <!--Nodes for a doubly-linked list.-->
+	<script src="src/data structures/graphNode.js"></script>           <!--Nodes for a graph.-->
+	<script src="src/data structures/group.js"></script>               <!--Implementation of symmetry groups.-->
 	<script src="src/data structures/matrix.js"></script>              <!--Implementation of matrices-->
-	<script src="src/data structures/avl-tree.js"></script>            <!--Implementation of the AVL tree data structure-->
-	<script src="src/data structures/sweeplineEdge.js"></script>              <!--Helper class for PolytopeC rendering-->
+	<script src="src/data structures/avl-tree.js"></script>            <!--Implementation of the AVL tree data structure.-->
+	<script src="src/data structures/sweeplineEdge.js"></script>       <!--Helper class for PolytopeC rendering.-->
 		<!--Files found in /translation/-->
-	<script src="src/translation/ending.js"></script>                  <!--Helper class for toAdjective, used for adjective endings-->
+	<script src="src/translation/ending.js"></script>                  <!--Helper class for toAdjective, used for adjective endings.-->
 	<script src="src/translation/translation.js"></script>             <!--Class for translating words in general.-->
-	<script src="src/translation/names.js"></script>                   <!--Part of translation class, used for specific names-->
-	<script src="src/translation/toAdjective.js"></script>             <!--Part of translation class, used for adjectives-->
+	<script src="src/translation/names.js"></script>                   <!--Part of translation class, used for specific names.-->
+	<script src="src/translation/toAdjective.js"></script>             <!--Part of translation class, used for adjectives.-->
 		<!--Files found in /geometry/-->
-	<script src="src/geometry/point.js"></script>                      <!--Class for points-->
-	<script src="src/geometry/space.js"></script>                      <!--Class for calculations related to points-->
+	<script src="src/geometry/point.js"></script>                      <!--Class for points.-->
+	<script src="src/geometry/space.js"></script>                      <!--Class for calculations related to points.-->
 		<!--Files found in /importing/-->
-	<script src="src/importing/caret.js"></script>                     <!--Helper class for OFF importing-->
+	<script src="src/importing/caret.js"></script>                     <!--Helper class for OFF importing.-->
 		<!--Files found in /polytopes/-->
-	<script src="src/polytopes/polytope.js"></script>                  <!--Master class for polytopes-->
-	<script src="src/polytopes/polytopeC.js"></script>                 <!--Class for polytopes in Combinatorial representation-->
+	<script src="src/polytopes/polytope.js"></script>                  <!--Master class for polytopes.-->
+	<script src="src/polytopes/polytopeC.js"></script>                 <!--Class for polytopes in Combinatorial representation.-->
 	<script src="src/polytopes/polytopeS.js"></script>                 <!--Class for polytopes in Symmetry representation.-->
 		<!--Files found in /rendering/-->
-	<script src="src/rendering/scene.js"></script>                     <!--Class for scenes-->
-	<script src="src/rendering/three.js"></script>                     <!--Library for 3D rendering library-->
-	<script src="src/rendering/render.js"></script>                    <!--Renderer bit of the Polytope class-->
+	<script src="src/rendering/scene.js"></script>                     <!--Class for scenes.-->
+	<script src="src/rendering/three.js"></script>                     <!--Library for 3D rendering library.-->
+	<script src="src/rendering/render.js"></script>                    <!--Renderer bit of the Polytope class.-->
 </head>
 <body>
-	<!-- Used to download files. -->
+	<!-- Used to download files.-->
 	<a id = "download"></a>
-	<!--For OFF import, should get placed somewhere more appropriate eventually-->
-	OFF import:<input type="file" id="file-input"/>
+	<!--For OFF importing, should get placed somewhere more appropriate eventually.-->
+	OFF import:<input type="file" id="file-input" accept=".off,text/plain"/>
+	<!--Loads the application.-->
+	<script src="src/main.js"></script>
+	<!--This is just some test code. This whole script tag should be removed eventually.-->
 	<script>
-		//Configure OFF import button.
-		document.getElementById('file-input').addEventListener('change', Polytope.openOFF, false);
-		var P; //Test variable. OFF imports to here.
-		
-		//Basic variables.
-		var fillType = 0;
-		var matrix;
-		const epsilon = 0.000000000001;
-		
-		//Configures the basic attributes of the scene.
-		var scene = new Scene(new THREE.Scene());
-		var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-		camera.position.z = 2;
-		var renderer = new THREE.WebGLRenderer({antialias:true});
-		renderer.setSize( window.innerWidth, window.innerHeight );
-		document.body.appendChild( renderer.domElement );
-		
-		//Adds both ambient light and directional light.
-		var ambientLight = new THREE.AmbientLight( 0x777777 );
-		scene.add( ambientLight );
-		var directionalLight = new THREE.DirectionalLight( 0x777777, 2 );
-		directionalLight.position.set( 1,1,1 ).normalize();
-		scene.add( directionalLight );
-		
 		//Test pentagrammic pyramid.
 		/*var pts=[new Point([-1,0,0]),new Point([0,2,0]),new Point([1,0,0]),new Point([-2,1,0]),new Point([2,1,0]),new Point([0,1.4,3])];
 		var edges=[[0,1],[1,2],[2,3],[3,4],[4,0],[0,5],[1,5],[2,5],[3,5],[4,5]];
@@ -79,16 +58,5 @@
 		/*Polytope.regularPolygon(101,50).renderTo(scene);*/
 		
 		Polytope.polygon([new Point([-1,-1]), new Point([-1,0]), new Point([-1,1]), new Point([0,-1]), new Point([0,1]), new Point([1,-1]), new Point([1,0]), new Point([1,1])]).renderTo(scene);
-		//Render loop. NOT YET FUNCTIONAL!
-		/*function animate() { 
-			requestAnimationFrame( animate );
-			for(var i=0;i<scene.children.length;i++) {
-				if(scene.children[i].type==="Mesh") {
-					scene.children[i].rotation.x += 0.01; scene.children[i].rotation.y += 0.01;
-				}
-			}
-			renderer.render( scene, camera ); 
-		} 
-		animate();*/
 	</script>
 </body>

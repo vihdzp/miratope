@@ -1,44 +1,46 @@
 "use strict";
 
-//A nodeC represents how a polytope has been built up
+//A ConstructionNode represents how a polytope has been built up
 //ConstructionNodes come in types, and can have children
 //"Children" are arrays containing objects, the specific objects depend on the node type
-//Usually these objects are other nodes
+//Usually these objects are other nodes, but they can also be numbers or Polytopes.
 //Children are essentially what a nodeC operates on
 //The types of nodeC and their case number are given below:
 
-//Has a single polytope as a child
+//Has a single polytope as a child. (Should it just have the number of facets and dimensions as children?)
+//Used for polytopes without a known name.
 const POLYTOPE = 0;
 
-//Has the factors of a prism product as children
-const MULTIPRISM = 2;
+//Has the factors of a prism product as children.
+const MULTIPRISM = 1;
 
-//Has the factors of a tegum product as children
-const MULTITEGUM = 3;
+//Has the factors of a tegum product as children.
+const MULTITEGUM = 2;
 
-//Has the factors of a pyramid product as children
-const MULTIPYRAMID = 4;
+//Has the factors of a pyramid product as children.
+const MULTIPYRAMID = 3;
 
-//Has an antiprism based on the child node
-const ANTIPRISM = 5;
+//Has an antiprism based on the child node.
+const ANTIPRISM = 4;
 
-//Has a pyramid based on the child node
-const PYRAMID = 6;
+//Has a pyramid based on the child node.
+const PYRAMID = 5;
 
-//Has a cupola based on the child node
-const CUPOLA = 7;
+//Has a cupola based on the child node.
+const CUPOLA = 6;
 
-//Has two children n, d, representing the regular polygonal small base {n/d}
-const CUPLOID = 8;
+//Has two children n, d, representing the regular polygonal small base {n/d}.
+const CUPLOID = 7;
 
-//Has two children n, d, representing the regular polygonal base {n/d}
-const CUPBLEND = 9;
+//Has two children n, d, representing the regular polygonal base {n/d}.
+const CUPBLEND = 8;
 
-//Has two children n, d, representing the regular polygonal base {n/d}
-const POLYGON = 10;
+//Has two children n, d, representing the regular polygonal base {n/d}.
+const POLYGON = 9;
 
-//Has a polytope's name in Miratope's library (a single string) as a child
-const NAME = 11;
+//Has a polytope's name as a child. (Should it also have the polytope as a child?)
+//The default for imported polytopes, or polytopes not built out of anything else whose name is known.
+const NAME = 10;
 
 function ConstructionNode(type, children) {
 	this.type = type;
