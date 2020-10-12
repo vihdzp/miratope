@@ -18,7 +18,7 @@ function Point(x) {
 	
 //Returns the number of dimensions of the point's space
 Point.prototype.dimensions = function() {
-	return this.coordinates.length; //Set Point.dimensions to the length of Point.coordinates
+	return this.coordinates.length; //Return the length of Point.coordinates
 };
 	
 //Makes a Point object with the same base attributes
@@ -26,13 +26,13 @@ Point.prototype.clone = function() {
 	var coordinates = [];                            //Set "coordinates" to an empty array
 	for(var i = 0; i < this.coordinates.length; i++) //For every whole number "i" less than the length of Point.coordinates,
 		coordinates.push(this.coordinates[i]);       //Add the "i"th element in Point.coordinates to the end of "coordinates"
-	return new Point(coordinates);                   //Set Point.clone to the result of Point("coordinates")
+	return new Point(coordinates);                   //Return the result of Point("coordinates")
 };
 	
 //Projects the point into 3D
 //For now, just the simplest orthographic projection possible
 Point.prototype.project = function() {
-	//Set Point.project to an array,based on this:
+	//Return an array, based on this:
 	return [
 	this.coordinates[0] === undefined ? 0 : this.coordinates[0],         //If the first element in Point.coordinates is undefined,
                                                                          //Set the first element of this array to 0, otherwise set it to the first element of Point.coordinates
@@ -50,7 +50,7 @@ Point.add = function(x, y) {
 	var coordinates = [];                                                              //Set "coordinates" to an empty array
 	for(var i = 0; i < x.dimensions(); i++)                                            //For every whole number "i" less than the number of dimensions of "x",
 		coordinates[i] = x.coordinates[i] + y.coordinates[i];                          //Set the "i"th element in Point.coordinates to the sum of "i"th element of "x" and of "y"
-	return new Point(coordinates);                                                     //Set Point.add to result of Point("coordinates")
+	return new Point(coordinates);                                                     //Return the result of Point("coordinates")
 };
 	
 //Subtracts the coordinates of "y" from the coordinates of "x"
@@ -61,7 +61,7 @@ Point.subtract = function(x, y) {
 	var coordinates = [];                                                              //Set "coordinates" to an empty array
 	for(var i = 0; i < x.dimensions(); i++)                                            //For every whole number "i" less than the number of dimensions of "x",
 		coordinates[i] = x.coordinates[i] - y.coordinates[i];                          //Set the "i"th element in Point.coordinates to the sum of "i"th element of "x" and of "y"
-	return new Point(coordinates);                                                     //Set Point.add to result of Point("coordinates")
+	return new Point(coordinates);                                                     //Return thr result of Point("coordinates")
 };
 	
 //Scales up the point "x" by a factor of "t"
@@ -69,7 +69,7 @@ Point.multiplyBy = function(x, t) {
 	var coordinates = [];                      //Set "coordinates" to an empty array
 	for(var i = 0; i < x.dimensions(); i++)    //For every whole number "i" less than the number of dimensions of "x",
 		coordinates[i] = x.coordinates[i] * t; //Set the "i"th element in Point.coordinates to the product of "i"th element of "x" and "t"
-	return new Point(coordinates);             //Set Point.multiplyBy to the result of Point("coordinates")
+	return new Point(coordinates);             //Return the result of Point("coordinates")
 };
 	
 //Scales up the point x by a factor of 1/t.
@@ -77,7 +77,7 @@ Point.divideBy = function(x, t) {
 	var coordinates = [];                      //Set "coordinates" to an empty array
 	for(var i = 0; i < x.dimensions(); i++)    //For every whole number "i" less than the number of dimensions of "x",
 		coordinates[i] = x.coordinates[i] / t; //Set the "i"th element in Point.coordinates to the quotient of "i"th element of "x" and "t"
-	return new Point(coordinates);             //Set Point.multiplyBy to the result of Point("coordinates")
+	return new Point(coordinates);             //Return the result of Point("coordinates")
 };
 
 //Takes the Cartesian product of two points
@@ -87,7 +87,7 @@ Point.product = function(p, q) {
 		coordinates.push(p.coordinates[i]);   //Add the "i"th element in p.coordinates to the end of "coordinates"
 	for(i = 0; i < q.coordinates.length; i++) //For every whole number "i" less than the length of q.coordinates,
 		coordinates.push(q.coordinates[i]);   //Add the "i"th element in q.coordinates to the end of "coordinates"
-	return new Point(coordinates);            //Set Point.product to the result of Point("coordinates")
+	return new Point(coordinates);            //Return the result of Point("coordinates")
 };
 
 //Adds n zeros to the left of the point's coordinates
@@ -97,7 +97,7 @@ Point.padLeft = function(point, n) {
 		coordinates.push(0);                      //Add 0 to the end of "coordinates"
 	for(i = 0; i < point.coordinates.length; i++) //For every whole number "i" less than the length of point.coordinates,
 		coordinates.push(point.coordinates[i]);   //Add the "i"th element in q.coordinates to the end of "coordinates"
-	return new Point(coordinates);                //Set Point.product to the result of Point("coordinates")
+	return new Point(coordinates);                //Return the result of Point("coordinates")
 };
 
 //Adds n zeros to the right of the point's coordinates
@@ -107,20 +107,20 @@ Point.padRight = function(point, n) {
 		coordinates.push(point.coordinates[i]);   //Add the "i"th element in q.coordinates to the end of "coordinates"
 	for(i = 0; i < n; i++)                        //For every whole number "i" less than "n",
 		coordinates.push(0);                      //Add 0 to the end of "coordinates"
-	return new Point(coordinates);                //Set Point.product to the result of Point("coordinates")
+	return new Point(coordinates);                //Return the result of Point("coordinates")
 };
 
 //Adds the given coordinate at the end of the coordinate list
 Point.prototype.addCoordinate = function(coord) {
 	this.coordinates.push(coord); //Add "coord" to the end of Point.coordinates
-	return this; //Set Point.addCoordinate to Point
+	return this; //Return Point
 };
 	
 //Converts to the Vector3 class used by three.js
 //Meant only for 3D points
 Point.prototype.toVector3 = function() {
 	return new THREE.Vector3([this.coordinates[0], this.coordinates[1], this.coordinates[2]]);
-	//Set Point.toVector3 to the result of THREE.Vector3(the first element of Point.coordinates, the second element of Point.coordinates, the third element of Point.coordinates)
+	//Return the result of THREE.Vector3(the first element of Point.coordinates, the second element of Point.coordinates, the third element of Point.coordinates)
 };
 	
 //Checks if two points are equal, to a predetermined precision
@@ -129,9 +129,9 @@ Point.equal = function(a, b) {
 		if(Math.abs(a.coordinates[i] - b.coordinates[i]) > Math.abs(a.coordinates[i] * epsilon)) //If the absolute value of the difference of the "i"th element of a.coordinates and of b.coordinates
 		                                                                                         //Is greater than the absolute value of the product of the "i"th element of a.coordinates and a small number (epsilon)
 																								 //This essentailly asks "is the difference between a and b more than a little bit of 'a'?"
-			return false;                                                                        //Set Point.equal to false
+			return false;                                                                        //Return false
 	}                                                                                            //Otherwise,
-	return true;                                                                                 //Set Point.equal to true
+	return true;                                                                                 //Return true
 };
 
 //TODO: work on this, make it its own class
