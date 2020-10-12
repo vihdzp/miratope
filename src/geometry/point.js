@@ -3,17 +3,15 @@
 //Class for points in arbitary amounts of dimension, works with number of dimensions or with objects
 //Meant for Euclidean space, idk what we can do with hyperbolics
 function Point(x) {
-	//Constructor from the number of dimensions "x", initializes in the origin
-	if(typeof(x) === "number") {     //If "x" is a number,
-		this.coordinates = [];       //Set Point.coordinates to an empty array
-		for(var i = 0; i < x; i++)   //For every whole number "i" less than "x"
-			this.coordinates[i] = 0; //Set the "i"th element in Point.coordinates to 0
-			                         //Example: if "x" is 3, Point.coordinates will be [0,0,0]
+	//Constructor from the number of dimensions "x", initializes a point at the origin of R^x
+	if(typeof(x) === "number") {
+		this.coordinates = [];
+		for(var i = 0; i < x; i++)
+			this.coordinates[i] = 0;
 	}
 	//Constructor from the coordinates
-	else if(typeof(x) === "object") { //Otherwise, if "x" is an object (more precisely, an array),
-		this.coordinates = x;        //Set Point.coordinates to "x"
-	}
+	else if(typeof(x) === "object") //Otherwise, if "x" is an object (more precisely, an array),
+		this.coordinates = x;       //Set Point.coordinates to "x"
 };
 	
 //Returns the number of dimensions of the point's space
@@ -30,16 +28,9 @@ Point.prototype.clone = function() {
 };
 	
 //Projects the point into 3D
-//For now, just the simplest orthographic projection possible
+//For now, just the simplest orthographic projection possible.
 Point.prototype.project = function() {
-	//Return an array, based on this:
-	return [
-	this.coordinates[0] === undefined ? 0 : this.coordinates[0],         //If the first element in Point.coordinates is undefined,
-                                                                         //Set the first element of this array to 0, otherwise set it to the first element of Point.coordinates
-	this.coordinates[1] === undefined ? 0 : this.coordinates[1],         //If the second element in Point.coordinates is undefined,
-                                                                         //Set the second element of this array to 0, otherwise set it to the second element of Point.coordinates
-	this.coordinates[2] === undefined ? 0 : this.coordinates[2]          //If the third element in Point.coordinates is undefined,
-           ]                                                             //Set the third element of this array to 0, otherwise set it to the third element of Point.coordinates
+	return Point.padRight(this, 3 - this.coordinates.length);
 };
 	
 //Adds the coordinates of "x" to the coordinates of "y"
@@ -66,18 +57,18 @@ Point.subtract = function(x, y) {
 	
 //Scales up the point "x" by a factor of "t"
 Point.multiplyBy = function(x, t) {
-	var coordinates = [];                      //Set "coordinates" to an empty array
-	for(var i = 0; i < x.dimensions(); i++)    //For every whole number "i" less than the number of dimensions of "x",
-		coordinates[i] = x.coordinates[i] * t; //Set the "i"th element in Point.coordinates to the product of "i"th element of "x" and "t"
-	return new Point(coordinates);             //Return the result of Point("coordinates")
+	var coordinates = [];
+	for(var i = 0; i < x.dimensions(); i++)
+		coordinates[i] = x.coordinates[i] * t; //Multiplies each of the coordinates of x by t, copies them to coordinates.
+	return new Point(coordinates);
 };
 	
 //Scales up the point x by a factor of 1/t.
 Point.divideBy = function(x, t) {
-	var coordinates = [];                      //Set "coordinates" to an empty array
-	for(var i = 0; i < x.dimensions(); i++)    //For every whole number "i" less than the number of dimensions of "x",
-		coordinates[i] = x.coordinates[i] / t; //Set the "i"th element in Point.coordinates to the quotient of "i"th element of "x" and "t"
-	return new Point(coordinates);             //Return the result of Point("coordinates")
+	var coordinates = [];
+	for(var i = 0; i < x.dimensions(); i++)
+		coordinates[i] = x.coordinates[i] / t; //Divides each of the coordinates of x by t, copies them to coordinates.
+	return new Point(coordinates);
 };
 
 //Takes the Cartesian product of two points
@@ -107,15 +98,15 @@ Point.padRight = function(point, n) {
 
 //Adds the given coordinate at the end of the coordinate list
 Point.prototype.addCoordinate = function(coord) {
-	this.coordinates.push(coord); //Add "coord" to the end of Point.coordinates
-	return this; //Return Point
+	this.coordinates.push(coord); //Add "coord" to the end of this.coordinates
+	return this;
 };
 	
 //Converts to the Vector3 class used by three.js
 //Meant only for 3D points
 Point.prototype.toVector3 = function() {
-	return new THREE.Vector3([this.coordinates[0], this.coordinates[1], this.coordinates[2]]);
-	//Return the result of THREE.Vector3(the first element of Point.coordinates, the second element of Point.coordinates, the third element of Point.coordinates)
+	//Simply copies the coordinates over.
+	return new THREE.Vector3([this.coordinates[0], this.coordinates[1], this.coordinates[2]]);	
 };
 	
 //Checks if two points are equal, to a predetermined precision
