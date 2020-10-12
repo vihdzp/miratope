@@ -107,6 +107,6 @@ Space.collinear = function(a, b, c) {
 //have the same (neglibly different) slopes
 Space.sameSlope = function(a, b, c, d) {
 	var s = Math.atan(a / b) - Math.atan(c / d); //Set "s" as the arctangent of "a"/"b" minus the arctangent of "c"/"d"
-	return (s + Math.PI + epsilon) % Math.PI < 2 * epsilon; //Set Space.sameSlope as true if "s"+pi+a tiny number (epsilon) modulo pi is less than 2*a tiny number (epsilon)
-	                                                        //Set Space.sameSlope as false otherwise
+	return (s + Math.PI + epsilon) % Math.PI < 2 * epsilon; //Return true if "s"+pi+a tiny number (epsilon) modulo pi is less than 2*a tiny number (epsilon)
+	                                                        //Return Space.sameSlope as false otherwise
 };
