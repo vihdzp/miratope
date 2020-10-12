@@ -14,17 +14,18 @@ function Point(x) {
 		this.coordinates = x;       //Set Point.coordinates to "x"
 };
 	
-//Returns the number of dimensions of the point's space
+//Returns the number of dimensions of the point's space.
 Point.prototype.dimensions = function() {
-	return this.coordinates.length; //Return the length of Point.coordinates
+	return this.coordinates.length;
 };
 	
-//Makes a Point object with the same base attributes
+//Makes a Point object with the same coordinates.
+//Simple shallow copy.
 Point.prototype.clone = function() {
-	var coordinates = [];                            //Set "coordinates" to an empty array
-	for(var i = 0; i < this.coordinates.length; i++) //For every whole number "i" less than the length of Point.coordinates,
-		coordinates.push(this.coordinates[i]);       //Add the "i"th element in Point.coordinates to the end of "coordinates"
-	return new Point(coordinates);                   //Return the result of Point("coordinates")
+	var coordinates = [];
+	for(var i = 0; i < this.coordinates.length; i++)
+		coordinates.push(this.coordinates[i]);
+	return new Point(coordinates);
 };
 	
 //Projects the point into 3D
@@ -36,23 +37,23 @@ Point.prototype.project = function() {
 //Adds the coordinates of "x" to the coordinates of "y"
 //Both need to have the same amount of dimensions
 Point.add = function(x, y) {
-	if(x.dimensions() !== y.dimensions())                                              //If the number of dimensions of "x" does not equal the number of dimensions of "y",
-		throw new Error("You can't add points with different amounts of dimensions!"); //Throw up the error "You can't add point with different amounts of dimensions!"
-	var coordinates = [];                                                              //Set "coordinates" to an empty array
-	for(var i = 0; i < x.dimensions(); i++)                                            //For every whole number "i" less than the number of dimensions of "x",
-		coordinates[i] = x.coordinates[i] + y.coordinates[i];                          //Set the "i"th element in Point.coordinates to the sum of "i"th element of "x" and of "y"
-	return new Point(coordinates);                                                     //Return the result of Point("coordinates")
+	if(x.dimensions() !== y.dimensions()) //The points need to have the same number of coordinates.
+		throw new Error("You can't add points with different amounts of dimensions!");
+	var coordinates = [];
+	for(var i = 0; i < x.dimensions(); i++) //Add the respective coordinates.
+		coordinates[i] = x.coordinates[i] + y.coordinates[i];
+	return new Point(coordinates); 
 };
 	
 //Subtracts the coordinates of "y" from the coordinates of "x"
 //Both need to have the same amount of dimensions
 Point.subtract = function(x, y) {
-	if(x.dimensions() !== y.dimensions())                                              //If the number of dimensions of "x" does not equal the number of dimensions of "y",
-		throw new Error("You can't add points with different amounts of dimensions!"); //Throw up the error "You can't add point with different amounts of dimensions!"
-	var coordinates = [];                                                              //Set "coordinates" to an empty array
-	for(var i = 0; i < x.dimensions(); i++)                                            //For every whole number "i" less than the number of dimensions of "x",
-		coordinates[i] = x.coordinates[i] - y.coordinates[i];                          //Set the "i"th element in Point.coordinates to the sum of "i"th element of "x" and of "y"
-	return new Point(coordinates);                                                     //Return thr result of Point("coordinates")
+	if(x.dimensions() !== y.dimensions()) //The points need to have the same number of coordinates.
+		throw new Error("You can't add points with different amounts of dimensions!");
+	var coordinates = [];
+	for(var i = 0; i < x.dimensions(); i++) //Subtract the respective coordinates.
+		coordinates[i] = x.coordinates[i] - y.coordinates[i];
+	return new Point(coordinates);
 };
 	
 //Scales up the point "x" by a factor of "t"
@@ -98,26 +99,25 @@ Point.padRight = function(point, n) {
 
 //Adds the given coordinate at the end of the coordinate list
 Point.prototype.addCoordinate = function(coord) {
-	this.coordinates.push(coord); //Add "coord" to the end of this.coordinates
+	this.coordinates.push(coord);
 	return this;
 };
 	
 //Converts to the Vector3 class used by three.js
-//Meant only for 3D points
+//Meant only for 3D points.
+//Simply copies the coordinates over.
 Point.prototype.toVector3 = function() {
-	//Simply copies the coordinates over.
 	return new THREE.Vector3([this.coordinates[0], this.coordinates[1], this.coordinates[2]]);	
 };
 	
 //Checks if two points are equal, to a predetermined precision
+//Simply checks whether the respective coordinates are "similar enough" by floating point standards.
 Point.equal = function(a, b) {
-	for(var i = 0; i < a.coordinates.length; i++) {                                              //For every whole number "i" less than the length of a.coordinates,
-		if(Math.abs(a.coordinates[i] - b.coordinates[i]) > Math.abs(a.coordinates[i] * epsilon)) //If the absolute value of the difference of the "i"th element of a.coordinates and of b.coordinates
-		                                                                                         //Is greater than the absolute value of the product of the "i"th element of a.coordinates and a small number (epsilon)
-																								 //This essentailly asks "is the difference between a and b more than a little bit of 'a'?"
-			return false;                                                                        //Return false
-	}                                                                                            //Otherwise,
-	return true;                                                                                 //Return true
+	for(var i = 0; i < a.coordinates.length; i++) {
+		if(Math.abs(a.coordinates[i] - b.coordinates[i]) > Math.abs(a.coordinates[i] * epsilon))
+			return false;
+	}
+	return true;                                                                                 
 };
 
 //TODO: work on this, make it its own class
