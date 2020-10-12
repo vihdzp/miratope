@@ -148,8 +148,10 @@ Polytope.prototype.renderTo = function(scene) {
 			counter++;			
 			var E = EQ.findMinimum(); //The next "event" in the event queue.
 			EQ.delete(E);
-			if(!SL.checkSorted())
-				alert(I + ", " + J + ": " + counter);
+			if(!SL.checkSorted()) { //If the code worked perfectly, we could skip this part.
+				alert("Something went wrong!");
+				//return; //Uncomment if you want the code not to throw an exception.
+			}
 			
 			//Runs P code on both edges adjacent to E's vertex.
 			for(j = 0; j <= 1; j++) {
@@ -164,7 +166,7 @@ Polytope.prototype.renderTo = function(scene) {
 					node = SL.insert(edge);
 					if(!node) {
 						console.log("SL insertion failed! This isn't supposed to happen!");
-						console.log("Edge searched for: "+edge.toString());
+						console.log("Edge searched for: " + edge.toString());
 						console.log("Debug stuff:");
 						debug();
 					}
