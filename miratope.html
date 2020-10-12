@@ -43,10 +43,10 @@
 	<!--This is just some test code. This whole script tag should be removed eventually.-->
 	<script>
 		//Test pentagrammic pyramid.
-		Polytope.regularPolygon(7,3).extrudeToPyramid(new Point([0,0,-1])).renderTo(mainScene);
+		//Polytope.regularPolygon(6,2).extrudeToPyramid(new Point([0,0,-1])).renderTo(mainScene);
 		
 		//Test tetrahedron.
-		//Polytope.simplex(3).renderTo(mainScene);
+		Polytope.simplex(3).renderTo(mainScene);
 		
 		//Test octagrammic prism with concurrent sides. DOES NOT WORK!
 		/*pts=[new Point([-1,-2,-1]),new Point([-1,2,-1]),new Point([2,-1,-1]),new Point([-2,-1,-1]),new Point([1,2,-1]),new Point([1,-2,-1]),new Point([-2,1,-1]),new Point([2,1,-1]),
