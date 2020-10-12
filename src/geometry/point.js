@@ -11,7 +11,7 @@ function Point(x) {
 			                         //Example: if "x" is 3, Point.coordinates will be [0,0,0]
 	}
 	//Constructor from the coordinates
-	else if(typeof(x) === "object") { //Otherwise, if "x" is an object,
+	else if(typeof(x) === "object") { //Otherwise, if "x" is an object (more precisely, an array),
 		this.coordinates = x;        //Set Point.coordinates to "x"
 	}
 };
@@ -82,32 +82,27 @@ Point.divideBy = function(x, t) {
 
 //Takes the Cartesian product of two points
 Point.product = function(p, q) {
-	var coordinates = [], i;                  //Set "coordinates" to an empty array, and give "i" existance
-	for(i = 0; i < p.coordinates.length; i++) //For every whole number "i" less than the length of p.coordinates,
-		coordinates.push(p.coordinates[i]);   //Add the "i"th element in p.coordinates to the end of "coordinates"
-	for(i = 0; i < q.coordinates.length; i++) //For every whole number "i" less than the length of q.coordinates,
-		coordinates.push(q.coordinates[i]);   //Add the "i"th element in q.coordinates to the end of "coordinates"
-	return new Point(coordinates);            //Return the result of Point("coordinates")
+	return new Point(p.coordinates.concat(q.coordinates)); //Simply concatenates the coordinates of both points.
 };
 
 //Adds n zeros to the left of the point's coordinates
 Point.padLeft = function(point, n) {
-	var coordinates = [], i;                      //Set "coordinates" to an empty array, and give "i" existance
-	for(i = 0; i < n; i++)                        //For every whole number "i" less than "n",
-		coordinates.push(0);                      //Add 0 to the end of "coordinates"
-	for(i = 0; i < point.coordinates.length; i++) //For every whole number "i" less than the length of point.coordinates,
-		coordinates.push(point.coordinates[i]);   //Add the "i"th element in q.coordinates to the end of "coordinates"
-	return new Point(coordinates);                //Return the result of Point("coordinates")
+	var coordinates = [], i;                      //Set "coordinates" to an empty array, and declare "i".
+	for(i = 0; i < n; i++)                        //Adds the required amount of zeros to the left.
+		coordinates.push(0);                      
+	for(i = 0; i < point.coordinates.length; i++) //Fills out the rest of the coordinates.
+		coordinates.push(point.coordinates[i]);   
+	return new Point(coordinates);                //Returns the padded set of coordinates.
 };
 
 //Adds n zeros to the right of the point's coordinates
 Point.padRight = function(point, n) {
-	var coordinates = [], i;                      //Set "coordinates" to an empty array, and give "i" existance
-	for(i = 0; i < point.coordinates.length; i++) //For every whole number "i" less than the length of point.coordinates,
-		coordinates.push(point.coordinates[i]);   //Add the "i"th element in q.coordinates to the end of "coordinates"
-	for(i = 0; i < n; i++)                        //For every whole number "i" less than "n",
-		coordinates.push(0);                      //Add 0 to the end of "coordinates"
-	return new Point(coordinates);                //Return the result of Point("coordinates")
+	var coordinates = [], i;                      //Set "coordinates" to an empty array, and declare "i".
+	for(i = 0; i < point.coordinates.length; i++) //Fills out the coordinates.
+		coordinates.push(point.coordinates[i]);   
+	for(i = 0; i < n; i++)                        //Adds the required amount of zeros to the right.
+		coordinates.push(0);
+	return new Point(coordinates);                //Returns the padded set of coordinates.
 };
 
 //Adds the given coordinate at the end of the coordinate list
@@ -135,6 +130,8 @@ Point.equal = function(a, b) {
 };
 
 //TODO: work on this, make it its own class
+//This will eventually become a JS port of OFFBuilder.
+
 //Calculates the specified permutations of a point in a given format
 //The string needs to start with the coordinates of the point in parentheses, separated by commas
 //These are followed by permutation and sign "modifiers", such as allPerms(0, 1) for all permutations of the first and second coordinates,
