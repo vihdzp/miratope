@@ -19,3 +19,9 @@ mainScene.scene.add( ambientLight );
 var directionalLight = new THREE.DirectionalLight( 0x777777, 2 );
 directionalLight.position.set( 1,1,1 ).normalize();
 mainScene.scene.add( directionalLight );
+
+//Sets up controls.
+const controls = new TrackballControls(camera, renderer.domElement);
+controls.target.set(0, 0, 0);
+controls.rotateSpeed=4;
+controls.update();

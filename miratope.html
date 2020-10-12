@@ -31,6 +31,7 @@
 	<script src="src/rendering/scene.js"></script>                     <!--Class for scenes.-->
 	<script src="src/rendering/three.js"></script>                     <!--Library for 3D rendering library.-->
 	<script src="src/rendering/render.js"></script>                    <!--Renderer bit of the Polytope class.-->
+	<script src="src/rendering/trackballControls.js"></script>         <!--Camera control.-->
 </head>
 <body>
 	<!-- Used to download files.-->
@@ -42,10 +43,10 @@
 	<!--This is just some test code. This whole script tag should be removed eventually.-->
 	<script>
 		//Test pentagrammic pyramid.
-		Polytope.regularPolygon(7,3).extrudeToPyramid(new Point([0,0,1])).renderTo(mainScene);
+		Polytope.regularPolygon(7,3).extrudeToPyramid(new Point([0,0,-1])).renderTo(mainScene);
 		
 		//Test tetrahedron.
-		//Polytope.hypercube(3).renderTo(mainScene);
+		//Polytope.simplex(3).renderTo(mainScene);
 		
 		//Test octagrammic prism with concurrent sides. DOES NOT WORK!
 		/*pts=[new Point([-1,-2,-1]),new Point([-1,2,-1]),new Point([2,-1,-1]),new Point([-2,-1,-1]),new Point([1,2,-1]),new Point([1,-2,-1]),new Point([-2,1,-1]),new Point([2,1,-1]),
@@ -61,16 +62,17 @@
 		//Polytope.polygon([new Point([-1,-1]), new Point([-1,0]), new Point([-1,1]), new Point([0,-1]), new Point([0,1]), new Point([1,-1]), new Point([1,0]), new Point([1,1])]).renderTo(scene);
 	</script>
 	<!--Render loop.-->
-	<script>
+	<script>	
 	function animate() { 
+		requestAnimationFrame( animate );
+		controls.update();	
 		var scene = mainScene.scene;
 		
-		requestAnimationFrame( animate );
-		for(var i=0;i<scene.children.length;i++) {
-			if(scene.children[i].type==="Mesh") {
+		/*for(var i = 0; i < scene.children.length; i++) {
+			if(scene.children[i].type === "Mesh") {
 				scene.children[i].rotation.x += 0.01; scene.children[i].rotation.y += 0.01;
 			}
-		}
+		}*/
 		renderer.render( scene, camera ); 
 	} 
 	animate();
