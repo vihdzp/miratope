@@ -3,12 +3,12 @@ A renderer for polytopes. Still in alpha.
 
 ## What can Miratope do now?
 Miratope can generate the classes of polytopes, among others:
-*Simplexes
-*Hypercubes
-*Orthoplexes
-*Product prisms
-*Polyhedral antiprisms
-*Cupolae, cuploids and cupolaic blends
+* Simplexes
+* Hypercubes
+* Orthoplexes
+* Product prisms
+* Polyhedral antiprisms
+* Cupolae, cuploids and cupolaic blends
 
 Miratope can also read and export OFF files.
 
@@ -20,6 +20,8 @@ Most of the cool generating commands are on the `Polytope` class. For example, t
 
 ### Why does my OFF file not render?
 Provisionally, your OFF file is being loaded into the variable `P`. You have to manually render it using the command `P.renderTo(mainScene);`.
+
+Note that at the moment, this works only for 3D OFF files, and can be very buggy.
 
 ### How do I clear the scene?
 Use `mainScene.clear();`.
