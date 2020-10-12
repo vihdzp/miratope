@@ -11,16 +11,16 @@ Polytope.prototype.renderTo = function(scene) {
 	
 	function debug() {
 		var x = 0;
-		console.log(E.value.coordinates[SweeplineEdge.indx0].toString());
+		console.log(E.value.coordinates[window.index0].toString());
 		console.log(SL.toString());
 	}
 	
 	//Orders two points lexicographically based on the coordinates on indices 0 and 1.
 	//Uses the IDs of the vertices to order them consistently if their coordinates are identical.
 	function order(a, b) {
-		var c = a.value.coordinates[SweeplineEdge.indx0] - b.value.coordinates[SweeplineEdge.indx0];
+		var c = a.value.coordinates[window.index0] - b.value.coordinates[window.index0];
 		if(c === 0) { //DO NOT REPLACE BY Math.abs(c) < epsilon
-			c = a.value.coordinates[SweeplineEdge.indx1] - b.value.coordinates[SweeplineEdge.indx1];
+			c = a.value.coordinates[window.index1] - b.value.coordinates[window.index1];
 			if(c === 0)
 				return a.id - b.id;
 		}
@@ -39,14 +39,14 @@ Polytope.prototype.renderTo = function(scene) {
 		b = x.rightVertex().value,
 		c = y.leftVertex.value,
 		d = y.rightVertex().value,
-		k = E.value.coordinates[SweeplineEdge.indx0], slopeMod;
+		k = E.value.coordinates[window.index0], slopeMod;
 		
 		//Calculates where in the segments the intersection with the sweepline lies.
-		var lambda0 = (k - b.coordinates[SweeplineEdge.indx0])/(a.coordinates[SweeplineEdge.indx0] - b.coordinates[SweeplineEdge.indx0]);		
-		var lambda1 = (k - d.coordinates[SweeplineEdge.indx0])/(c.coordinates[SweeplineEdge.indx0] - d.coordinates[SweeplineEdge.indx0]);
+		var lambda0 = (k - b.coordinates[window.index0])/(a.coordinates[window.index0] - b.coordinates[window.index0]);		
+		var lambda1 = (k - d.coordinates[window.index0])/(c.coordinates[window.index0] - d.coordinates[window.index0]);
 		
 		//The height difference between the intersections.
-		var res = (a.coordinates[SweeplineEdge.indx1] * lambda0 + b.coordinates[SweeplineEdge.indx1] * (1 - lambda0)) - (c.coordinates[SweeplineEdge.indx1] * lambda1 + d.coordinates[SweeplineEdge.indx1] * (1 - lambda1));
+		var res = (a.coordinates[window.index1] * lambda0 + b.coordinates[window.index1] * (1 - lambda0)) - (c.coordinates[window.index1] * lambda1 + d.coordinates[window.index1] * (1 - lambda1));
 		
 		//If the intersections are so similar, we also need to consider the possibility
 		//that the edges actually have a common endpoint.
@@ -86,6 +86,9 @@ Polytope.prototype.renderTo = function(scene) {
 		//Let's not even bother with digons and monogons.
 		if(P.elementList[2][i].length < 3)
 			continue faceLoop;
+	/*	if(P.elementList[2][i].length === 3) {
+			//All triangles are convex, so cut to the chase and render it directly.
+		} */
 		
 		//Enumerates the vertices in order.
 		var cycle = P.faceToVertices(i);
@@ -113,18 +116,26 @@ Polytope.prototype.renderTo = function(scene) {
 		
 		//Calculates the coordinates such that the projection of our three non-collinear points onto their 2D plane has the highest area.
 		//Uses the shoelace formula.
-		//Stores such coordinates' indices in SweeplineEdge.indx0, SweeplineEdge.indx1.
-		var maxArea = 0;
-		SweeplineEdge.indx0 = 0;
-		SweeplineEdge.indx1 = 1;
-		for(j = 0; j < vertexDLL[0].value.dimensions(); j++) {
-			for(k = j + 1; k < vertexDLL[0].value.dimensions(); k++) {
-				if(vertexDLL[0].value.coordinates[j] * (vertexDLL[a].value.coordinates[k] - vertexDLL[b].value.coordinates[k])
-				+ vertexDLL[a].value.coordinates[j] * (vertexDLL[b].value.coordinates[k] - vertexDLL[0].value.coordinates[k])
-				+ vertexDLL[b].value.coordinates[j] * (vertexDLL[0].value.coordinates[k] - vertexDLL[a].value.coordinates[k])
+		//Stores such coordinates' indices in window.index0, window.index1.
+		//That way, they become global variables that can be used elsewhere.
+		var maxArea = 0,
+		Area,
+		va = vertexDLL[a].value,
+		vb = vertexDLL[b].value,
+		v0 = vertexDLL[0].value;
+		window.index0 = 0;
+		window.index1 = 1;
+		for(j = 0; j < v0.dimensions(); j++) {
+			for(k = j + 1; k < v0.dimensions(); k++) {
+				if((Area = Math.abs(
+					v0.coordinates[j] * (va.coordinates[k] - vb.coordinates[k])
+					+ va.coordinates[j] * (vb.coordinates[k] - v0.coordinates[k])
+					+ vb.coordinates[j] * (v0.coordinates[k] - va.coordinates[k])
+				))
 				> maxArea) {
-					SweeplineEdge.indx0 = j;
-					SweeplineEdge.indx1 = k;
+					window.index0 = j;
+					window.index1 = k;
+					maxArea = Area;
 				}						
 			}
 		}
@@ -156,7 +167,7 @@ Polytope.prototype.renderTo = function(scene) {
 			//Runs P code on both edges adjacent to E's vertex.
 			for(j = 0; j <= 1; j++) {
 				var edge; //E's edge in the SL format.
-				var ord = E.value.coordinates[SweeplineEdge.indx0] - E.getNode(j).value.coordinates[SweeplineEdge.indx0];
+				var ord = E.value.coordinates[window.index0] - E.getNode(j).value.coordinates[window.index0];
 				var pos = 0;
 				var node, prevNode, nextNode;
 				
@@ -199,7 +210,7 @@ Polytope.prototype.renderTo = function(scene) {
 				}
 				//The edge is perpendicular to the first coordinate's axis:
 				//Runs only once per such an edge.
-				else if(E.value.coordinates[SweeplineEdge.indx1] > E.getNode(j).value.coordinates[SweeplineEdge.indx1]) {
+				else if(E.value.coordinates[window.index1] > E.getNode(j).value.coordinates[window.index1]) {
 					edge = new SweeplineEdge(E, j);
 				
 					//I really should only check intersections with segments at the "correct height".

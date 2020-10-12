@@ -12,8 +12,8 @@ function SweeplineEdge(leftVertex, rightVertexIndex) {
 	
 	//Calculates the slope.
 	//This won't change even if the edge gets cut down to zero length, thus making the ordering consistent.
-	this.slope = (leftVertex.value.coordinates[SweeplineEdge.indx1] - rightVertex.value.coordinates[SweeplineEdge.indx1])
-	/ (leftVertex.value.coordinates[SweeplineEdge.indx0] - rightVertex.value.coordinates[SweeplineEdge.indx0]);
+	this.slope = (leftVertex.value.coordinates[window.index1] - rightVertex.value.coordinates[window.index1])
+	/ (leftVertex.value.coordinates[window.index0] - rightVertex.value.coordinates[window.index0]);
 	
 	//Gives the edge an immutable ID in terms of its vertices.
 	//Uses the redirect table (read below).

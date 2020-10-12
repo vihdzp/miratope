@@ -8,6 +8,9 @@ function Scene(scene) {
 		this.scene = new THREE.Scene();
 };
 
+//Material for the faces.
+Scene.material = new THREE.MeshLambertMaterial({color: 0xffffff, side: THREE.DoubleSide, flatShading: true});
+
 //This will probably get deleted soon.
 Scene.prototype.renderTriangle = function(a,b,c) {
 	var geometry = new THREE.BufferGeometry();
@@ -22,7 +25,7 @@ Scene.prototype.renderTriangle = function(a,b,c) {
 	geometry.setAttribute('position',new THREE.BufferAttribute(vertices, 3));
 	geometry.setAttribute('normal',new THREE.BufferAttribute(normals, 3));
 	geometry.setIndex([0,1,2]);
-	var triangle = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial({color: 0xffffff, side: THREE.DoubleSide, flatShading: true}));
+	var triangle = new THREE.Mesh( geometry, material );
 	this.scene.add( triangle );  
 };
 
@@ -31,14 +34,27 @@ Scene.prototype.renderTriangle = function(a,b,c) {
 //This code figures out which of these faces need to be rendered,
 //and transforms the points into 3D. (or at least will when it's fully functional).
 Scene.prototype.add = function(face) {
-	var simple = face[0];
-	var simpleVec3 = [];
+	var _poly = face[0], //A simple polygon of which the face is composed.
+	poly = [];           //The face projected into 3D, as an array of THREE.Vector3s.
 	
-	for(var i = 0; i < simple.length; i++) {
-		simpleVec3.push(new THREE.Vector3(...simple[i].coordinates));
+	//Here's where I'm supposed to project the face into 3D via the projection matrix.
+	
+	//These are the analogs of window.index0 and window.index1 for the projected face.
+	//(at the moment, I just use the old values, since I'm not doing any projection yet)
+	//window.index0 = something; window.index1 = something;
+	
+	//The last coordinate.
+	window.index2 = 3 - window.index0 - window.index1;
+	
+	for(var i = 0; i < _poly.length; i++) {
+		poly.push(new THREE.Vector3(
+			_poly[i].coordinates[window.index0],
+			_poly[i].coordinates[window.index1],
+			_poly[i].coordinates[window.index2])
+		);
 	}
 	
-	this._renderHoledPolygon(simpleVec3);
+	this._renderHoledPolygon(poly);
 };
 
 Scene.prototype._renderHoledPolygon = function(poly, hole) {
@@ -46,19 +62,28 @@ Scene.prototype._renderHoledPolygon = function(poly, hole) {
 	//I edited the three.js source code so that is stores whether each polygon is correct or reversed.
 	window._polyReversed = false;
 	
+	//Probably won't work.
 	var shape = new THREE.Shape(poly);
 	if(hole)
 		shape.holes.push(new THREE.Shape(hole));
 	
-	var geometry = new THREE.ShapeBufferGeometry( shape );	
+	var geometry = new THREE.ShapeBufferGeometry(shape);	
 	
-	//Extrudes vertices into 3D appropriately.
-	if(window._polyReversed)
-		for(var i = 0; i < poly.length; i++) 		
-			geometry.attributes.position.array[3 * i + 2] = poly[geometry.attributes.position.count - i - 1].z;
-	else 		
-		for(var i = 0; i < poly.length; i++) 		
-			geometry.attributes.position.array[3 * i + 2] = poly[i].z;
+	//Reorders vertices and extrudes into 3D appropriately.
+	var a;
+			
+	for(var i = 0; i < poly.length; i++) {
+		a = [];
+		a[window.index0] = geometry.attributes.position.array[3 * i];
+		a[window.index1] = geometry.attributes.position.array[3 * i + 1];
+		if(window._polyReversed)
+			a[window.index2] = poly[geometry.attributes.position.count - i - 1].z;
+		else 
+			a[window.index2] = poly[i].z;
+		for(var j = 0; j < 3; j++) {
+			geometry.attributes.position.array[3 * i + j] = a[j];
+		}
+	}
 	
 	geometry.attributes.position.needsUpdate = true;
 	
@@ -67,11 +92,19 @@ Scene.prototype._renderHoledPolygon = function(poly, hole) {
 	this.scene.add(
 		new THREE.Mesh(
 			geometry, 
-			new THREE.MeshLambertMaterial({color: 0xffffff, side: THREE.DoubleSide, flatShading: true})
+			Scene.material
 		)
 	);
 };
 	
 Scene.prototype.clear = function() {
-	this.scene = new THREE.Scene();
+	while(this.scene.children.length > 0) {
+		if(this.scene.children[0].type === "Mesh")
+			this.scene.children[0].geometry.dispose();
+		
+		this.scene.remove(this.scene.children[0]);
+	}
+	
+	this.scene.add(ambientLight);
+	this.scene.add(directionalLight);
 };
