@@ -27,7 +27,7 @@ Note that at the moment, this works only for 3D OFF files, and can be very buggy
 Use `mainScene.clear();`.
 
 ## What's next?
-There are lots of planned features for Miratope, some more ambitious than others. You can look at the complete list, along with some ideas on how to implement them (here)[https://docs.google.com/document/d/1IEoXR4vmOPELFKosRMIDfDN_M4oaUGWDExdqqDpCwfU/edit?usp=sharing].
+There are lots of planned features for Miratope, some more ambitious than others. You can look at the complete list, along with some ideas on how to implement them [here](https://docs.google.com/document/d/1IEoXR4vmOPELFKosRMIDfDN_M4oaUGWDExdqqDpCwfU/edit?usp=sharing).
 
 The most immediate changes will probably be the following:
 * Greater camera control
