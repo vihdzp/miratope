@@ -62,41 +62,49 @@ Space.intersect = function(a, b, c, d) {
 	if(Space.sameSlope(r[0], r[1], s[0], s[1]))
 		return null;
 	
-	//Set "t" to 
-	var t = ((p[0] - q[0]) * s[1] - (p[1] - q[1]) * s[0])/(r[1] * s[0] - r[0] * s[1]),
-	u = ((p[0] - q[0]) * r[1] - (p[1] - q[1]) * r[0])/(r[1] * s[0] - r[0] * s[1]);
+	//wow, complicated formulas, I use @ to mean "at ab_MAX_indx" or "at cd_MAX_indx"
+	//Set "t" to
+	var t = ((p[0] - q[0]) * s[1] - (p[1] - q[1]) * s[0])/ //(a@ab-c@ab)*(d@cd-c@cd)-(a@cd-c@cd)*(d@ab-c@ab) divided by
+	        (s[0] * r[1] - s[1] * r[0]),                   //(d@ab-c@ab)*(b@cd-a@cd)-(d@cd-c@cd)*(b@ab-a@ab)
+	//Set "u" to
+	    u = ((p[0] - q[0]) * r[1] - (p[1] - q[1]) * r[0])/ //(a@ab-c@ab)*(b@cd-a@cd)-(a@cd-c@cd)*(b@ab-a@ab) divided by
+	        (s[0] * r[1] - s[1] * r[0]);                   //(d@ab-c@ab)*(b@cd-a@cd)-(d@cd-c@cd)*(b@ab-a@ab)
 	
-	//The intersection lies outside of the segments, or at infinity.
-	if(!(t > epsilon) || t >= 1 - epsilon || !(u > epsilon) || u >= 1 - epsilon)
+	//The intersection lies outside of the segments, or at infinity
+	//Check if "t" or "u" are less than or equal to a small number (epsilon)
+	//Check if "t" or "u" are greater than or equal to a 1- a small number (epsilon)
+	//If any of those are true, return null
+	if(t <= epsilon || t >= 1 - epsilon || u <= epsilon || u >= 1 - epsilon)
 		return null;
 	
+	//Create "pt" and set it to an empty array
 	var pt = [];
-	for(var i = 0; i < a.dimensions(); i++)
-		pt.push(a.coordinates[i] + (b.coordinates[i] - a.coordinates[i]) * t);
-	return new Point(pt);
+	for(var i = 0; i < a.dimensions(); i++)                                    //For all whole numbers less than the number of dimensions "a" is in
+		pt.push(a.coordinates[i] + (b.coordinates[i] - a.coordinates[i]) * t); //Add the sum of "a"'s "i"th coordinate and "b"'s "i"th coordinate minus "a"'s "i"th coordinate times "t" to the end of "pt"
+	return new Point(pt);                                                      //After that's done, Return the result of the function Point with the variable "pt"
 };
 	
-//Calculates the angle between b - a and c - a, and check if it's straight to a given precision.
+//Calculates the angle between b - a and c - a, and check if it's straight to a given precision
 Space.collinear = function(a, b, c) {
-	if(Point.equal(a, b) || Point.equal(a, c))
-		return true;
+	if(Point.equal(a, b) || Point.equal(a, c)) //If "a"="b" or "a"="c",
+		return true;                           //Return true
 	
-	var dot = 0;
-	var norm0, norm1;
-	var sub0, sub1;
-	for(var i = 0; i < a.coordinates.length; i++) {
-		sub0 = b.coordinates[i] - a.coordinates[i];
-		sub1 = c.coordinates[i] - a.coordinates[i];
-		dot += sub0 * sub1;
-		norm0 += sub0 * sub0;
-		norm1 += sub1 * sub1;
+	var dot = 0;      //Set "dot" to 0
+	var norm0, norm1; //Give "norm0" and "norm1" existance
+	var sub0, sub1;   //Give "sub0" and "sub1" existance
+	for(var i = 0; i < a.coordinates.length; i++) { //For every whole number "i" less than the number of dimensions of "a",
+		sub0 = b.coordinates[i] - a.coordinates[i]; //Set "sub0" to difference of the "i"th coordinate of "b" and the "i"th coordinate of "a"
+		sub1 = c.coordinates[i] - a.coordinates[i]; //Set "sub1" to difference of the "i"th coordinate of "c" and the "i"th coordinate of "a"
+		dot += sub0 * sub1;   //Add "dot" to the product of "sub0" and "sub1"
+		norm0 += sub0 * sub0; //Add "norm0" to the product of "sub0" and "sub0"
+		norm1 += sub1 * sub1; //Add "norm1" to the product of "sub1" and "sub1"
 	}
-
+    //Return true if the absolute value of "dot" divided by the square root of ("norm0" * "norm1") is less than or equal to a small number
 	return 1 - Math.abs(dot / Math.sqrt(norm0 * norm1)) <= epsilon;
 };
 
 //Returns whether the line from (0, 0) to (a, b) and the line from (0, 0) to (c, d)
-//have the same (neglibly different) slopes.
+//have the same (neglibly different) slopes
 Space.sameSlope = function(a, b, c, d) {
 	var s = Math.atan(a / b) - Math.atan(c / d); //Set "s" as the arctangent of "a"/"b" minus the arctangent of "c"/"d"
 	return (s + Math.PI + epsilon) % Math.PI < 2 * epsilon; //Set Space.sameSlope as true if "s"+pi+a tiny number (epsilon) modulo pi is less than 2*a tiny number (epsilon)

@@ -92,7 +92,7 @@ Point.product = function(p, q) {
 
 //Adds n zeros to the left of the point's coordinates
 Point.padLeft = function(point, n) {
-	var coordinates = [], i;                      //Set "coordinates" to an empty array, and give "i" existence
+	var coordinates = [], i;                      //Set "coordinates" to an empty array, and give "i" existance
 	for(i = 0; i < n; i++)                        //For every whole number "i" less than "n",
 		coordinates.push(0);                      //Add 0 to the end of "coordinates"
 	for(i = 0; i < point.coordinates.length; i++) //For every whole number "i" less than the length of point.coordinates,
@@ -102,7 +102,7 @@ Point.padLeft = function(point, n) {
 
 //Adds n zeros to the right of the point's coordinates
 Point.padRight = function(point, n) {
-	var coordinates = [], i;                      //Set "coordinates" to an empty array, and give "i" existence
+	var coordinates = [], i;                      //Set "coordinates" to an empty array, and give "i" existance
 	for(i = 0; i < point.coordinates.length; i++) //For every whole number "i" less than the length of point.coordinates,
 		coordinates.push(point.coordinates[i]);   //Add the "i"th element in q.coordinates to the end of "coordinates"
 	for(i = 0; i < n; i++)                        //For every whole number "i" less than "n",
