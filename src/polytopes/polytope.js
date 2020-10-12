@@ -5,14 +5,13 @@
 //the class doesn't contain any properties (but it does contain methods)
 //Those are set in the PolytopeC (combinatorial) and PolytopeS (symmetry) subclasses
 
-//This constructor function sets the value of Polytope.construction based on an input variable "construction"
+//Stores how a polytope was created in Polytope.construction
 function Polytope(construction) {
-	if(!construction)                                    //If "construction" is false (aka, if Polytope is called without defining "construction"),
-		this.construction = new ConstructionNode(POLYTOPE, [this]); //Then (using the ConstructionNode function) Polytope.construction.type is set to 0 (as the constant POLYTOPE = 0) and 
-		                                                 //Polytope.construction.children is set to the single item array [Polytope]
-	else                                                 //Otherwise,
-		this.construction = construction;                //Polytope.construction is set to the input variable "construction"
-		                                                 //Note: Don't confuse the variable "construction" and the property name construction, these are two seperate things
+	if(!construction)                                    //If Polytope is called without defining "construction",
+		this.construction = new ConstructionNode(POLYTOPE, [this]); //Polytope.construction.type is set to 0
+		                                                            //Polytope.construction.children is set to the array [Polytope]
+	else
+		this.construction = construction;
 };
 
 //This gets the polytope's name from its construction (in the current language) and sets it to Polytope.getName
@@ -22,7 +21,6 @@ Polytope.prototype.getName = function() {
 
 //The two elephants in the room.
 //Using these two is probably buggy, and we should check this eventually.
-//This sets Polytope.nullitope as.
 Polytope.nullitope = function() {
 	return new PolytopeC([], new ConstructionNode(NAME, ["nullitope"]));
 };

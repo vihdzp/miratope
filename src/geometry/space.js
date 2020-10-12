@@ -1,6 +1,8 @@
 //A class for operations on points
 var Space = {}; //Sets Space as an object
-	
+
+//Uses functions from point.js
+
 //Calculates the intersection of a line ab with a line cd (where the letters are the points used)
 //Assumes that these lines are coplanar, but not colinear
 //Returns null if this does not exist
@@ -57,7 +59,7 @@ Space.intersect = function(a, b, c, d) {
 	if(Space.sameSlope(r[0], r[1], s[0], s[1]))
 		return null;
 	
-	//wow, complicated formulas, @ is used to mean "at ab_MAX_indx" or "at cd_MAX_indx"
+	//Wow, complicated formulas, @ is used to mean "at ab_MAX_indx" or "at cd_MAX_indx"
 	var t = ((p[0] - q[0]) * s[1] - (p[1] - q[1]) * s[0])/ //(a@ab-c@ab)*(d@cd-c@cd)-(a@cd-c@cd)*(d@ab-c@ab) divided by
 	        (s[0] * r[1] - s[1] * r[0]),                   //(d@ab-c@ab)*(b@cd-a@cd)-(d@cd-c@cd)*(b@ab-a@ab)
 	

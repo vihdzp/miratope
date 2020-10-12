@@ -1,6 +1,7 @@
 "use strict";
 
 //Class for points in arbitary amounts of dimension, works with number of dimensions or with objects
+
 //Meant for Euclidean space, idk what we can do with hyperbolics
 function Point(x) {
 	//Constructor from the number of dimensions "x", initializes a point at the origin of R^x

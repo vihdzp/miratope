@@ -5,7 +5,7 @@
 //"Children" are arrays containing objects, the specific objects depend on the node type
 //Usually these objects are other nodes, but they can also be numbers or Polytopes.
 //Children are essentially what a nodeC operates on
-//The types of nodeC and their case number are given below:
+//The types of node and their case number are given below:
 
 //Has a single polytope as a child. (Should it just have the number of facets and dimensions as children?)
 //Used for polytopes without a known name.
@@ -42,11 +42,13 @@ const POLYGON = 9;
 //The default for imported polytopes, or polytopes not built out of anything else whose name is known.
 const NAME = 10;
 
+//Creates a ConstructionNode of a certain type and with certain children
 function ConstructionNode(type, children) {
 	this.type = type;
 	this.children = children;
 };
 
+//Gets the name of a ConstructionNode based on type
 ConstructionNode.prototype.getName = function() {
 	switch(this.type) {		
 		case POLYTOPE:
@@ -87,31 +89,31 @@ ConstructionNode.prototype.getName = function() {
 ConstructionNode.prototype.setGenders = function() {	
 	switch(type) {
 		case POLYGON: //The gender of the plain polygon names
-		case POLYTOPE: //The gender of the plain polytope names.
-		case MULTIPRISM: //The gender of the word "multiprism".
-		case ANTIPRISM: //The gender of the word "antiprism".
-		case MULTITEGUM: //The gender of the word "multitegum".
+		case POLYTOPE: //The gender of the plain polytope names
+		case MULTIPRISM: //The gender of the word "multiprism"
+		case ANTIPRISM: //The gender of the word "antiprism"
+		case MULTITEGUM: //The gender of the word "multitegum"
 			switch(LANGUAGE) {
 				case SPANISH: this.gender = MALE; break;
 				case GERMAN: this.gender = NEUTER; break;
 				default: break;
 			}
 			break;
-		case PYRAMID: //The gender of the word "pyramid".
-		case CUPOLA: //The gender of the word "cupola".
+		case PYRAMID: //The gender of the word "pyramid"
+		case CUPOLA: //The gender of the word "cupola"
 			switch(LANGUAGE) {
 				case SPANISH:
 				case GERMAN: this.gender = FEMALE; break;
 				default: break;;
 			}
 			break;
-		case CUPBLEND: //The gender of the word "cupolaic blend".
+		case CUPBLEND: //The gender of the word "cupolaic blend"
 			switch(LANGUAGE) {
 				case SPANISH: this.gender = FEMALE; break;
 				default: break;;
 			}
 			break;
-		case CUPLOID: //The gender of the word "cuploid".
+		case CUPLOID: //The gender of the word "cuploid"
 			switch(LANGUAGE) {
 				case SPANISH: this.gender = MALE; break;
 				default: break;

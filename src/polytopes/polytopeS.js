@@ -1,6 +1,6 @@
 "use strict";
 
-//Represents a polytope in a way that takes advantage of symmetry.
+//Represents a polytope in a way that takes advantage of symmetry
 //Obviously, this requires a representation of the symmetry group.
 //The other components are a description of how the flags (tuples of vertex/edge/face...) 
 //within a single domain connect to each other under "change vertex/edge/..." operations,

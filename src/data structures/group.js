@@ -1,6 +1,9 @@
 "use strict";
 
 //A class for abstract groups.
+
+
+
 function Group() {
 };
 

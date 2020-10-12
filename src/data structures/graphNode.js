@@ -1,8 +1,8 @@
 "use strict";
 
 //Class for nodes in a graph.
-//Not to be confused by the more common Node.js.
-//Also not to be confused for the LinkedListNode class for doubly-linked lists.
+//Not to be confused with the more common Node.js
+//Also not to be confused for the LinkedListNode class for doubly-linked lists
 
 function GraphNode(val) {
 	this.value = val;
