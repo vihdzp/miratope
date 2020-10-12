@@ -8,6 +8,7 @@ function Scene(scene) {
 		this.scene = new THREE.Scene();
 };
 
+//This will probably get deleted soon.
 Scene.prototype.renderTriangle = function(a,b,c) {
 	var geometry = new THREE.BufferGeometry();
 	var vertices = new Float32Array(a.project().concat(b.project().concat(c.project())));
@@ -24,9 +25,51 @@ Scene.prototype.renderTriangle = function(a,b,c) {
 	var triangle = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial({color: 0xffffff, side: THREE.DoubleSide, flatShading: true}));
 	this.scene.add( triangle );  
 };
+
+//Adds a face to the scene.
+//The face is an array of simple polygons that together, form the face.
+//This code figures out which of these faces need to be rendered,
+//and transforms the points into 3D. (or at least will when it's fully functional).
+Scene.prototype.add = function(face) {
+	var simple = face[0];
+	var simpleVec3 = [];
 	
-Scene.prototype.add = function(object) {
-	this.scene.add(object);
+	for(var i = 0; i < simple.length; i++) {
+		simpleVec3.push(new THREE.Vector3(...simple[i].coordinates));
+	}
+	
+	this._renderHoledPolygon(simpleVec3);
+};
+
+Scene.prototype._renderHoledPolygon = function(poly, hole) {
+	//The vertices of the polygon and the holes can be loaded either in correct or inverse order.
+	//I edited the three.js source code so that is stores whether each polygon is correct or reversed.
+	window._polyReversed = false;
+	
+	var shape = new THREE.Shape(poly);
+	if(hole)
+		shape.holes.push(new THREE.Shape(hole));
+	
+	var geometry = new THREE.ShapeBufferGeometry( shape );	
+	
+	//Extrudes vertices into 3D appropriately.
+	if(window._polyReversed)
+		for(var i = 0; i < poly.length; i++) 		
+			geometry.attributes.position.array[3 * i + 2] = poly[geometry.attributes.position.count - i - 1].z;
+	else 		
+		for(var i = 0; i < poly.length; i++) 		
+			geometry.attributes.position.array[3 * i + 2] = poly[i].z;
+	
+	geometry.attributes.position.needsUpdate = true;
+	
+	geometry.computeVertexNormals();
+	
+	this.scene.add(
+		new THREE.Mesh(
+			geometry, 
+			new THREE.MeshLambertMaterial({color: 0xffffff, side: THREE.DoubleSide, flatShading: true})
+		)
+	);
 };
 	
 Scene.prototype.clear = function() {

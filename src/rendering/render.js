@@ -84,7 +84,7 @@ Polytope.prototype.renderTo = function(scene) {
 	faceLoop:
 	for(var i = 0; i < P.elementList[2].length; i++){
 		//Let's not even bother with digons and monogons.
-		if(P.elementList[2][i].length <= 3)
+		if(P.elementList[2][i].length < 3)
 			continue faceLoop;
 		
 		//Enumerates the vertices in order.
@@ -212,16 +212,17 @@ Polytope.prototype.renderTo = function(scene) {
 			}
 		}			
 		
-		//Polygons as ordered sets of vertices.
-		var polygons = [];
+		//Polygons composing a single face as ordered sets of vertices.
+		var face = [];
 		
 		//Retrieves polygonal paths from edges.
-		//Could be optimized somewhat, I think (do we need to traverse the list twice?), but I first need to check that it works in concept.
 		for(j = 0; j < vertexDLL.length; j++) {
 			if(!vertexDLL[j].traversed)
-				polygons.push(vertexDLL[j].getCycle());
+				face.push(vertexDLL[j].getCycle());
 		}
-		console.log(polygons);
+		
+		//The rest of the rendering shenanigans are handled by the Scene class.
+		scene.add(face);
 	}		
 };
 	

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8" />
@@ -31,6 +31,7 @@
 	<script src="src/rendering/scene.js"></script>                     <!--Class for scenes.-->
 	<script src="src/rendering/three.js"></script>                     <!--Library for 3D rendering library.-->
 	<script src="src/rendering/render.js"></script>                    <!--Renderer bit of the Polytope class.-->
+	<script src="src/rendering/trackballControls.js"></script>         <!--Camera control.-->
 </head>
 <body>
 	<!-- Used to download files.-->
@@ -42,23 +43,39 @@
 	<!--This is just some test code. This whole script tag should be removed eventually.-->
 	<script>
 		//Test pentagrammic pyramid.
-		/*var pts=[new Point([-1,0,0]),new Point([0,2,0]),new Point([1,0,0]),new Point([-2,1,0]),new Point([2,1,0]),new Point([0,1.4,3])];
-		var edges=[[0,1],[1,2],[2,3],[3,4],[4,0],[0,5],[1,5],[2,5],[3,5],[4,5]];
-		var faces=[[0,1,2,3,4],[0,5,6],[1,6,7],[2,7,8],[3,8,9],[4,9,5]];
-		new PolytopeC([pts,edges,faces],3).renderTo(scene);*/
+		Polytope.regularPolygon(7,3).extrudeToPyramid(new Point([0,0,-1])).renderTo(mainScene);
 		
-		/*//Test octagrammic prism with concurrent sides. DOES NOT WORK!
-		var pts=[new Point([-1,-2,-1]),new Point([-1,2,-1]),new Point([2,-1,-1]),new Point([-2,-1,-1]),new Point([1,2,-1]),new Point([1,-2,-1]),new Point([-2,1,-1]),new Point([2,1,-1]),
+		//Test tetrahedron.
+		//Polytope.simplex(3).renderTo(mainScene);
+		
+		//Test octagrammic prism with concurrent sides. DOES NOT WORK!
+		/*pts=[new Point([-1,-2,-1]),new Point([-1,2,-1]),new Point([2,-1,-1]),new Point([-2,-1,-1]),new Point([1,2,-1]),new Point([1,-2,-1]),new Point([-2,1,-1]),new Point([2,1,-1]),
 		new Point([-1,-2,1]),new Point([-1,2,1]),new Point([2,-1,1]),new Point([-2,-1,1]),new Point([1,2,1]),new Point([1,-2,1]),new Point([-2,1,1]),new Point([2,1,1])];
-		var edges=[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,0],[8,9],[9,10],[10,11],[11,12],[12,13],[13,14],[14,15],[15,0],[0,8],[1,9],[2,10],[3,11],[4,12],[5,13],[6,14],[7,15]];
-		var faces=[[0,1,2,3,4,5,6,7],[8,9,10,11,12,13,14,15],[0,8,16,17],[1,9,17,18],[2,10,18,19],[3,11,19,20],[4,12,20,21],[5,13,21,22],[6,14,22,23],[7,15,23,0]];
-		new PolytopeC([pts,edges,faces],3).renderTo(scene);*/
+		edges=[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,0],[8,9],[9,10],[10,11],[11,12],[12,13],[13,14],[14,15],[15,0],[0,8],[1,9],[2,10],[3,11],[4,12],[5,13],[6,14],[7,15]];
+		faces=[[0,1,2,3,4,5,6,7],[8,9,10,11,12,13,14,15],[0,8,16,17],[1,9,17,18],[2,10,18,19],[3,11,19,20],[4,12,20,21],[5,13,21,22],[6,14,22,23],[7,15,23,0]];
+		PolytopeC([pts,edges,faces],3).renderTo(scene);*/
 		
 		//Test {100/49}
 		//Polytope.regularPolygon(101,50).renderTo(scene);
 		
 		//Test polygon with collinear points.
 		//Polytope.polygon([new Point([-1,-1]), new Point([-1,0]), new Point([-1,1]), new Point([0,-1]), new Point([0,1]), new Point([1,-1]), new Point([1,0]), new Point([1,1])]).renderTo(scene);
+	</script>
+	<!--Render loop.-->
+	<script>	
+	function animate() { 
+		requestAnimationFrame( animate );
+		controls.update();	
+		var scene = mainScene.scene;
+		
+		/*for(var i = 0; i < scene.children.length; i++) {
+			if(scene.children[i].type === "Mesh") {
+				scene.children[i].rotation.x += 0.01; scene.children[i].rotation.y += 0.01;
+			}
+		}*/
+		renderer.render( scene, camera ); 
+	} 
+	animate();
 	</script>
 </body>
 </html>
