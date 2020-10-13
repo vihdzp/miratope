@@ -234,7 +234,9 @@ Polytope.prototype.renderTo = function(scene) {
 		
 		//The rest of the rendering shenanigans are handled by the Scene class.
 		scene.add(face);
-	}		
+	}
+	
+	scene.polytopes.push(this);
 };
 	
 //renderTo helper function.

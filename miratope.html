@@ -65,17 +65,17 @@
 	<script>	
 	function animate() { 
 		requestAnimationFrame( animate );
-		controls.update();	
-		var scene = mainScene.scene;
+		mainScene.controls.update();
 		
 		/*for(var i = 0; i < scene.children.length; i++) {
 			if(scene.children[i].type === "Mesh") {
 				scene.children[i].rotation.x += 0.01; scene.children[i].rotation.y += 0.01;
 			}
 		}*/
-		renderer.render( scene, camera ); 
+		mainScene.renderer.render( mainScene.scene, mainScene.camera ); 
 	} 
 	animate();
+
 	</script>
 </body>
 </html>

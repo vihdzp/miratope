@@ -7,12 +7,25 @@
 
 //Stores how a polytope was created in Polytope.construction
 function Polytope(construction) {
-	if(!construction)                                    //If Polytope is called without defining "construction",
-		this.construction = new ConstructionNode(POLYTOPE, [this]); //Polytope.construction.type is set to 0
-		                                                            //Polytope.construction.children is set to the array [Polytope]
+	if(!construction) //The construction defaults to just the polytope itself.
+		this.construction = new ConstructionNode(POLYTOPE, [this]);
 	else
 		this.construction = construction;
 };
+
+//Scales a polytope by a factor of r.
+Polytope.prototype.scale = function(r) {
+	for(var i = 0; i < this.elementList[0].length; i++)
+		this.elementList[0][i].scale(r);
+	return this;
+}
+
+//Moves a polytope by the vector defined by p.
+Polytope.prototype.move = function(p) {
+	for(var i = 0; i < this.elementList[0].length; i++)
+		this.elementList[0][i].add(p);
+	return this;
+}
 
 //This gets the polytope's name from its construction (in the current language) and sets it to Polytope.getName
 Polytope.prototype.getName = function() {

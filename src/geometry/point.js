@@ -35,42 +35,21 @@ Point.prototype.project = function() {
 	return Point.padRight(this, 3 - this.coordinates.length);
 };
 	
-//Adds the coordinates of "x" to the coordinates of "y"
-//Both need to have the same amount of dimensions
-Point.add = function(x, y) {
-	if(x.dimensions() !== y.dimensions()) //The points need to have the same number of coordinates.
+//Adds the coordinates of "x" to the coordinates of a point.
+//Both need to have the same amount of dimensions.
+Point.prototype.add = function(x) {
+	if(x.dimensions() !== this.dimensions()) //The points need to have the same number of coordinates.
 		throw new Error("You can't add points with different amounts of dimensions!");
 	var coordinates = [];
 	for(var i = 0; i < x.dimensions(); i++) //Add the respective coordinates.
-		coordinates[i] = x.coordinates[i] + y.coordinates[i];
-	return new Point(coordinates); 
+		this.coordinates[i] += x.coordinates[i];
+	return this; 
 };
 	
-//Subtracts the coordinates of "y" from the coordinates of "x"
-//Both need to have the same amount of dimensions
-Point.subtract = function(x, y) {
-	if(x.dimensions() !== y.dimensions()) //The points need to have the same number of coordinates.
-		throw new Error("You can't add points with different amounts of dimensions!");
-	var coordinates = [];
-	for(var i = 0; i < x.dimensions(); i++) //Subtract the respective coordinates.
-		coordinates[i] = x.coordinates[i] - y.coordinates[i];
-	return new Point(coordinates);
-};
-	
-//Scales up the point "x" by a factor of "t"
-Point.multiplyBy = function(x, t) {
-	var coordinates = [];
-	for(var i = 0; i < x.dimensions(); i++)
-		coordinates[i] = x.coordinates[i] * t; //Multiplies each of the coordinates of x by t, copies them to coordinates.
-	return new Point(coordinates);
-};
-	
-//Scales up the point x by a factor of 1/t.
-Point.divideBy = function(x, t) {
-	var coordinates = [];
-	for(var i = 0; i < x.dimensions(); i++)
-		coordinates[i] = x.coordinates[i] / t; //Divides each of the coordinates of x by t, copies them to coordinates.
-	return new Point(coordinates);
+//Scales up the point by a factor of "r"
+Point.prototype.scale = function(r) {
+	for(var i = 0; i < this.dimensions(); i++)
+		this.coordinates[i] = this.coordinates[i] * r; //Multiplies each of the coordinates of x by r.
 };
 
 //Takes the Cartesian product of two points
