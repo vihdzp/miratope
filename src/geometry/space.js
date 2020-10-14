@@ -15,23 +15,23 @@ Space.intersect = function(a, b, c, d) {
 	
 	//Now, we calculate the where each line segment coordinates change the most
 	//That way, we avoid projecting lines into points when we calculate in 2D (like looking at a pencil straight down the length of it)
-	//No need to calculate it in 2D, though
+	//No need to calculate it in 2D, though.
 	var ab_MAX = 0, ab_MAX_indx = 0, cd_MAX = 0, cd_MAX_indx = 1;
 	
 	if(a.dimensions() !== 2) {		
-		for(var i = 0; i < a.dimensions(); i++) {                   //For every whole number "i" less than the number of dimensions of "a",
-			var ab = Math.abs(a.coordinates[i] - b.coordinates[i]); //"ab" is the absolute value of the differences between the coordinates of "a" and "b"
-			var cd = Math.abs(c.coordinates[i] - d.coordinates[i]); //"cd" is the absolute value of the differences between the coordinates of "c" and "d"
-			if(ab > ab_MAX){     //If "ab" is greater than "ab_MAX"
+		for(var i = 0; i < a.dimensions(); i++) {
+			var ab = Math.abs(a.coordinates[i] - b.coordinates[i]); //Change in the segment ab in the i direction.
+			var cd = Math.abs(c.coordinates[i] - d.coordinates[i]); //Change in the segment cd in the i direction.
+			if(ab > ab_MAX){
 				ab_MAX = ab;
 				ab_MAX_indx = i;
 			}
-			if(cd > cd_MAX){     //If "cd" is greater than "cd_MAX"
+			if(cd > cd_MAX){
 				cd_MAX = cd;
 				cd_MAX_indx = i;
 			}
-			//At the end, "ab_MAX" is the largest difference between "a" and "b", and "ab_MAX_indx" is the dimension that happens in
-			//And "cd_MAX" is the largest difference between "c" and "d", and "cd_MAX_indx" is the dimension that happens in
+			//At the end, "ab_MAX" is the largest difference between "a" and "b", and "ab_MAX_indx" is the dimension that happens in.
+			//"cd_MAX" and "cd_MAX_indx" are analogous.
 		}
 		
 		//If both indices are the same (if the largest differences happen in the same dimension for both lines), we can take the second one to be anything different
@@ -54,8 +54,8 @@ Space.intersect = function(a, b, c, d) {
 	    
 	    s = [d.coordinates[ab_MAX_indx] - c.coordinates[ab_MAX_indx], d.coordinates[cd_MAX_indx] - c.coordinates[cd_MAX_indx]];
 	
-	//If the two lines' slopes are very similar, do nothing
-	//They either not intersect or are too similar for us to care
+	//If the two lines' slopes are very similar, do nothing.
+	//They either not intersect or are too similar for us to care.
 	if(Space.sameSlope(r[0], r[1], s[0], s[1]))
 		return null;
 	
@@ -71,9 +71,9 @@ Space.intersect = function(a, b, c, d) {
 	if(t <= epsilon || t >= 1 - epsilon || u <= epsilon || u >= 1 - epsilon)
 		return null;
 	
+	//Returns the point a + t * (b - a).
 	var pt = [];
 	for(var i = 0; i < a.dimensions(); i++)
-		//Add the sum of "a"'s "i"th coordinate and "b"'s "i"th coordinate minus "a"'s "i"th coordinate times "t" to the end of "pt"
 		pt.push(a.coordinates[i] + (b.coordinates[i] - a.coordinates[i]) * t);
 	return new Point(pt);
 };
@@ -83,23 +83,37 @@ Space.collinear = function(a, b, c) {
 	if(Point.equal(a, b) || Point.equal(a, c)) //If "a" is the same as "b" or "c"
 		return true;
 	
+	//Calculates (b - a) . (c - a), |b - a|, |c - a|.
+	//This will be used to calculate the angle between them.
 	var dot = 0;
 	var norm0, norm1;
 	var sub0, sub1;
 	for(var i = 0; i < a.coordinates.length; i++) {
-		sub0 = b.coordinates[i] - a.coordinates[i]; //Set "sub0" to difference of the "i"th coordinate of "b" and the "i"th coordinate of "a"
-		sub1 = c.coordinates[i] - a.coordinates[i]; //Set "sub1" to difference of the "i"th coordinate of "c" and the "i"th coordinate of "a"
-		dot += sub0 * sub1;   //Add "dot" to "sub0" times "sub1"
-		norm0 += sub0 * sub0; //Add "norm0" to "sub0" squared
-		norm1 += sub1 * sub1; //Add "norm1" to "sub1" squared
+		sub0 = b.coordinates[i] - a.coordinates[i];
+		sub1 = c.coordinates[i] - a.coordinates[i];
+		dot += sub0 * sub1;
+		norm0 += sub0 * sub0;
+		norm1 += sub1 * sub1;
 	}
-    //Returns true if "dot" over the square root of ("norm0" * "norm1") is close to 1 (or -1)
+	
+    //Returns true iff the cosine of the angle between b - a and c - a is at a distance epsilon from 1 or -1.
 	return 1 - Math.abs(dot / Math.sqrt(norm0 * norm1)) <= epsilon;
+};
+
+//Calculates the Euclidean distance between a and b.
+//Nothing clever here.
+Space.distance = function(a, b) {
+	var res = 0;
+	for(var i = 0; i < a.coordinates().length, i++) {
+		var t = a.cooordinates[i] - b.coordinates[i];
+		res += t * t;
+	}
+	return Math.sqrt(res);
 };
 
 //Returns whether the line from (0, 0) to (a, b) and the line from (0, 0) to (c, d)
 //have the same (neglibly different) slopes
 Space.sameSlope = function(a, b, c, d) {
-	var s = Math.atan(a / b) - Math.atan(c / d); //Set "s" as the arctangent of ("a"/"b") minus the arctangent of ("c"/"d")
-	return (s + Math.PI + epsilon) % Math.PI < 2 * epsilon; //Return true if "s"+pi+a tiny number (epsilon) modulo pi is less than 2*a tiny number (epsilon)
+	var s = Math.atan(a / b) - Math.atan(c / d); //s is the difference between the angles.
+	return (s + Math.PI + epsilon) % Math.PI < 2 * epsilon; //Returns true if the angles (mod pi) are different by less than epsilon.
 };
