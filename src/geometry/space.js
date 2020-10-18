@@ -104,11 +104,23 @@ Space.collinear = function(a, b, c) {
 //Nothing clever here.
 Space.distance = function(a, b) {
 	var res = 0;
-	for(var i = 0; i < a.coordinates().length, i++) {
+	for(var i = 0; i < a.coordinates().length; i++) {
 		var t = a.cooordinates[i] - b.coordinates[i];
 		res += t * t;
 	}
 	return Math.sqrt(res);
+};
+
+//Calculates the squared Euclidean distance between a and b.
+//For when you don't need that last square root.
+//Again, nothing clever here.
+Space.distanceSq = function(a, b) {
+	var res = 0;
+	for(var i = 0; i < a.coordinates().length; i++) {
+		var t = a.cooordinates[i] - b.coordinates[i];
+		res += t * t;
+	}
+	return res;
 };
 
 //Returns whether the line from (0, 0) to (a, b) and the line from (0, 0) to (c, d)

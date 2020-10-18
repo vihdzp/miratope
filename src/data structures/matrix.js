@@ -1,3 +1,5 @@
+"use strict";
+
 //A class for matrices. 
 function Matrix(els) {
 	this.els = els;

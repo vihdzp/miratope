@@ -27,6 +27,13 @@ Polytope.prototype.move = function(p) {
 	return this;
 }
 
+//Moves a polytope by the vector defined by -p.
+Polytope.prototype.moveNeg = function(p) {
+	for(var i = 0; i < this.elementList[0].length; i++)
+		this.elementList[0][i].subtract(p);
+	return this;
+}
+
 //This gets the polytope's name from its construction (in the current language) and sets it to Polytope.getName
 Polytope.prototype.getName = function() {
 	return this.construction.getName();
@@ -470,7 +477,6 @@ Polytope._product = function(P, Q, type, fun) {
 //Constructs pyramids out of elements recursively.
 //The ith n-element in the original polytope gets extruded to the 
 //(i+[(n+1)-elements in the original polytope])th element in the new polytope.
-//TODO: Use the pyramid product for this instead.
 Polytope.prototype.extrudeToPyramid = function(apex) {
 	var P = this.toPolytopeC(),
 	els, i;
