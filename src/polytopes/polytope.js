@@ -39,24 +39,30 @@ Polytope.prototype.getName = function() {
 	return this.construction.getName();
 };
 
+//THIS IS PROVISIONAL.
+Polytope.prototype.circumradius = function() {
+	return this.elementList[0][0].magnitude();
+};
+
 //The two elephants in the room.
 //Using these two is probably buggy, and we should check this eventually.
 Polytope.nullitope = function() {
 	return new PolytopeC([], new ConstructionNode(NAME, ["nullitope"]));
 };
 
-//This sets Polytope.point as.
+//Returns the unique 0D polytope.
 Polytope.point = function() {
 	return new PolytopeC([[new Point([])]], new ConstructionNode(NAME, ["point"]));
 };
 
-//This sets Polytope.dyad to a dyad of half a given size, using the variable "length"
+//This sets Polytope.dyad to a dyad of a given size.
 Polytope.dyad = function(length) {
-	if(length === undefined) //If "length" is not specified,
-		length = 0.5;        //Default "length" to 0.5
-	else                     //Otherwise,
-		length /= 2;         //Set "length" to the input "length" value divided by 2
-	return new PolytopeC([[new Point([-length]), new Point([length])], [[0, 1]]], new ConstructionNode(NAME, ["dyad"])); //Then.
+	//The dyad's length defaults to 1.
+	if(length === undefined)
+		length = 0.5;
+	else
+		length /= 2;
+	return new PolytopeC([[new Point([-length]), new Point([length])], [[0, 1]]], new ConstructionNode(NAME, ["dyad"]));
 };
 
 //Polytope._prismProduct, but also supports P being an array.
@@ -533,10 +539,10 @@ Polytope.polygon = function(points) {
 	return new PolytopeC(newElementList, new ConstructionNode(POLYGON, [points.length, 1]));
 };
 
-//Builds a n/d star.
+//Builds a n/d star with edge length s.
 //If n and d are not coprime, a regular polygon compound is made instead.
 //In the future, should be replaced by the PolytopeS version.
-Polytope.regularPolygon = function(n, d) {
+Polytope.regularPolygon = function(n, d, s) {
 	var gcd;
 	if(d === undefined) {
 		d = 1;
@@ -545,17 +551,21 @@ Polytope.regularPolygon = function(n, d) {
 	else
 		gcd = Polytope._gcd(n, d);
 
+	if(s === undefined)
+		s = 1;
+
 	var els = [[], [], []],
 	n_gcd = n / gcd,
 	counter = 0,
 	comp,
 	i, j, x = 0, y = d,
+	t = 2 * Math.PI / n,
 	angle = 0,
-	invRad = 2 * Math.sin(Math.PI * d / n); //1 / the circumradius.
+	invRad = 2 * Math.sin(Math.PI * d / n) / s; //1 / the circumradius.
 
 	for(i = 0; i < n; i++) {
 		els[0].push(new Point([Math.cos(angle) / invRad, Math.sin(angle) / invRad])); //Vertices
-		angle += 2 * Math.PI / n;
+		angle += t;
 	}
 
 	//i is the component number.
@@ -590,21 +600,86 @@ Polytope._gcd = function(n, d) {
 	return n;
 };
 
-//Builds a Grünbaumian n/d star.
+//Builds a Grünbaumian n/d star with edge lenth s.
 //In the future, should be replaced by the PolytopeS version.
-Polytope.regularPolygonG = function(n, d) {
+Polytope.regularPolygonG = function(n, d, s) {
 	if(d === undefined)
 		d = 1;
+	if(s === undefined)
+		s = 1;
 
 	var els = [[], [], [[]]],
 	i,
 	angle = 0,
-	invRad = 2 * Math.sin(Math.PI * d / n); //1 / the circumradius
+	t = Math.PI * d / n,
+	invRad = 2 * Math.sin(t) / s; //1 / the circumradius
 
 	for(i = 0; i < n; i++) {
 		els[0].push(new Point([Math.cos(angle) / invRad, Math.sin(angle) / invRad])); //Vertices
 		els[2][0].push(i); //Face.
-		angle += 2 * Math.PI * d / n;
+		angle += 2 * t;
+	}
+
+	for(i = 0; i < n - 1; i++)
+		els[1].push([i, i + 1]); //Edges
+	els[1].push([els[0].length - 1, 0]);
+
+	return new PolytopeC(els, new ConstructionNode(POLYGON, [n, d]));
+};
+
+//Builds a semiuniform polygon with n sides and "absolute turning number"
+//whose edge lengths are a and b.
+//The absolute turning number is the number d such that
+//the sum of the angles of the polygon is π(n - 2d).
+Polytope.semiregularPolygon = function(n, d, a, b) {
+	//If n = 4, d = 0, a bowtie is created.
+	//Idk if there are more natural parameters for the bowtie.
+	if(n === 4 && d === 0) {
+		//If a > b, swaps b and a.
+		if(a > b) {
+			var t = a;
+			a = b;
+			b = t;
+		}
+
+		b = Math.sqrt(b * b - a * a) / 2;
+		a /= 2;
+		return new PolytopeC([
+				[new Point([-a,b]),new Point([a,b]),new Point([-a,-b]),new Point([a,-b])],
+				[[0,1],[1,2],[2,3],[3,0]],
+				[[0,1,2,3]]
+			],
+			new ConstructionNode(NAME, "Bowtie")
+		);
+	}
+
+	if(d === undefined)	d = 1;
+	if(a === undefined) a = 1;
+	if(b === undefined) b = 1;
+
+	//The angles and sides of a triangle made by three adjacent vertices.
+	//Also, the circumdiameter 2R.
+	var gamma = Math.PI * (1 - 2 * d / n),
+	c = Math.sqrt(a * a + b * b - 2 * a * b * Math.cos(gamma)),
+	R = c / Math.sin(gamma) / 2,
+
+	//The sine rule doesn't work here, since asin is ambiguous in [0, π/2].
+	//Instead, we use the more complicated cosine rule.
+	alpha = 2 * Math.acos((b * b + c * c - a * a) / (2 * b * c)), //is actually 2α.
+	beta = 2 * Math.acos((a * a + c * c - b * b) / (2 * a * c)), //is actually 2β.
+	//Some more variables
+	i, angle = 0,
+	els = [[], [], [[]]];
+
+	for(i = 0; i < n / 2; i++) {
+		//Side a.
+		els[0].push(new Point([Math.cos(angle) * R, Math.sin(angle) * R])); //Vertices
+		els[2][0].push(2 * i); //Face.
+		angle += alpha;
+		//Side b
+		els[0].push(new Point([Math.cos(angle) * R, Math.sin(angle) * R])); //Vertices
+		els[2][0].push(2 * i + 1); //Face.
+		angle += beta;
 	}
 
 	for(i = 0; i < n - 1; i++)
@@ -670,10 +745,12 @@ Polytope.hypercube = function(dimensions) {
 //In the future, will be replaced by the PolytopeS version.
 Polytope.simplex = function(dimensions) {
 	var vertices = [];
-	var aux = [Infinity]; //Memoizes some square roots, tiny optimization.
+	//Memoizes some square roots, tiny optimization.
+	var aux = [Infinity];
 	for(var i = 1; i <= dimensions; i++)
 		aux.push(1 / Math.sqrt(2 * i * (i + 1)));
 
+	//Adds vertices.
 	for(var i = 0; i <= dimensions ; i++) {
 		var coordinates = [];
 		for(var j = 1; j <= dimensions; j++) {
@@ -687,6 +764,7 @@ Polytope.simplex = function(dimensions) {
 		vertices.push(new Point(coordinates));
 	}
 
+	//Adds higher dimensional elements.
 	var els = [vertices];
 	for(var i = 1; i <= dimensions; i++)
 		els.push([]);
