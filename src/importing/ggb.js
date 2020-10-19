@@ -12,7 +12,7 @@ Polytope._GGBReaderOnload = function(e) {
   elementList = [[], [], [], []],
   vertDict = {}, //Dictionary to convert from GeoGebra point names to indices.
   edgeDict = {}, //Dictionary to convert from edges to indices.
-  lst = ['<element type="point3d"', '<command name="Polygon">'],
+  lst = ['<element type="point"', '<element type="point3d"', '<command name="Polygon">'],
   component,
   i, j;
 
@@ -21,7 +21,22 @@ Polytope._GGBReaderOnload = function(e) {
     switch(caret.skipToStringList(lst)) {
       case -1: //EOF.
         break WHILELOOP;
-      case 0: //Reading a point.
+      case 0: //Reading a 2D point.
+        //Reads the point name.
+        caret.skipToString('label="');
+        var lbl = caret.readUntil('"');
+        vertDict[lbl] = elementList[0].length;
+
+        //Reads the coordinates.
+        caret.skipToString('<coords x="');
+        var x = caret.readNumber(); caret.advance(5);
+        var y = caret.readNumber(); caret.advance(5);
+        var z = caret.readNumber(); caret.advance(5);
+        x /= z; y /= z; z /= z;
+
+        elementList[0].push(new Point([x, y, 0]));
+        break;
+      case 1: //Reading a 3D point.
         //Reads the point name.
         caret.skipToString('label="');
         var lbl = caret.readUntil('"');
@@ -37,13 +52,14 @@ Polytope._GGBReaderOnload = function(e) {
 
         elementList[0].push(new Point([x, y, z]));
         break;
-      case 1: //Reading a polygon.
+      case 2: //Reading a polygon.
         //Reads vertex names.
         caret.skipToString('<input a0=');
         var verts = [];
         while(caret.getChar() !== '/') {
           caret.skipToChar('"'); caret.increment();
-          verts.push(vertDict[caret.readUntil('"')]);
+          var str = caret.readUntil('"');
+          verts.push(vertDict[str]);
           caret.increment();
         }
         verts.push(verts[0]); //Simulates a cyclic order.
