@@ -107,30 +107,30 @@ Point.equal = function(a, b) {
 //The string needs to start with the coordinates of the point in parentheses, separated by commas
 //These are followed by permutation and sign "modifiers", such as allPerms(0, 1) for all permutations of the first and second coordinates,
 //or evenSignChanges(all) for even sign changes in all coordinates
-Point.calculatePermutations = function(line) {
-	throw new Error("Not yet implemented!"); //Throws up error, this method hasn't been implemented yet
-	line = line.replace(" ", "");            //Get rid of all the spaces in "line", and set the result to "line"
-	var coords = [];                         //Set "coordinates" to an empty array (Coordinates of point)
-	var c = 1;                               //Caret (pointer) for reading the line – skips first character (assumed to be a left parenthesis)
+Point.calculatePermutations = function(pcoords) {
+	throw new Error("Not yet implemented!");
+	pcoords = pcoords.replace(" ", "");            //Removes all spaces from input
+	var coords = [];                         //Coordinates of point
+	var c = 1;                               //Caret (pointer) for reading the pcoords – skips first character (assumed to be a left parenthesis)
 	var leftP = 0, rightP = 0;               //Counts parentheses, to detect when the point ends.
 	
 	var coord = "";                          //A single coordinate, not to be confused with "coords"
-	while(rightP <= leftP) {        //While "rightP" is less than or equal to "leftP"
-		switch(line[c]) {           //Run certain code based on what the "c"th element in "line" is:
-			case "(":               //If it is a "("
-				leftP++;            //Increment "leftP" by 1
-				break;              //And leave the switch loop
-			case ")":               //If it is a ")"
-				rightP++;           //Increment "rightP" by 1
-				break;              //And leave the switch loop
-			case ",":		   		//If it is a ","
-				coords.push(coord); //Add "coord" to the end of "coords"
-				coord = "";         //Set "coord: to an empty string
-				break;              //And leave the switch loop
-			default:                //If all else fails,
-				coord += line[c];   //Add "coord" and the "c"th element of "line" and set that to "coord"
-				break;              //And leave the switch loop
+	while(rightP <= leftP) {         //While "rightP" is less than or equal to "leftP"
+		switch(pcoords[c]) {
+			case "(":                //Increment leftP count when "("
+				leftP++;
+				break;
+			case ")":                //Increment rightP count when "("
+				rightP++;
+				break;
+			case ",":		   		 //In this case it's the end of a coordinate
+				coords.push(coord);  //Add "coord" to the array and reset the coord
+				coord = "";
+				break
+			default:                 //In this case it's the start of a new coordinate
+				coord += pcoords[c]; //Add the character at the caret to "coord"
+				break;
 		}
-		c++;                        //Increment "c" by 1
+		c++; //Increment caret
 	}
 };
