@@ -1,9 +1,9 @@
 "use strict";
 
-//Helper class for renderTo, used in the sweep line for Bentley-Ottmann.
-//Encodes an object with properties leftVertex and rightVertexIndex.
-//rightVertexIndex should be 0 if leftVertex.node0.value is to the right of leftVertex.value, 1 if leftVertex.node1.value is.
-//This format is useful because an edge on the sweep line can only be cut to the right.
+//Helper class for renderTo, used in the sweep line for Bentley-Ottmann
+//Encodes an object with properties leftVertex and rightVertexIndex
+//rightVertexIndex depends on if leftVertex.node0.value (returns 0) or leftVertex.node1.value (returns 1) is to the right of leftVertex.value (0)
+//This format is useful because an edge on the sweep line can only be cut to the right
 //That way, we don't need to modify the SL objects after the division process: only the nodes' connections change.
 function SweeplineEdge(leftVertex, rightVertexIndex) {
 	this.leftVertex = leftVertex;
@@ -40,8 +40,8 @@ SweeplineEdge.prototype.updateID = function() {
 	SweeplineEdge.redirectTable[newID] = this.id;
 }	;
 
-//TO DELETE.
-//Used for debugging purposes.
+//TO DELETE
+//Used for debugging purposes
 SweeplineEdge.prototype.toString = function(){
 	return "([" + this.leftVertex.value.coordinates.toString() +"], ["+this.rightVertex().value.coordinates.toString()+"])";
 };
