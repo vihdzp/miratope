@@ -9,17 +9,17 @@ Polytope.createFromVerf = function(V, S) {
 
 	var A = V.circumcenter(); //Apex of verf pyramid.
 	var r = Space.distanceSq(A, V.elementList[0][0]); //Squared circumradius.
-	
+
 	//r has to be less than 1.
 	if(r >= 1)
 		throw new Error("Verf's circumradius too big!");
-	
+
 	A.coordinates.push(Math.sqrt(1 - r));
 	var P = V.extrudeToPyramid(A); //Verf pyramid.
 	var C = P.circumcenter(); //Verf pyramid's circumcenter.
 	var d = P.dimensions(); //Dimensions of final polytope.
 	P.moveNeg(C); //Centers P at the origin.
-	
+
 	//Attempts to build the polytope, until it either succeeds, or after a certain amount of tries, fails.
 	for(var ATTEMPT = 1; ATTEMPT <= ATTEMPTS; ATTEMPT++) {
 		//Generates a (non-uniformly) random set of angles.
@@ -27,7 +27,7 @@ Polytope.createFromVerf = function(V, S) {
 		var angles = [];
 		for(var i = 0; i < d * (d - 1) / 2; i++)
 			angles.push(Math.random() * 2 * Math.PI);
-		
+
 		//The core of this function, minimizes a function of the angles.
 		//The set of d * (d - 1) / 2 angles define an orthogonal matrix.
 		//This matrix moves the verf somewhere on a hypersphere.
@@ -36,19 +36,19 @@ Polytope.createFromVerf = function(V, S) {
 		//When they do, we'll be able to build an isogonal and thus uniform polytope.
 		window.P = P; window.S = S;
 		var sol = Polytope._minimize(Polytope._orbitDistance, angles);
-		
+
 		//Tries again from a new starting point if the minimum wasn't found.
 		if(sol.fncvalue > epsilon)
 			continue;
-		
+
 		angles = sol.argument;
 		var matrix = Polytope._matrixFromAngles(angles);
-		
+
 		//Generates vertices.
 		var elementList = [];
 		elementList[0] = P.elementList[0][0].orbitUnder(S);
 	}
-	
+
 	console.log("Polytope couldn't be built!");
 	return;
 };
@@ -61,22 +61,22 @@ Polytope._orbitDistance = function(angles) {
 	P = window.P, S = window.S,
 	res = 0,
 	i, j;
-	
+
 	//For each vertex of the verf pyramid, creates an array with its orbit under the symmetry group.
 	var orbits = [];
 	for(i = 0; i < P.elementList[0].length; i++)
 		orbits.push(P.elementList[0][i].rotate(matrix).orbitUnder(S));
-	
+
 	//Gets the smallest distance between contiguous orbits.
 	//Takes advantage of symmetry: it suffices to calculate the smallest distance
 	//between a single vertex of one orbit and the vertices of the other orbit.
 	for(i = 0; i < orbits.length - 1; i++) {
 		var min = Number.MAX_VALUE;
-		for(j = 0; j < orbits[i].length; j++) 
+		for(j = 0; j < orbits[i].length; j++)
 			min = Math.min(min, Space.distance(orbits[i][j], orbits[i + 1][0]));
 		res += min;
 	}
-	
+
 	return res;
 }
 
@@ -85,7 +85,7 @@ Polytope._orbitDistance = function(angles) {
 Polytope._matrixFromAngles = function(angles, d) {
 	var result = Matrix.identity(d),
 	i, j, x, y;
-	
+
 	for(i = 0; i < d; i++)
 		for(j = i + 1; j < d; j++) {
 			var factor = Matrix.identity(d);
@@ -94,21 +94,22 @@ Polytope._matrixFromAngles = function(angles, d) {
 			factor.els[i][j] = -Math.sin(alpha);
 			factor.els[j][i] = Math.sin(alpha);
 			factor.els[j][j] = Math.cos(alpha);
-				
+
 			result = result.multiply(new Matrix(factor));
 		}
-		
-	return result;	
+
+	return result;
 };
 
 /**
+ * Taken from optimize.js
  * Minimize an unconstrained function using zero order Powell algorithm.
- * @param {function} fnc Function to be minimized. This function takes 
- * array of size N as an input, and returns a scalar value as output, 
+ * @param {function} fnc Function to be minimized. This function takes
+ * array of size N as an input, and returns a scalar value as output,
  * which is to be minimized.
  * @param {Array} x0 An array of values of size N, which is an initialization
  *  to the minimization algorithm.
- * @return {Object} An object instance with two fields: argument, which 
+ * @return {Object} An object instance with two fields: argument, which
  * denotes the best argument found thus far, and fncvalue, which is a
  * value of the function at the best found argument.
 */
@@ -144,11 +145,11 @@ Polytope._minimize = function (fnc, x0) {
 
         }
 
-        // a simple step size selection rule. Near x function acts linear 
+        // a simple step size selection rule. Near x function acts linear
         // (this is assumed at least) and thus very small values of alpha
         // should lead to (small) improvement. Increasing alpha would
         // yield better improvement up to certain alpha size.
-        
+
         alpha = pfx > fx ? alpha * 1.1 : alpha * 0.7;
         pfx = fx;
 

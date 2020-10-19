@@ -38,9 +38,11 @@ Caret.prototype.skipToContent = function() {
 			case 13: //Carriage Return (\r)
 			case 32: //Space ( )
 				this.increment(); break;
-			case 35: //Octothorpe/Hash (#) A comment lasts from the # until the end of the line in C
+			case 35: //Hashtag (#)
 				this.increment();
-				while(!this.EOF && this.charCode() !== 10) //Increments until you hit the EOF or a new line character
+				//A comment lasts from the # until the end of the line.
+				//Increments until you hit the EOF or a new line character.
+				while(!this.EOF && this.charCode() !== 10)
 					this.increment();
 				this.increment();
 				break;
@@ -54,25 +56,25 @@ Caret.prototype.skipToContent = function() {
 Caret.prototype.readWord = function() {
 	if(this.EOF) //EOF error
 		this.throwError("unexpected EOF");
-	
+
 	var initIndx = this.pos, endIndx;
-	
+
 	WHILELOOP:
 	do {
 		switch(this.charCode()) {
 			case 10: //New Line (\n)
 			case 13: //Carriage Return (\r)
 			case 32: //Space ( )
-			case 35: // (#)
+			case 35: //Hashtag (#)
 				break WHILELOOP; //Leave the do-while loop immediately
 			default:
 				this.increment();
 				break;
 		}
 	}
-	while(!this.EOF); //Until you hit EOF
-	
-	endIndx = this.pos; 
+	while(!this.EOF); //Until you hit the EOF.
+
+	endIndx = this.pos;
 	this.skipToContent();
 	//Returns the substring found
 	return this.contents.substr(initIndx, endIndx - initIndx);
@@ -84,7 +86,7 @@ Caret.prototype.readWord = function() {
 Caret.prototype.readNumber = function() {
 	if(this.EOF) //EOF error
 		this.throwError("unexpected EOF");
-	
+
 	var initIndx = this.pos, endIndx;
 
 	WHILELOOP:
@@ -93,7 +95,7 @@ Caret.prototype.readNumber = function() {
 			case 43:  // (+)
 			case 45:  // (-)
 			case 46:  // (.)
-			case 69:  //nice (e)
+			case 69:  // (e)
 			case 101: // (E)
 			case 48: case 49: case 50: case 51: case 52: case 53: case 54: case 55: case 56: case 57: // (0) to (9)
 				this.increment();
@@ -103,14 +105,14 @@ Caret.prototype.readNumber = function() {
 		}
 	}
 	while(!this.EOF); //Until you hit EOF
-	
+
 	endIndx = this.pos;
 	this.skipToContent();
-	
+
 	//We return NaN only when the read number is in fact the empty string.
 	if(endIndx === initIndx)
 		return NaN;
-	
+
 	var res = parseFloat(this.contents.substr(initIndx, endIndx - initIndx));
 	if(isNaN(res))
 		this.throwError("invalidNumber");
@@ -118,5 +120,9 @@ Caret.prototype.readNumber = function() {
 };
 
 Caret.prototype.throwError = function(code) {
-	throw new Error(Translation.get(code) + "\n" + Translation.get("line", UPPERCASE) + " " + this.line + ", " + Translation.get("column") + " " + this.col + ".");
+	throw new Error(
+		Translation.get(code) + "\n"
+		+ Translation.get("line", UPPERCASE) + " " 	+ this.line + ", "
+		+ Translation.get("column") + " " + this.col + "."
+	);
 };
