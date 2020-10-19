@@ -44,6 +44,14 @@ Polytope.prototype.circumradius = function() {
 	return this.elementList[0][0].magnitude();
 };
 
+//Gets the length of the verf of {n/d}.
+//Simple auxiliary function.
+Polytope.verfLength = function(n, d) {
+	if(d === undefined)
+		d = 1;
+	return 2 * Math.cos(Math.PI / (n / d));
+}
+
 //The two elephants in the room.
 //Using these two is probably buggy, and we should check this eventually.
 Polytope.nullitope = function() {
@@ -1107,5 +1115,6 @@ Polytope.openFile = function(e) {
   }
 };
 
+//Auxiliary functions for Polytope.openFile
 var _ggb2 = function(e) {e.file("geogebra.xml").async("string").then(Polytope._GGBReaderOnload)},
 _ggb = function(e) {JSZip.loadAsync(e.target.result).then(_ggb2);};
