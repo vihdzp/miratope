@@ -11,7 +11,7 @@
 function PolytopeC(elementList, constructionRoot) {
 	Polytope.call(this, constructionRoot);                          //Calls the Polytope constructor function using PolytopeC as the object and "constructionRoot" as the parameter "construction"
 	this.elementList = elementList;
-	this.dimensions = elementList.length - 1;                       //The combinatorial dimension
+	this.dimensions = elementList.length - 1;                       //The combinatorial dimension (the polytope's dimension)
 	if(this.elementList[0])
 		this.spaceDimensions = this.elementList[0][0].dimensions(); //The space's dimension
 	else

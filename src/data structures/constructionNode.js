@@ -53,6 +53,7 @@ ConstructionNode.prototype.getName = function() {
 	switch(this.type) {		
 		case POLYTOPE:
 			var poly = this.children[0];
+			//Can only use the plain translation
 			return Translation.plain(poly.elementList[poly.elementList.length - 2].length, poly.dimensions);
 		case MULTIPRISM:
 			this.mergeChildren();
