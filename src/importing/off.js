@@ -141,7 +141,7 @@ Polytope._OFFReaderOnload = function(e) {
 		facets = elementList[elementList.length - 2];
 		for(i = 0; i < facets.length; i++)
 			graph.push(new GraphNode(i));
-      
+
 		//Calculates incidences.
 		for(i = 0; i < facets.length; i++)
 			for(j = i + 1; j < facets.length; j++)
@@ -269,9 +269,8 @@ Polytope.prototype.saveAsOFF = function(comments) {
 
 	//Adds the rest of the elements.
 	for(var d = 3; d < P.dimensions; d++) {
-		if(comments) {
+		if(comments)
 			data.push("\n# ", Translation.elementName(d, PLURAL ^ UPPERCASE), "\n");
-		}
 		for(i = 0; i < P.elementList[d].length; i++) {
 			data.push(P.elementList[d][i].length);
 			for(j = 0; j < P.elementList[d][i].length; j++)
@@ -280,38 +279,6 @@ Polytope.prototype.saveAsOFF = function(comments) {
 		}
 	}
 
-	Polytope._saveFile(data, "text/plain", Translation.firstToUpper(P.getName()) + ".off");
-};
-
-//Saves the file with the given data, the given MIME type, and the given extension.
-//Adapted from https://stackoverflow.com/a/45120037/ (by Thomas Praxl),
-//and from https://stackoverflow.com/a/46233123/12419072 (by Jaromanda X)
-//to deal with the IE case.
-Polytope._saveFile = function(data, type, fileName) {
-	var blob;
-	try {
-		blob = new Blob(data, {type: type});
-	}
-	//Old browser!
-	catch(e) {
-		window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder || window.MSBlobBuilder;
-		if (window.BlobBuilder) {
-		   var bb = new BlobBuilder();
-		   bb.append(data);
-		   blob = bb.getBlob(type);
-		}
-	}
-
-	fileName = fileName.replace("/", "_");
-
-	//Old browser again!
-	if(navigator.msSaveOrOpenBlob)
-		navigator.msSaveOrOpenBlob(blob, fileName);
-	else {
-		var a = document.getElementById("download");
-		a.href = window.URL.createObjectURL(blob);
-		a.download = fileName;
-		a.click();
-		window.URL.revokeObjectURL(a.href);
-	}
+	Polytope.fileName = Translation.firstToUpper(P.getName()) + ".off";
+	Polytope._saveBlob(new Blob(data, {type:"text/plain"}));
 };

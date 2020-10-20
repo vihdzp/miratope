@@ -19,10 +19,10 @@ function PolytopeC(elementList, constructionRoot) {
 };
 
 PolytopeC.prototype = new Polytope();
-	
+
 //Calculates the centroid as the average of the vertices.
 //Could be made more efficient replacing the add method with direct calculations with arrays.
-PolytopeC.prototype.centroid = function() {		
+PolytopeC.prototype.centroid = function() {
 	var res = this.elementList[0][0].clone();
 	for(var i = 1; i < this.elementList[0].length; i++)
 		res.add(this.elementList[0][i]);
@@ -41,7 +41,7 @@ PolytopeC.prototype.setSpaceDimensions = function(dim) {
 	}
 	this.spaceDimensions = dim;
 };
-	
+
 //Converts the edge representation of the i-th face to an ordered array of vertices.
 PolytopeC.prototype.faceToVertices = function(i) {
 	//Enumerates the vertices in order.
@@ -53,13 +53,37 @@ PolytopeC.prototype.faceToVertices = function(i) {
 			vertexDLL[edge[0]] = new LinkedListNode(edge[0]);
 		if(vertexDLL[edge[1]] === undefined)
 			vertexDLL[edge[1]] = new LinkedListNode(edge[1]);
-		
-		vertexDLL[edge[0]].linkTo(vertexDLL[edge[1]]);				
-	}			
-	
+
+		vertexDLL[edge[0]].linkTo(vertexDLL[edge[1]]);
+	}
+
 	//Cycle of vertex indices.
 	//"this.elementList[1][this.elementList[2][i][0]][0]" is just some vertex index.
 	return vertexDLL[this.elementList[1][this.elementList[2][i][0]][0]].getCycle();
+};
+
+//Returns the center of mass of the polytope.
+PolytopeC.prototype.gravicenter = function() {
+	var d = this.spaceDimensions,
+	res = [],
+	i, j;
+
+	for(j = 0; j < d; j++)
+		res.push(0);
+
+	for(i = 0; i < this.elementList[0].length; i++)
+		for(j = 0; j < d; j++)
+			res[j] += this.elementList[0][i].coordinates[j];
+
+	for(j = 0; j < d; j++)
+		res[j] /= this.elementList[0].length;
+
+	return new Point(res);
+};
+
+//Places the gravicenter of the polytope at the origin.
+PolytopeC.prototype.recenter = function() {
+	this.moveNeg(this.gravicenter());
 };
 
 //Ensures that we can always correctly call toPolytopeC on a polytope.

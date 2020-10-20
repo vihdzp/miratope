@@ -1115,6 +1115,20 @@ Polytope.openFile = function(e) {
   }
 };
 
+//Saves the file with the given data, the given MIME type, and the given extension.
+Polytope._saveBlob = function(blob) {
+	var fileName = Polytope.fileName.replace("/", "_");
+	if(navigator.msSaveOrOpenBlob)
+		navigator.msSaveOrOpenBlob(blob, fileName);
+	else {
+		var a = document.getElementById("download");
+		a.href = window.URL.createObjectURL(blob);
+		a.download = fileName;
+		a.click();
+		window.URL.revokeObjectURL(a.href);
+	}
+};
+
 //Auxiliary functions for Polytope.openFile
 var _ggb2 = function(e) {e.file("geogebra.xml").async("string").then(Polytope._GGBReaderOnload)},
 _ggb = function(e) {JSZip.loadAsync(e.target.result).then(_ggb2);};
