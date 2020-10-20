@@ -469,7 +469,7 @@ Polytope._product = function(P, Q, type, fun) {
 	var constructions = [], res;
 
 	//If P is an array:
-	if(P.length && P.length >= 1) {
+	if(P.length) {
 		res = P.pop();
 		constructions.push(res.construction);
 		while(P.length) {
@@ -980,12 +980,12 @@ Polytope.cuploid = function(n, d) {
 		//Small base's edges.
 		newElementList[1].push([i, i + 1]);
 		//Connecting edges.
-		newElementList[1].push([i, n + 2 * i]);
-		newElementList[1].push([i, n + 2 * i + 1]);
+		newElementList[1].push([i, n + (2 * i) % n]);
+		newElementList[1].push([i, n + (2 * i + 1) % n]);
 		//Triangles.
-		newElementList[2].push([3 * i + 1, 3 * i + 2, 3 * n + 2 * i]);
+		newElementList[2].push([3 * i + 1, 3 * i + 2, 3 * n + (2 * i) % n]);
 		//Squares.
-		newElementList[2].push([3 * i + 2, 3 * n + 2 * i + 1, 3 * i + 4, 3 * i]);
+		newElementList[2].push([3 * i + 2, 3 * n + (2 * i + 1) % n, 3 * i + 4, 3 * i]);
 		//Small base.
 		base.push(3 * i);
 	}
@@ -993,13 +993,13 @@ Polytope.cuploid = function(n, d) {
 	//Adds last elements.
 	newElementList[0].push(new Point([r1 * Math.cos(2 * Math.PI * (i / x)), r1 * Math.sin(2 * Math.PI * (i / x)), h1]));
 	newElementList[1].push([i, 0]);
-	newElementList[1].push([i, n + 2 * i]);
-	newElementList[1].push([i, n + 2 * i + 1]);
-	newElementList[2].push([3 * i + 1, 3 * i + 2, 3 * n + 2 * i]);
-	newElementList[2].push([3 * i + 2, 3 * n + 2 * i + 1, 1, 3 * i]);
+	newElementList[1].push([i, 2 * i]);
+	newElementList[1].push([i, 2 * i + 1]);
+	newElementList[2].push([3 * i + 1, 3 * i + 2, 2 * n + 2 * i]);
+	newElementList[2].push([3 * i + 2, 2 * n + 2 * i + 1, 1, 3 * i]);
 	base.push(3 * i);
 
-	for(i = 0; i < 2 * n - 1; i++) {
+	for(i = 0; i < n - 1; i++) {
 		//Big base's vertices.
 		newElementList[0].push(new Point([r2 * Math.cos(Math.PI * ((i - 0.5) / x)), r2 * Math.sin(Math.PI * ((i - 0.5) / x)), h2]));
 		//Big base's edges.

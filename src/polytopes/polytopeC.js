@@ -84,6 +84,7 @@ PolytopeC.prototype.gravicenter = function() {
 //Places the gravicenter of the polytope at the origin.
 PolytopeC.prototype.recenter = function() {
 	this.moveNeg(this.gravicenter());
+	return this;
 };
 
 //Ensures that we can always correctly call toPolytopeC on a polytope.

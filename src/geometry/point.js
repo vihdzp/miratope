@@ -46,6 +46,17 @@ Point.prototype.add = function(x) {
 	return this;
 };
 
+//Substracts the coordinates of "x" from the coordinates of a point.
+//Both need to have the same amount of dimensions.
+Point.prototype.subtract = function(x) {
+	if(x.dimensions() !== this.dimensions()) //The points need to have the same number of coordinates.
+		throw new Error("You can't add points with different amounts of dimensions!");
+	var coordinates = [];
+	for(var i = 0; i < x.dimensions(); i++) //Add the respective coordinates.
+		this.coordinates[i] -= x.coordinates[i];
+	return this;
+};
+
 //Scales up the point by a factor of "r"
 Point.prototype.scale = function(r) {
 	for(var i = 0; i < this.dimensions(); i++)
