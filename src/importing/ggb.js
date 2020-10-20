@@ -239,7 +239,7 @@ Polytope.prototype.saveAsGGB = function(wireframe) {
 		for(i = 0; i < P.elementList[0].length; i++) {
 			var coords = P.elementList[0][i].coordinates;
 			//The coordinates need to be in uppercase, since for example 1e+10 = 2.718281+10 by GeoGebra's standards.
-			file += '<element type="point3d" label="P_{' + i + '}"><show object="true" label="false" ev="4"/><objColor r="' + ptColor[0] + '" g="' + ptColor[1] + '" b="' + ptColor[2] + '" alpha="0.0"/><layer val="0"/><labelMode val="0"/><animation step="0.1" speed="1" type="1" playing="false"/><coords x="' + String(coords[0]).toUpperCase() + '" y="' + String(coords[1]).toUpperCase() + '" z="' + String(coords[0]).toUpperCase() + '" w="1.0"/><pointSize val="5"/></element>';
+			file += '<element type="point3d" label="P_{' + i + '}"><show object="true" label="false" ev="4"/><objColor r="' + ptColor[0] + '" g="' + ptColor[1] + '" b="' + ptColor[2] + '" alpha="0.0"/><layer val="0"/><labelMode val="0"/><animation step="0.1" speed="1" type="1" playing="false"/><coords x="' + String(coords[0]).toUpperCase() + '" y="' + String(coords[1]).toUpperCase() + '" z="' + String(coords[2]).toUpperCase() + '" w="1.0"/><pointSize val="5"/></element>';
 		}
 	}
 
