@@ -30,7 +30,7 @@ Caret.prototype.advance = function(n) {
 		this.increment();
 }
 
-//Gets current character
+//Gets the character at the caret
 Caret.prototype.getChar = function() {
 	return this.contents[this.pos];
 }
