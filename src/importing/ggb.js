@@ -116,7 +116,7 @@ Polytope._GGBReaderOnload = function(e) {
 //Saves a polytope as a GeoGebra file.
 //Writes most of the XML manually, just editing what's needed.
 //Only supports 3D stuff for now.
-Polytope.prototype.saveAsGGB = function() {
+Polytope.prototype.saveAsGGB = function(wireframe) {
 	var P = this.toPolytopeC(),
 	//ggbs often come bundled with some other files,
 	//but it seems geogebra.xml is the only one that's really needed.
@@ -243,26 +243,33 @@ Polytope.prototype.saveAsGGB = function() {
 		}
 	}
 
-	//Adds faces.
-	for(i = 0; i < P.elementList[2].length; i++) {
-		//Specifies vertices of face.
-		file += '<command name="Polygon"><input ';
-		var verts = P.faceToVertices(i);
-		for(j = 0; j < verts.length; j++)
-			file += 'a' + j + '="P_{' + verts[j] + '}" ';
-		file += '/><output a0="f_{' + i + '}" ';
+	if(wireframe) {
+		//Adds edges.
+		for(i = 0; i < P.elementList[1].length; i++)
+			file += '<command name="Segment"><input a0="P_{' + P.elementList[1][i][0] + '}" a1="P_{' + P.elementList[1][i][1] + '}"/><output a0="e_{' + edge + '}"/></command><element type="segment3d" label="e_{' + (edge++) + '}"><show object="true" label="false" ev="4"/><objColor r="' + edgeColor[0] + '" g="' + edgeColor[1] + '" b="' + edgeColor[2] + '" alpha="0.0"/><layer val="0"/><labelMode val="0"/><lineStyle thickness="2" type="0" typeHidden="1"/><outlyingIntersections val="false"/><keepTypeOnTransform val="true"/></element>';
+	}
+	else {
+		//Adds faces.
+		for(i = 0; i < P.elementList[2].length; i++) {
+			//Specifies vertices of face.
+			file += '<command name="Polygon"><input ';
+			var verts = P.faceToVertices(i);
+			for(j = 0; j < verts.length; j++)
+				file += 'a' + j + '="P_{' + verts[j] + '}" ';
+			file += '/><output a0="f_{' + i + '}" ';
 
-		//Names the faces' edges.
-		for(j = 0; j < verts.length; j++)
-			file += 'a' + (j + 1) + '="e_{' + (edge++) + '}" ';
+			//Names the faces' edges.
+			for(j = 0; j < verts.length; j++)
+				file += 'a' + (j + 1) + '="e_{' + (edge++) + '}" ';
 
-		//Adds the face.
-		file += '/></command><element type="polygon3d" label="f_{' + i + '}"><lineStyle thickness="5" type="0" typeHidden="1" opacity="178"/><show object="true" label="false" ev="4"/><objColor r="' + faceColor[0] + '" g="' + faceColor[1] + '" b="' + faceColor[2] + '" alpha="' + opacity + '"/><layer val="0"/><labelMode val="0"/></element>';
+			//Adds the face.
+			file += '/></command><element type="polygon3d" label="f_{' + i + '}"><lineStyle thickness="5" type="0" typeHidden="1" opacity="178"/><show object="true" label="false" ev="4"/><objColor r="' + faceColor[0] + '" g="' + faceColor[1] + '" b="' + faceColor[2] + '" alpha="' + opacity + '"/><layer val="0"/><labelMode val="0"/></element>';
 
-		//Edges... again.
-		edge -= verts.length;
-		for(j = 0; j < verts.length; j++)
-			file += '<element type="segment3d" label="e_{' + (edge++) + '}"><show object="true" label="false" ev="4"/><objColor r="' + edgeColor[0] + '" g="' + edgeColor[1] + '" b="' + edgeColor[2] + '" alpha="0.0"/><layer val="0"/><labelMode val="0"/><auxiliary val="false"/><lineStyle thickness="2" type="0" typeHidden="1"/><outlyingIntersections val="false"/><keepTypeOnTransform val="true"/></element>';
+			//Edges... again.
+			edge -= verts.length;
+			for(j = 0; j < verts.length; j++)
+				file += '<element type="segment3d" label="e_{' + (edge++) + '}"><show object="true" label="false" ev="4"/><objColor r="' + edgeColor[0] + '" g="' + edgeColor[1] + '" b="' + edgeColor[2] + '" alpha="0.0"/><layer val="0"/><labelMode val="0"/><auxiliary val="false"/><lineStyle thickness="2" type="0" typeHidden="1"/><outlyingIntersections val="false"/><keepTypeOnTransform val="true"/></element>';
+		}
 	}
 
 	//Closing tags.
