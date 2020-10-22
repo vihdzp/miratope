@@ -42,9 +42,9 @@ Caret.prototype.skipToContent = function() {
 		switch(this.getChar()) {
 			case '\n': //New Line (\n)
 			case '\r': //Carriage Return (\r)
-			case ' ': //Space ( )
+			case ' ':  //Skips Whitespace
 				this.increment(); break;
-			case '#': //Hashtag (#)
+			case '#':  //Skips Comments
 				this.increment();
 				//A comment lasts from the # until the end of the line.
 				//Increments until you hit the EOF or a new line character.
