@@ -18,6 +18,11 @@ Miratope doesn't have an interface yet, so you'll have to use the Console to wri
 
 Most of the cool generating commands are on the `Polytope` class. For example, to generate a uniform octagrammic antiprism and render it to the screen, you can use `Polytope.uniformAntiprism(8, 3).renderTo(mainScene);`.
 
+Here's some other commands to try out:
+* `Polytope.hypercube(3).renderTo(mainScene); //Renders a cube on screen.`
+* `Polytope.prismProduct(Polytope.regularPolygon(5), Polytope.regularPolygon(5, 2)).saveAsOFF(true); //OFF file for a pentagon-pentagram duoprism.``
+* `Polytope.cross(4).extrudeToPrism(1).saveAsGGB(); //Exports a hexadecachoral prism as a GeoGebra file.`
+
 ### Why does my OFF file not render?
 Provisionally, your OFF file is being loaded into the variable `P`. You have to manually render it using the command `P.renderTo(mainScene);`.
 
@@ -32,7 +37,7 @@ There are lots of planned features for Miratope, some more ambitious than others
 The most immediate changes will probably be the following:
 * Greater camera control
 * Vertex and edge toggling
-* Projection type change
+* Projection type options
 
 Longer term but more substantial changes include:
 * Localization
