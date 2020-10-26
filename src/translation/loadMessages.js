@@ -28,6 +28,7 @@ Globalize.loadMessages({
 		greekPrefixes: {
 			deca: "deca",
 			conta: "conta",
+			dodeca: "dodeca",
 			icosa: "icosa",
 			icosi: "icosi",
 			tria: "tria",
@@ -72,6 +73,7 @@ Globalize.loadMessages({
 		greekPrefixes: {
 			/*deca: "deca",
 			conta: "conta",
+			dodeca: "dodeca",
 			icosa: "icosa",
 			icosi: "icosi",
 			tria: "tria",
@@ -94,6 +96,7 @@ Globalize.loadMessages({
 		greekPrefixes: {
 			deca: "deka",
 			//conta: "conta",
+			dodeca: "dodeka",
 			icosa: "ikosa",
 			icosi: "ikosi",
 			//tria: "tria",
