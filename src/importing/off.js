@@ -191,8 +191,10 @@ Polytope.prototype.saveAsOFF = function(comments) {
 		alert("The OFF format does not support polytopes in spaces with more dimensions than themselves.");
 		return;
 	}
+
 	//The contexts of the OFF file, as an array of plaintext strings.
-	var data = [];
+	var data = [],
+	pluralAndUppercase = {plural: "many", uppercase: true};
 
 	//Writes the element counts, and optionally, leaves a comment listing their names in order.
 	switch(P.dimensions) {
@@ -202,27 +204,27 @@ Polytope.prototype.saveAsOFF = function(comments) {
 		case 1: //Also LOL
 			data.push("1OFF\n");
 			if(comments)
-				data.push("# ", Translation.elementName(0, PLURAL ^ UPPERCASE), "\n");
+				data.push("# ", Translation.elementName(0, pluralAndUppercase), "\n");
 			data.push(P.elementList[0].length, "\n");
 			break;
 		case 2:
 			data.push("2OFF\n");
 			if(comments)
-				data.push("# ", Translation.elementName(0, PLURAL ^ UPPERCASE), ", ", Translation.firstToUpper(GlobalizeLang.messageFormatter("misc/component")({plural: many})), "\n");
+				data.push("# ", Translation.elementName(0, pluralAndUppercase), ", ", Translation.get("misc/component", pluralAndUppercase), "\n");
 			data.push(P.elementList[0].length, " ", P.elementList[2].length, "\n");
 			break;
 		case 3:
 			data.push("OFF\n"); //For compatibility with Stella.
 			if(comments)
-				data.push("# ", Translation.elementName(0, PLURAL ^ UPPERCASE), ", ", Translation.elementName(2, PLURAL ^ UPPERCASE), ", ", Translation.elementName(1, PLURAL ^ UPPERCASE), "\n");
+				data.push("# ", Translation.elementName(0, pluralAndUppercase), ", ", Translation.elementName(2, pluralAndUppercase), ", ", Translation.elementName(1, pluralAndUppercase), "\n");
 			data.push(P.elementList[0].length, " ", P.elementList[2].length, " ", P.elementList[1].length, "\n");
 			break;
 		default:
 			data.push(P.dimensions, "OFF\n");
 			if(comments) {
-				data.push("# ", Translation.elementName(0, PLURAL ^ UPPERCASE), ", ", Translation.elementName(2, PLURAL ^ UPPERCASE), ", ", Translation.elementName(1, PLURAL ^ UPPERCASE));
+				data.push("# ", Translation.elementName(0, pluralAndUppercase), ", ", Translation.elementName(2, pluralAndUppercase), ", ", Translation.elementName(1, pluralAndUppercase));
 				for(i = 3; i < P.dimensions; i++)
-					data.push(", ", Translation.elementName(i, PLURAL ^ UPPERCASE));
+					data.push(", ", Translation.elementName(i, pluralAndUppercase));
 				data.push("\n");
 			}
 			data.push(P.elementList[0].length, " ", P.elementList[2].length, " ", P.elementList[1].length, " ");
@@ -233,7 +235,7 @@ Polytope.prototype.saveAsOFF = function(comments) {
 
 	//Adds vertices. Fills in zeros if spaceDimensions < dimensions.
 	if(comments)
-		data.push("\n# ", Translation.elementName(0, PLURAL ^ UPPERCASE), "\n");
+		data.push("\n# ", Translation.elementName(0, pluralAndUppercase), "\n");
 
 	for(i = 0; i < P.elementList[0].length; i++) {
 		for(j = 0; j < P.dimensions - 1; j++) {
@@ -254,9 +256,9 @@ Polytope.prototype.saveAsOFF = function(comments) {
 	if(P.dimensions >= 2) {
 		if(comments) {
 			if(P.dimensions === 2)
-				data.push("\n# ", Translation.get("component", PLURAL ^ UPPERCASE), "\n");
+				data.push("\n# ", Translation.get("misc/component", pluralAndUppercase), "\n");
 			else
-				data.push("\n# ", Translation.elementName(2, PLURAL ^ UPPERCASE), "\n");
+				data.push("\n# ", Translation.elementName(2, pluralAndUppercase), "\n");
 		}
 		for(i = 0; i < P.elementList[2].length; i++) {
 			vertices = P.faceToVertices(i);
@@ -270,7 +272,7 @@ Polytope.prototype.saveAsOFF = function(comments) {
 	//Adds the rest of the elements.
 	for(var d = 3; d < P.dimensions; d++) {
 		if(comments)
-			data.push("\n# ", Translation.elementName(d, PLURAL ^ UPPERCASE), "\n");
+			data.push("\n# ", Translation.elementName(d, pluralAndUppercase), "\n");
 		for(i = 0; i < P.elementList[d].length; i++) {
 			data.push(P.elementList[d][i].length);
 			for(j = 0; j < P.elementList[d][i].length; j++)

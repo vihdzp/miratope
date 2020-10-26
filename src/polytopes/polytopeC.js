@@ -9,16 +9,22 @@
 //Subelements are stored as indices
 //All points are assumed to be of the same dimension
 function PolytopeC(elementList, constructionRoot) {
+	this.dimensions = elementList.length - 1;                       //The combinatorial dimension (the polytope's dimension)
+	if(!constructionRoot) //The construction defaults to just the polytope itself.
+	constructionRoot = new ConstructionNode(PLAIN,
+		[
+			elementList[elementList.length - 2].length,
+			this.dimensions
+		]);
 	Polytope.call(this, constructionRoot);                          //Calls the Polytope constructor function using PolytopeC as the object and "constructionRoot" as the parameter "construction"
 	this.elementList = elementList;
-	this.dimensions = elementList.length - 1;                       //The combinatorial dimension (the polytope's dimension)
 	if(this.elementList[0])
 		this.spaceDimensions = this.elementList[0][0].dimensions(); //The space's dimension
 	else
 		this.spaceDimensions = -1;                                  //The almighty nullitope (aka nothing)
 };
 
-PolytopeC.prototype = new Polytope();
+PolytopeC.prototype = Polytope.prototype;
 
 //Calculates the centroid as the average of the vertices.
 //Could be made more efficient replacing the add method with direct calculations with arrays.

@@ -6,6 +6,8 @@ Globalize.loadMessages({
 		},
 		shape: {
 			polytope: "polytope",
+			nullitope: "nullitope",
+			point: "point",
 			dyad: "dyad",
 			prism: "prism",
 			pyramid: "pyramid",
@@ -15,6 +17,7 @@ Globalize.loadMessages({
 			rectangle: "rectangle",
 			triangle: "triangle",
 			square: "square",
+			bowtie: "bowtie",
 			cupola: "cupola",
 			cuploid: "cuploid",
 			cupolaicBlend: "cupolaic blend",
@@ -25,17 +28,38 @@ Globalize.loadMessages({
 		misc: {
 			component: "{plural, select, one {component}, many {components}}",
 			compound: "compound",
+			nulli: "nulli",
+			mono: "mono"
 		}
 	},
 	es: {
 		shape: {
 			polytope: "politopo",
-			dyad: "díada"
+			nullitope: "nulitopo",
+			point: "punto",
+			dyad: "díada",
+			prism: "prisma",
+			pyramid: "pirámide",
+			antiprism: "antiprisma",
+			bipyramid: "bipirámide",
+			tegum: "tego",
+			rectangle: "rectángulo",
+			triangle: "triángulo",
+			square: "cuadrado",
+			bowtie: "moño",
+			cupola: "cúpula",
+			cuploid: "cuploide",
+			cupolaicBlend: "mezcla cupoléica"
 		},
 		construction: {
 			familyMember: "{family} {nameAdj}"
+		},
+		misc: {
+			component: "{plural, select, one {componente}, many {componentes}}",
+			compound: "compuesto",
+			nulli: "nulli"
 		}
 	},
 	de: {},
-	en: {}, //DON'T FILL THIS!
+	en: {} //DON'T FILL THIS!
 });

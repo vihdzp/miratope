@@ -200,10 +200,10 @@ Caret.prototype.readNumber = function() {
 
 Caret.prototype.throwError = function(code) {
 	throw new Error(
-		GlobalizeLang.messageFormatter("error/" + code)
-		({
+		Translation.get("error/" + code,
+		{
 			line: this.line,
 			column: this.column
-		})
-	);
+		}
+	));
 };

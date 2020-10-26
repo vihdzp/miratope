@@ -7,9 +7,9 @@
 //Children are essentially what a nodeC operates on
 //The types of node and their case number are given below:
 
-//Has a single polytope as a child. (Should it just have the number of facets and dimensions as children?)
-//Used for polytopes without a known name.
-const POLYTOPE = 0;
+//Has two children n, d,
+//representing the number of facets n and number of dimensions d.
+const PLAIN = 0;
 
 //Has the factors of a prism product as children.
 const MULTIPRISM = 1;
@@ -29,18 +29,26 @@ const PYRAMID = 5;
 //Has a cupola based on the child node.
 const CUPOLA = 6;
 
-//Has two children n, d, representing the regular polygonal small base {n/d}.
+//Has two children n, d,
+//representing the regular polygonal small base {n/d}.
 const CUPLOID = 7;
 
-//Has two children n, d, representing the regular polygonal base {n/d}.
+//Has two children n, d,
+//representing the regular polygonal base {n/d}.
 const CUPBLEND = 8;
 
-//Has two children n, d, representing the regular polygonal base {n/d}.
+//Has two children n, d,
+//representing the regular polygonal base {n/d}.
 const POLYGON = 9;
 
-//Has a polytope's name as a child. (Should it also have the polytope as a child?)
+//Has a polytope's "code name" as a child.
+//Used for polytopes whose names are in loadMessages.js, and can be translated.
+const CODENAME = 10;
+
+//Has a polytope's name as a child.
 //The default for imported polytopes, or polytopes not built out of anything else whose name is known.
-const NAME = 10;
+//IS NOT translated.
+const NAME = 11;
 
 //Creates a ConstructionNode of a certain type and with certain children
 function ConstructionNode(type, children) {
@@ -51,10 +59,8 @@ function ConstructionNode(type, children) {
 //Gets the name of a ConstructionNode based on type
 ConstructionNode.prototype.getName = function() {
 	switch(this.type) {
-		case POLYTOPE:
-			var poly = this.children[0];
-			//Can only use the plain translation
-			return Translation.plain(poly.elementList[poly.elementList.length - 2].length, poly.dimensions);
+		case PLAIN:
+			return Translation.plain(this.children[0], this.children[1]);
 		case MULTIPRISM:
 			this.mergeChildren();
 			return Translation.multiFamily(this.children, "prism", "dyad", "prism", this.gender);
@@ -65,17 +71,19 @@ ConstructionNode.prototype.getName = function() {
 			this.mergeChildren();
 			return Translation.multiFamily(this.children, "pyramid", "point", "pyramid", this.gender);
 		case ANTIPRISM:
-			return Translation.familyMember(this.children[0], "antiprism", this.gender);
+			return Translation.familyMember(this.children, "antiprism", this.gender);
 		case PYRAMID:
-			return Translation.familyMember(this.children[0], "pyramid", this.gender);
+			return Translation.familyMember(this.children, "pyramid", this.gender);
 		case CUPOLA:
-			return Translation.familyMember(this.children[0], "cupola", this.gender);
+			return Translation.familyMember(this.children, "cupola", this.gender);
 		case CUPLOID:
 			return Translation.familyMember(this.children[0], "cuploid", this.gender);
 		case CUPBLEND:
 			return Translation.familyMember(this.children[0], "cupolaicBlend", this.gender);
 		case POLYGON:
 			return Translation.regularPolygonName(this.children[0], this.children[1], 0, this.gender);
+		case CODENAME:
+			return Translation.get("shape/" + this.children[0]);
 		case NAME:
 			return this.children[0];
 		default:
@@ -90,7 +98,7 @@ ConstructionNode.prototype.getName = function() {
 ConstructionNode.prototype.setGenders = function() {
 	switch(type) {
 		case POLYGON: //The gender of the plain polygon names
-		case POLYTOPE: //The gender of the plain polytope names
+		case PLAIN: //The gender of the plain polytope names
 		case MULTIPRISM: //The gender of the word "multiprism"
 		case ANTIPRISM: //The gender of the word "antiprism"
 		case MULTITEGUM: //The gender of the word "multitegum"

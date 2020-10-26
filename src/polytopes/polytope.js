@@ -7,10 +7,8 @@
 
 //Stores how a polytope was created in Polytope.construction
 function Polytope(construction) {
-	if(!construction) //The construction defaults to just the polytope itself.
-		this.construction = new ConstructionNode(POLYTOPE, [this]);
-	else
-		this.construction = construction;
+	this.construction = construction;
+	this.construction.polytope = this;
 };
 
 //Scales a polytope by a factor of r.
@@ -55,12 +53,12 @@ Polytope.verfLength = function(n, d) {
 //The two elephants in the room.
 //Using these two is probably buggy, and we should check this eventually.
 Polytope.nullitope = function() {
-	return new PolytopeC([], new ConstructionNode(NAME, ["nullitope"]));
+	return new PolytopeC([], new ConstructionNode(CODENAME, "nullitope"));
 };
 
 //Returns the unique 0D polytope.
 Polytope.point = function() {
-	return new PolytopeC([[new Point([])]], new ConstructionNode(NAME, ["point"]));
+	return new PolytopeC([[new Point([])]], new ConstructionNode(CODENAME, "point"));
 };
 
 //This sets Polytope.dyad to a dyad of a given size.
@@ -70,7 +68,7 @@ Polytope.dyad = function(length) {
 		length = 0.5;
 	else
 		length /= 2;
-	return new PolytopeC([[new Point([-length]), new Point([length])], [[0, 1]]], new ConstructionNode(NAME, ["dyad"]));
+	return new PolytopeC([[new Point([-length]), new Point([length])], [[0, 1]]], new ConstructionNode(CODENAME, "dyad"));
 };
 
 //Polytope._prismProduct, but also supports P being an array.
@@ -520,7 +518,7 @@ Polytope.prototype.extrudeToPyramid = function(apex) {
 		}
 	}
 
-	var construction = new ConstructionNode(PYRAMID, [P.construction]);
+	var construction = new ConstructionNode(PYRAMID, P.construction);
 	P.construction = construction;
 	return P;
 };
@@ -657,7 +655,7 @@ Polytope.semiregularPolygon = function(n, d, a, b) {
 				[[0,1],[1,2],[2,3],[3,0]],
 				[[0,1,2,3]]
 			],
-			new ConstructionNode(NAME, "Bowtie")
+			new ConstructionNode(CODENAME, "bowtie")
 		);
 	}
 
@@ -899,7 +897,7 @@ Polytope.uniformAntiprism = function(n, d) {
 	for(i = 0; i < 2 * (n + 1); i++)
 		newElementList[3][0].push(i);
 
-	return new PolytopeC(newElementList, new ConstructionNode(ANTIPRISM, [new ConstructionNode(POLYGON, [n, d])]));
+	return new PolytopeC(newElementList, new ConstructionNode(ANTIPRISM, new ConstructionNode(POLYGON, [n, d])));
 };
 
 //Creates an {n / d} cupola with regular faces.
@@ -957,7 +955,7 @@ Polytope.cupola = function(n, d) {
 	for(i = 0; i < 2 * n + 2; i++)
 		newElementList[3][0].push(i);
 
-	return new PolytopeC(newElementList, new ConstructionNode(CUPOLA, [new ConstructionNode(POLYGON, [n, d])]));
+	return new PolytopeC(newElementList, new ConstructionNode(CUPOLA, new ConstructionNode(POLYGON, [n, d])));
 };
 
 //Creates an {n / d} cuploid with regular faces.
