@@ -4,9 +4,9 @@
 
 //-, one, two, three, four, five, six, seven, eight, nine, to Greek, back to each language.
 Translation._units = {
-	en: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "ennea"], //English
-	es: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "enea"], //Spanish
-	de: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "okto", "ennea"] //German
+	en: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "ennea"],
+	es: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "enea"],
+	de: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "okto", "ennea"]
 };
 
 //Converts n into a greek prefix (or whatever works similarly in the target language).
@@ -52,7 +52,8 @@ Translation.greekPrefix = function(n, options) {
 		default:
 			res += units[tenThousands] + Translation.get("greekPrefixes/myria");
 			break;
-
+	}
+	
 	//Chilias
 	switch(thousands) {
 		case 0:
@@ -101,7 +102,7 @@ Translation.greekPrefix = function(n, options) {
 					res += Translation.get("greekPrefixes/deca");
 					break;
 				case 2:
-					res += "do" + Translation.get("greekPrefixes/deca");
+					res += Translation.get("greekPrefixes/dodeca");
 					break;
 				default:
 					res += units[ones] + Translation.get("greekPrefixes/deca");
