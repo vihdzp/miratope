@@ -25,6 +25,21 @@ Globalize.loadMessages({
 		construction: {
 			familyMember: "{nameAdj} {family}"
 		},
+		greekPrefixes: {
+			deca: "deca",
+			conta: "conta",
+			icosa: "icosa",
+			icosi: "icosi",
+			tria: "tria",
+			hecto: "hecto",
+			hecaton: "hecaton",
+			cosi: "cosi",
+			dia: "dia",
+			chilia: "chilia",
+			dis: "dis",
+			tris: "tris",
+			myria: "myria"
+		},
 		misc: {
 			component: "{plural, select, one {component}, many {components}}",
 			compound: "compound",
@@ -54,12 +69,43 @@ Globalize.loadMessages({
 		construction: {
 			familyMember: "{family} {nameAdj}"
 		},
+		greekPrefixes: {
+			/*deca: "deca",
+			conta: "conta",
+			icosa: "icosa",
+			icosi: "icosi",
+			tria: "tria",
+			hecto: "hecto",
+			hecaton: "hecaton",
+			cosi: "cosi",
+			dia: "dia",
+			chilia: "chilia",
+			dis: "dis",
+			tris: "tris",*/
+			myria: "miria"
+		},
 		misc: {
 			component: "{plural, select, one {componente}, many {componentes}}",
 			compound: "compuesto",
 			nulli: "nulli"
 		}
 	},
-	de: {},
+	de: {
+		greekPrefixes: {
+			deca: "deka",
+			//conta: "conta",
+			icosa: "ikosa",
+			icosi: "ikosi",
+			//tria: "tria",
+			hecto: "hekto",
+			hecaton: "hekaton",
+			cosi: "kosi",
+			dia: "dia",
+			/*chilia: "chilia",
+			dis: "dis",
+			tris: "tris",
+			myria: "myria"*/
+		}
+	},
 	en: {} //DON'T FILL THIS!
 });

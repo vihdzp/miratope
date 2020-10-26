@@ -18,7 +18,7 @@ Translation.setLanguage = function(lang) {
 };
 
 Translation.get = function(message, params) {
-	if(params.uppercase)
+	if(params && params.uppercase)
 		return Translation.firstToUpper(Translation._globalize.messageFormatter(message)(params));
 	return Translation._globalize.messageFormatter(message)(params);
 };

@@ -9,14 +9,7 @@ Translation._units = {
 	de: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "okto", "ennea"] //German
 };
 
-//ten, tenfold, twenty, twenty-, hundredfold, thousandfold, ten-thousandfold, to Greek, back to each language.
-Translation._joiners = {
-	en: ["deca", "conta", "icosa", "icosi", "hecto", "chilia", "myria"], //English
-	es: ["deca", "conta", "icosa", "icosi", "hecta", "chilia", "miria"], //Spanish
-	de: ["deka", "conta", "ikosa", "ikosi", "hekto", "chilia", "myria"] //German
-};
-
-//Converts n into a greek prefix.
+//Converts n into a greek prefix (or whatever works similarly in the target language).
 //Works only from 0 to 99999.
 //Based on https://www.georgehart.com/virtual-polyhedra/greek-prefixes.html
 //Defaults to n-.
@@ -41,67 +34,93 @@ Translation.greekPrefix = function(n, options) {
 	var tenThousands = n % 10,
 
 	LANGUAGE = Translation.language,
-	joiners = Translation._joiners[LANGUAGE],
 	units = Translation._units[LANGUAGE];
 
+	//Myrias
 	switch(tenThousands) {
 		case 0:
 			break;
 		case 1:
-			res += joiners[6];
+			res += Translation.get("greekPrefixes/myria");
+			break;
+		case 2:
+			res += Translation.get("greekPrefixes/dis") + Translation.get("greekPrefixes/myria");
+			break;
+		case 3:
+			res += Translation.get("greekPrefixes/tris") + Translation.get("greekPrefixes/myria");
 			break;
 		default:
-			res += units[tenThousands] + joiners[6];
+			res += units[tenThousands] + Translation.get("greekPrefixes/myria");
 			break;
-	}
 
+	//Chilias
 	switch(thousands) {
 		case 0:
 			break;
 		case 1:
-			res += joiners[5];
+			res += Translation.get("greekPrefixes/chilia");
+			break;
+		case 2:
+			res += Translation.get("greekPrefixes/dis") + Translation.get("greekPrefixes/chilia");
+			break;
+		case 3:
+			res += Translation.get("greekPrefixes/tris") + Translation.get("greekPrefixes/chilia");
 			break;
 		default:
-			res += units[thousands] + joiners[5];
+			res += units[thousands] + Translation.get("greekPrefixes/chilia");
 			break;
 	}
 
+	//Hectos
 	switch(hundreds) {
 		case 0:
 			break;
 		case 1:
-			res += joiners[4];
+			if(!tens && !ones)
+				res += Translation.get("greekPrefixes/hecto");
+			else
+				res += Translation.get("greekPrefixes/hecaton");
+			break;
+		case 2:
+			res += Translation.get("greekPrefixes/dia") + Translation.get("greekPrefixes/cosi");
 			break;
 		default:
-			res += units[hundreds] + joiners[4];
+			res += units[hundreds] + Translation.get("greekPrefixes/cosi");
 			break;
 	}
 
+	//Decas
 	switch(tens) {
 		case 0:
 			res += units[ones];
 			break;
+		//-deca cases:
 		case 1:
 			switch(ones) {
 				case 0:
-					res += joiners[0];
+					res += Translation.get("greekPrefixes/deca");
 					break;
 				case 2:
-					res += "do" + joiners[0];
+					res += "do" + Translation.get("greekPrefixes/deca");
 					break;
 				default:
-					res += units[units] + joiners[0];
+					res += units[ones] + Translation.get("greekPrefixes/deca");
 					break;
 			}
 			break;
+		//icosa- cases:
 		case 2:
 			if(ones)
-				res += joiners[2] + units[ones];
+				res += Translation.get("greekPrefixes/icosi") + units[ones];
 			else
-				res += joiners[1];
+				res += Translation.get("greekPrefixes/icosa");
+			break;
+		//tria- cases:
+		case 3:
+			res += Translation.get("greekPrefixes/tria") + units[ones];
 			break;
 		default:
-			res += units[tens] + joiners[1] + units[ones];
+			res += units[tens] + Translation.get("greekPrefixes/conta") + units[ones];
 			break;
 	}
 
