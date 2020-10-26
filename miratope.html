@@ -14,10 +14,22 @@
 	<script src="src/data structures/avl-tree.js"></script>            <!--Implementation of the AVL tree data structure.-->
 	<script src="src/data structures/sweeplineEdge.js"></script>       <!--Helper class for PolytopeC rendering.-->
 
-	<script src="src/translation/ending.js"></script>                  <!--Helper class for toAdjective, used for adjective endings.-->
-	<script src="src/translation/translation.js"></script>             <!--Class for translating words in general.-->
-	<script src="src/translation/names.js"></script>                   <!--Part of translation class, used for specific names.-->
-	<script src="src/translation/toAdjective.js"></script>             <!--Part of translation class, used for adjectives.-->
+	<script src="src/translation/cldr/cldr.js"></script>             <!--Globalize.js dependency.-->
+	<script src="src/translation/cldr/event.js"></script>            <!--Globalize,js dependency.-->
+	<script src="src/translation/cldr/supplemental.js"></script>     <!--Globalize,js dependency.-->
+	<script src="src/translation/cldr/unresolved.js"></script>       <!--Globalize,js dependency.-->
+
+	<script src="src/translation/globalize/globalize.js"></script>   <!--Library for localization/globalization.-->
+	<script src="src/translation/globalize/message.js"></script>     <!--Formats messages in different languages.-->
+	<script src="src/translation/globalize/number.js"></script>      <!--Formats numbers in different languages.-->
+	<script src="src/translation/globalize/plural.js"></script>      <!--Formats plurals in different languages.-->
+
+	<script src="src/translation/loadJSON.js"></script>                <!--Loads the necessary JSON files for Globalize.-->
+	<script src="src/translation/loadMessages.js"></script>            <!--Loads all possible messages in Miratope.-->
+	<script src="src/translation/translation.js"></script>             <!--Loads all possible messages in Miratope.-->
+	<script src="src/translation/ending.js"></script>             <!--Loads all possible messages in Miratope.-->
+	<script src="src/translation/toAdjective.js"></script>             <!--Loads all possible messages in Miratope.-->
+	<script src="src/translation/names.js"></script>             <!--Loads all possible messages in Miratope.-->
 
 	<script src="src/geometry/point.js"></script>                      <!--Class for points.-->
 	<script src="src/geometry/space.js"></script>                      <!--Class for calculations related to points.-->
@@ -30,7 +42,7 @@
 	<script src="src/importing/ggb.js"></script>                       <!--Methods for GGB importing.-->
 	<script src="src/importing/caret.js"></script>                     <!--Helper class for off.js.-->
 	<script src="src/importing/jszip.js"></script>                     <!--Library for ZIP handling.-->
-	
+
 	<script src="src/rendering/three.js"></script>                     <!--Library for 3D rendering.-->
 	<script src="src/rendering/scene.js"></script>                     <!--Class for scenes.-->
 	<script src="src/rendering/render.js"></script>                    <!--Renderer bit of the Polytope class.-->

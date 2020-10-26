@@ -8,7 +8,7 @@ function Caret(contents) {
 	this.contents = contents;
 	this.pos = 0;  //Position
 	this.line = 0; //Line
-	this.col = 0;  //Column
+	this.column = 0;  //Column
 	this.EOF = contents.length === 0; //EOF is "End Of File"
 	this.skipToContent();
 };
@@ -17,10 +17,10 @@ function Caret(contents) {
 Caret.prototype.increment = function() {
 	if(this.getChar() === '\n') {
 		this.line++;
-		this.col = 0;
+		this.column = 0;
 	}
 	else
-		this.col++;
+		this.column++;
 	this.EOF = ++this.pos > this.contents.length; //Checks if next position is the EOF
 };
 
@@ -110,7 +110,7 @@ Caret.prototype.skipToStringList = function(strs) {
 //Caret skips to next content.
 Caret.prototype.readWord = function() {
 	if(this.EOF) //EOF error
-		this.throwError("unexpected EOF");
+		this.throwError("unexpectedEOF");
 
 	var initIndx = this.pos, endIndx;
 
@@ -138,7 +138,7 @@ Caret.prototype.readWord = function() {
 
 Caret.prototype.readUntil = function(c) {
 	if(this.EOF) //EOF error
-		this.throwError("unexpected EOF");
+		this.throwError("unexpectedEOF");
 
 	var initIndx = this.pos, endIndx;
 
@@ -163,7 +163,7 @@ Caret.prototype.readUntil = function(c) {
 //Caret ends up after the number.
 Caret.prototype.readNumber = function() {
 	if(this.EOF) //EOF error
-		this.throwError("unexpected EOF");
+		this.throwError("unexpectedEOF");
 
 	var initIndx = this.pos, endIndx;
 
@@ -200,8 +200,10 @@ Caret.prototype.readNumber = function() {
 
 Caret.prototype.throwError = function(code) {
 	throw new Error(
-		Translation.get(code) + "\n"
-		+ Translation.get("line", UPPERCASE) + " " 	+ this.line + ", "
-		+ Translation.get("column") + " " + this.col + "."
+		GlobalizeLang.messageFormatter("error/" + code)
+		({
+			line: this.line,
+			column: this.column
+		})
 	);
 };

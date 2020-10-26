@@ -50,7 +50,7 @@ function ConstructionNode(type, children) {
 
 //Gets the name of a ConstructionNode based on type
 ConstructionNode.prototype.getName = function() {
-	switch(this.type) {		
+	switch(this.type) {
 		case POLYTOPE:
 			var poly = this.children[0];
 			//Can only use the plain translation
@@ -68,26 +68,26 @@ ConstructionNode.prototype.getName = function() {
 			return Translation.familyMember(this.children[0], "antiprism", this.gender);
 		case PYRAMID:
 			return Translation.familyMember(this.children[0], "pyramid", this.gender);
-		case CUPOLA:		
+		case CUPOLA:
 			return Translation.familyMember(this.children[0], "cupola", this.gender);
-		case CUPLOID:		
+		case CUPLOID:
 			return Translation.familyMember(this.children[0], "cuploid", this.gender);
-		case CUPBLEND:		
+		case CUPBLEND:
 			return Translation.familyMember(this.children[0], "cupolaicBlend", this.gender);
 		case POLYGON:
 			return Translation.regularPolygonName(this.children[0], this.children[1], 0, this.gender);
 		case NAME:
-			return Translation.get(this.children[0]);
+			return this.children[0];
 		default:
 			throw new Error("Not yet implemented!");
 	}
 };
 
 //Sets the gender of the noun representing the polytope type at all children nodes.
-//e.g. in Spanish, we'd say "prisma cupoidal pentagrámico cruzado", not 
+//e.g. in Spanish, we'd say "prisma cupoidal pentagrámico cruzado", not
 //"prisma cupoidal pentagrámica cruzada"; even though "cúpula" is femenine,
 //the male "prisma" takes over.
-ConstructionNode.prototype.setGenders = function() {	
+ConstructionNode.prototype.setGenders = function() {
 	switch(type) {
 		case POLYGON: //The gender of the plain polygon names
 		case POLYTOPE: //The gender of the plain polytope names
@@ -121,7 +121,7 @@ ConstructionNode.prototype.setGenders = function() {
 			}
 			break;
 	}
-	
+
 	this._setGenders();
 };
 
@@ -135,7 +135,7 @@ ConstructionNode.prototype._setGenders = function() {
 	}
 }
 
-//A multiprism of multiprisms is just a larger multiprism, 
+//A multiprism of multiprisms is just a larger multiprism,
 //a multitegum of multitegums is just a larger multitegum, etc.
 //This function removes children nodes of the same type,
 //and replaces them by their children.

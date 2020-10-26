@@ -208,7 +208,7 @@ Polytope.prototype.saveAsOFF = function(comments) {
 		case 2:
 			data.push("2OFF\n");
 			if(comments)
-				data.push("# ", Translation.elementName(0, PLURAL ^ UPPERCASE), ", ", Translation.get("component", PLURAL ^ UPPERCASE), "\n");
+				data.push("# ", Translation.elementName(0, PLURAL ^ UPPERCASE), ", ", Translation.firstToUpper(GlobalizeLang.messageFormatter("misc/component")({plural: many})), "\n");
 			data.push(P.elementList[0].length, " ", P.elementList[2].length, "\n");
 			break;
 		case 3:

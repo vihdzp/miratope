@@ -14,7 +14,7 @@ function GraphNode(val) {
 //Resets the traversed variable for an array of nodes
 //Should be helpful sometime else.
 GraphNode.clearTraversed = function(nodes) {
-	for(i = 0, i < nodes.length; i++)
+	for(var i = 0; i < nodes.length; i++)
 		nodes[i].traversed = false;
 };
 

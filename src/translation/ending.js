@@ -20,6 +20,7 @@ function Ending(string, sliceDepth, newEnding, genderModificationType) {
 
 const SPANISH_MODIFIER = 0;
 const GERMAN_MODIFIER = 1;
+
 //Adds a gender modifier at the end of a word.
 //May require some extra logic in case some words behave weirdly.
 Ending.prototype.genderModifier = function(gender) {
@@ -50,21 +51,21 @@ Ending.prototype.changeEnding = function(name, gender) {
 	return this.customFunction(name, gender);
 };
 
-//Compares the kth to last (and therefore the last k characters backwards) of name with _endings kth entry, 
+//Compares the kth to last (and therefore the last k characters backwards) of name with _endings kth entry,
 //in alphabetical order.
 Ending.compare = function(name, endingStr, k) {
 	i = name.length - k,
 	j = endingStr.length - k;
-	
+
 	//This must be the backup ending, so let's check to the right of that.
 	if(j <= -1)
 		return 1;
-	
+
 	//We only really need to check the kth character; the rest have been checked before.
 	if(name.charAt(i).toLowerCase() < endingStr.charAt(j).toLowerCase())
 		return -1;
 	if(name.charAt(i).toLowerCase() > endingStr.charAt(j).toLowerCase())
-		return 1;	
+		return 1;
 
 	return 0;
 };
