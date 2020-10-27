@@ -30,6 +30,11 @@ Polytope.prismProduct(Polytope.regularPolygon(5), Polytope.regularPolygon(5, 2))
 Polytope.cross(4).extrudeToPrism(1).saveAsGGB(); 
 ```
 
+### Where do I get these "OFF files"?
+The OFF file format is a quite specialized file format. It was initially meant for the [Geomview software](https://people.sc.fsu.edu/~jburkardt/data/off/off.html), and was later adapted for the [Stella software](https://www.software3d.com/StellaManual.php?prod=stella4D#import). Miratope uses a further generalization of the Stella OFF format for any amount of dimensions.
+
+Miratope does not yet include a library of OFF files. Nevertheless, many of them can be downloaded from [OfficialURL's personal collection](https://drive.google.com/drive/u/0/folders/1nQZ-QVVBfgYSck4pkZ7he0djF82T9MVy). Eventually, they'll be browsable from Miratope itself.
+
 ### Why does my OFF file not render?
 Provisionally, your OFF file is being loaded into the variable `P`. You have to manually render it using the command `P.renderTo(mainScene);`.
 
