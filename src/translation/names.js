@@ -9,6 +9,24 @@ Translation._units = {
 	de: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "okto", "ennea"]
 };
 
+//A plain name for the polytope is simply [greek facet count prefix] [greek dimension Ending].
+Translation.plain = function(n, dimension, options) {
+	var UPPERCASE = {uppercase: true};
+
+	switch(Translation.language) {
+		case "en":
+			return Translation.greekPrefix(n, options) + Translation.polytopeEnding(dimension, options);
+		case "de":
+			return Translation.greekPrefix(n, UPPERCASE) + Translation.polytopeEnding(dimension, options);
+		case "es":
+			if(dimension === 2) //"Pentágono" en vez de "pentagono".
+				return Translation._lastVowelTilde(Translation.greekPrefix(n, options)) + "gono" + (options.plural === "many" ? "s" : "");
+			return Translation.greekPrefix(n, options) + Translation.polytopeEnding(dimension, options);
+		default:
+			return n;
+	}
+};
+
 //Converts n into a greek prefix (or whatever works similarly in the target language).
 //Works only from 0 to 99999.
 //Based on https://www.georgehart.com/virtual-polyhedra/greek-prefixes.html
@@ -53,7 +71,7 @@ Translation.greekPrefix = function(n, options) {
 			res += units[tenThousands] + Translation.get("greekPrefixes/myria");
 			break;
 	}
-	
+
 	//Chilias
 	switch(thousands) {
 		case 0:
@@ -116,9 +134,9 @@ Translation.greekPrefix = function(n, options) {
 			else
 				res += Translation.get("greekPrefixes/icosa");
 			break;
-		//tria- cases:
+		//triaconta- cases:
 		case 3:
-			res += Translation.get("greekPrefixes/tria") + units[ones];
+			res += Translation.get("greekPrefixes/triaconta") + units[ones];
 			break;
 		default:
 			res += units[tens] + Translation.get("greekPrefixes/conta") + units[ones];
@@ -364,22 +382,87 @@ Translation.polytopeEnding = function(d, options) {
 	return res;
 };
 
-//A plain name for the polytope is simply [greek facet count prefix] [greek dimension Ending].
-Translation.plain = function(n, dimension, options) {
-	var UPPERCASE = {uppercase: true};
-
-	switch(Translation.language) {
-		case "en":
-			return Translation.greekPrefix(n, options) + Translation.polytopeEnding(dimension, options);
-		case "de":
-			return Translation.greekPrefix(n, UPPERCASE) + Translation.polytopeEnding(dimension, options);
-		case "es":
-			if(dimension === 2) //"Pentágono" en vez de "pentagono".
-				return Translation._lastVowelTilde(Translation.greekPrefix(n, options)) + "gono" + (options.plural === "many" ? "s" : "");
-			return Translation.greekPrefix(n, options) + Translation.polytopeEnding(dimension, options);
+//The name for a hypercube in d dimensions.
+Translation.hypercube = function(d) {
+	switch(d) {
+		case 0:
+			return Translation.get("shape/point");
+		case 1:
+			return Translation.get("shape/dyad");
+		case 2:
+			return Translation.get("shape/square");
+		case 3:
+			return Translation.get("shape/cube");
+		case 4:
+			return Translation.get("shape/tesseract");
 		default:
-			return n;
-	}
+			var prefix = Translation.greekPrefix(d);
+			switch(Translation.language) {
+				case "es":
+					if(prefix.charAt(prefix.length - 2) == 'c')
+						return prefix.substr(0, prefix.length - 2) + "queracto";
+					else
+						return prefix.substr(0, prefix.length - 1) + "eract";
+				case "de":
+					return prefix.substr(0, prefix.length - 1) + "eract";
+				case "en":
+				default:
+					if(prefix.charAt(prefix.length - 2) == 'c')
+						return prefix.substr(0, prefix.length - 2) + "keract";
+					else
+						return prefix.substr(0, prefix.length - 1) + "eract";
+			}
+		}
+};
+
+//The name for a cross-polytope in d dimensions.
+Translation.cross = function(d) {
+	switch(d) {
+		case 0:
+			return Translation.get("shape/point");
+		case 1:
+			return Translation.get("shape/dyad");
+		case 2:
+			return Translation.get("shape/square");
+		case 3:
+			return Translation.plain(8, 3);
+		case 4:
+			return Translation.plain(16, 4);
+		default:
+			var prefix = Translation.greekPrefix(d);
+			switch(Translation.language) {
+				case "es":
+					return prefix + "cruz";
+				case "en":
+				default:
+					return prefix + "cross";
+			}
+		}
+};
+
+//The name for a simplex in d dimensions.
+Translation.simplex = function(d) {
+	switch(d) {
+		case 0:
+			return Translation.get("shape/point");
+		case 1:
+			return Translation.get("shape/dyad");
+		case 2:
+			return Translation.get("shape/triangle");
+		case 3:
+			return Translation.plain(4, 3);
+		case 4:
+			return Translation.plain(5, 4);
+		default:
+			var prefix = Translation.greekPrefix(d);
+			switch(Translation.language) {
+				case "es":
+					return prefix + "plejo";
+				case "en":
+				default:
+					return prefix + "plex";
+			}
+		}
 };
 
 //Converts a nodeC into its the corresponding member of the specified family's name.
@@ -433,8 +516,8 @@ Translation.multiFamily = function(nodes, family, specialFactor, specialFactorMo
 			prefix = Translation.greekPrefix(names.length);	break;
 	}
 
-	switch(LANGUAGE) {
-		case ENGLISH:
+	switch(Translation.language) {
+		case "en":
 			tempName = names.pop();
 			concatName = Translation.toAdjective(tempName);
 
@@ -466,7 +549,7 @@ Translation.multiFamily = function(nodes, family, specialFactor, specialFactorMo
 			while(--specialCount)
 				concatName += SPECIALMODADJ + " ";
 			return concatName + SPECIALMOD;
-		case SPANISH:
+		case "es":
 			tempName = names.pop();
 			concatName = Translation.toAdjective(tempName, gender);
 

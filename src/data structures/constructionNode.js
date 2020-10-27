@@ -50,6 +50,11 @@ const CODENAME = 10;
 //IS NOT translated.
 const NAME = 11;
 
+//Has the dimension of the figure as a child.
+const HYPERCUBE = 12;
+const SIMPLEX = 13;
+const CROSS = 14;
+
 //Creates a ConstructionNode of a certain type and with certain children
 function ConstructionNode(type, children) {
 	this.type = type;
@@ -86,6 +91,12 @@ ConstructionNode.prototype.getName = function() {
 			return Translation.get("shape/" + this.children[0]);
 		case NAME:
 			return this.children[0];
+		case HYPERCUBE:
+			return Translation.hypercube(this.children);
+		case SIMPLEX:
+			return Translation.simplex(this.children);
+		case CROSS:
+			return Translation.cross(this.children);
 		default:
 			throw new Error("Not yet implemented!");
 	}

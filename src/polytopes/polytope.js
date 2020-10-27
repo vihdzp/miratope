@@ -743,7 +743,7 @@ Polytope.hypercube = function(dimensions) {
 		}
 	}
 
-	return new PolytopeC(els);
+	return new PolytopeC(els, new ConstructionNode(HYPERCUBE, dimensions));
 };
 
 //Builds a simplex in the specified amount of dimensions.
@@ -796,7 +796,7 @@ Polytope.simplex = function(dimensions) {
 		els[elementDimension].push(facets);
 	}
 
-	return new PolytopeC(els);
+	return new PolytopeC(els, new ConstructionNode(SIMPLEX, dimensions));
 };
 
 //Builds a cross-polytope in the specified amount of dimensions.
@@ -846,7 +846,7 @@ Polytope.cross = function(dimensions) {
 	}
 	els[dimensions].push(facets);
 
-	return new PolytopeC(els);
+	return new PolytopeC(els, new ConstructionNode(CROSS, dimensions));
 };
 
 //Creates a uniform {n / d} antiprism.
