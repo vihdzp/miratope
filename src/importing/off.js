@@ -156,7 +156,7 @@ Polytope._OFFReaderOnload = function(e) {
 		}
 	}
 
-	P = new PolytopeC(elementList, new ConstructionNode(NAME, [Polytope.fileName]));
+	P = new PolytopeC(elementList, new ConstructionNode(NAME, Polytope.fileName));
 };
 
 //Helper function for OFF importing.

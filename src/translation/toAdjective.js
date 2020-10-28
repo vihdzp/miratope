@@ -4,9 +4,8 @@
 //Stores some endings and what to do with them.
 //Sorted by alphabetical order of the strings, backwards!
 //cba is sorted before dcba.
-Translation._endings = [
-	//English
-	[
+Translation._endings = {
+	en:	[
 		new Ending("da", 0, "ic"), //Rotunda(ic)
 		new Ending("ola", 0, "ic"), //Cupola(ic)
 		new Ending("ula", 0, "r"), //Stella octangula(r)
@@ -28,9 +27,9 @@ Translation._endings = [
 		new Ending("ium", -2, "al"), //Gyrobifastigi(um/al)
 		new Ending("lum", -2, "ar"), //Disphenocingul(um/ar)
 		new Ending("on", -2, "al"), //Tetrahedr(on/al)
-		new Ending("gon", 0, "al"), //Pentagon(al)
 		new Ending("ion", -3, "e"), //Square tesselat(ion/e)
 		new Ending("lon", -2, "ar"), //Ditel(on/ar)
+		new Ending("ron", -2, "ic"), //Pentachor(on/ic)
 		//new Ending("ss", 0, ""), // Pentacross
 		new Ending("us", -2, "ic"), //Triamb(us/ic)
 		//new Ending("nt", 0, ""), // Point
@@ -40,27 +39,30 @@ Translation._endings = [
 		new Ending("ix", -1, "cal"), //Square heli(x/cal)
 		new Ending("ny", -1, "ical") //Octagonn(y/ical)
 	],
-	[
+	es: [
 		new Ending("zada", Translation._toAdjectiveBeforeLastWord), //Cúpula pentagrámica cruzada
 		new Ending("íada", -4, "iádic", SPANISH_MODIFIER), //D(íada/iádic[o/a])
 		new Ending("lda", -2, "ular"), //5-cel(da/ular)
 		new Ending("nda", -1, "áic", SPANISH_MODIFIER), //Rotund(a/áic[o/a])
 		new Ending("ia", 0, "l"), //Essenc(ia/ial)
-		new Ending("la", -2, "idal"), //Cupo(la/idal)
-		new Ending("ula", -6, "angular"), //Estrella oct(ángula/angular)
+		new Ending("la", -3, "oidal"), //Cupu(la/idal)
+		new Ending("gula", -6, "angular"), //Estrella oct(ángula/angular)
 		new Ending("ma", -3, "ámic", SPANISH_MODIFIER), //Pentagr(ama/ámic[o/a])
 		new Ending("sma", -1, "átic", SPANISH_MODIFIER), //Prism(a/átic[o/a])
 		new Ending("na", 0, "l"), //Esfenocorona(l)
+		new Ending("ce", -5, "elicoidal"), //H(élice/elicoidal)
 		new Ending("ide", -5, "amidal"), //Pir(ámide/amidal)
 		new Ending("oide", -1, "al"), //Disfenoid(e/al)
 		new Ending("nde", Translation._toAdjectiveBeforeLastWord), //Heptagrama grande
 		new Ending("ng", -12, "l de Skilling"), //Figura( de Skilling/l de Skilling)
 		new Ending("ium", -2, "al"), //Girobifastigi(um/al)
+		new Ending("ón", -4, "d", SPANISH_MODIFIER), //Tesela(ción/d[o/a])
 		new Ending("bo", -3, "úbic", SPANISH_MODIFIER), //C(ubo/úbic[o/a])
 		new Ending("co", Translation._toAdjectiveBeforeLastWord), //Heptadecaedro diestrófico
 		new Ending("ado", Translation._toAdjectiveBeforeLastWordGendered), //Pentagrama cruzado
 		//Icosaedro estrellado
 		new Ending("rado", -1, "", SPANISH_MODIFIER), //Cuadrad(o/[o/a])
+		new Ending("go", -1, "mátic", SPANISH_MODIFIER), //Teg(o/mátic[o/a])
 		new Ending("jo", -3, "icial"), //Simpl(ejo/icial)
 		new Ending("io", -1, "al"), //Girobifastigi(o/al)
 		new Ending("lo", -1, "ar"), //Ditel(o/ar)
@@ -69,10 +71,11 @@ Translation._endings = [
 		new Ending("ano", Translation._toAdjectiveBeforeLastWord), //Tridecagrama mediano
 		new Ending("ono", -5, "agonal"), //Pent(ágono/agonal)
 		new Ending("po", -3, "ópic", SPANISH_MODIFIER), //Pentat(opo/ópic[o/a])
-		new Ending("ro", -1, "al"), //Tetrahedr(on/al)
+		new Ending("dro", -1, "al"), //Tetraed(ro/al)
+		new Ending("oro", -3, "órico"), //Pentac(oro/órico)
 		new Ending("to", -4, "áctic", SPANISH_MODIFIER), //Teseract(o/ic[o/a])
 		new Ending("nto", -1, "al"), //3-element(o/al)
-		new Ending("unto", 1, "ual"), //Punt(o/ual)		
+		new Ending("unto", 1, "ual"), //Punt(o/ual)
 		new Ending("ño", Translation._toAdjectiveBeforeLastWord), //Hendecagrama pequeño
 		new Ending("or", Translation._toAdjectiveBeforeLastWord), //Hendecagrama mayor
 		new Ending("is", Translation._toAdjectiveBeforeLastWord), //Dodecaedral pentakis
@@ -80,41 +83,34 @@ Translation._endings = [
 		new Ending("uz", 0, "ad", SPANISH_MODIFIER), //Pentacruz(ad[o/a])
 		new Ending("ié", -2, "odal") //Trip(ié/odal)
 	]
-];
-	
-//I have to deal with some special cases in toAdjective.
-//Some Spanish words have to be modified at the beginning.
-//E,g, Prisma triangular -> Prismático triangular.
-Translation._spanishFirstWordEndings = [
-	new Ending("nda", -1, "áic", SPANISH_MODIFIER), //Rotund(a/áic[o/a])
-	new Ending("ula", -5, "upular"), //C(úpula/upular)
-	new Ending("sma", -1, "átic", SPANISH_MODIFIER), //Prism(a/átic[o/a])
-	new Ending("ce", -5, "elicoidal"), //H(élice/elicoidal)
-	new Ending("mide", -5, "amidal"), //Pir(ámide/amidal)
-	new Ending("ón", -4, "d", SPANISH_MODIFIER), //Tesela(ción/d[o/a])
-	new Ending("go", -1, "mátic", SPANISH_MODIFIER) //Teg(o/mátic[o/a])
-];
+};
 
 //Converts a polytope name into an adjective, possibly depending on the gender of the substantive it modifies (e.g. in Spanish or German).
 //E.g. cube -> cubical, sphenocorona -> sphenocoronal, etc.
 //If there's an ending match, the transformation done will correspond to the longest match.
 //If no ending matches, the default is to leave the name as is.
 Translation.toAdjective = function(name, gender) {
-	var endingIndx;
-	
-	//Checks a few special cases in Spanish.
-	if(LANGUAGE === SPANISH) {
-		var i = name.indexOf(" "), firstWord = name.substr(0, i);
-		endingIndx = Translation._findEnding(firstWord, Translation._spanishFirstWordEndings);
+	var endingIndx,
+	endings = Translation._endings[Translation.language];
+
+	if(Translation.adjBeforeNoun) {
+		endingIndx = Translation._findEnding(name, endings);
+
 		if(endingIndx !== -1)
-			return Translation._spanishFirstWordEndings[endingIndx].changeEnding(firstWord, gender) + name.substr(i);
+			return endings[endingIndx].changeEnding(name, gender);
+		return name;
 	}
-		
-	endingIndx = Translation._findEnding(name, Translation._endings[LANGUAGE])
-	
-	if(endingIndx !== -1)		
-		return Translation._endings[LANGUAGE][endingIndx].changeEnding(name, gender);
-	return name;
+	else {
+		var indexOfSpace = name.indexOf(' '),
+		firstWord = indexOfSpace === -1 ? name : name.substr(0, indexOfSpace),
+		restOfName = indexOfSpace === -1 ? "" : name.substr(indexOfSpace);
+
+		endingIndx = Translation._findEnding(firstWord, endings);
+
+		if(endingIndx !== -1)
+			return endings[endingIndx].changeEnding(firstWord, gender) + restOfName;
+		return name;
+	}
 };
 
 //Helper function for toAdjective.
@@ -125,37 +121,37 @@ Translation._findEnding = function (name, endings) {
 	var first,
 	mid,
 	last,
-	firstMatch = 0, 
+	firstMatch = 0,
 	lastMatch = endings.length - 1,
 	endingStr,
 	backup,
 	k = 1;
-	
+
 	//Adds one letter of name at a time.
 	//Searches for the least and greatest elements of _endings that are compatible with the observed letters.
 	while(lastMatch !== firstMatch) {
 		//If the first (shorter) possibility fits, and no other (longer one) does, we'll use that one.
-		
+
 		if(endings[firstMatch].string.length < k)
 			backup = firstMatch;
 		else
 			backup = null;
-		
+
 		//Finds firstMatch.
 		first = firstMatch;
-		last = lastMatch;		
+		last = lastMatch;
 		while(last - first > 1) {
 			mid = Math.floor((first + last) / 2);
 			if(Ending.compare(name, endings[mid].string, k) <= 0)
 				last = mid;
 			else
 				first = mid;
-		}		
+		}
 		if(Ending.compare(name, endings[first].string, k) === 0)
 			firstMatch = first;
 		else
 			firstMatch = last;
-		
+
 		//Finds lastMatch.
 		first = firstMatch;
 		last = lastMatch;
@@ -169,11 +165,11 @@ Translation._findEnding = function (name, endings) {
 		if(Ending.compare(name, endings[last].string, k) === 0)
 			lastMatch = last;
 		else
-			lastMatch = first;	
-		
+			lastMatch = first;
+
 		k++;
-	}	
-	
+	}
+
 	//If at some point, only one match fits, we check if it fits the whole string.
 	//Note: we haven't checked if the (k - 1)th character is correct.
 	endingStr = endings[firstMatch].string;
@@ -184,7 +180,7 @@ Translation._findEnding = function (name, endings) {
 				return backup;
 			return -1;
 		}
-		
+
 	//If the match does fit, we return it.
 	return firstMatch;
 };
@@ -203,5 +199,5 @@ Translation._toAdjectiveBeforeLastWord = function(name, gender) {
 //Turns everything except for the last word into an adjective and adds the last word with its grammatical gender modified accordingly.
 Translation._toAdjectiveBeforeLastWordGendered = function(name, gender) {
 	var i = name.lastIndexOf(" ");
-	return Translation.toAdjective(name.substr(0, i), gender) + name.substr(i, name.length - i - 1) + (gender === MALE ? "o" : "a");
+	return Translation.toAdjective(name.substr(0, i), gender) + name.substr(i, name.length - i - 1) + (gender === "male" ? "o" : "a");
 };

@@ -9,38 +9,20 @@ Translation._units = {
 	de: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "okto", "ennea"]
 };
 
-//A plain name for the polytope is simply [greek facet count prefix] [greek dimension Ending].
-Translation.plain = function(n, dimension, options) {
-	var UPPERCASE = {uppercase: true};
-
-	switch(Translation.language) {
-		case "en":
-			return Translation.greekPrefix(n, options) + Translation.polytopeEnding(dimension, options);
-		case "de":
-			return Translation.greekPrefix(n, UPPERCASE) + Translation.polytopeEnding(dimension, options);
-		case "es":
-			if(dimension === 2) //"Pentágono" en vez de "pentagono".
-				return Translation._lastVowelTilde(Translation.greekPrefix(n, options)) + "gono" + (options.plural === "many" ? "s" : "");
-			return Translation.greekPrefix(n, options) + Translation.polytopeEnding(dimension, options);
-		default:
-			return n;
-	}
-};
-
 //Converts n into a greek prefix (or whatever works similarly in the target language).
 //Works only from 0 to 99999.
 //Based on https://www.georgehart.com/virtual-polyhedra/greek-prefixes.html
 //Defaults to n-.
+
+//Possible options:
+/* uppercase */
 Translation.greekPrefix = function(n, options) {
 	if(!options)
 		options = {};
-
 	if(n === 0)
-		return Translation.get("misc/nulli", options);
-
+		return Translation.get("greekPrefixes/nulli", options);
 	if(n === 1)
-		return Translation.get("misc/mono", options);
-
+		return Translation.get("greekPrefixes/mono", options);
 	if(n >= 100000)
 		return n + "-";
 
@@ -51,8 +33,7 @@ Translation.greekPrefix = function(n, options) {
 	var thousands = n % 10; n = Math.floor(n / 10);
 	var tenThousands = n % 10,
 
-	LANGUAGE = Translation.language,
-	units = Translation._units[LANGUAGE];
+	units = Translation._units[Translation.language];
 
 	//Myrias
 	switch(tenThousands) {
@@ -148,7 +129,28 @@ Translation.greekPrefix = function(n, options) {
 	return res;
 };
 
+//A plain name for the polytope is simply [greek facet count prefix] [greek dimension Ending].
+
+//Possible options:
+/* uppercase */
+Translation.plainName = function(n, dimension, options) {
+	var UPPERCASE = {uppercase: true};
+	if(!options)
+		options = {};
+	if(!options.count)
+		options.count = 1;
+
+	var prefix = Translation.greekPrefix(n, options);
+
+	//"Pentágono" en vez de "pentagono."
+	if(Translation.language === "es" && dimension === 2)
+		prefix = Translation._lastVowelTilde(prefix);
+
+	return prefix + Translation.polytopeEnding(dimension, options);
+};
+
 //The name for an d-element, according to http://os2fan2.com/gloss/pglosstu.html
+//These are all neologisms, so feel free to translate them as you think appropriate.
 //Works for up to 20 dimensions, we very probably don't need more than that.
 Translation.elementName = function(d, options) {
 	if(!options)
@@ -158,49 +160,49 @@ Translation.elementName = function(d, options) {
 		case "en":
 			switch(d) {
 				case 0:
-					if(options.plural) res = "vertices"; else res = "vertex"; break;
+					if(options.count) res = "vertices"; else res = "vertex"; break;
 				case 1:
-					if(options.plural) res = "edges"; else res = "edge"; break;
+					if(options.count) res = "edges"; else res = "edge"; break;
 				case 2:
-					if(options.plural) res = "faces"; else res = "face"; break;
+					if(options.count) res = "faces"; else res = "face"; break;
 				case 3:
-					if(options.plural) res = "cells"; else res = "cell"; break;
+					if(options.count) res = "cells"; else res = "cell"; break;
 				case 4:
-					if(options.plural) res = "tera"; else res = "teron"; break;
+					if(options.count) res = "tera"; else res = "teron"; break;
 				case 5:
-					if(options.plural) res = "peta"; else res = "peton"; break;
+					if(options.count) res = "peta"; else res = "peton"; break;
 				case 6:
-					if(options.plural) res = "exa"; else res = "exon"; break;
+					if(options.count) res = "exa"; else res = "exon"; break;
 				case 7:
-					if(options.plural) res = "zetta"; else res = "zetton"; break;
+					if(options.count) res = "zetta"; else res = "zetton"; break;
 				case 8:
-					if(options.plural) res = "yotta"; else res = "yotton"; break;
+					if(options.count) res = "yotta"; else res = "yotton"; break;
 				case 9:
-					if(options.plural) res = "xenna"; else res = "xennon"; break;
+					if(options.count) res = "xenna"; else res = "xennon"; break;
 				case 10:
-					if(options.plural) res = "daka"; else res = "dakon"; break;
+					if(options.count) res = "daka"; else res = "dakon"; break;
 				case 11:
-					if(options.plural) res = "hendaka"; else res = "hendakon"; break;
+					if(options.count) res = "hendaka"; else res = "hendakon"; break;
 				case 12:
-					if(options.plural) res = "doka"; else res = "dokon"; break;
+					if(options.count) res = "doka"; else res = "dokon"; break;
 				case 13:
-					if(options.plural) res = "tradaka"; else res = "tradakon"; break;
+					if(options.count) res = "tradaka"; else res = "tradakon"; break;
 				case 14:
-					if(options.plural) res = "teradaka"; else res = "teradakon"; break;
+					if(options.count) res = "teradaka"; else res = "teradakon"; break;
 				case 15:
-					if(options.plural) res = "petadaka"; else res = "petadakon"; break;
+					if(options.count) res = "petadaka"; else res = "petadakon"; break;
 				case 16:
-					if(options.plural) res = "exdaka"; else res = "exdakon"; break;
+					if(options.count) res = "exdaka"; else res = "exdakon"; break;
 				case 17:
-					if(options.plural) res = "zettadaka"; else res = "zettadakon"; break;
+					if(options.count) res = "zettadaka"; else res = "zettadakon"; break;
 				case 18:
-					if(options.plural) res = "yottadaka"; else res = "yottadakon"; break;
+					if(options.count) res = "yottadaka"; else res = "yottadakon"; break;
 				case 19:
-					if(options.plural) res = "xendaka"; else res = "xendakon"; break;
+					if(options.count) res = "xendaka"; else res = "xendakon"; break;
 				case 20:
-					if(options.plural) res = "ica"; else res = "icon"; break;
+					if(options.count) res = "ica"; else res = "icon"; break;
 				default:
-					if(options.plural) res = d + "-elements"; else res = d + "-element"; break;
+					if(options.count) res = d + "-elements"; else res = d + "-element"; break;
 			}
 
 			break;
@@ -252,21 +254,21 @@ Translation.elementName = function(d, options) {
 					res = d + "-elemento"; break;
 			}
 
-			if(options.plural)
+			if(options.count)
 				res += "s";
 			break;
 		case "de":
 			switch(d) {
 				case 0:
-					if(options.plural) res = "Eck"; else res = "Ecke"; break;
+					if(options.count) res = "Eck"; else res = "Ecke"; break;
 				case 1:
-					if(options.plural) res = "Kante"; else res = "Kanten"; break;
+					if(options.count) res = "Kante"; else res = "Kanten"; break;
 				case 2:
-					if(options.plural) res = "Fläche"; else res = "Flächen"; break;
+					if(options.count) res = "Fläche"; else res = "Flächen"; break;
 				case 3:
-					if(options.plural) res = "Zell"; else res = "Zellen"; break;
+					if(options.count) res = "Zell"; else res = "Zellen"; break;
 				case 4:
-					if(options.plural) res = "Tera"; else res = "Teras"; break;
+					if(options.count) res = "Tera"; else res = "Teras"; break;
 				case 5:
 					res = "Peta"; break;
 				case 6:
@@ -303,7 +305,7 @@ Translation.elementName = function(d, options) {
 					res = d + "-Element"; break;
 			}
 
-			if(options.plural)
+			if(options.count)
 				res += "s";
 			break;
 	}
@@ -314,25 +316,22 @@ Translation.elementName = function(d, options) {
 };
 
 //The ending in the name for a d-polytope.
-Translation.polytopeEnding = function(d, options) {
-	if(!options)
-		options = {};
-
+Translation.polytopeEnding = function(d, options = {}) {
 	var res = "";
 	switch(Translation.language) {
 		case "en":
 			switch(d) {
 				case 1:
-					if(options.plural) res = "tela"; else res = "telon"; break;
+					if(options.count > 1) res = "tela"; else res = "telon"; break;
 				case 2:
-					if(options.plural) res = "gons"; else res = "gon"; break;
+					if(options.count > 1) res = "gons"; else res = "gon"; break;
 				case 3:
-					if(options.plural) res = "hedra"; else res = "hedron"; break;
+					if(options.count > 1) res = "hedra"; else res = "hedron"; break;
 				case 4:
-					if(options.plural) res = "chora"; else res = "choron"; break;
+					if(options.count > 1) res = "chora"; else res = "choron"; break;
 				default:
 					if(d > 20)
-						return n + "-polytope" + (options.plural ? "s" : "");
+						return n + "-polytope" + (options.count > 1? "s" : "");
 					return Translation.elementName(d - 1, options);
 			}
 
@@ -355,22 +354,22 @@ Translation.polytopeEnding = function(d, options) {
 					break;
 			}
 
-			if(options.plural)
+			if(options.count >= 2)
 				res += "s";
 			break;
 		case "de":
 			switch(d) {
 				case 1:
-					if(options.plural) res = "tela"; else res = "telon"; break;
+					if(options.count) res = "tela"; else res = "telon"; break;
 				case 2:
-					if(options.plural) res = "gone"; else res = "gon"; break;
+					if(options.count) res = "gone"; else res = "gon"; break;
 				case 3:
 					res = "eder"; break;
 				case 4:
-					if(options.plural) res = "chora"; else res = "choron"; break;
+					if(options.count) res = "chora"; else res = "choron"; break;
 				default:
 					if(d > 20)
-						return n + "-polytop" + (options.plural ? "en" : "");
+						return n + "-polytop" + (options.count ? "en" : "");
 					return Translation.elementName(d - 1, options);
 			}
 
@@ -383,7 +382,7 @@ Translation.polytopeEnding = function(d, options) {
 };
 
 //The name for a hypercube in d dimensions.
-Translation.hypercube = function(d) {
+Translation.hypercube = function(d, options = {}) {
 	switch(d) {
 		case 0:
 			return Translation.get("shape/point");
@@ -397,6 +396,7 @@ Translation.hypercube = function(d) {
 			return Translation.get("shape/tesseract");
 		default:
 			var prefix = Translation.greekPrefix(d);
+			//Changes the ending of the prefix accordingly.
 			switch(Translation.language) {
 				case "es":
 					if(prefix.charAt(prefix.length - 2) == 'c')
@@ -425,18 +425,11 @@ Translation.cross = function(d) {
 		case 2:
 			return Translation.get("shape/square");
 		case 3:
-			return Translation.plain(8, 3);
+			return Translation.plainName(8, 3);
 		case 4:
-			return Translation.plain(16, 4);
+			return Translation.plainName(16, 4);
 		default:
-			var prefix = Translation.greekPrefix(d);
-			switch(Translation.language) {
-				case "es":
-					return prefix + "cruz";
-				case "en":
-				default:
-					return prefix + "cross";
-			}
+			return Translation.greekPrefix(d) + Translation.get("misc/cross");
 		}
 };
 
@@ -450,28 +443,19 @@ Translation.simplex = function(d) {
 		case 2:
 			return Translation.get("shape/triangle");
 		case 3:
-			return Translation.plain(4, 3);
+			return Translation.plainName(4, 3);
 		case 4:
-			return Translation.plain(5, 4);
+			return Translation.plainName(5, 4);
 		default:
-			var prefix = Translation.greekPrefix(d);
-			switch(Translation.language) {
-				case "es":
-					return prefix + "plejo";
-				case "en":
-				default:
-					return prefix + "plex";
-			}
+			return Translation.greekPrefix(d) + Translation.get("misc/plex");
 		}
 };
 
 //Converts a nodeC into its the corresponding member of the specified family's name.
 Translation.familyMember = function(node, family, gender) {
-	return Translation.get("construction/familyMember",
-		{
-			nameAdj: Translation.toAdjective(node.getName(), gender),
-			family: Translation.get("shape/" + family)
-		}
+	return Translation.addAdjective(
+		Translation.toAdjective(node.getName(), gender),
+		Translation.get(family)
 	);
 };
 
@@ -512,81 +496,64 @@ Translation.multiFamily = function(nodes, family, specialFactor, specialFactorMo
 			prefix = ""; break;
 		case 2:
 			prefix = "duo"; break;
+		case 3:
+			prefix = "trio"; break;
 		default:
 			prefix = Translation.greekPrefix(names.length);	break;
 	}
 
-	switch(Translation.language) {
-		case "en":
-			tempName = names.pop();
-			concatName = Translation.toAdjective(tempName);
+	tempName = names.pop();
+	concatName = Translation.toAdjective(tempName, gender);
 
-			while(names.length > 0) {
-				concatName += "-" + Translation.toAdjective(names[names.length - 1]);
-				if(names.pop() !== tempName)
-					allNamesSame = false;
-			}
-
-			if(!specialCount) {
-				//X multi[family]
-				if(allNamesSame)
-					return Translation.toAdjective(tempName)+ " " + prefix + FAMILY;
-
-				//X-Y-Z multi[family]
-				return concatName + " " + prefix + FAMILY;
-			}
-
-			//Same as before, but adds as many ...[family-adj] [family]	as needed at the end.
-			if(allNamesSame)
-				concatName = Translation.toAdjective(tempName) + " ";
-			else
-				concatName += " ";
-
-			//We aren't calling a single polytope X an "X mono[family]", are we?
-			if(prefix)
-				concatName += prefix + FAMILYADJ + " ";
-
-			while(--specialCount)
-				concatName += SPECIALMODADJ + " ";
-			return concatName + SPECIALMOD;
-		case "es":
-			tempName = names.pop();
-			concatName = Translation.toAdjective(tempName, gender);
-
-			while(names.length > 0) {
-				concatName += "-" + Translation.toAdjective(names[names.length - 1], gender);
-				if(names.pop() !== tempName)
-					allNamesSame = false;
-			}
-
-			if(!specialCount) {
-				//Multi[familia] X
-				if(allNamesSame)
-					return prefix + FAMILY + " " + Translation.toAdjective(tempName, gender);
-
-				//Multi[familia] X-Y-Z
-				return prefix + FAMILY + " " + concatName;
-			}
-
-			//Igual que antes, pero con tantos [familia] [familia-adj]... como se requieran al inicio.
-			if(allNamesSame)
-				concatName = Translation.toAdjective(tempName, gender);
-
-			//No estamos llamando a un politopo X un "mono[familia] X", ¿o sí?
-			if(prefix)
-				concatName = prefix + FAMILYADJ + " " + concatName;
-
-			while(--specialCount)
-				concatName = SPECIALMODADJ + " " + concatName;
-			return SPECIALMOD + " " + concatName;
+	while(names.length > 0) {
+		concatName += "-" + Translation.toAdjective(names[names.length - 1], gender);
+		if(names.pop() !== tempName)
+			allNamesSame = false;
 	}
+
+	if(!specialCount) {
+		//X multi[family]
+		if(allNamesSame)
+			return Translation.addAdjective(
+				Translation.toAdjective(tempName, gender),
+				prefix + FAMILY
+			);
+
+		//X-Y-Z multi[family]
+		return Translation.addAdjective(
+			concatName,
+			prefix + FAMILY
+		);
+	}
+
+	//Same as before, but adds as many ...[family-adj] [family]	as needed at the end.
+	if(allNamesSame)
+		concatName = Translation.toAdjective(tempName, gender);
+
+	//We aren't calling a single polytope X an "X mono[family]", are we?
+	if(prefix)
+		concatName = Translation.addAdjective(
+			concatName,
+			prefix + FAMILYADJ
+		);
+
+	while(--specialCount)
+		concatName = Translation.addAdjective(
+			concatName,
+			SPECIALMODADJ
+		);
+
+	return Translation.addAdjective(
+		concatName,
+		SPECIALMOD
+	);
 };
 
 //Spanish helper function.
 //Adds a tilde to the last vowel of a word.
 //E.g. penta -> pentá
 Translation._lastVowelTilde = function(str) {
-	for(var i = str.length - 1; i >= 0; i--) {
+	for(var i = str.length - 1; i >= 0; i--)
 		switch(str.charAt(i)) {
 			case "a":
 				return Translation._replaceAt(str, i, "á");
@@ -599,7 +566,6 @@ Translation._lastVowelTilde = function(str) {
 			case "u":
 				return Translation._replaceAt(str, i, "ú");
 		}
-	}
 
 	throw new Error("No vowel to replace!");
 };
@@ -612,220 +578,134 @@ Translation._replaceAt = function(str, index, replacement) {
 //Gives a name for {n / d}.
 //For polygons with up to five non-compound stellations, uses the [small/-/medial/great/grand] n-gram naming scheme.
 //For everything else, uses d-strophic n-gon.
-Translation.regularPolygonName = function(n, d, options, gender) {
-	if(d === undefined)
-		d = 1;
+
+//Possible options:
+/* uppercase
+ * gender
+ * count */
+Translation.regularPolygonName = function(n, d, options = {}) {
+	if(d === undefined || d === 1)
+		return Translation.plainName(n, 2);
+	if(n === 3 && d === 1)
+		return Translation.get("shape/triangle", options);
+	if(n === 4 && d === 1)
+		return Translation.get("shape/square", options);
+
+	options.uppercase |= Translation.nounCapitalization;
+
 	//"Crossed" polygons, as in the crossed pentagrammic antiprism.
-	else if(d > n / 2) {
-		switch(LANGUAGE) {
-			case ENGLISH:
-				if(options.uppercase)
-					return "Crossed " + Translation.regularPolygonName(n, n - d, options.plural);
-				return "crossed " + Translation.regularPolygonName(n, n - d, options.plural);
-			case SPANISH:
-				return Translation.regularPolygonName(n, n - d, options) + " cruzad" + (gender === MALE ? "o" : "a") + (options.plural ? "s" : "");
-		}
-	}
+	if(d > n / 2)
+		return Translation.addAdjective(
+			Translation.get("misc/crossed", {gender: options.gender}),
+			Translation.regularPolygonName(n, n - d, Translation._lowercaseOptions(options)),
+			{uppercase: options.uppercase},
+		);
 
-	//THIS CODE IS CURSED AND SHOULD PROBABLY BE REPLACED REGARDLESS OF WHATEVER EXPLANATION I GAVE BELOW.
-	var res;
-	//I just need a quick to calculate function on n and d
-	//to distinguish the stars with up to 42 sides.
-	//I could just use the Euler totient function to give names without this enormous switch,
-	//but this is ever so slightly faster so whatever.
-	switch(64 * n + d) {
-		case 193:
-			return Translation.get("shape/triangle");
-		case 257:
-			return Translation.get("shape/square");
-		case 322:
-			res = Translation._starName(NONE, 5); break;
-		case 386:
-			res = Translation._starName(NONE, 6); break;
-		case 450:
-			res = Translation._starName(NONE, 7); break;
-		case 451:
-			res = Translation._starName(GREAT, 7); break;
-		case 515:
-			res = Translation._starName(NONE, 8); break;
-		case 578:
-			res = Translation._starName(NONE, 9); break;
-		case 580:
-			res = Translation._starName(GREAT, 5); break;
-		case 643:
-			res = Translation._starName(NONE, 10); break;
-		case 706:
-			res = Translation._starName(SMALL, 11); break;
-		case 707:
-			res = Translation._starName(NONE, 11); break;
-		case 708:
-			res = Translation._starName(GREAT, 11); break;
-		case 709:
-			res = Translation._starName(GRAND, 11); break;
-		case 773:
-			res = Translation._starName(NONE, 12); break;
-		case 834:
-			res = Translation._starName(SMALL, 13); break;
-		case 835:
-			res = Translation._starName(NONE, 13); break;
-		case 836:
-			res = Translation._starName(MEDIAL, 13); break;
-		case 837:
-			res = Translation._starName(GREAT, 13); break;
-		case 838:
-			res = Translation._starName(GRAND, 13); break;
-		case 899:
-			res = Translation._starName(NONE, 14); break;
-		case 901:
-			res = Translation._starName(GREAT, 14); break;
-		case 962:
-			res = Translation._starName(SMALL, 15); break;
-		case 964:
-			res = Translation._starName(NONE, 15); break;
-		case 967:
-			res = Translation._starName(GREAT, 15); break;
-		case 1027:
-			res = Translation._starName(SMALL, 16); break;
-		case 1029:
-			res = Translation._starName(NONE, 16); break;
-		case 1031:
-			res = Translation._starName(GREAT, 16); break;
-		case 1157:
-			res = Translation._starName(NONE, 18); break;
-		case 1159:
-			res = Translation._starName(GREAT, 18); break;
-		case 1283:
-			res = Translation._starName(SMALL, 20); break;
-		case 1287:
-			res = Translation._starName(NONE, 20); break;
-		case 1289:
-			res = Translation._starName(GREAT, 20); break;
-		case 1346:
-			res = Translation._starName(SMALL, 21); break;
-		case 1348:
-			res = Translation._starName(NONE, 21); break;
-		case 1349:
-			res = Translation._starName(MEDIAL, 21); break;
-		case 1352:
-			res = Translation._starName(GREAT, 21); break;
-		case 1354:
-			res = Translation._starName(GRAND, 21); break
-		case 1411:
-			res = Translation._starName(SMALL, 22); break;
-		case 1413:
-			res = Translation._starName(NONE, 22); break;
-		case 1415:
-			res = Translation._starName(GREAT, 22); break;
-		case 1417:
-			res = Translation._starName(GRAND, 22); break;
-		case 1541:
-			res = Translation._starName(SMALL, 24); break;
-		case 1543:
-			res = Translation._starName(NONE, 24); break;
-		case 1547:
-			res = Translation._starName(GREAT, 24); break;
-		case 1667:
-			res = Translation._starName(SMALL, 26); break;
-		case 1669:
-			res = Translation._starName(NONE, 26); break;
-		case 1671:
-			res = Translation._starName(MEDIAL, 26); break;
-		case 1673:
-			res = Translation._starName(GREAT, 26); break;
-		case 1675:
-			res = Translation._starName(GRAND, 26); break;
-		case 1795:
-			res = Translation._starName(SMALL, 28); break;
-		case 1797:
-			res = Translation._starName(NONE, 28); break;
-		case 1801:
-			res = Translation._starName(MEDIAL, 28); break;
-		case 1803:
-			res = Translation._starName(GREAT, 28); break;
-		case 1805:
-			res = Translation._starName(GRAND, 28); break;
-		case 1927:
-			res = Translation._starName(SMALL, 30); break;
-		case 1931:
-			res = Translation._starName(NONE, 30); break;
-		case 1933:
-			res = Translation._starName(GREAT, 30); break;
-		case 2309:
-			res = Translation._starName(SMALL, 36); break;
-		case 2311:
-			res = Translation._starName(NONE, 36); break;
-		case 2315:
-			res = Translation._starName(MEDIAL, 36); break;
-		case 2317:
-			res = Translation._starName(GREAT, 36); break;
-		case 2321:
-			res = Translation._starName(GRAND, 36); break;
-		case 2693:
-			res = Translation._starName(SMALL, 42); break;
-		case 2699:
-			res = Translation._starName(NONE, 42); break;
-		case 2701:
-			res = Translation._starName(MEDIAL, 42); break;
-		case 2705:
-			res = Translation._starName(GREAT, 42); break;
-		case 2707:
-			res = Translation._starName(GRAND, 42); break;
+	//Counts the number of stellation non-compounds.
+	var count,
+	//Gets the index of {n/d} among these.
+	index = 0,
+	i = 2;
+
+	//Any polygon with more than 42 sides has at least 6 non-compound stellations.
+	if(n > 42)
+		return Translation._simpleStarName(n, d);
+
+	//Calculates the index.
+	while(i < d)
+		if(Polytope._gcd(n, i++) === 1 && ++index >= 5)
+				return Translation._simpleStarName(n, d);
+
+	count = index;
+
+	//Calculates the count.
+	while(i < n / 2)
+		if(Polytope._gcd(n, i++) === 1 && ++count >= 5)
+			return Translation._simpleStarName(n, d);
+
+	//Adds the great, grand, etc. modifiers.
+	//This system is complicated, don't blame me, I didn't make it.
+	switch(count * 10 + index) {
+		case 30: case 40:	case 50:
+			return Translation._starName(n, "modifiers/small", options);
+		case 52:
+			return Translation._starName(n, "modifiers/medial", options);
+		case 21: case 32: case 42: case 53:
+			return Translation._starName(n, "modifiers/great", options);
+		case 43: case 54:
+			return Translation._starName(n, "modifiers/grand", options);
 		default:
-			if(d === 1)
-				return Translation.plain(n, 2, options);
-
-			switch(LANGUAGE) {
-				case ENGLISH:
-					res = Translation.greekPrefix(d) + "strophic " + Translation.greekPrefix(n) + "gram"; break;
-				case SPANISH:
-					res = Translation.greekPrefix(n) + "grama " + Translation.greekPrefix(d) + "estrófic" + (gender === MALE ? "o" : "a"); break;
-				case GERMAN: //Todo: conjugate strophisch.
-					res = Translation.firstToUpper(Translation.greekPrefix(d)) + "strophisches " + Translation.greekPrefix(n, UPPERCASE) + "gramm"; break;
-			}
+			return Translation._starName(n, undefined, options);
 	}
-
+};
+/*
 	//Adds plural and uppercase.
 	//The plurals aren't always like this in the languages below, but they work for all polygon names.
-	if(options.plural) {
-		switch(LANGUAGE) {
+	if(options.count) {
+		switch(Translation.language) {
 			case ENGLISH:
-			case SPANISH:
+			case "es":
 				res += "s"; break;
-			case GERMAN:
+			case "de":
 				res += "e"; break;
 		}
 	}
 	if(options.uppercase)
 		return Translation.firstToUpper(res);
 	return res;
-};
+};*/
 
-Translation._starModifiers = [
-	["small", "medial", "great", "grand"], //English
-	["pequeño", "mediano", "grande", "mayor"], //Spanish
-	["Kleines", "Mittel", "Großes", "Größtes"] //German THE LAST ONE IS PROBABLY WRONG
-];
+
+//Possible options:
+/* uppercase
+ * gender
+ * count */
+Translation._simpleStarName = function(n, d, options = {}) {
+	return Translation.addAdjective(
+		Translation.greekPrefix(d) + Translation.get("misc/strophic", options),
+		Translation.get("grammar/starName",
+		{
+			prefix: Translation.greekPrefix(n),
+			count: options.count,
+			uppercase: Translation.nounCapitalization
+		}),
+		{uppercase: options.uppercase}
+	);
+};
 
 //Helper function for regularPolygonName.
 //Is the one actually giving the names.
-Translation._starName = function(mod, n) {
-	if(mod === NONE) {
-		switch(LANGUAGE) {
-			case ENGLISH:
-				return Translation.greekPrefix(n) + "gram";
-			case GERMAN:
-				return Translation.firstToUpper(Translation.greekPrefix(n)) + "gramm";
-			case SPANISH:
-				return Translation.greekPrefix(n) + "grama";
-		}
+
+//Possible options:
+/* uppercase
+ * gender
+ * count */
+Translation._starName = function(n, mod, options = {}) {
+	//The base name of the star, e.g. "heptagram".
+	var starName = Translation.get("grammar/starName",
+	{
+		prefix: Translation.greekPrefix(n),
+		count: options.count,
+	});
+
+	//If there's no modifier, returns the name.
+	if(!mod) {
+		if(options.uppercase)
+			return Translation.firstToUpper(starName);
+		return starName;
 	}
 
-	switch(LANGUAGE) {
-		case ENGLISH:
-			return Translation._starModifiers[LANGUAGE][mod] + " " + Translation.greekPrefix(n) + "gram";
-		case GERMAN:
-			return Translation._starModifiers[LANGUAGE][mod] + " " + Translation.firstToUpper(Translation.greekPrefix(n)) + "gramm";
-		case SPANISH:
-			return Translation.greekPrefix(n) + "grama" + " " + Translation._starModifiers[LANGUAGE][mod];
-	}
+	//The base name with the modifier added, e.g. "great heptagram".
+	return Translation.addAdjective(
+		Translation.get(mod, {gender: options.gender}),
+		starName,
+		{uppercase: options.uppercase}
+	);
+};
+
+//Clones the options and sets the uppercase attribute to false.
+Translation._lowercaseOptions = function(options) {
+	var newOptions = {...options};
+	newOptions.uppercase = false;
+	return newOptions;
 };

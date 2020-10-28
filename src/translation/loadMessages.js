@@ -1,33 +1,45 @@
+"use strict";
+
+//WARNING: THESE LABELS WILL PROBABLY BE MOVED AROUND A LOT.
 Globalize.loadMessages({
 	root: { //English is used as a fall-back.
+		meta: {
+			nounCapitalization: "false",
+			adjBeforeNoun: "true",
+			genderedLanguage: "false"
+		},
 		error: {
 			unexpectedEOF: "Unexpected end of file!\nLine: {line}, column: {column}.",
-			invalidNumber: "Invalid number!\nLine: {line}, column: {column}.",
+			invalidNumber: "Invalid number!\nLine: {line}, column: {column}."
 		},
 		shape: {
 			polytope: "polytope",
 			nullitope: "nullitope",
 			point: "point",
 			dyad: "dyad",
-			prism: "prism",
-			pyramid: "pyramid",
-			antiprism: "antiprism",
-			bipyramid: "bipyramid",
-			tegum: "tegum",
 			rectangle: "rectangle",
-			triangle: "triangle",
-			square: "square",
+			triangle: "{count, plural, one {triangle} other {triangles}}",
+			square: "{count, plural, one {square} other {squares}}",
 			cube: "cube",
 			tesseract: "tesseract",
-			bowtie: "bowtie",
+			bowtie: "bowtie"
+		},
+		family: {
+			prism: "prism",
+			pyramid: "pyramid",
+			bipyramid: "bipyramid",
+			antiprism: "antiprism",
+			tegum: "tegum",
 			cupola: "cupola",
 			cuploid: "cuploid",
 			cupolaicBlend: "cupolaic blend"
 		},
-		construction: {
-			familyMember: "{nameAdj} {family}"
+		grammar: {
+			starName: "{count, plural, many {{prefix}grams} other {{prefix}gram}}"
 		},
 		greekPrefixes: {
+			nulli: "nulli",
+			mono: "mono",
 			deca: "deca",
 			conta: "conta",
 			dodeca: "dodeca",
@@ -43,36 +55,51 @@ Globalize.loadMessages({
 			tris: "tris",
 			myria: "myria"
 		},
+		modifiers: {
+			small: "small",
+			medial: "medial",
+			great: "great",
+			grand: "grand"
+		},
 		misc: {
-			component: "{plural, select, one {component}, many {components}}",
+			component: "{count, plural, many {components} other {component}}",
 			compound: "compound",
-			nulli: "nulli",
-			mono: "mono"
+			cross: "cross",
+			plex: "plex",
+			crossed: "crossed",
+			strophic: "strophic"
 		}
 	},
 	es: {
+		meta: {
+			nounCapitalization: "false",
+			adjBeforeNoun: "false",
+			genderedLanguage: "true"
+		},
 		shape: {
 			polytope: "politopo",
 			nullitope: "nulitopo",
 			point: "punto",
 			dyad: "díada",
-			prism: "prisma",
-			pyramid: "pirámide",
-			antiprism: "antiprisma",
-			bipyramid: "bipirámide",
-			tegum: "tego",
 			rectangle: "rectángulo",
 			triangle: "triángulo",
 			square: "cuadrado",
 			cube: "cubo",
 			tesseract: "teseracto",
-			bowtie: "moño",
+			bowtie: "moño"
+		},
+		family: {
+			prism: "prisma",
+			pyramid: "pirámide",
+			antiprism: "antiprisma",
+			bipyramid: "bipirámide",
+			tegum: "tego",
 			cupola: "cúpula",
 			cuploid: "cuploide",
 			cupolaicBlend: "mezcla cupoléica"
 		},
-		construction: {
-			familyMember: "{family} {nameAdj}"
+		grammar: {
+			starName: "{count, plural, one {{prefix}grama} other {{prefix}gramas}}"
 		},
 		greekPrefixes: {
 			/*deca: "deca",
@@ -90,13 +117,29 @@ Globalize.loadMessages({
 			tris: "tris",*/
 			myria: "miria"
 		},
+		modifiers: {
+			small: "{gender, select, male {pequeño} other {pequeña}}",
+			medial: "{gender, select, male {mediano} other {pequeña}}",
+			great: "grande",
+			grand: "mayor"
+		},
 		misc: {
-			component: "{plural, select, one {componente}, many {componentes}}",
+			component: "{count, plural, one {componente} other {componentes}}",
 			compound: "compuesto",
-			nulli: "nulli"
+			nulli: "nuli",
+			//mono: "mono",
+			cross: "cruz",
+			plex: "plejo",
+			crossed: "{gender, select, male {cruzado} other {cruzada}}",
+			strophic: "estrófico"
 		}
 	},
 	de: {
+		meta: {
+			nounCapitalization: "true",
+			adjBeforeNoun: "true",
+			genderedLanguage: "true"
+		},
 		greekPrefixes: {
 			deca: "deka",
 			//conta: "conta",

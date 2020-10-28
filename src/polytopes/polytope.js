@@ -493,12 +493,22 @@ Polytope.prototype.extrudeToPyramid = function(apex) {
 	var P = this.toPolytopeC(),
 	els, i;
 
+	//If the height was passed instead, builds a point from there.
+	if(typeof(apex) === 'number') {
+		var newApex = [];
+		for(i = 0; i < P.dimensions; i++)
+			newApex.push(0);
+		newApex.push(apex);
+		apex = new Point(newApex);
+	}
+
 	P.dimensions++;
 	P.elementList.push([]);
 
 	var oldElNumbers = [];
 	for(i = 0; i <= P.dimensions; i++)
 		oldElNumbers.push(P.elementList[i].length);
+
 
 	//Adds apex.
 	P.elementList[0].push(apex);
@@ -1097,7 +1107,7 @@ Polytope.openFile = function(e) {
   var i = Polytope.fileName.lastIndexOf("."),
   ext = Polytope.fileName.substr(i + 1); //Extension of file.
 	Polytope.fileName = Polytope.fileName.substr(0, i); //Removes extension from file name.
-	if(LANGUAGE !== GERMAN)
+	if(Translation.language !== "de")
 		Polytope.fileName = Translation.firstToLower(Polytope.fileName); //Lowercase name.
 
   //Handles the file according to its extension.

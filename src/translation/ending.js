@@ -28,12 +28,12 @@ Ending.prototype.genderModifier = function(gender) {
 		case undefined: //Does not modify a word at all.
 			return "";
 		case SPANISH_MODIFIER: //Adds an o for masculine nouns, an a for femenine nouns.
-			if(gender === MALE)	return "o";
+			if(gender === "male")	return "o";
 			return "a";
 		case GERMAN_MODIFIER: //Adds an er for masculine nouns, an e for femenine nouns, and an es for netural nouns.
 			switch(gender) {
-				case MALE: return "er";
-				case FEMALE: return "e";
+				case "male": return "er";
+				case "female": return "e";
 				default: return "es";
 			}
 		default:

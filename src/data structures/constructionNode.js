@@ -59,38 +59,39 @@ const CROSS = 14;
 function ConstructionNode(type, children) {
 	this.type = type;
 	this.children = children;
+	this.setGenders();
 };
 
 //Gets the name of a ConstructionNode based on type
 ConstructionNode.prototype.getName = function() {
 	switch(this.type) {
 		case PLAIN:
-			return Translation.plain(this.children[0], this.children[1]);
+			return Translation.plainName(this.children[0], this.children[1]);
 		case MULTIPRISM:
 			this.mergeChildren();
-			return Translation.multiFamily(this.children, "prism", "dyad", "prism", this.gender);
+			return Translation.multiFamily(this.children, "family/prism", "shape/dyad", "family/prism", this.gender);
 		case MULTITEGUM:
 			this.mergeChildren();
-			return Translation.multiFamily(this.children, "tegum", "dyad", "bipyramid", this.gender);
+			return Translation.multiFamily(this.children, "family/tegum", "shape/dyad", "family/bipyramid", this.gender);
 		case MULTIPYRAMID:
 			this.mergeChildren();
-			return Translation.multiFamily(this.children, "pyramid", "point", "pyramid", this.gender);
+			return Translation.multiFamily(this.children, "family/pyramid", "shape/point", "family/pyramid", this.gender);
 		case ANTIPRISM:
-			return Translation.familyMember(this.children, "antiprism", this.gender);
+			return Translation.familyMember(this.children, "family/antiprism", this.gender);
 		case PYRAMID:
-			return Translation.familyMember(this.children, "pyramid", this.gender);
+			return Translation.familyMember(this.children, "family/pyramid", this.gender);
 		case CUPOLA:
-			return Translation.familyMember(this.children, "cupola", this.gender);
+			return Translation.familyMember(this.children, "family/cupola", this.gender);
 		case CUPLOID:
-			return Translation.familyMember(this.children[0], "cuploid", this.gender);
+			return Translation.familyMember(this.children[0], "family/cuploid", this.gender);
 		case CUPBLEND:
-			return Translation.familyMember(this.children[0], "cupolaicBlend", this.gender);
+			return Translation.familyMember(this.children[0], "family/cupolaicBlend", this.gender);
 		case POLYGON:
-			return Translation.regularPolygonName(this.children[0], this.children[1], 0, this.gender);
+			return Translation.regularPolygonName(this.children[0], this.children[1], {gender: this.gender});
 		case CODENAME:
-			return Translation.get("shape/" + this.children[0]);
+			return Translation.get("shape/" + this.children);
 		case NAME:
-			return this.children[0];
+			return this.children;
 		case HYPERCUBE:
 			return Translation.hypercube(this.children);
 		case SIMPLEX:
@@ -107,35 +108,37 @@ ConstructionNode.prototype.getName = function() {
 //"prisma cupoidal pentagrámica cruzada"; even though "cúpula" is femenine,
 //the male "prisma" takes over.
 ConstructionNode.prototype.setGenders = function() {
-	switch(type) {
+	if(!Translation.genderedLanguage) return;
+
+	switch(this.type) {
 		case POLYGON: //The gender of the plain polygon names
 		case PLAIN: //The gender of the plain polytope names
 		case MULTIPRISM: //The gender of the word "multiprism"
 		case ANTIPRISM: //The gender of the word "antiprism"
 		case MULTITEGUM: //The gender of the word "multitegum"
-			switch(LANGUAGE) {
-				case SPANISH: this.gender = MALE; break;
-				case GERMAN: this.gender = NEUTER; break;
+			switch(Translation.language) {
+				case "es": this.gender = "male"; break;
+				case "de": this.gender = "neuter"; break;
 				default: break;
 			}
 			break;
 		case PYRAMID: //The gender of the word "pyramid"
 		case CUPOLA: //The gender of the word "cupola"
-			switch(LANGUAGE) {
-				case SPANISH:
-				case GERMAN: this.gender = FEMALE; break;
-				default: break;;
+			switch(Translation.language) {
+				case "es":
+				case "de": this.gender = "female"; break;
+				default: break;
 			}
 			break;
 		case CUPBLEND: //The gender of the word "cupolaic blend"
-			switch(LANGUAGE) {
-				case SPANISH: this.gender = FEMALE; break;
-				default: break;;
+			switch(Translation.language) {
+				case "es": this.gender = "female"; break;
+				default: break;
 			}
 			break;
 		case CUPLOID: //The gender of the word "cuploid"
-			switch(LANGUAGE) {
-				case SPANISH: this.gender = MALE; break;
+			switch(Translation.language) {
+				case "es": this.gender = "male"; break;
 				default: break;
 			}
 			break;
@@ -144,15 +147,24 @@ ConstructionNode.prototype.setGenders = function() {
 	this._setGenders();
 };
 
+//Auxiliary function for setGenders.
 ConstructionNode.prototype._setGenders = function() {
-	for(var i = 0; i < this.children.length; i++) {
-		var child = this.children[i];
-		if(child._setGenders) {
-			child.gender = this.gender;
-			child._setGenders();
+	//If the node has a single child:
+	if(!this.children.length && this.children._setGenders) {
+		this.children.gender = this.gender;
+		this.children._setGenders();
+	}
+	//If the node has an array of children:
+	else {
+		for(var i = 0; i < this.children.length; i++) {
+			var child = this.children[i];
+			if(child._setGenders) {
+				child.gender = this.gender;
+				child._setGenders();
+			}
 		}
 	}
-}
+};
 
 //A multiprism of multiprisms is just a larger multiprism,
 //a multitegum of multitegums is just a larger multitegum, etc.
