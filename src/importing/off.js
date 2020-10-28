@@ -2,7 +2,12 @@
 
 //The part of the Polytope class for reading and writing to OFF files.
 
-//Helper function for OFF importing.
+/**
+ * Helper function for OFF importing.
+ * Is called when the OFF file is loaded.
+ * @private
+ * @param {Object} e The event handler.
+ */
 Polytope._OFFReaderOnload = function(e) {
 	var caret = new Caret(e.target.result), //Caret for reading the OFF file.
 	component, //A component of the polytope.
@@ -156,7 +161,13 @@ Polytope._OFFReaderOnload = function(e) {
 		}
 	}
 
-	P = new PolytopeC(elementList, new ConstructionNode(NAME, Polytope.fileName));
+	P = new PolytopeC(
+		elementList,
+		new ConstructionNode(
+			ConstructionNodeType.Name,
+			Polytope.fileName
+		)
+	);
 };
 
 //Helper function for OFF importing.

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>data structures/constructionNode.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AvlTree.html">AvlTree</a><ul class='methods'><li data-type='method'><a href="AvlTree.html#contains">contains</a></li><li data-type='method'><a href="AvlTree.html#delete">delete</a></li><li data-type='method'><a href="AvlTree.html#findMaximum">findMaximum</a></li><li data-type='method'><a href="AvlTree.html#findMaximumNode">findMaximumNode</a></li><li data-type='method'><a href="AvlTree.html#findMinimum">findMinimum</a></li><li data-type='method'><a href="AvlTree.html#findMinimumNode">findMinimumNode</a></li><li data-type='method'><a href="AvlTree.html#get">get</a></li><li data-type='method'><a href="AvlTree.html#getNode">getNode</a></li><li data-type='method'><a href="AvlTree.html#insert">insert</a></li><li data-type='method'><a href="AvlTree.html#isEmpty">isEmpty</a></li><li data-type='method'><a href="AvlTree.html#size">size</a></li></ul></li><li><a href="ConstructionNode.html">ConstructionNode</a></li><li><a href="Polytope.html">Polytope</a><ul class='methods'><li data-type='method'><a href="Polytope.html#._minimize">_minimize</a></li><li data-type='method'><a href="Polytope.html#.dyad">dyad</a></li><li data-type='method'><a href="Polytope.html#.nullitope">nullitope</a></li><li data-type='method'><a href="Polytope.html#.point">point</a></li><li data-type='method'><a href="Polytope.html#.prismProduct">prismProduct</a></li><li data-type='method'><a href="Polytope.html#.verfLength">verfLength</a></li><li data-type='method'><a href="Polytope.html#circumradius">circumradius</a></li><li data-type='method'><a href="Polytope.html#getName">getName</a></li><li data-type='method'><a href="Polytope.html#move">move</a></li><li data-type='method'><a href="Polytope.html#moveNeg">moveNeg</a></li><li data-type='method'><a href="Polytope.html#renderTo">renderTo</a></li><li data-type='method'><a href="Polytope.html#scale">scale</a></li></ul></li><li><a href="PolytopeC.html">PolytopeC</a><ul class='methods'><li data-type='method'><a href="PolytopeC.html#faceToVertices">faceToVertices</a></li><li data-type='method'><a href="PolytopeC.html#gravicenter">gravicenter</a></li><li data-type='method'><a href="PolytopeC.html#recenter">recenter</a></li><li data-type='method'><a href="PolytopeC.html#setSpaceDimensions">setSpaceDimensions</a></li><li data-type='method'><a href="PolytopeC.html#toPolytopeC">toPolytopeC</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#ConstructionNodeType">ConstructionNodeType</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">data structures/constructionNode.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
+
+/**
+ * An object containing the possible types of {@link ConstructionNode|ConstructionNodes}.
+ * @enum {number}
+ */
+const ConstructionNodeType = {
+	/** Has two children `[n, d]`,
+	 * representing the number of facets `n`
+	 * and the number of dimensions `d` of the polytope.
+	 */
+	Plain: 0,
+
+	//Has the factors of a prism product as children.
+	Multiprism: 1,
+
+	//Has the factors of a tegum product as children.
+	Multitegum: 2,
+
+	//Has the factors of a pyramid product as children.
+	Multipyramid: 3,
+
+	//Has an antiprism based on the child node.
+	Antiprism: 4,
+
+	//Has a pyramid based on the child node.
+	Pyramid: 5,
+
+	//Has a cupola based on the child node.
+	Cupola: 6,
+
+	//Has two children n, d,
+	//representing the regular polygonal small base {n/d}.
+	Cuploid: 7,
+
+	//Has two children n, d,
+	//representing the regular polygonal base {n/d}.
+	CupolaicBlend: 8,
+
+	//Has two children n, d,
+	//representing the regular polygonal base {n/d}.
+	Polygon: 9,
+
+	//Has a polytope's "code name" as a child.
+	//Used for polytopes whose names are in loadMessages.js, and can be translated.
+	Codename: 10,
+
+	//Has a polytope's name as a child.
+	//The default for imported polytopes, or polytopes not built out of anything else whose name is known.
+	//IS NOT translated.
+	Name: 11,
+
+	//Has the dimension of the figure as a child.
+	Hypercube: 12,
+	Simplex: 13,
+	Cross: 14
+};
+
+/**
+ * The constructor for the ConstructionNode class.
+ * @constructor
+ * @classdesc A ConstructionNode represents how a polytope has been built up.
+ * ConstructionNodes come in various types, and always have at least one child.
+ * Depending on the node type, these children can either be single objects,
+ * or arrays of ConstructionNodes or other objects.&lt;br />
+ * &amp;emsp;The possible node types and their descriptions are given in {@link ConstructionNodeType}.
+ * @param {ConstructionNodeType} type The ConstructionNode type.
+ * @param {Object} children The child or children of the node. The type of this variable depends on the ConstructionNode type.
+ */
+//Creates a ConstructionNode of a certain type and with certain children
+function ConstructionNode(type, children) {
+	this.type = type;
+	this.children = children;
+	this.setGenders();
+};
+
+//Gets the name of a ConstructionNode based on type
+ConstructionNode.prototype.getName = function() {
+	switch(this.type) {
+		case ConstructionNodeType.Plain:
+			return Translation.plainName(this.children[0], this.children[1]);
+		case ConstructionNodeType.Multiprism:
+			this.mergeChildren();
+			return Translation.multiFamily(this.children, "family/prism", "shape/dyad", "family/prism", this.gender);
+		case ConstructionNodeType.Multitegum:
+			this.mergeChildren();
+			return Translation.multiFamily(this.children, "family/tegum", "shape/dyad", "family/bipyramid", this.gender);
+		case ConstructionNodeType.Multipyramid:
+			this.mergeChildren();
+			return Translation.multiFamily(this.children, "family/pyramid", "shape/point", "family/pyramid", this.gender);
+		case ConstructionNodeType.Antiprism:
+			return Translation.familyMember(this.children, "family/antiprism", this.gender);
+		case ConstructionNodeType.Pyramid:
+			return Translation.familyMember(this.children, "family/pyramid", this.gender);
+		case ConstructionNodeType.Cupola:
+			return Translation.familyMember(this.children, "family/cupola", this.gender);
+		case ConstructionNodeType.Cuploid:
+			return Translation.familyMember(this.children[0], "family/cuploid", this.gender);
+		case ConstructionNodeType.CupolaicBlend:
+			return Translation.familyMember(this.children[0], "family/cupolaicBlend", this.gender);
+		case ConstructionNodeType.Polygon:
+			return Translation.regularPolygonName(this.children[0], this.children[1], {gender: this.gender});
+		case ConstructionNodeType.Codename:
+			return Translation.get("shape/" + this.children);
+		case ConstructionNodeType.Name:
+			return this.children;
+		case ConstructionNodeType.Hypercube:
+			return Translation.hypercube(this.children);
+		case ConstructionNodeType.Simplex:
+			return Translation.simplex(this.children);
+		case ConstructionNodeType.Cross:
+			return Translation.cross(this.children);
+		default:
+			throw new Error("Not yet implemented!");
+	}
+};
+
+//Sets the gender of the noun representing the polytope type at all children nodes.
+//e.g. in Spanish, we'd say "prisma cupoidal pentagrámico cruzado", not
+//"prisma cupoidal pentagrámica cruzada"; even though "cúpula" is femenine,
+//the male "prisma" takes over.
+ConstructionNode.prototype.setGenders = function() {
+	if(!Translation.genderedLanguage) return;
+
+	switch(this.type) {
+		case ConstructionNodeType.Polygon: //The gender of the plain polygon names
+		case ConstructionNodeType.Plain: //The gender of the plain polytope names
+		case ConstructionNodeType.Multiprism: //The gender of the word "multiprism"
+		case ConstructionNodeType.Antiprism: //The gender of the word "antiprism"
+		case ConstructionNodeType.Multitegum: //The gender of the word "multitegum"
+			switch(Translation.language) {
+				case "es": this.gender = "male"; break;
+				case "de": this.gender = "neuter"; break;
+				default: break;
+			}
+			break;
+		case ConstructionNodeType.Pyramid: //The gender of the word "pyramid"
+		case ConstructionNodeType.Cupola: //The gender of the word "cupola"
+			switch(Translation.language) {
+				case "es":
+				case "de": this.gender = "female"; break;
+				default: break;
+			}
+			break;
+		case ConstructionNodeType.CupolaicBlend: //The gender of the word "cupolaic blend"
+			switch(Translation.language) {
+				case "es": this.gender = "female"; break;
+				default: break;
+			}
+			break;
+		case ConstructionNodeType.Cuploid: //The gender of the word "cuploid"
+			switch(Translation.language) {
+				case "es": this.gender = "male"; break;
+				default: break;
+			}
+			break;
+	}
+
+	this._setGenders();
+};
+
+//Auxiliary function for setGenders.
+ConstructionNode.prototype._setGenders = function() {
+	//If the node has a single child:
+	if(!this.children.length &amp;&amp; this.children._setGenders) {
+		this.children.gender = this.gender;
+		this.children._setGenders();
+	}
+	//If the node has an array of children:
+	else {
+		for(var i = 0; i &lt; this.children.length; i++) {
+			var child = this.children[i];
+			if(child._setGenders) {
+				child.gender = this.gender;
+				child._setGenders();
+			}
+		}
+	}
+};
+
+//A multiprism of multiprisms is just a larger multiprism,
+//a multitegum of multitegums is just a larger multitegum, etc.
+//This function removes children nodes of the same type,
+//and replaces them by their children.
+ConstructionNode.prototype.mergeChildren = function() {
+	var oldLength = this.children.length;
+	for(var i = 0; i &lt; oldLength; i++) {
+		if(this.children[i].type === this.type) {
+			for(var j = 0; j &lt; this.children[i].children.length - 1; j++)
+				this.children.push(this.children[i].children.pop());
+			this.children[i] = this.children[i].children.pop();
+		}
+	}
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Wed Oct 28 2020 11:42:58 GMT-0600 (Central Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

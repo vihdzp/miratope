@@ -2,7 +2,7 @@
 
 //Represents a polytope in a way that takes advantage of symmetry
 //Obviously, this requires a representation of the symmetry group.
-//The other components are a description of how the flags (tuples of vertex/edge/face...) 
+//The other components are a description of how the flags (tuples of vertex/edge/face...)
 //within a single domain connect to each other under "change vertex/edge/..." operations,
 //matrices describing how the symmetry group affects the physical representation of the polytope,
 //and positions of each class of vertices.
@@ -79,12 +79,12 @@ PolytopeS.recticross = function(dimensions) {
 	return new PolytopeS(symmetries, flagClasses, vertices, dimensions);
 };
 
-//The centroid is the centroid of the original vertices,
+//The gravicenter is the gravicenter of the original vertices,
 //weighted by the inverse of the number of domains each vertex appears in,
 //projected onto the intersection of the eigenspaces of the generators
 //with eigenvalues 1.
-PolytopeS.prototype.centroid = function() {
-	throw new Error("PolytopeS.centroid is not yet implemented");
+PolytopeS.prototype.gravicenter = function() {
+	throw new Error("PolytopeS.gravicenter is not yet implemented");
 };
 
 //Apply a flag-change operation to a flag.

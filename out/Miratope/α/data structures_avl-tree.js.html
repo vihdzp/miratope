@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>data structures/avl-tree.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AvlTree.html">AvlTree</a><ul class='methods'><li data-type='method'><a href="AvlTree.html#contains">contains</a></li><li data-type='method'><a href="AvlTree.html#delete">delete</a></li><li data-type='method'><a href="AvlTree.html#findMaximum">findMaximum</a></li><li data-type='method'><a href="AvlTree.html#findMaximumNode">findMaximumNode</a></li><li data-type='method'><a href="AvlTree.html#findMinimum">findMinimum</a></li><li data-type='method'><a href="AvlTree.html#findMinimumNode">findMinimumNode</a></li><li data-type='method'><a href="AvlTree.html#get">get</a></li><li data-type='method'><a href="AvlTree.html#getNode">getNode</a></li><li data-type='method'><a href="AvlTree.html#insert">insert</a></li><li data-type='method'><a href="AvlTree.html#isEmpty">isEmpty</a></li><li data-type='method'><a href="AvlTree.html#size">size</a></li></ul></li><li><a href="ConstructionNode.html">ConstructionNode</a></li><li><a href="Polytope.html">Polytope</a><ul class='methods'><li data-type='method'><a href="Polytope.html#._minimize">_minimize</a></li><li data-type='method'><a href="Polytope.html#.dyad">dyad</a></li><li data-type='method'><a href="Polytope.html#.nullitope">nullitope</a></li><li data-type='method'><a href="Polytope.html#.point">point</a></li><li data-type='method'><a href="Polytope.html#.prismProduct">prismProduct</a></li><li data-type='method'><a href="Polytope.html#.verfLength">verfLength</a></li><li data-type='method'><a href="Polytope.html#circumradius">circumradius</a></li><li data-type='method'><a href="Polytope.html#getName">getName</a></li><li data-type='method'><a href="Polytope.html#move">move</a></li><li data-type='method'><a href="Polytope.html#moveNeg">moveNeg</a></li><li data-type='method'><a href="Polytope.html#renderTo">renderTo</a></li><li data-type='method'><a href="Polytope.html#scale">scale</a></li></ul></li><li><a href="PolytopeC.html">PolytopeC</a><ul class='methods'><li data-type='method'><a href="PolytopeC.html#faceToVertices">faceToVertices</a></li><li data-type='method'><a href="PolytopeC.html#gravicenter">gravicenter</a></li><li data-type='method'><a href="PolytopeC.html#recenter">recenter</a></li><li data-type='method'><a href="PolytopeC.html#setSpaceDimensions">setSpaceDimensions</a></li><li data-type='method'><a href="PolytopeC.html#toPolytopeC">toPolytopeC</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#ConstructionNodeType">ConstructionNodeType</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">data structures/avl-tree.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+/**
+ * @license
+ * Copyright Daniel Imms &lt;http://www.growingwiththeweb.com>
+ * Modified by the Miratope authors.
+ * Released under MIT license. See LICENSE in the project root for details.
+ */
+
+/**
+ * Creates a new AVL Tree.
+ * @constructor
+ * @param {function=} customCompare An optional custom compare function.
+ */
+var AvlTree = function (customCompare) {
+  this._root = null;
+  this._size = 0;
+
+  if (customCompare) {
+    this._compare = customCompare;
+  }
+};
+
+/**
+ * Compares two keys with each other.
+ *
+ * @private
+ * @param {Object} a The first key to compare.
+ * @param {Object} b The second key to compare.
+ * @return {number} -1, 0 or 1 if a &lt; b, a == b or a > b respectively.
+ */
+AvlTree.prototype._compare = function (a, b) {
+  if (a > b) {
+    return 1;
+  }
+  if (a &lt; b) {
+    return -1;
+  }
+  return 0;
+};
+
+/**
+ * Inserts a new node with a specific key into the tree.
+ *
+ * @param {Object} key The key being inserted.
+ * @param {Object} value The value being inserted.
+ */
+AvlTree.prototype.insert = function (key, value) {
+  this._root = this._insert(key, value, this._root);
+  this._size++;
+  return AvlTree.insertedNode;
+};
+
+/**
+ * Inserts a new node with a specific key into the tree.
+ *
+ * @private
+ * @param {Object} key The key being inserted.
+ * @param {Object} value The value being inserted.
+ * @param {Node} root The root of the tree to insert in.
+ * @return {Node} The new tree root.
+ */
+AvlTree.prototype._insert = function (key, value, root) {
+  // Perform regular BST insertion
+  if (root === null) {
+    AvlTree.insertedNode = new Node(key, value);
+	return AvlTree.insertedNode;
+  }
+
+  if (this._compare(key, root.key) &lt; 0) {
+    root.linkLeft(this._insert(key, value, root.left));
+  } else if (this._compare(key, root.key) > 0) {
+    root.linkRight(this._insert(key, value, root.right));
+  } else {
+    // It's a duplicate so insertion failed, decrement size to make up for it
+    this._size--;
+    return root;
+  }
+
+  // Update height and rebalance tree
+  root.height = Math.max(root.leftHeight(), root.rightHeight()) + 1;
+  var balanceState = getBalanceState(root);
+
+  if (balanceState === BalanceState.UNBALANCED_LEFT) {
+    if (this._compare(key, root.left.key) &lt; 0) {
+      // Left left case
+      root = root.rotateRight();
+    } else {
+      // Left right case
+      root.linkLeft(root.left.rotateLeft());
+      return root.rotateRight();
+    }
+  }
+
+  if (balanceState === BalanceState.UNBALANCED_RIGHT) {
+    if (this._compare(key, root.right.key) > 0) {
+      // Right right case
+      root = root.rotateLeft();
+    } else {
+      // Right left case
+      root.linkRight(root.right.rotateRight());
+      return root.rotateLeft();
+    }
+  }
+
+  return root;
+};
+
+/**
+ * Finds the next node in the tree.
+ *
+ * @private
+ * @param {Node} node The current node in the tree.
+ * @return {Node} The next node in the tree.
+ */
+AvlTree.prototype.next = function(node) {
+	if(node.right) {
+		node = node.right;
+		while(node.left)
+			node = node.left;
+		return node;
+	}
+
+	while(node.parent) {
+		if(node.parent.right === node)
+			node = node.parent;
+		else
+			return node.parent;
+	}
+	return null;
+}
+
+/**
+ * Finds the previous node in the tree.
+ *
+ * @private
+ * @param {Node} node The current node in the tree.
+ * @return {Node} The previous node in the tree.
+ */
+AvlTree.prototype.prev = function(node) {
+	if(node.left) {
+		node = node.left;
+		while(node.right)
+			node = node.right;
+		return node;
+	}
+
+	while(node.parent) {
+		if(node.parent.left === node)
+			node = node.parent;
+		else
+			return node.parent;
+	}
+	return null;
+}
+
+/**
+ * Deletes a node with a specific key from the tree.
+ *
+ * @param {Object} key The key being deleted.
+ */
+AvlTree.prototype.delete = function (key) {
+  this._root = this._delete(key, this._root);
+  this._size--;
+};
+
+/**
+ * Deletes a node with a specific key from the tree.
+ *
+ * @private
+ * @param {Object} key The key being deleted.
+ * @param {Node} root The root of the tree to delete from.
+ * @return {Node} The new tree root.
+ */
+AvlTree.prototype._delete = function (key, root) {
+  // Perform regular BST deletion
+  if (root === null) {
+    this._size++;
+    return root;
+  }
+
+  var compare = this._compare(key, root.key);
+  if (compare &lt; 0) {
+    // The key to be deleted is in the left sub-tree
+    root.linkLeft(this._delete(key, root.left));
+  } else if (compare > 0) {
+    // The key to be deleted is in the right sub-tree
+    root.linkRight(this._delete(key, root.right));
+  } else {
+    // root is the node to be deleted
+    if (!root.left &amp;&amp; !root.right) {
+      root = null;
+    } else if (!root.left &amp;&amp; root.right) {
+      root = root.right;
+	  root.parent = null;
+    } else if (root.left &amp;&amp; !root.right) {
+      root = root.left;
+	  root.parent = null;
+    } else {
+      // Node has 2 children, get the in-order successor
+      var inOrderSuccessor = minValueNode(root.right);
+      root.key = inOrderSuccessor.key;
+      root.value = inOrderSuccessor.value;
+      root.linkRight(this._delete(inOrderSuccessor.key, root.right));
+    }
+  }
+
+  if (root === null) {
+    return null;
+  }
+
+  // Update height and rebalance tree
+  root.height = Math.max(root.leftHeight(), root.rightHeight()) + 1;
+  var balanceState = getBalanceState(root);
+
+  if (balanceState === BalanceState.UNBALANCED_LEFT) {
+    // Left left case
+    if (getBalanceState(root.left) === BalanceState.BALANCED ||
+        getBalanceState(root.left) === BalanceState.SLIGHTLY_UNBALANCED_LEFT) {
+      return root.rotateRight();
+    }
+    // Left right case
+    if (getBalanceState(root.left) === BalanceState.SLIGHTLY_UNBALANCED_RIGHT) {
+      root.linkLeft(root.left.rotateLeft());
+      return root.rotateRight();
+    }
+  }
+
+  if (balanceState === BalanceState.UNBALANCED_RIGHT) {
+    // Right right case
+    if (getBalanceState(root.right) === BalanceState.BALANCED ||
+        getBalanceState(root.right) === BalanceState.SLIGHTLY_UNBALANCED_RIGHT) {
+      return root.rotateLeft();
+    }
+    // Right left case
+    if (getBalanceState(root.right) === BalanceState.SLIGHTLY_UNBALANCED_LEFT) {
+      root.linkRight(root.right.rotateRight());
+      return root.rotateLeft();
+    }
+  }
+
+  return root;
+};
+
+/**
+ * Gets the value of a node within the tree with a specific key.
+ *
+ * @param {Object} key The key being searched for.
+ * @return {Object} The value of the node or null if it doesn't exist.
+ */
+AvlTree.prototype.get = function (key) {
+  if (this._root === null) {
+    return null;
+  }
+
+  return this._get(key, this._root).value;
+};
+
+/**
+ * Gets the node within the tree with a specific key.
+ *
+ * @param {Object} key The key being searched for.
+ * @return {Object} The node or null if it doesn't exist.
+ */
+AvlTree.prototype.getNode = function (key) {
+  if (this._root === null) {
+    return null;
+  }
+
+  return this._get(key, this._root);
+};
+
+/**
+ * Gets the value of a node within the tree with a specific key.
+ *
+ * @private
+ * @param {Object} key The key being searched for.
+ * @param {Node} root The root of the tree to search in.
+ * @return {Object} The node or null if it doesn't exist.
+ */
+AvlTree.prototype._get = function (key, root) {
+  var result = this._compare(key, root.key);
+
+  if (result === 0) {
+    return root;
+  }
+
+  if (result &lt; 0) {
+    if (!root.left) {
+      return null;
+    }
+    return this._get(key, root.left);
+  }
+
+  if (!root.right) {
+    return null;
+  }
+  return this._get(key, root.right);
+};
+
+/**
+ * Gets whether a node with a specific key is within the tree.
+ *
+ * @param {Object} key The key being searched for.
+ * @return {boolean} Whether a node with the key exists.
+ */
+AvlTree.prototype.contains = function (key) {
+  if (this._root === null) {
+    return false;
+  }
+
+  return !!this._get(key, this._root);
+};
+
+/**
+ * @return {Object} The minimum key in the tree.
+ */
+AvlTree.prototype.findMinimum = function () {
+  if(this._size === 0)
+	  return null;
+  return minValueNode(this._root).key;
+};
+
+/**
+ * @return {Object} The minimum node in the tree.
+ */
+AvlTree.prototype.findMinimumNode = function () {
+  if(this._size === 0)
+	  return null;
+  return minValueNode(this._root);
+};
+
+/**
+ * Gets the minimum value node, rooted in a particular node.
+ *
+ * @private
+ * @param {Node} root The node to search.
+ * @return {Node} The node with the minimum key in the tree.
+ */
+function minValueNode(root) {
+  var current = root;
+  while (current.left) {
+    current = current.left;
+  }
+  return current;
+};
+
+/**
+ * @return {Object} The maximum key in the tree.
+ */
+AvlTree.prototype.findMaximum = function () {
+  if(this._size === 0)
+	  return null;
+  return maxValueNode(this._root).key;
+};
+
+/**
+ * @return {Object} The maximum node in the tree.
+ */
+AvlTree.prototype.findMaximumNode = function () {
+  if(this._size === 0)
+	  return null;
+  return maxValueNode(this._root);
+};
+
+/**
+ * Gets the maximum value node, rooted in a particular node.
+ *
+ * @private
+ * @param {Node} root The node to search.
+ * @return {Node} The node with the maximum key in the tree.
+ */
+function maxValueNode(root) {
+  var current = root;
+  while (current.right) {
+    current = current.right;
+  }
+  return current;
+};
+
+/**
+ * @return {number} The size of the tree.
+ */
+AvlTree.prototype.size = function () {
+  return this._size;
+};
+
+/**
+ * @return {boolean} Whether the tree is empty.
+ */
+AvlTree.prototype.isEmpty = function () {
+  return this._size === 0;
+};
+
+//TO DELETE
+AvlTree.prototype.toString = function() {
+	if(this.isEmpty())
+		return;
+	var res = "", x = 0;
+	var node = this.findMinimumNode();
+	while(node !== null &amp;&amp; x++ &lt; 100) {
+		res += node.key.toString()+"\n";
+		node = this.next(node);
+	}
+	return res;
+};
+
+//TO DELETE
+AvlTree.prototype.checkSorted = function() {
+	if(this.size() === 0)
+		return true;
+	var node = this.findMinimumNode();
+	var next = this.next(node);
+
+	while(next) {
+		if(this._compare(node.key, next.key) >= 0 || isNaN(this._compare(node.key, next.key))) {
+			console.log(node.key.toString()+", "+next.key.toString()+" out of order!");
+			return false;
+		}
+		node = next;
+		next = this.next(next);
+	}
+
+	return true;
+};
+
+/**
+ * Represents how balanced a node's left and right children are.
+ *
+ * @private
+ */
+var BalanceState = {
+  UNBALANCED_RIGHT: 1,
+  SLIGHTLY_UNBALANCED_RIGHT: 2,
+  BALANCED: 3,
+  SLIGHTLY_UNBALANCED_LEFT: 4,
+  UNBALANCED_LEFT: 5
+};
+
+/**
+ * Gets the balance state of a node, indicating whether the left or right
+ * sub-trees are unbalanced.
+ *
+ * @private
+ * @param {Node} node The node to get the difference from.
+ * @return {BalanceState} The BalanceState of the node.
+ */
+function getBalanceState(node) {
+  var heightDifference = node.leftHeight() - node.rightHeight();
+  switch (heightDifference) {
+    case -2: return BalanceState.UNBALANCED_RIGHT;
+    case -1: return BalanceState.SLIGHTLY_UNBALANCED_RIGHT;
+    case 1: return BalanceState.SLIGHTLY_UNBALANCED_LEFT;
+    case 2: return BalanceState.UNBALANCED_LEFT;
+    default: return BalanceState.BALANCED;
+  }
+}
+
+/**
+ * Creates a new AVL Tree node.
+ *
+ * @private
+ * @param {Object} key The key of the new node.
+ * @param {Object} value The value of the new node.
+ */
+var Node = function (key, value) {
+  this.left = null;
+  this.right = null;
+  this.parent = null;
+  this.height = null;
+  this.key = key;
+  this.value = value;
+};
+
+/**
+ * Performs a right rotate on this node.
+ *
+ *       b                           a
+ *      / \                         / \
+ *     a   e -> b.rotateRight() -> c   b
+ *    / \                             / \
+ *   c   d                           d   e
+ *
+ * @return {Node} The root of the sub-tree; the node where this node used to be.
+ */
+Node.prototype.rotateRight = function () {
+  var other = this.left;
+  this.linkLeft(other.right);
+  other.linkRight(this);
+  this.height = Math.max(this.leftHeight(), this.rightHeight()) + 1;
+  other.height = Math.max(other.leftHeight(), this.height) + 1;
+  return other;
+};
+
+/**
+ * Performs a left rotate on this node.
+ *
+ *     a                              b
+ *    / \                            / \
+ *   c   b   -> a.rotateLeft() ->   a   e
+ *      / \                        / \
+ *     d   e                      c   d
+ *
+ * @return {Node} The root of the sub-tree; the node where this node used to be.
+ */
+Node.prototype.rotateLeft = function () {
+  var other = this.right;
+  this.linkRight(other.left);
+  other.linkLeft(this);
+  this.height = Math.max(this.leftHeight(), this.rightHeight()) + 1;
+  other.height = Math.max(other.rightHeight(), this.height) + 1;
+  return other;
+};
+
+/**
+ * Convenience function to get the height of the left child of the node,
+ * returning -1 if the node is null.
+ *
+ * @return {number} The height of the left child, or -1 if it doesn't exist.
+ */
+Node.prototype.leftHeight = function () {
+  if (!this.left) {
+    return -1;
+  }
+  return this.left.height;
+};
+
+/**
+ * Convenience function to get the height of the right child of the node,
+ * returning -1 if the node is null.
+ *
+ * @return {number} The height of the right child, or -1 if it doesn't exist.
+ */
+Node.prototype.rightHeight = function () {
+  if (!this.right) {
+    return -1;
+  }
+  return this.right.height;
+};
+
+/**
+ * Links a node to the left.
+ *
+ * @param {Object} node The node to be linked.
+ */
+Node.prototype.linkLeft = function (node) {
+  if(this.left &amp;&amp; this.left.parent === this)
+    this.left.parent = null;
+  this.left = node;
+  if(node)
+	node.parent = this;
+};
+
+/**
+ * Links a node to the right.
+ *
+ * @param {Object} node The node to be linked.
+ */
+Node.prototype.linkRight = function (node) {
+  if(this.right &amp;&amp; this.right.parent === this)
+    this.right.parent = null;
+  this.right = node;
+  if(node)
+	node.parent = this;
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Wed Oct 28 2020 11:42:58 GMT-0600 (Central Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

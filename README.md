@@ -1,4 +1,3 @@
-# Miratope
 A renderer for polytopes. Still in alpha.
 
 ## What can Miratope do now?

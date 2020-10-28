@@ -1,15 +1,15 @@
+'use strict';
 /**
  * @license
  * Copyright Daniel Imms <http://www.growingwiththeweb.com>
  * Modified by the Miratope authors.
  * Released under MIT license. See LICENSE in the project root for details.
  */
-'use strict';
 
 /**
  * Creates a new AVL Tree.
- *
- * @param {function} customCompare An optional custom compare function.
+ * @constructor
+ * @param {function=} customCompare An optional custom compare function.
  */
 var AvlTree = function (customCompare) {
   this._root = null;
@@ -105,6 +105,13 @@ AvlTree.prototype._insert = function (key, value, root) {
   return root;
 };
 
+/**
+ * Finds the next node in the tree.
+ *
+ * @private
+ * @param {Node} node The current node in the tree.
+ * @return {Node} The next node in the tree.
+ */
 AvlTree.prototype.next = function(node) {
 	if(node.right) {
 		node = node.right;
@@ -112,7 +119,7 @@ AvlTree.prototype.next = function(node) {
 			node = node.left;
 		return node;
 	}
-	
+
 	while(node.parent) {
 		if(node.parent.right === node)
 			node = node.parent;
@@ -122,6 +129,13 @@ AvlTree.prototype.next = function(node) {
 	return null;
 }
 
+/**
+ * Finds the previous node in the tree.
+ *
+ * @private
+ * @param {Node} node The current node in the tree.
+ * @return {Node} The previous node in the tree.
+ */
 AvlTree.prototype.prev = function(node) {
 	if(node.left) {
 		node = node.left;
@@ -129,7 +143,7 @@ AvlTree.prototype.prev = function(node) {
 			node = node.right;
 		return node;
 	}
-	
+
 	while(node.parent) {
 		if(node.parent.left === node)
 			node = node.parent;
@@ -396,7 +410,7 @@ AvlTree.prototype.checkSorted = function() {
 		return true;
 	var node = this.findMinimumNode();
 	var next = this.next(node);
-	
+
 	while(next) {
 		if(this._compare(node.key, next.key) >= 0 || isNaN(this._compare(node.key, next.key))) {
 			console.log(node.key.toString()+", "+next.key.toString()+" out of order!");
@@ -405,7 +419,7 @@ AvlTree.prototype.checkSorted = function() {
 		node = next;
 		next = this.next(next);
 	}
-	
+
 	return true;
 };
 
@@ -548,4 +562,3 @@ Node.prototype.linkRight = function (node) {
   if(node)
 	node.parent = this;
 };
-

@@ -2,13 +2,6 @@
 
 //The part of the Translation class that gives translated names for families.
 
-//-, one, two, three, four, five, six, seven, eight, nine, to Greek, back to each language.
-Translation._units = {
-	en: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "ennea"],
-	es: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "enea"],
-	de: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "okto", "ennea"]
-};
-
 //Converts n into a greek prefix (or whatever works similarly in the target language).
 //Works only from 0 to 99999.
 //Based on https://www.georgehart.com/virtual-polyhedra/greek-prefixes.html
@@ -16,9 +9,7 @@ Translation._units = {
 
 //Possible options:
 /* uppercase */
-Translation.greekPrefix = function(n, options) {
-	if(!options)
-		options = {};
+Translation.greekPrefix = function(n, options = {}) {
 	if(n === 0)
 		return Translation.get("greekPrefixes/nulli", options);
 	if(n === 1)
@@ -152,167 +143,13 @@ Translation.plainName = function(n, dimension, options) {
 //The name for an d-element, according to http://os2fan2.com/gloss/pglosstu.html
 //These are all neologisms, so feel free to translate them as you think appropriate.
 //Works for up to 20 dimensions, we very probably don't need more than that.
-Translation.elementName = function(d, options) {
-	if(!options)
-		options = {};
+Translation.elementName = function(d, options = {}) {
+	if(d > 999)
+		return d + "-" + Translation.get("elements/element");
+
 	var res;
-	switch(Translation.language) {
-		case "en":
-			switch(d) {
-				case 0:
-					if(options.count) res = "vertices"; else res = "vertex"; break;
-				case 1:
-					if(options.count) res = "edges"; else res = "edge"; break;
-				case 2:
-					if(options.count) res = "faces"; else res = "face"; break;
-				case 3:
-					if(options.count) res = "cells"; else res = "cell"; break;
-				case 4:
-					if(options.count) res = "tera"; else res = "teron"; break;
-				case 5:
-					if(options.count) res = "peta"; else res = "peton"; break;
-				case 6:
-					if(options.count) res = "exa"; else res = "exon"; break;
-				case 7:
-					if(options.count) res = "zetta"; else res = "zetton"; break;
-				case 8:
-					if(options.count) res = "yotta"; else res = "yotton"; break;
-				case 9:
-					if(options.count) res = "xenna"; else res = "xennon"; break;
-				case 10:
-					if(options.count) res = "daka"; else res = "dakon"; break;
-				case 11:
-					if(options.count) res = "hendaka"; else res = "hendakon"; break;
-				case 12:
-					if(options.count) res = "doka"; else res = "dokon"; break;
-				case 13:
-					if(options.count) res = "tradaka"; else res = "tradakon"; break;
-				case 14:
-					if(options.count) res = "teradaka"; else res = "teradakon"; break;
-				case 15:
-					if(options.count) res = "petadaka"; else res = "petadakon"; break;
-				case 16:
-					if(options.count) res = "exdaka"; else res = "exdakon"; break;
-				case 17:
-					if(options.count) res = "zettadaka"; else res = "zettadakon"; break;
-				case 18:
-					if(options.count) res = "yottadaka"; else res = "yottadakon"; break;
-				case 19:
-					if(options.count) res = "xendaka"; else res = "xendakon"; break;
-				case 20:
-					if(options.count) res = "ica"; else res = "icon"; break;
-				default:
-					if(options.count) res = d + "-elements"; else res = d + "-element"; break;
-			}
 
-			break;
-		case "es":
-			switch(d) {
-				case 0:
-					res = "vértice"; break;
-				case 1:
-					res = "arista"; break;
-				case 2:
-					res = "cara"; break;
-				case 3:
-					res = "celda"; break;
-				case 4:
-					res = "tera"; break;
-				case 5:
-					res = "peta"; break;
-				case 6:
-					res = "exa"; break;
-				case 7:
-					res = "zeta"; break;
-				case 8:
-					res = "yota"; break;
-				case 9:
-					res = "xena"; break;
-				case 10:
-					res = "daca"; break;
-				case 11:
-					res = "hendaca"; break;
-				case 12:
-					res = "doca"; break;
-				case 13:
-					res = "tradaca"; break;
-				case 14:
-					res = "teradaca"; break;
-				case 15:
-					res = "petadaca"; break;
-				case 16:
-					res = "exadaca"; break;
-				case 17:
-					res = "zettadaca"; break;
-				case 18:
-					res = "yottadaca"; break;
-				case 19:
-					res = "xendaca"; break;
-				case 20:
-					res = "ica"; break;
-				default:
-					res = d + "-elemento"; break;
-			}
 
-			if(options.count)
-				res += "s";
-			break;
-		case "de":
-			switch(d) {
-				case 0:
-					if(options.count) res = "Eck"; else res = "Ecke"; break;
-				case 1:
-					if(options.count) res = "Kante"; else res = "Kanten"; break;
-				case 2:
-					if(options.count) res = "Fläche"; else res = "Flächen"; break;
-				case 3:
-					if(options.count) res = "Zell"; else res = "Zellen"; break;
-				case 4:
-					if(options.count) res = "Tera"; else res = "Teras"; break;
-				case 5:
-					res = "Peta"; break;
-				case 6:
-					res = "Exa"; break;
-				case 7:
-					res = "Zetta"; break;
-				case 8:
-					res = "Yotta"; break;
-				case 9:
-					res = "Xena"; break;
-				case 10:
-					res = "Daka"; break;
-				case 11:
-					res = "Hendaka"; break;
-				case 12:
-					res = "Doka"; break;
-				case 13:
-					res = "Tradaka"; break;
-				case 14:
-					res = "Teradaka"; break;
-				case 15:
-					res = "Petadaka"; break;
-				case 16:
-					res = "Exadaka"; break;
-				case 17:
-					res = "Zettadaka"; break;
-				case 18:
-					res = "Yottadaka"; break;
-				case 19:
-					res = "Xendaka"; break;
-				case 20:
-					res = "Ika"; break;
-				default:
-					res = d + "-Element"; break;
-			}
-
-			if(options.count)
-				res += "s";
-			break;
-	}
-
-	if(options.uppercase)
-		return Translation.firstToUpper(res);
-	return res;
 };
 
 //The ending in the name for a d-polytope.

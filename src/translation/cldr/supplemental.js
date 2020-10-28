@@ -1,4 +1,4 @@
-/**
+/*
  * CLDR JavaScript Library v0.5.3
  * http://jquery.com/
  *
@@ -83,7 +83,7 @@
 
 	var initSuper = Cldr.prototype.init;
 
-	/**
+	/*
 	 * .init() automatically ran on construction.
 	 *
 	 * Overload .init().

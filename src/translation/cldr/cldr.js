@@ -1,4 +1,4 @@
-/**
+/*
  * CLDR JavaScript Library v0.5.3
  * http://jquery.com/
  *
@@ -76,7 +76,7 @@
 
 
 
-	/**
+	/*
 	 * Return the maximized language id as defined in
 	 * http://www.unicode.org/reports/tr35/#Likely_Subtags
 	 * 1. Canonicalize.
@@ -168,7 +168,7 @@
 
 
 
-	/**
+	/*
 	 * Given a locale, remove any fields that Add Likely Subtags would add.
 	 * http://www.unicode.org/reports/tr35/#Likely_Subtags
 	 * 1. First get max = AddLikelySubtags(inputLocale). If an error is signaled,
@@ -214,7 +214,7 @@
 
 
 
-	/**
+	/*
 	 * subtags( locale )
 	 *
 	 * @locale [String]
@@ -279,7 +279,7 @@
 
 
 
-	/**
+	/*
 	 * bundleLookup( minLanguageId )
 	 *
 	 * @Cldr [Cldr class]
@@ -390,7 +390,7 @@
 
 
 
-	/**
+	/*
 	 * Function inspired by jQuery Core, but reduced to our use case.
 	 */
 	var isPlainObject = function( obj ) {
@@ -432,7 +432,7 @@
 
 
 
-	/**
+	/*
 	 * setAvailableBundles( Cldr, json )
 	 *
 	 * @Cldr [Cldr class]
@@ -500,7 +500,7 @@
 }());
 
 
-	/**
+	/*
 	 * load( Cldr, source, jsons )
 	 *
 	 * @Cldr [Cldr class]
@@ -542,7 +542,7 @@
 
 
 
-	/**
+	/*
 	 * new Cldr()
 	 */
 	var Cldr = function( locale ) {
@@ -569,7 +569,7 @@
 	// Allow user to override locale separator "-" (default) | "_". According to http://www.unicode.org/reports/tr35/#Unicode_language_identifier, both "-" and "_" are valid locale separators (eg. "en_GB", "en-GB"). According to http://unicode.org/cldr/trac/ticket/6786 its usage must be consistent throughout the data set.
 	Cldr.localeSep = "-";
 
-	/**
+	/*
 	 * Cldr.load( json [, json, ...] )
 	 *
 	 * @json [JSON] CLDR data or [Array] Array of @json's.
@@ -580,7 +580,7 @@
 		Cldr._resolved = coreLoad( Cldr, Cldr._resolved, arguments );
 	};
 
-	/**
+	/*
 	 * .init() automatically run on instantiation/construction.
 	 */
 	Cldr.prototype.init = function( locale ) {
@@ -652,7 +652,7 @@
 		this.locale = locale;
 	};
 
-	/**
+	/*
 	 * .get()
 	 */
 	Cldr.prototype.get = function( path ) {
@@ -663,7 +663,7 @@
 		return itemGetResolved( Cldr, path, this.attributes );
 	};
 
-	/**
+	/*
 	 * .main()
 	 */
 	Cldr.prototype.main = function( path ) {

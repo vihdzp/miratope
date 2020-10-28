@@ -1,5 +1,14 @@
 "use strict";
 
+//-, one, two, three, four, five, six, seven, eight, nine, to Greek, back to each language.
+//Used for Translation.greekPrefix.
+var Translation = {};
+Translation._units = {
+	en: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "ennea"],
+	es: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "enea"],
+	de: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "okto", "ennea"]
+};
+
 //WARNING: THESE LABELS WILL PROBABLY BE MOVED AROUND A LOT.
 Globalize.loadMessages({
 	root: { //English is used as a fall-back.
@@ -35,7 +44,7 @@ Globalize.loadMessages({
 			cupolaicBlend: "cupolaic blend"
 		},
 		grammar: {
-			starName: "{count, plural, many {{prefix}grams} other {{prefix}gram}}"
+			starName: "{count, plural, one {{prefix}gram} other {{prefix}grams}}"
 		},
 		greekPrefixes: {
 			nulli: "nulli",
@@ -67,7 +76,8 @@ Globalize.loadMessages({
 			cross: "cross",
 			plex: "plex",
 			crossed: "crossed",
-			strophic: "strophic"
+			strophic: "strophic",
+			element: "element"
 		}
 	},
 	es: {
@@ -131,7 +141,8 @@ Globalize.loadMessages({
 			cross: "cruz",
 			plex: "plejo",
 			crossed: "{gender, select, male {cruzado} other {cruzada}}",
-			strophic: "estrófico"
+			strophic: "estrófico",
+			element: "elemento"
 		}
 	},
 	de: {

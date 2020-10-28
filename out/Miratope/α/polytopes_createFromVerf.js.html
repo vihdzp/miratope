@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>polytopes/createFromVerf.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AvlTree.html">AvlTree</a><ul class='methods'><li data-type='method'><a href="AvlTree.html#contains">contains</a></li><li data-type='method'><a href="AvlTree.html#delete">delete</a></li><li data-type='method'><a href="AvlTree.html#findMaximum">findMaximum</a></li><li data-type='method'><a href="AvlTree.html#findMaximumNode">findMaximumNode</a></li><li data-type='method'><a href="AvlTree.html#findMinimum">findMinimum</a></li><li data-type='method'><a href="AvlTree.html#findMinimumNode">findMinimumNode</a></li><li data-type='method'><a href="AvlTree.html#get">get</a></li><li data-type='method'><a href="AvlTree.html#getNode">getNode</a></li><li data-type='method'><a href="AvlTree.html#insert">insert</a></li><li data-type='method'><a href="AvlTree.html#isEmpty">isEmpty</a></li><li data-type='method'><a href="AvlTree.html#size">size</a></li></ul></li><li><a href="ConstructionNode.html">ConstructionNode</a></li><li><a href="Polytope.html">Polytope</a><ul class='methods'><li data-type='method'><a href="Polytope.html#._minimize">_minimize</a></li><li data-type='method'><a href="Polytope.html#.dyad">dyad</a></li><li data-type='method'><a href="Polytope.html#.nullitope">nullitope</a></li><li data-type='method'><a href="Polytope.html#.point">point</a></li><li data-type='method'><a href="Polytope.html#.prismProduct">prismProduct</a></li><li data-type='method'><a href="Polytope.html#.verfLength">verfLength</a></li><li data-type='method'><a href="Polytope.html#circumradius">circumradius</a></li><li data-type='method'><a href="Polytope.html#getName">getName</a></li><li data-type='method'><a href="Polytope.html#move">move</a></li><li data-type='method'><a href="Polytope.html#moveNeg">moveNeg</a></li><li data-type='method'><a href="Polytope.html#renderTo">renderTo</a></li><li data-type='method'><a href="Polytope.html#scale">scale</a></li></ul></li><li><a href="PolytopeC.html">PolytopeC</a><ul class='methods'><li data-type='method'><a href="PolytopeC.html#faceToVertices">faceToVertices</a></li><li data-type='method'><a href="PolytopeC.html#gravicenter">gravicenter</a></li><li data-type='method'><a href="PolytopeC.html#recenter">recenter</a></li><li data-type='method'><a href="PolytopeC.html#setSpaceDimensions">setSpaceDimensions</a></li><li data-type='method'><a href="PolytopeC.html#toPolytopeC">toPolytopeC</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#ConstructionNodeType">ConstructionNodeType</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">polytopes/createFromVerf.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
+const ATTEMPTS = 10;
+
+//NOT YET FUNCTIONAL
+//Tries to create a uniform polytope with edge length 1 from a given verf, with a given symmetry.
+//Doesn't yet work, depends on various methods that haven't been coded yet.
+Polytope.createFromVerf = function(V, S) {
+	V = V.clone(); //Clones the verf, so that the original isn't modified.
+
+	var A = V.circumcenter(); //Apex of verf pyramid.
+	var r = Space.distanceSq(A, V.elementList[0][0]); //Squared circumradius.
+
+	//r has to be less than 1.
+	if(r >= 1)
+		throw new Error("Verf's circumradius too big!");
+
+	A.coordinates.push(Math.sqrt(1 - r));
+	var P = V.extrudeToPyramid(A); //Verf pyramid.
+	var C = P.circumcenter(); //Verf pyramid's circumcenter.
+	var d = P.dimensions(); //Dimensions of final polytope.
+	P.moveNeg(C); //Centers P at the origin.
+
+	//Attempts to build the polytope, until it either succeeds, or after a certain amount of tries, fails.
+	for(var ATTEMPT = 1; ATTEMPT &lt;= ATTEMPTS; ATTEMPT++) {
+		//Generates a (non-uniformly) random set of angles.
+		//This will be used as the starting point for minimization.
+		var angles = [];
+		for(var i = 0; i &lt; d * (d - 1) / 2; i++)
+			angles.push(Math.random() * 2 * Math.PI);
+
+		//The core of this function, minimizes a function of the angles.
+		//The set of d * (d - 1) / 2 angles define an orthogonal matrix.
+		//This matrix moves the verf somewhere on a hypersphere.
+		//Under the action of S, each of the verf's vertices has an orbit.
+		//We want to find the place where these orbits coincide.
+		//When they do, we'll be able to build an isogonal and thus uniform polytope.
+		window.P = P; window.S = S;
+		var sol = Polytope._minimize(Polytope._orbitDistance, angles);
+
+		//Tries again from a new starting point if the minimum wasn't found.
+		if(sol.fncvalue > epsilon)
+			continue;
+
+		angles = sol.argument;
+		var matrix = Polytope._matrixFromAngles(angles);
+
+		//Generates vertices.
+		var elementList = [];
+		elementList[0] = P.elementList[0][0].orbitUnder(S);
+	}
+
+	console.log("Polytope couldn't be built!");
+	return;
+};
+
+//An objective function for how "close" the orbits of different vertices are.
+//Returns the sum of the smallest distance between points of the orbits i, i + 1 over all i.
+//Will return 0 (or something small) iff the orbits are all equal.
+Polytope._orbitDistance = function(angles) {
+	var matrix = Polytope._matrixFromAngles(angles),
+	P = window.P, S = window.S,
+	res = 0,
+	i, j;
+
+	//For each vertex of the verf pyramid, creates an array with its orbit under the symmetry group.
+	var orbits = [];
+	for(i = 0; i &lt; P.elementList[0].length; i++)
+		orbits.push(P.elementList[0][i].rotate(matrix).orbitUnder(S));
+
+	//Gets the smallest distance between contiguous orbits.
+	//Takes advantage of symmetry: it suffices to calculate the smallest distance
+	//between a single vertex of one orbit and the vertices of the other orbit.
+	for(i = 0; i &lt; orbits.length - 1; i++) {
+		var min = Number.MAX_VALUE;
+		for(j = 0; j &lt; orbits[i].length; j++)
+			min = Math.min(min, Space.distance(orbits[i][j], orbits[i + 1][0]));
+		res += min;
+	}
+
+	return res;
+}
+
+//Creates an orthogonal matrix.
+//It is the composition of the rotations given by angles through the XY, XZ, ... planes.
+Polytope._matrixFromAngles = function(angles, d) {
+	var result = Matrix.identity(d),
+	i, j, x, y;
+
+	for(i = 0; i &lt; d; i++)
+		for(j = i + 1; j &lt; d; j++) {
+			var factor = Matrix.identity(d);
+			var alpha = angles[(d - 2 - (i + 1) / 2) * i + j - 1]
+			factor.els[i][i] = Math.cos(alpha);
+			factor.els[i][j] = -Math.sin(alpha);
+			factor.els[j][i] = Math.sin(alpha);
+			factor.els[j][j] = Math.cos(alpha);
+
+			result = result.multiply(new Matrix(factor));
+		}
+
+	return result;
+};
+
+/**
+ * Taken from optimize.js
+ * Minimize an unconstrained function using zero order Powell algorithm.
+ * @param {function} fnc Function to be minimized. This function takes
+ * array of size N as an input, and returns a scalar value as output,
+ * which is to be minimized.
+ * @param {Array} x0 An array of values of size N, which is an initialization
+ *  to the minimization algorithm.
+ * @return {Object} An object instance with two fields: argument, which
+ * denotes the best argument found thus far, and fncvalue, which is a
+ * value of the function at the best found argument.
+*/
+Polytope._minimize = function (fnc, x0) {
+    var eps = 1e-2;
+
+    var convergence = false;
+    var x = x0.slice(); // make copy of initialization
+    var alpha = 0.001; // scaling factor
+
+    var pfx = Math.exp(10);
+    var fx = fnc(x);
+    var pidx = 1;
+    while (!convergence) {
+
+        var indicies = shuffleIndiciesOf(x);
+        convergence = true;
+
+        // Perform update over all of the variables in random order
+        for (var i = 0; i &lt; indicies.length; i++) {
+
+            x[indicies[i]] += 1e-6;
+            var fxi = fnc(x);
+            x[indicies[i]] -= 1e-6;
+            var dx = (fxi - fx) / 1e-6;
+
+            if (Math.abs(dx) > eps) {
+                convergence = false;
+            }
+
+            x[indicies[i]] = x[indicies[i]] - alpha * dx;
+            fx = fnc(x);
+
+        }
+
+        // a simple step size selection rule. Near x function acts linear
+        // (this is assumed at least) and thus very small values of alpha
+        // should lead to (small) improvement. Increasing alpha would
+        // yield better improvement up to certain alpha size.
+
+        alpha = pfx > fx ? alpha * 1.1 : alpha * 0.7;
+        pfx = fx;
+
+        pidx--;
+        if (pidx === 0) {
+            pidx = 1;
+        }
+
+    }
+
+    var solution = {};
+    solution.argument = x;
+    solution.fncvalue = fx;
+
+    return solution;
+
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Wed Oct 28 2020 11:42:58 GMT-0600 (Central Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

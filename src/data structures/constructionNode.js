@@ -1,60 +1,72 @@
 "use strict";
 
-//A ConstructionNode represents how a polytope has been built up
-//ConstructionNodes come in types, and can have children
-//"Children" are arrays containing objects, the specific objects depend on the node type
-//Usually these objects are other nodes, but they can also be numbers or Polytopes.
-//Children are essentially what a nodeC operates on
-//The types of node and their case number are given below:
+/**
+ * An object containing the possible types of {@link ConstructionNode|ConstructionNodes}.
+ * @enum {number}
+ */
+const ConstructionNodeType = {
+	/** Has two children `[n, d]`,
+	 * representing the number of facets `n`
+	 * and the number of dimensions `d` of the polytope.
+	 */
+	Plain: 0,
 
-//Has two children n, d,
-//representing the number of facets n and number of dimensions d.
-const PLAIN = 0;
+	//Has the factors of a prism product as children.
+	Multiprism: 1,
 
-//Has the factors of a prism product as children.
-const MULTIPRISM = 1;
+	//Has the factors of a tegum product as children.
+	Multitegum: 2,
 
-//Has the factors of a tegum product as children.
-const MULTITEGUM = 2;
+	//Has the factors of a pyramid product as children.
+	Multipyramid: 3,
 
-//Has the factors of a pyramid product as children.
-const MULTIPYRAMID = 3;
+	//Has an antiprism based on the child node.
+	Antiprism: 4,
 
-//Has an antiprism based on the child node.
-const ANTIPRISM = 4;
+	//Has a pyramid based on the child node.
+	Pyramid: 5,
 
-//Has a pyramid based on the child node.
-const PYRAMID = 5;
+	//Has a cupola based on the child node.
+	Cupola: 6,
 
-//Has a cupola based on the child node.
-const CUPOLA = 6;
+	//Has two children n, d,
+	//representing the regular polygonal small base {n/d}.
+	Cuploid: 7,
 
-//Has two children n, d,
-//representing the regular polygonal small base {n/d}.
-const CUPLOID = 7;
+	//Has two children n, d,
+	//representing the regular polygonal base {n/d}.
+	CupolaicBlend: 8,
 
-//Has two children n, d,
-//representing the regular polygonal base {n/d}.
-const CUPBLEND = 8;
+	//Has two children n, d,
+	//representing the regular polygonal base {n/d}.
+	Polygon: 9,
 
-//Has two children n, d,
-//representing the regular polygonal base {n/d}.
-const POLYGON = 9;
+	//Has a polytope's "code name" as a child.
+	//Used for polytopes whose names are in loadMessages.js, and can be translated.
+	Codename: 10,
 
-//Has a polytope's "code name" as a child.
-//Used for polytopes whose names are in loadMessages.js, and can be translated.
-const CODENAME = 10;
+	//Has a polytope's name as a child.
+	//The default for imported polytopes, or polytopes not built out of anything else whose name is known.
+	//IS NOT translated.
+	Name: 11,
 
-//Has a polytope's name as a child.
-//The default for imported polytopes, or polytopes not built out of anything else whose name is known.
-//IS NOT translated.
-const NAME = 11;
+	//Has the dimension of the figure as a child.
+	Hypercube: 12,
+	Simplex: 13,
+	Cross: 14
+};
 
-//Has the dimension of the figure as a child.
-const HYPERCUBE = 12;
-const SIMPLEX = 13;
-const CROSS = 14;
-
+/**
+ * The constructor for the ConstructionNode class.
+ * @constructor
+ * @classdesc A ConstructionNode represents how a polytope has been built up.
+ * ConstructionNodes come in various types, and always have at least one child.
+ * Depending on the node type, these children can either be single objects,
+ * or arrays of ConstructionNodes or other objects.<br />
+ * &emsp;The possible node types and their descriptions are given in {@link ConstructionNodeType}.
+ * @param {ConstructionNodeType} type The ConstructionNode type.
+ * @param {Object} children The child or children of the node. The type of this variable depends on the ConstructionNode type.
+ */
 //Creates a ConstructionNode of a certain type and with certain children
 function ConstructionNode(type, children) {
 	this.type = type;
@@ -65,38 +77,38 @@ function ConstructionNode(type, children) {
 //Gets the name of a ConstructionNode based on type
 ConstructionNode.prototype.getName = function() {
 	switch(this.type) {
-		case PLAIN:
+		case ConstructionNodeType.Plain:
 			return Translation.plainName(this.children[0], this.children[1]);
-		case MULTIPRISM:
+		case ConstructionNodeType.Multiprism:
 			this.mergeChildren();
 			return Translation.multiFamily(this.children, "family/prism", "shape/dyad", "family/prism", this.gender);
-		case MULTITEGUM:
+		case ConstructionNodeType.Multitegum:
 			this.mergeChildren();
 			return Translation.multiFamily(this.children, "family/tegum", "shape/dyad", "family/bipyramid", this.gender);
-		case MULTIPYRAMID:
+		case ConstructionNodeType.Multipyramid:
 			this.mergeChildren();
 			return Translation.multiFamily(this.children, "family/pyramid", "shape/point", "family/pyramid", this.gender);
-		case ANTIPRISM:
+		case ConstructionNodeType.Antiprism:
 			return Translation.familyMember(this.children, "family/antiprism", this.gender);
-		case PYRAMID:
+		case ConstructionNodeType.Pyramid:
 			return Translation.familyMember(this.children, "family/pyramid", this.gender);
-		case CUPOLA:
+		case ConstructionNodeType.Cupola:
 			return Translation.familyMember(this.children, "family/cupola", this.gender);
-		case CUPLOID:
+		case ConstructionNodeType.Cuploid:
 			return Translation.familyMember(this.children[0], "family/cuploid", this.gender);
-		case CUPBLEND:
+		case ConstructionNodeType.CupolaicBlend:
 			return Translation.familyMember(this.children[0], "family/cupolaicBlend", this.gender);
-		case POLYGON:
+		case ConstructionNodeType.Polygon:
 			return Translation.regularPolygonName(this.children[0], this.children[1], {gender: this.gender});
-		case CODENAME:
+		case ConstructionNodeType.Codename:
 			return Translation.get("shape/" + this.children);
-		case NAME:
+		case ConstructionNodeType.Name:
 			return this.children;
-		case HYPERCUBE:
+		case ConstructionNodeType.Hypercube:
 			return Translation.hypercube(this.children);
-		case SIMPLEX:
+		case ConstructionNodeType.Simplex:
 			return Translation.simplex(this.children);
-		case CROSS:
+		case ConstructionNodeType.Cross:
 			return Translation.cross(this.children);
 		default:
 			throw new Error("Not yet implemented!");
@@ -111,32 +123,32 @@ ConstructionNode.prototype.setGenders = function() {
 	if(!Translation.genderedLanguage) return;
 
 	switch(this.type) {
-		case POLYGON: //The gender of the plain polygon names
-		case PLAIN: //The gender of the plain polytope names
-		case MULTIPRISM: //The gender of the word "multiprism"
-		case ANTIPRISM: //The gender of the word "antiprism"
-		case MULTITEGUM: //The gender of the word "multitegum"
+		case ConstructionNodeType.Polygon: //The gender of the plain polygon names
+		case ConstructionNodeType.Plain: //The gender of the plain polytope names
+		case ConstructionNodeType.Multiprism: //The gender of the word "multiprism"
+		case ConstructionNodeType.Antiprism: //The gender of the word "antiprism"
+		case ConstructionNodeType.Multitegum: //The gender of the word "multitegum"
 			switch(Translation.language) {
 				case "es": this.gender = "male"; break;
 				case "de": this.gender = "neuter"; break;
 				default: break;
 			}
 			break;
-		case PYRAMID: //The gender of the word "pyramid"
-		case CUPOLA: //The gender of the word "cupola"
+		case ConstructionNodeType.Pyramid: //The gender of the word "pyramid"
+		case ConstructionNodeType.Cupola: //The gender of the word "cupola"
 			switch(Translation.language) {
 				case "es":
 				case "de": this.gender = "female"; break;
 				default: break;
 			}
 			break;
-		case CUPBLEND: //The gender of the word "cupolaic blend"
+		case ConstructionNodeType.CupolaicBlend: //The gender of the word "cupolaic blend"
 			switch(Translation.language) {
 				case "es": this.gender = "female"; break;
 				default: break;
 			}
 			break;
-		case CUPLOID: //The gender of the word "cuploid"
+		case ConstructionNodeType.Cuploid: //The gender of the word "cuploid"
 			switch(Translation.language) {
 				case "es": this.gender = "male"; break;
 				default: break;

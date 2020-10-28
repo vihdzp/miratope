@@ -1,8 +1,6 @@
 "use strict";
 //Class for translating words, phrases, or generating names for polytopes in various languages.
 
-var Translation = {};
-
 Translation.firstToLower = function(str) {
 	return str.charAt(0).toLowerCase() + str.slice(1);
 };

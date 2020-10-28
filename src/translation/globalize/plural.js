@@ -1,4 +1,4 @@
-/**
+/*
  * Globalize v1.6.0
  *
  * http://github.com/jquery/globalize
@@ -56,7 +56,7 @@ var _classCallCheck = function (instance, Constructor) { if (!(instance instance
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 
-/**
+/*
  * make-plural.js -- https://github.com/eemeli/make-plural.js/
  * Copyright (c) 2014-2015 by Eemeli Aro <eemeli@gmail.com>
  *
@@ -229,7 +229,7 @@ var MakePlural = (function () {
     }, {
         key: 'fnToString',
         value: function fnToString(name) {
-            return Function.prototype.toString.call(this.fn).replace(/^function( \w+)?/, name ? 'function ' + name : 'function').replace('\n/**/', '');
+            return Function.prototype.toString.call(this.fn).replace(/^function( \w+)?/, name ? 'function ' + name : 'function').replace('\n/*/', '');
         }
     }], [{
         key: 'load',
@@ -301,7 +301,7 @@ var pluralGeneratorFn = function( plural ) {
 
 
 
-/**
+/*
  * .plural( value )
  *
  * @value [Number]
@@ -316,7 +316,7 @@ Globalize.prototype.plural = function( value, options ) {
 	return this.pluralGenerator( options )( value );
 };
 
-/**
+/*
  * .pluralGenerator( [options] )
  *
  * Return a plural function (of the form below).

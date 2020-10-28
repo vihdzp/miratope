@@ -1,11 +1,11 @@
-//Made with 3D polyhedra in mind.
-//Will probably have to implement other more complicated stuff for other dimensions.
-//Implements Bentley-Ottmann, based on the implementation at
-//http://geomalgorithms.com/a09-_intersect-3.html#Bentley-Ottmann-Algorithm
-//combined with the simplification algorithm at
-//https://web.archive.org/web/20100805164131if_/http://www.cis.southalabama.edu/~hain/general/Theses/Subramaniam_thesis.pdf
-//to triangulate general polygons.
-//NOT YET FULLY IMPLEMENTED!
+/** Renders a polytope into a scene.
+ * Implements the Bentley-Ottmann algorithm
+ * as well as a simplification algorithm
+ * to triangulate general polygons.
+ * @summary Renders a polytope into a scene.
+ * @todo Guarantee that all edge cases work properly.
+ * @see {@link http://geomalgorithms.com/a09-_intersect-3.html|[1] Dan Sunday. Intersections for a Set of Segments. 2012.}
+ */
 Polytope.prototype.renderTo = function(scene) {
 	var P = this.toPolytopeC().recenter();
 
@@ -13,19 +13,7 @@ Polytope.prototype.renderTo = function(scene) {
 		var x = 0;
 		console.log(E.value.coordinates[window.index0].toString());
 		console.log(SL.toString());
-	}
-
-	//Orders two points lexicographically based on the coordinates on indices 0 and 1.
-	//Uses the IDs of the vertices to order them consistently if their coordinates are identical.
-	function order(a, b) {
-		var c = a.value.coordinates[window.index0] - b.value.coordinates[window.index0];
-		if(c === 0) { //DO NOT REPLACE BY Math.abs(c) < epsilon
-			c = a.value.coordinates[window.index1] - b.value.coordinates[window.index1];
-			if(c === 0)
-				return a.id - b.id;
-		}
-		return c;
-	}
+	};
 
 	//SL is sorted by the height of the edges' intersections with the sweepline.
 	//If these are equal, the lines are sorted by slope.
@@ -95,7 +83,7 @@ Polytope.prototype.renderTo = function(scene) {
 
 		//Makes a doubly-linked list vertexDLL for the polygon's vertices and the new vertices created.
 		//node0 is always the "next" vertex.
-		var vertexDLL = [new LinkedListNode(P.elementList[0][cycle[0]])];
+		Polytope.vertexDLL = [new LinkedListNode(P.elementList[0][cycle[0]])]; var vertexDLL = Polytope.vertexDLL;
 		for(j = 0; j < cycle.length - 1; j++) {
 			vertexDLL[j + 1] = new LinkedListNode(P.elementList[0][cycle[j + 1]]);
 			vertexDLL[j].linkToNext(vertexDLL[j + 1]);
@@ -143,7 +131,7 @@ Polytope.prototype.renderTo = function(scene) {
 		//Event queue for Bentley-Ottmann, stores vertices.
 		//Sorts EQ by lexicographic order of the vertices (EQ is read backwards at the moment).
 
-		var EQ = new AvlTree(order);
+		Polytope.EQ = new AvlTree(Polytope._order); var EQ = Polytope.EQ;
 		for(j = 0; j < vertexDLL.length; j++)
 			EQ.insert(vertexDLL[j]);
 
@@ -152,7 +140,7 @@ Polytope.prototype.renderTo = function(scene) {
 		//This format is useful because an edge on the sweep line can only be cut to the right.
 		//That way, we don't need to modify the SL objects after the division process: only the nodes' connections change.
 
-		var SL = new AvlTree(SLSort),counter=0;
+		var SL = new AvlTree(SLSort), counter=0;
 
 		//Bentley-Ottmann:
 		while(!EQ.isEmpty()) {
@@ -239,10 +227,14 @@ Polytope.prototype.renderTo = function(scene) {
 	scene.polytopes.push(this);
 };
 
-//renderTo helper function.
-//"Cuts" edgeA and edgeB at the intersection point, adds the new directed edges according to the simplification algorithm.
-//Edges are in the SL format.
-Polytope._divide = function(edgeA, edgeB, vertexDLL, EQ) {
+/**
+ * renderTo helper function.
+ * "Cuts" two edges at the intersection point, adds the new directed edges according to the simplification algorithm.
+ * @private
+ * @param {SLEdge} edgeA The first edge to cut.
+ * @param {SLEdge} edgeB The second edge to cut.
+ */
+Polytope._divide = function(edgeA, edgeB) {
 	//No point in doing anything if the intersection has already been dealt with.
 	//...what happens if two different vertices take the same location?
 	if(edgeA.leftVertex.value === edgeB.leftVertex.value || edgeA.leftVertex.value === edgeB.rightVertex().value ||
@@ -268,7 +260,11 @@ Polytope._divide = function(edgeA, edgeB, vertexDLL, EQ) {
 	//Add the intersection and a point at "infinitesimal distance" to the vertex list.
 	//They don't actually have to be different in this implementation of the algorithm.
 	//In fact, the algorithm (as implemented) will fail if both nodes don't reference the same point.
-	var newNode1 = new LinkedListNode(inter); var newNode2 = new LinkedListNode(inter);
+	var newNode1 = new LinkedListNode(inter),
+	newNode2 = new LinkedListNode(inter),
+	vertexDLL = Polytope.vertexDLL,
+	EQ = Polytope.EQ;
+
 	vertexDLL.push(newNode1); vertexDLL.push(newNode2);
 
 	//Re-links the vertices.
@@ -283,4 +279,22 @@ Polytope._divide = function(edgeA, edgeB, vertexDLL, EQ) {
 
 	EQ.insert(newNode1);
 	EQ.insert(newNode2);
+};
+
+
+/* Orders two points lexicographically based on the coordinates on indices 0 and 1.
+ * Uses the IDs of the vertices to order them consistently if their coordinates are identical.
+ * @private
+ * @param {number[]} The first point to order.
+ * @param {number[]} The second point to order.
+ * @returns {number} 1, 0 or -1 depending on whether a > b, a = b or a < b.
+ */
+Polytope._order = function(a, b) {
+	var c = a.value.coordinates[window.index0] - b.value.coordinates[window.index0];
+	if(c === 0) { //DO NOT REPLACE BY Math.abs(c) < epsilon
+		c = a.value.coordinates[window.index1] - b.value.coordinates[window.index1];
+		if(c === 0)
+			return a.id - b.id;
+	}
+	return c;
 };

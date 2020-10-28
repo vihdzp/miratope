@@ -1,83 +1,131 @@
 "use strict";
 
-//A class for general polytopes, and functions of general polytopes
-//Other than the construction property (which stores how the polytope was created),
-//the class doesn't contain any properties (but it does contain methods)
-//Those are set in the PolytopeC (combinatorial) and PolytopeS (symmetry) subclasses
-
-//Stores how a polytope was created in Polytope.construction
+/**
+ * The constructor for the Polytope class.
+ * @constructor
+ * @param {ConstructionNode} construction The constructionNode representing how the polytope was built.
+ * @classDesc A class for general polytopes, and functions of general polytopes.
+ * Other than the construction property (which stores how the polytope was created),
+ * instances of this class doesn't contain any properties by default.
+ * These are set in the PolytopeC (combinatorial) and PolytopeS (symmetry) subclasses.
+ */
 function Polytope(construction) {
 	this.construction = construction;
 	this.construction.polytope = this;
 };
 
-//Scales a polytope by a factor of r.
+/**
+ * Scales a polytope up or down.
+ * @param {number} r The scaling factor.
+ * @returns {Polytope} The scaled polytope.
+*/
 Polytope.prototype.scale = function(r) {
 	for(var i = 0; i < this.elementList[0].length; i++)
 		this.elementList[0][i].scale(r);
 	return this;
 }
 
-//Moves a polytope by the vector defined by p.
-Polytope.prototype.move = function(p) {
+/**
+ * Moves a polytope by a vector.
+ * @param {Point} P The translation vector.
+ * @returns {Polytope} The translated polytope.
+*/
+Polytope.prototype.move = function(P) {
 	for(var i = 0; i < this.elementList[0].length; i++)
-		this.elementList[0][i].add(p);
+		this.elementList[0][i].add(P);
 	return this;
 }
 
-//Moves a polytope by the vector defined by -p.
-Polytope.prototype.moveNeg = function(p) {
+/**
+ * Moves a polytope by the negative of a vector.
+ * @param {Point} P The negative of the translation vector.
+ * @returns {Polytope} The translated polytope.
+*/
+Polytope.prototype.moveNeg = function(P) {
 	for(var i = 0; i < this.elementList[0].length; i++)
-		this.elementList[0][i].subtract(p);
+		this.elementList[0][i].subtract(P);
 	return this;
 }
 
-//This gets the polytope's name from its construction (in the current language) and sets it to Polytope.getName
+/**
+ * Gets the name of a polytope.
+ * @returns {string} The name of the polytope.
+*/
 Polytope.prototype.getName = function() {
 	return this.construction.getName();
 };
 
-//THIS IS PROVISIONAL.
+/**
+ * Calculates the circumradius of a polytope.
+ * @returns {number} The polytope's circumradius.
+ * @todo Actually implement this properly!
+*/
 Polytope.prototype.circumradius = function() {
 	return this.elementList[0][0].magnitude();
 };
 
-//Gets the length of the verf of {n/d}.
-//Simple auxiliary function.
+/**
+ * Simple auxiliary function to get the length of a regular polygon's vertex figure.
+ * @param {number} n The number of sides of the polygon.
+ * @param {number} d The winding number of the polygon.
+ */
 Polytope.verfLength = function(n, d) {
 	if(d === undefined)
 		d = 1;
 	return 2 * Math.cos(Math.PI / (n / d));
 }
 
-//The two elephants in the room.
-//Using these two is probably buggy, and we should check this eventually.
+/**
+ * Creates the null polytope.
+ * @returns An instance of the null polytope.
+ */
 Polytope.nullitope = function() {
-	return new PolytopeC([], new ConstructionNode(CODENAME, "nullitope"));
+	return new PolytopeC([], new ConstructionNode(ConstructionNodeType.Codename, "nullitope"));
 };
 
-//Returns the unique 0D polytope.
+/**
+ * Creates the point polytope.
+ * @returns An instance of the point polytope.
+ */
 Polytope.point = function() {
-	return new PolytopeC([[new Point([])]], new ConstructionNode(CODENAME, "point"));
+	return new PolytopeC([[new Point([])]], new ConstructionNode(ConstructionNodeType.Codename, "point"));
 };
 
-//This sets Polytope.dyad to a dyad of a given size.
-Polytope.dyad = function(length) {
+/**
+ * Creates a dyad (line segment) of a specified length.
+ * @param {number} length The length of the dyad.
+ * @returns A dyad of the specified length.
+ */
+ Polytope.dyad = function(length) {
 	//The dyad's length defaults to 1.
+	//Note that the variable length is actually a misnomer, and will store half of the length instead.
 	if(length === undefined)
 		length = 0.5;
 	else
 		length /= 2;
-	return new PolytopeC([[new Point([-length]), new Point([length])], [[0, 1]]], new ConstructionNode(CODENAME, "dyad"));
+	return new PolytopeC([[new Point([-length]), new Point([length])], [[0, 1]]], new ConstructionNode(ConstructionNodeType.Codename, "dyad"));
 };
 
+/**
+ * Calculates the prism product (Cartesian product) of a set of polytopes.
+ * Vertices are the products of vertices, edges are the products of vertices
+ * with edges or viceversa, and so on.
+ * @summary Calculates the prism product of a set of polytopes.
+ * @param {...Polytope} P The list of polytopes to "multiply" together.
+ */
 //Polytope._prismProduct, but also supports P being an array.
-Polytope.prismProduct = function(P, Q) {
-	return Polytope._product(P, Q, MULTIPRISM, Polytope._prismProduct);
+Polytope.prismProduct = function(...P) {
+	return Polytope._product(P, ConstructionNodeType.Multiprism, Polytope._prismProduct);
 };
 
-//Calculates the prism product (Cartesian product) of P and Q
-//Vertices are the products of vertices, edges are the products of vertices with edges or viceversa, and so on.
+/**
+ * Helper function for {@link Polytope.prismProduct}.
+ * Is the one actually performing the product.
+ * Takes the prism product of two polytopes.
+ * @private
+ * @param {Polytope} P The first polytope to multiply.
+ * @param {Polytope} Q The second polytope to multiply.
+ */
 Polytope._prismProduct = function(P, Q) {
 	//Deals with the point, nullitope cases.
 	if(P.dimensions === 0)
@@ -127,10 +175,22 @@ Polytope._prismProduct = function(P, Q) {
 	return new PolytopeC(newElementList); //The construction gets added in the main function.
 };
 
-//Helper function for prismProduct.
-//Gets the index of the product of the ith m-element and the jth n-element in the new polytope.
-//Takes into account the order in which the elements are calculated and added.
-Polytope._getIndexOfPrismProduct = function(m, i, n, j, P, Q, memoizer) {
+/**
+ * Helper function for {@link Polytope.prismProduct}.
+ * Gets the index of the product of the ith m-element of P
+ * and the jth n-element of Q in the new polytope.
+ * Takes into account the order in which the elements are calculated and added.
+ * @summary Helper function for {@link Polytope.prismProduct}.
+ * @private
+ * @param {number} m The dimension of an element on the first polytope.
+ * @param {number} i The index of an element on the first polytope.
+ * @param {number} n The dimension of an element on the second polytope.
+ * @param {number} j The index of an element on the second polytope.
+ * @param {Polytope} P The first polytope to multiply.
+ * @param {Polytope} Q The second polytope to multiply.
+ * @param {number[][]} memoizer An array to store past calculations.
+ */
+ Polytope._getIndexOfPrismProduct = function(m, i, n, j, P, Q, memoizer) {
 	//Recall that the elements of a single dimension are added in order vertex * facet, edge * ridge, ...
 	//memoizer[m][n] counts the number of such elements that we have to skip before we reach the multiplication we actually care about.
 	//This number is found recursively, so we memoize to calculate it more efficiently.
@@ -154,7 +214,7 @@ Polytope._getIndexOfPrismProduct = function(m, i, n, j, P, Q, memoizer) {
 
 //Polytope._tegumProduct, but also supports P being an array.
 Polytope.tegumProduct = function(P, Q) {
-	return Polytope._product(P, Q, MULTITEGUM, Polytope._tegumProduct);
+	return Polytope._product(P, Q, ConstructionNodeType.Multitegum, Polytope._tegumProduct);
 };
 
 //Calculates the tegum product, or rather the dual of the Cartesian product, of P and Q.
@@ -308,7 +368,7 @@ Polytope._tegumProduct = function(P, Q) {
 
 //Polytope._pyramidProduct, but also supports P being an array.
 Polytope.pyramidProduct = function(P, Q) {
-	return Polytope._product(P, Q, MULTIPYRAMID, Polytope._pyramidProduct);
+	return Polytope._product(P, Q, ConstructionNodeType.Multipyramid, Polytope._pyramidProduct);
 };
 
 //Calculates the pyramid product of P and Q.
@@ -457,31 +517,30 @@ Polytope._getIndexOfTegumProduct = function(m, i, n, j, P, Q, memoizer, tegum) {
 	return memoizer[m][n] + offset;
 };
 
-//Helper function.
-//If P is not an array, performs the product dicated by type and fun of P and Q.
-//If P is an array, same thing, but among P's elements.
-Polytope._product = function(P, Q, type, fun) {
+/**
+ * Helper function for {@link Polytope.prismProduct},
+ * {@link Polytope.tegumProduct}, and {@link Polytope.pyramidProduct}.
+ * @summary Performs a product of a set of polytopes.
+ * @private
+ * @param {Polytope[]} P An array of polytopes to "multiply."
+ * @param {ConstructionNodeType} type The ConstructionNodeType corresponding to the product operation.
+ * @param {function} The function used to perform the product.
+ * @returns {Polytope} The resulting product.
+ * */
+Polytope._product = function(P, type, fun) {
 	if(P.length === 0)
 		return Polytope.nullitope();
 
 	var constructions = [], res;
 
-	//If P is an array:
-	if(P.length) {
-		res = P.pop();
-		constructions.push(res.construction);
-		while(P.length) {
-			//Stores the constructions of the elements of P in a temporary array.
-			constructions.push(P[P.length - 1].construction);
-			res = fun(P.pop(), res);
-		}
-		res.construction = new ConstructionNode(type, constructions);
-		return res;
+	res = P.pop();
+	constructions.push(res.construction);
+	while(P.length) {
+		//Stores the constructions of the elements of P in a temporary array.
+		constructions.push(P[P.length - 1].construction);
+		res = fun(P.pop(), res);
 	}
-
-	//If P and Q are just two polytopes:
-	res = fun(P, Q);
-	res.construction = new ConstructionNode(type, [P.construction, Q.construction]);
+	res.construction = new ConstructionNode(type, constructions);
 	return res;
 };
 
@@ -528,7 +587,7 @@ Polytope.prototype.extrudeToPyramid = function(apex) {
 		}
 	}
 
-	var construction = new ConstructionNode(PYRAMID, P.construction);
+	var construction = new ConstructionNode(ConstructionNodeType.Pyramid, P.construction);
 	P.construction = construction;
 	return P;
 };
@@ -552,7 +611,7 @@ Polytope.polygon = function(points) {
 	newElementList[1].push([i, 0]);
 	newElementList[2][0].push(i);
 
-	return new PolytopeC(newElementList, new ConstructionNode(POLYGON, [points.length, 1]));
+	return new PolytopeC(newElementList, new ConstructionNode(ConstructionNodeType.Polygon, [points.length, 1]));
 };
 
 //Builds a n/d star with edge length s.
@@ -601,7 +660,7 @@ Polytope.regularPolygon = function(n, d, s) {
 		x++; y++;
 	}
 
-	return new PolytopeC(els, new ConstructionNode(POLYGON, [n, d]));
+	return new PolytopeC(els, new ConstructionNode(ConstructionNodeType.Polygon, [n, d]));
 };
 
 //Helper function for regularPolygon.
@@ -640,7 +699,7 @@ Polytope.regularPolygonG = function(n, d, s) {
 		els[1].push([i, i + 1]); //Edges
 	els[1].push([els[0].length - 1, 0]);
 
-	return new PolytopeC(els, new ConstructionNode(POLYGON, [n, d]));
+	return new PolytopeC(els, new ConstructionNode(ConstructionNodeType.Polygon, [n, d]));
 };
 
 //Builds a semiuniform polygon with n sides and "absolute turning number"
@@ -665,7 +724,7 @@ Polytope.semiregularPolygon = function(n, d, a, b) {
 				[[0,1],[1,2],[2,3],[3,0]],
 				[[0,1,2,3]]
 			],
-			new ConstructionNode(CODENAME, "bowtie")
+			new ConstructionNode(ConstructionNodeType.Codename, "bowtie")
 		);
 	}
 
@@ -702,7 +761,7 @@ Polytope.semiregularPolygon = function(n, d, a, b) {
 		els[1].push([i, i + 1]); //Edges
 	els[1].push([els[0].length - 1, 0]);
 
-	return new PolytopeC(els, new ConstructionNode(POLYGON, [n, d]));
+	return new PolytopeC(els, new ConstructionNode(ConstructionNodeType.Polygon, [n, d]));
 };
 
 //Builds a hypercube in the specified amount of dimensions.
@@ -753,7 +812,7 @@ Polytope.hypercube = function(dimensions) {
 		}
 	}
 
-	return new PolytopeC(els, new ConstructionNode(HYPERCUBE, dimensions));
+	return new PolytopeC(els, new ConstructionNode(ConstructionNodeType.Hypercube, dimensions));
 };
 
 //Builds a simplex in the specified amount of dimensions.
@@ -806,7 +865,7 @@ Polytope.simplex = function(dimensions) {
 		els[elementDimension].push(facets);
 	}
 
-	return new PolytopeC(els, new ConstructionNode(SIMPLEX, dimensions));
+	return new PolytopeC(els, new ConstructionNode(ConstructionNodeType.Simplex, dimensions));
 };
 
 //Builds a cross-polytope in the specified amount of dimensions.
@@ -856,7 +915,7 @@ Polytope.cross = function(dimensions) {
 	}
 	els[dimensions].push(facets);
 
-	return new PolytopeC(els, new ConstructionNode(CROSS, dimensions));
+	return new PolytopeC(els, new ConstructionNode(ConstructionNodeType.Cross, dimensions));
 };
 
 //Creates a uniform {n / d} antiprism.
@@ -907,7 +966,7 @@ Polytope.uniformAntiprism = function(n, d) {
 	for(i = 0; i < 2 * (n + 1); i++)
 		newElementList[3][0].push(i);
 
-	return new PolytopeC(newElementList, new ConstructionNode(ANTIPRISM, new ConstructionNode(POLYGON, [n, d])));
+	return new PolytopeC(newElementList, new ConstructionNode(ConstructionNodeType.Antiprism, new ConstructionNode(ConstructionNodeType.Polygon, [n, d])));
 };
 
 //Creates an {n / d} cupola with regular faces.
@@ -965,7 +1024,7 @@ Polytope.cupola = function(n, d) {
 	for(i = 0; i < 2 * n + 2; i++)
 		newElementList[3][0].push(i);
 
-	return new PolytopeC(newElementList, new ConstructionNode(CUPOLA, new ConstructionNode(POLYGON, [n, d])));
+	return new PolytopeC(newElementList, new ConstructionNode(ConstructionNodeType.Cupola, new ConstructionNode(ConstructionNodeType.Polygon, [n, d])));
 };
 
 //Creates an {n / d} cuploid with regular faces.
@@ -1020,7 +1079,7 @@ Polytope.cuploid = function(n, d) {
 	for(i = 0; i < 2 * n + 1; i++)
 		newElementList[3][0].push(i);
 
-	return new PolytopeC(newElementList, new ConstructionNode(CUPLOID, [new ConstructionNode(POLYGON, [n, d])]));
+	return new PolytopeC(newElementList, new ConstructionNode(ConstructionNodeType.Cuploid, new ConstructionNode(ConstructionNodeType.Polygon, [n, d])));
 };
 
 //Creates an {n / d} cupolaic blend with regular faces.
@@ -1088,7 +1147,7 @@ Polytope.cupolaicBlend = function(n, d) {
 	for(i = 0; i < 2 * n + 1; i++)
 		newElementList[3][0].push(i);
 
-	return new PolytopeC(newElementList, new ConstructionNode(CUPBLEND, [new ConstructionNode(POLYGON, [n, d])]));
+	return new PolytopeC(newElementList, new ConstructionNode(ConstructionNodeType.CupolaicBlend, new ConstructionNode(ConstructionNodeType.Polygon, [n, d])));
 };
 
 //The event triggered by the import button.

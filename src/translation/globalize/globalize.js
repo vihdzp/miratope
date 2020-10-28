@@ -1,4 +1,4 @@
-/**
+/*
  * Globalize v1.6.0
  *
  * http://github.com/jquery/globalize
@@ -35,7 +35,7 @@
 }( this, function( Cldr ) {
 
 
-/**
+/*
  * A toString method that outputs meaningful values for objects or arrays and
  * still performs as fast as a plain string in case variable is string, or as
  * fast as `"" + number` in case variable is a number.
@@ -49,7 +49,7 @@ var toString = function( variable ) {
 
 
 
-/**
+/*
  * formatMessage( message, data )
  *
  * @message [String] A message with optional {vars} to be replaced.
@@ -113,7 +113,7 @@ var createError = function( code, message, attributes ) {
 
 
 
-/**
+/*
  * Pushes part to parts array, concat two consecutive parts of the same type.
  */
 var partsPush = function( parts, type, value ) {
@@ -130,7 +130,7 @@ var partsPush = function( parts, type, value ) {
 
 
 
-/**
+/*
  * formatMessage( message, data )
  *
  * @message [String] A message with optional {vars} to be replaced.
@@ -172,7 +172,7 @@ var formatMessageToParts = function( message, data ) {
 
 
 
-/**
+/*
  * Returns joined parts values.
  */
 var partsJoin = function( parts ) {
@@ -308,7 +308,7 @@ var validateParameterPresence = function( value, name ) {
 
 
 
-/**
+/*
  * range( value, name, minimum, maximum )
  *
  * @value [Number].
@@ -364,7 +364,7 @@ var validateParameterTypeLocale = function( value, name ) {
 
 
 
-/**
+/*
  * Function inspired by jQuery Core, but reduced to our use case.
  */
 var isPlainObject = function( obj ) {
@@ -420,7 +420,7 @@ function validateLikelySubtags( cldr ) {
 	cldr.get( "supplemental/likelySubtags" );
 }
 
-/**
+/*
  * [new] Globalize( locale|cldr )
  *
  * @locale [String]
@@ -442,7 +442,7 @@ function Globalize( locale ) {
 	validateLikelySubtags( this.cldr );
 }
 
-/**
+/*
  * Globalize.load( json, ... )
  *
  * @json [JSON]
@@ -456,7 +456,7 @@ Globalize.load = function() {
 	Cldr.load.apply( Cldr, arguments );
 };
 
-/**
+/*
  * Globalize.locale( [locale|cldr] )
  *
  * @locale [String]
@@ -477,7 +477,7 @@ Globalize.locale = function( locale ) {
 	return this.cldr;
 };
 
-/**
+/*
  * Optimization to avoid duplicating some internal functions across modules.
  */
 Globalize._alwaysArray = alwaysArray;

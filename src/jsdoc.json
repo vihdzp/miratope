@@ -1,0 +1,25 @@
+{
+    "tags": {
+        "allowUnknownTags": false,
+        "dictionaries": ["jsdoc", "closure"]
+    },
+    "source": {
+        "include": ["C:/Users/erici/github/miratope/src/package.json", "C:/Users/erici/github/miratope/readme.md"],
+        "includePattern": "\\.js$",
+        "excludePattern": "(node_modules/|docs)"
+    },
+    "plugins": [
+        "C:/Users/erici/.atom/packages/jsdoc-generator/node_modules/jsdoc/plugins/markdown"
+    ],
+    "opts": {
+        "template": "C:/Users/erici/.atom/packages/jsdoc-generator/node_modules/jsdoc/node_modules/docdash",
+        "encoding": "utf8",
+        "destination": "C:/Users/erici/github/miratope/out",
+        "recurse": true,
+        "verbose": true
+    },
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": false
+    }
+}

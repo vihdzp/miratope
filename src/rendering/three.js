@@ -270,7 +270,7 @@
 	var GLSL1 = "100";
 	var GLSL3 = "300 es";
 
-	/**
+	/*
 	 * https://github.com/mrdoob/eventdispatcher.js/
 	 */
 	function EventDispatcher() {}
@@ -7020,7 +7020,7 @@
 		}
 	});
 
-	/**
+	/*
 	 * parameters = {
 	 *	color: <hex>,
 	 *	opacity: <float>,
@@ -8992,7 +8992,7 @@
 		return BoxBufferGeometry;
 	}(BufferGeometry);
 
-	/**
+	/*
 	 * Uniform Utilities
 	 */
 	function cloneUniforms(src) {
@@ -9039,7 +9039,7 @@
 
 	var default_fragment = "void main() {\n\tgl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );\n}";
 
-	/**
+	/*
 	 * parameters = {
 	 *	defines: { "label" : "value" },
 	 *	uniforms: { "parameter1": { value: 1.0 }, "parameter2": { value2: 2 } },
@@ -9271,7 +9271,7 @@
 			return this;
 		},
 
-		/**
+		/*
 		 * Sets the FOV by focal length in respect to the current .filmGauge.
 		 *
 		 * The default film gauge is 35, so that the focal length can be specified for
@@ -9286,7 +9286,7 @@
 			this.updateProjectionMatrix();
 		},
 
-		/**
+		/*
 		 * Calculates the focal length from the current .fov and .filmGauge.
 		 */
 		getFocalLength: function getFocalLength() {
@@ -9305,7 +9305,7 @@
 			return this.filmGauge / Math.max(this.aspect, 1);
 		},
 
-		/**
+		/*
 		 * Sets an offset in a larger frustum. This is useful for multi-window or
 		 * multi-monitor/multi-machine setups.
 		 *
@@ -10321,7 +10321,7 @@
 		sprite_vert: sprite_vert
 	};
 
-	/**
+	/*
 	 * Uniforms library for shared webgl shaders
 	 */
 
@@ -12125,7 +12125,7 @@
 	DataTexture3D.prototype.constructor = DataTexture3D;
 	DataTexture3D.prototype.isDataTexture3D = true;
 
-	/**
+	/*
 	 * Uniforms of a program.
 	 * Those form a tree structure with a special top-level container for the root,
 	 * which you get by calling 'new WebGLUniforms( gl, program )'.
@@ -14156,7 +14156,7 @@
 		};
 	}
 
-	/**
+	/*
 	 * parameters = {
 	 *
 	 *	opacity: <float>,
@@ -14210,7 +14210,7 @@
 		return this;
 	};
 
-	/**
+	/*
 	 * parameters = {
 	 *
 	 *	referencePosition: <float>,
@@ -16588,7 +16588,7 @@
 
 		var cameraLPos = new Vector3();
 		var cameraRPos = new Vector3();
-		/**
+		/*
 		 * Assumes 2 cameras that are parallel and share an X-axis, and that
 		 * the cameras' projection and world matrices have already been set.
 		 * And that near and far planes are identical for both cameras.
@@ -17236,7 +17236,7 @@
 		this.domElement = _canvas; // Debug configuration container
 
 		this.debug = {
-			/**
+			/*
 			 * Enables error checking and reporting when shader programs are being compiled
 			 * @type {boolean}
 			 */
@@ -18938,7 +18938,7 @@
 		}
 	});
 
-	/**
+	/*
 	 * parameters = {
 	 *	color: <hex>,
 	 *	map: new THREE.Texture( <Image> ),
@@ -19527,7 +19527,7 @@
 		updateMorphTargets: function updateMorphTargets() {}
 	});
 
-	/**
+	/*
 	 * parameters = {
 	 *	color: <hex>,
 	 *	opacity: <float>,
@@ -19831,7 +19831,7 @@
 		isLineLoop: true
 	});
 
-	/**
+	/*
 	 * parameters = {
 	 *	color: <hex>,
 	 *	opacity: <float>,
@@ -21752,7 +21752,7 @@
 		return EdgesGeometry;
 	}(BufferGeometry);
 
-	/**
+	/*
 	 * Port from https://github.com/mapbox/earcut (v2.2.2)
 	 */
 	var Earcut = {
@@ -23178,7 +23178,7 @@
 		return OctahedronGeometry;
 	}(Geometry);
 
-	/**
+	/*
 	 * Parametric Surfaces Geometry
 	 * based on the brilliant article by @prideout https://prideout.net/blog/old/blog/index.html@p=44.html
 	 */
@@ -23267,7 +23267,7 @@
 	ParametricBufferGeometry.prototype = Object.create(BufferGeometry.prototype);
 	ParametricBufferGeometry.prototype.constructor = ParametricBufferGeometry;
 
-	/**
+	/*
 	 * Parametric Surfaces Geometry
 	 * based on the brilliant article by @prideout https://prideout.net/blog/old/blog/index.html@p=44.html
 	 */
@@ -24421,7 +24421,7 @@
 		WireframeGeometry: WireframeGeometry
 	});
 
-	/**
+	/*
 	 * parameters = {
 	 *	color: <THREE.Color>
 	 * }
@@ -24454,7 +24454,7 @@
 	RawShaderMaterial.prototype.constructor = RawShaderMaterial;
 	RawShaderMaterial.prototype.isRawShaderMaterial = true;
 
-	/**
+	/*
 	 * parameters = {
 	 *	color: <hex>,
 	 *	roughness: <float>,
@@ -24592,7 +24592,7 @@
 		return this;
 	};
 
-	/**
+	/*
 	 * parameters = {
 	 *	clearcoat: <float>,
 	 *	clearcoatMap: new THREE.Texture( <Image> ),
@@ -24670,7 +24670,7 @@
 		return this;
 	};
 
-	/**
+	/*
 	 * parameters = {
 	 *	color: <hex>,
 	 *	specular: <hex>,
@@ -24798,7 +24798,7 @@
 		return this;
 	};
 
-	/**
+	/*
 	 * parameters = {
 	 *	color: <hex>,
 	 *
@@ -24907,7 +24907,7 @@
 		return this;
 	};
 
-	/**
+	/*
 	 * parameters = {
 	 *	opacity: <float>,
 	 *
@@ -24973,7 +24973,7 @@
 		return this;
 	};
 
-	/**
+	/*
 	 * parameters = {
 	 *	color: <hex>,
 	 *	opacity: <float>,
@@ -25068,7 +25068,7 @@
 		return this;
 	};
 
-	/**
+	/*
 	 * parameters = {
 	 *	color: <hex>,
 	 *	opacity: <float>,
@@ -25148,7 +25148,7 @@
 		return this;
 	};
 
-	/**
+	/*
 	 * parameters = {
 	 *	color: <hex>,
 	 *	opacity: <float>,
@@ -25450,7 +25450,7 @@
 		}
 	};
 
-	/**
+	/*
 	 * Abstract base class of interpolants over parametric samples.
 	 *
 	 * The parameter domain is one dimensional, typically the time or a path
@@ -25636,7 +25636,7 @@
 		afterEnd_: Interpolant.prototype.copySampleValue_
 	});
 
-	/**
+	/*
 	 * Fast and simple cubic spline interpolant.
 	 *
 	 * It was derived from a Hermitian construction setting the first derivative
@@ -25766,7 +25766,7 @@
 		}
 	});
 
-	/**
+	/*
 	 *
 	 * Interpolant that evaluates to the sample value at the position preceeding
 	 * the parameter.
@@ -26083,7 +26083,7 @@
 		}
 	});
 
-	/**
+	/*
 	 * A Track of Boolean keyframe values.
 	 */
 
@@ -26103,7 +26103,7 @@
 
 	});
 
-	/**
+	/*
 	 * A Track of keyframe values that represent color.
 	 */
 
@@ -26120,7 +26120,7 @@
 
 	});
 
-	/**
+	/*
 	 * A Track of numeric keyframe values.
 	 */
 
@@ -26135,7 +26135,7 @@
 
 	});
 
-	/**
+	/*
 	 * Spherical linear unit quaternion interpolant.
 	 */
 
@@ -26160,7 +26160,7 @@
 		}
 	});
 
-	/**
+	/*
 	 * A Track of quaternion keyframe values.
 	 */
 
@@ -26180,7 +26180,7 @@
 
 	});
 
-	/**
+	/*
 	 * A Track that interpolates Strings
 	 */
 
@@ -26197,7 +26197,7 @@
 		InterpolantFactoryMethodSmooth: undefined
 	});
 
-	/**
+	/*
 	 * A Track of vectored keyframe values.
 	 */
 
@@ -26895,7 +26895,7 @@
 		}
 	});
 
-	/**
+	/*
 	 * Abstract Base class to block based textures loader (dds, pvr, ...)
 	 *
 	 * Sub classes have to implement the parse() method which will be used in load().
@@ -27068,7 +27068,7 @@
 		}
 	});
 
-	/**
+	/*
 	 * Abstract Base class to load generic binary textures formats (rgbe, hdr, ...)
 	 *
 	 * Sub classes have to implement the parse() method which will be used in load().
@@ -27156,7 +27156,7 @@
 		}
 	});
 
-	/**
+	/*
 	 * Extensible curve object.
 	 *
 	 * Some common of curve methods:
@@ -27550,7 +27550,7 @@
 	ArcCurve.prototype.constructor = ArcCurve;
 	ArcCurve.prototype.isArcCurve = true;
 
-	/**
+	/*
 	 * Centripetal CatmullRom Curve - which is useful for avoiding
 	 * cusps and self-intersections in non-uniform catmull rom curves.
 	 * http://www.cemyuksel.com/research/catmullrom_param/catmullrom.pdf
@@ -27734,7 +27734,7 @@
 		return this;
 	};
 
-	/**
+	/*
 	 * Bezier Curves formulas obtained from
 	 * http://en.wikipedia.org/wiki/Bézier_curve
 	 */
@@ -28157,7 +28157,7 @@
 		SplineCurve: SplineCurve
 	});
 
-	/**************************************************************
+	/*
 	 *	Curved Path - a curve path is simply a array of connected
 	 *	curves, but retains the api of a curve
 	 **************************************************************/
@@ -28917,7 +28917,7 @@
 		}
 	});
 
-	/**
+	/*
 	 * Primary reference:
 	 *	 https://graphics.stanford.edu/papers/envmap/envmap.pdf
 	 *
@@ -31621,7 +31621,7 @@
 			}
 		},
 
-		/**
+		/*
 		 * Replaces spaces with underscores and removes unsupported characters from
 		 * node names, to ensure compatibility with parseTrackName().
 		 *
@@ -31960,7 +31960,7 @@
 		_setValue_unbound: PropertyBinding.prototype.setValue
 	});
 
-	/**
+	/*
 	 *
 	 * A group of objects that receives a shared animation state.
 	 *
@@ -33425,7 +33425,7 @@
 		}
 	});
 
-	/**
+	/*
 	 * Ref: https://en.wikipedia.org/wiki/Spherical_coordinate_system
 	 *
 	 * The polar angle (phi) is measured from the positive y-axis. The positive y-axis is up.
@@ -33502,7 +33502,7 @@
 		return Spherical;
 	}();
 
-	/**
+	/*
 	 * Ref: https://en.wikipedia.org/wiki/Cylindrical_coordinate_system
 	 */
 	var Cylindrical = /*#__PURE__*/function () {
@@ -34332,7 +34332,7 @@
 	var _vector$b = /*@__PURE__*/new Vector3();
 
 	var _camera = /*@__PURE__*/new Camera();
-	/**
+	/*
 	 *	- shows frustum, line of sight and up of the camera
 	 *	- suitable for fast updates
 	 * 	- based on frustum visualization in lightgl.js shadowmap example
@@ -34833,7 +34833,7 @@
 	// same axis), used as axis directions evenly spread on a sphere.
 
 	var _axisDirections = [/*@__PURE__*/new Vector3(1, 1, 1), /*@__PURE__*/new Vector3(-1, 1, 1), /*@__PURE__*/new Vector3(1, 1, -1), /*@__PURE__*/new Vector3(-1, 1, -1), /*@__PURE__*/new Vector3(0, PHI, INV_PHI), /*@__PURE__*/new Vector3(0, PHI, -INV_PHI), /*@__PURE__*/new Vector3(INV_PHI, 0, PHI), /*@__PURE__*/new Vector3(-INV_PHI, 0, PHI), /*@__PURE__*/new Vector3(PHI, INV_PHI, 0), /*@__PURE__*/new Vector3(-PHI, INV_PHI, 0)];
-	/**
+	/*
 	 * This class generates a Prefiltered, Mipmapped Radiance Environment Map
 	 * (PMREM) from a cubeMap environment texture. This allows different levels of
 	 * blur to be quickly accessed based on material roughness. It is packed into a
@@ -34855,7 +34855,7 @@
 
 			this._compileMaterial(this._blurMaterial);
 		}
-		/**
+		/*
 		 * Generates a PMREM from a supplied Scene, which can be faster than using an
 		 * image if networking bandwidth is low. Optional sigma specifies a blur radius
 		 * in radians to be applied to the scene before PMREM generation. Optional near
@@ -34895,7 +34895,7 @@
 
 			return cubeUVRenderTarget;
 		}
-		/**
+		/*
 		 * Generates a PMREM from an equirectangular texture, which can be either LDR
 		 * (RGBFormat) or HDR (RGBEFormat). The ideal input image size is 1k (1024 x 512),
 		 * as this matches best with the 256 x 256 cubemap output.
@@ -34905,7 +34905,7 @@
 		_proto.fromEquirectangular = function fromEquirectangular(equirectangular) {
 			return this._fromTexture(equirectangular);
 		}
-		/**
+		/*
 		 * Generates a PMREM from an cubemap texture, which can be either LDR
 		 * (RGBFormat) or HDR (RGBEFormat). The ideal input cube size is 256 x 256,
 		 * as this matches best with the 256 x 256 cubemap output.
@@ -34915,7 +34915,7 @@
 		_proto.fromCubemap = function fromCubemap(cubemap) {
 			return this._fromTexture(cubemap);
 		}
-		/**
+		/*
 		 * Pre-compiles the cubemap shader. You can get faster start-up by invoking this method during
 		 * your texture's network fetch for increased concurrency.
 		 */
@@ -34928,7 +34928,7 @@
 				this._compileMaterial(this._cubemapShader);
 			}
 		}
-		/**
+		/*
 		 * Pre-compiles the equirectangular shader. You can get faster start-up by invoking this method during
 		 * your texture's network fetch for increased concurrency.
 		 */
@@ -34941,7 +34941,7 @@
 				this._compileMaterial(this._equirectShader);
 			}
 		}
-		/**
+		/*
 		 * Disposes of the PMREMGenerator's internal memory. Note that PMREMGenerator is a static class,
 		 * so you should not need more than one PMREMGenerator object. If you do, calling dispose() on
 		 * one of them will cause any others to also become unusable.
@@ -35105,7 +35105,7 @@
 
 			renderer.autoClear = autoClear;
 		}
-		/**
+		/*
 		 * This is a two-pass Gaussian blur for a cubemap. Normally this is done
 		 * vertically and horizontally, but this breaks down on a cube. Here we apply
 		 * the blur latitudinally (around the poles), and then longitudinally (towards

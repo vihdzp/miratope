@@ -1,4 +1,4 @@
-/**
+/*
  * CLDR JavaScript Library v0.5.3
  * http://jquery.com/
  *
@@ -127,7 +127,7 @@
 
 	Cldr._raw = {};
 
-	/**
+	/*
 	 * Cldr.load( json [, json, ...] )
 	 *
 	 * @json [JSON] CLDR data or [Array] Array of @json's.
@@ -139,7 +139,7 @@
 		Cldr._raw = coreLoad( Cldr, Cldr._raw, arguments );
 	};
 
-	/**
+	/*
 	 * Overwrite Cldr.prototype.get().
 	 */
 	Cldr.prototype.get = function( path ) {

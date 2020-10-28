@@ -1,4 +1,4 @@
-/**
+/*
  * Globalize v1.6.0
  *
  * http://github.com/jquery/globalize
@@ -1409,14 +1409,14 @@ MessageFormat._parse = (function() {
 }()).parse;
 
 
-/** @file messageformat.js - ICU PluralFormat + SelectFormat for JavaScript
+/* @file messageformat.js - ICU PluralFormat + SelectFormat for JavaScript
  *  @author Alex Sexton - @SlexAxton
  *  @version 0.3.0-1
  *  @copyright 2012-2015 Alex Sexton, Eemeli Aro, and Contributors
  *  @license To use or fork, MIT. To contribute back, Dojo CLA  */
 
 
-/** Utility function for quoting an Object's key value iff required
+/* Utility function for quoting an Object's key value iff required
  *  @private  */
 function propname(key, obj) {
   if (/^[A-Z_$][0-9A-Z_$]*$/i.test(key)) {
@@ -1428,7 +1428,7 @@ function propname(key, obj) {
 };
 
 
-/** Create a new message formatter
+/* Create a new message formatter
  *
  *  @class
  *  @global
@@ -1448,7 +1448,7 @@ function MessageFormat(locale, pluralFunc, formatters) {
 
 
 
-/** Parse an input string to its AST
+/* Parse an input string to its AST
  *
  *  Precompiled from `lib/messageformat-parser.pegjs` by
  *  {@link http://pegjs.org/ PEG.js}. Included in MessageFormat object
@@ -1458,7 +1458,7 @@ function MessageFormat(locale, pluralFunc, formatters) {
 
 
 
-/** Pluralization functions from
+/* Pluralization functions from
  *  {@link http://github.com/eemeli/make-plural.js make-plural}
  *
  *  @memberof MessageFormat
@@ -1466,7 +1466,7 @@ function MessageFormat(locale, pluralFunc, formatters) {
 MessageFormat.plurals = {};
 
 
-/** Default number formatting functions in the style of ICU's
+/* Default number formatting functions in the style of ICU's
  *  {@link http://icu-project.org/apiref/icu4j/com/ibm/icu/text/MessageFormat.html simpleArg syntax}
  *  implemented using the
  *  {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl Intl}
@@ -1502,7 +1502,7 @@ MessageFormat.plurals = {};
  *  "The total is €5.50."  */
 MessageFormat.formatters = {};
 
-/** Enable or disable support for the default formatters, which require the
+/* Enable or disable support for the default formatters, which require the
  *  `Intl` object. Note that this can't be autodetected, as the environment
  *  in which the formatted text is compiled into Javascript functions is not
  *  necessarily the same environment in which they will get executed.
@@ -1522,7 +1522,7 @@ MessageFormat.formatters = {};
 
 
 
-/** A set of utility functions that are called by the compiled Javascript
+/* A set of utility functions that are called by the compiled Javascript
  *  functions, these are included locally in the output of {@link
  *  MessageFormat#compile compile()}.
  *
@@ -1530,7 +1530,7 @@ MessageFormat.formatters = {};
  *  @memberof MessageFormat  */
 MessageFormat.prototype.runtime = {
 
-  /** Utility function for `#` in plural rules
+  /* Utility function for `#` in plural rules
    *
    *  @param {number} value - The value to operate on
    *  @param {number} [offset=0] - An optional offset, set by the surrounding context  */
@@ -1539,7 +1539,7 @@ MessageFormat.prototype.runtime = {
     return value - (offset || 0);
   },
 
-  /** Utility function for `{N, plural|selectordinal, ...}`
+  /* Utility function for `{N, plural|selectordinal, ...}`
    *
    *  @param {number} value - The key to use to find a pluralization rule
    *  @param {number} offset - An offset to apply to `value`
@@ -1555,7 +1555,7 @@ MessageFormat.prototype.runtime = {
     return data.other();
   },
 
-  /** Utility function for `{N, select, ...}`
+  /* Utility function for `{N, select, ...}`
    *
    *  @param {number} value - The key to use to find a selection
    *  @param {Object.<string,string>} data - The object from which results are looked up
@@ -1565,12 +1565,12 @@ MessageFormat.prototype.runtime = {
     return data.other()
   },
 
-  /** Pluralization functions included in compiled output
+  /* Pluralization functions included in compiled output
    *  @instance
    *  @type Object.<string,function>  */
   pluralFuncs: {},
 
-  /** Custom formatting functions called by `{var, fn[, args]*}` syntax
+  /* Custom formatting functions called by `{var, fn[, args]*}` syntax
    *
    *  For examples, see {@link MessageFormat.formatters}
    *
@@ -1579,7 +1579,7 @@ MessageFormat.prototype.runtime = {
    *  @type Object.<string,function>  */
   fmt: {},
 
-  /** Custom stringifier to clean up browser inconsistencies
+  /* Custom stringifier to clean up browser inconsistencies
    *  @instance  */
   toString: function () {
     var _stringify = function(o, level) {
@@ -1603,7 +1603,7 @@ MessageFormat.prototype.runtime = {
 };
 
 
-/** Recursively map an AST to its resulting string
+/* Recursively map an AST to its resulting string
  *
  *  @memberof MessageFormat
  *
@@ -1685,7 +1685,7 @@ MessageFormat.prototype._precompile = function(ast, data) {
   }
 };
 
-/** Compile messages into an executable function with clean string
+/* Compile messages into an executable function with clean string
  *  representation.
  *
  *  If `messages` is a single string including ICU MessageFormat declarations,
@@ -1981,7 +1981,7 @@ var messageFormatterRuntimeBind = function( cldr, messageformatter ) {
 
 var slice = [].slice;
 
-/**
+/*
  * .loadMessages( json )
  *
  * @json [JSON]
@@ -2008,7 +2008,7 @@ Globalize.loadMessages = function( json ) {
 	Cldr.load( customData );
 };
 
-/**
+/*
  * .messageFormatter( path )
  *
  * @path [String or Array]
@@ -2054,7 +2054,7 @@ Globalize.prototype.messageFormatter = function( path ) {
 	return returnFn;
 };
 
-/**
+/*
  * .formatMessage( path [, variables] )
  *
  * @path [String or Array]
