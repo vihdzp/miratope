@@ -16,7 +16,7 @@
  * Overrides [AVLTree.prototype.compare]{@link AVLTree#compare}, and has to
  * work similarly.
  */
-var AvlTree = function (customCompare) {
+function AvlTree (customCompare) {
   /** The root of the tree.
    * @private */
   this._root = null;
@@ -50,10 +50,9 @@ AvlTree.prototype._compare = function (a, b) {
  * Inserts a new node with a specific key into the tree.
  *
  * @param {Object} key The key being inserted.
- * @param {Object} value The value being inserted.
  */
-AvlTree.prototype.insert = function (key, value) {
-  this._root = this._insert(key, value, this._root);
+AvlTree.prototype.insert = function (key) {
+  this._root = this._insert(key, this._root);
   this._size++;
   return AvlTree.insertedNode;
 };
@@ -63,21 +62,20 @@ AvlTree.prototype.insert = function (key, value) {
  *
  * @private
  * @param {Object} key The key being inserted.
- * @param {Object} value The value being inserted.
  * @param {AvlNode} root The root of the tree to insert in.
  * @return {AvlNode} The new tree root.
  */
-AvlTree.prototype._insert = function (key, value, root) {
+AvlTree.prototype._insert = function (key, root) {
   // Perform regular BST insertion
   if (root === null) {
-    AvlTree.insertedNode = new AvlNode(key, value);
+    AvlTree.insertedNode = new AvlNode(key);
 	return AvlTree.insertedNode;
   }
 
   if (this._compare(key, root.key) < 0) {
-    root.linkLeft(this._insert(key, value, root.left));
+    root.linkLeft(this._insert(key, root.left));
   } else if (this._compare(key, root.key) > 0) {
-    root.linkRight(this._insert(key, value, root.right));
+    root.linkRight(this._insert(key, root.right));
   } else {
     // It's a duplicate so insertion failed, decrement size to make up for it
     this._size--;
@@ -207,7 +205,6 @@ AvlTree.prototype._delete = function (key, root) {
       // Node has 2 children, get the in-order successor
       var inOrderSuccessor = minValueNode(root.right);
       root.key = inOrderSuccessor.key;
-      root.value = inOrderSuccessor.value;
       root.linkRight(this._delete(inOrderSuccessor.key, root.right));
     }
   }
@@ -250,35 +247,20 @@ AvlTree.prototype._delete = function (key, root) {
 };
 
 /**
- * Gets the value of a node within the tree with a specific key.
- *
- * @param {Object} key The key being searched for.
- * @return {Object} The value of the node or null if it doesn't exist.
- */
-AvlTree.prototype.get = function (key) {
-  if (this._root === null) {
-    return null;
-  }
-
-  return this._get(key, this._root).value;
-};
-
-/**
  * Gets the node within the tree with a specific key.
  *
  * @param {Object} key The key being searched for.
  * @return {Object} The node or null if it doesn't exist.
  */
 AvlTree.prototype.getNode = function (key) {
-  if (this._root === null) {
+  if (!this._root)
     return null;
-  }
 
   return this._get(key, this._root);
 };
 
 /**
- * Gets the value of a node within the tree with a specific key.
+ * Gets a node within the tree with a specific key.
  *
  * @private
  * @param {Object} key The key being searched for.
@@ -288,20 +270,17 @@ AvlTree.prototype.getNode = function (key) {
 AvlTree.prototype._get = function (key, root) {
   var result = this._compare(key, root.key);
 
-  if (result === 0) {
+  if (result === 0)
     return root;
-  }
 
   if (result < 0) {
-    if (!root.left) {
+    if (!root.left)
       return null;
-    }
     return this._get(key, root.left);
   }
 
-  if (!root.right) {
+  if (!root.right)
     return null;
-  }
   return this._get(key, root.right);
 };
 
@@ -466,15 +445,13 @@ function getBalanceState(node) {
  * @constructor
  * @classdesc A node in an [AVL tree]{@link AvlTree}.
  * @param {Object} key The key of the new node.
- * @param {Object} value The value of the new node.
  */
-var AvlNode = function (key, value) {
+function AvlNode (key) {
   this.left = null;
   this.right = null;
   this.parent = null;
   this.height = null;
   this.key = key;
-  this.value = value;
 };
 
 /**
