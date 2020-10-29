@@ -25,6 +25,7 @@
 	"docdash": {
 		"sort": true,
 		"private": true,
-		"search": true
+		"search": true,
+		"collapse": true
 	}
 }

@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>polytopes/polytopeC.js - Documentation</title>
+    <title>importing/caret.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -34,7 +34,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">polytopes/polytopeC.js</h1>
+    <h1 class="page-title">importing/caret.js</h1>
     
 
     
@@ -47,111 +47,266 @@
             <pre class="prettyprint source linenums"><code>"use strict";
 
 /**
- * The constructor for the PolytopeC class.
+ * Constructor for Caret.
  * @constructor
- * @param {ConstructionNode} construction The constructionNode representing how the polytope was built.
- * @classDesc Represents a polytope as a list of elements, in ascending order of dimensions,
- * similarly (but not identically) to an OFF file.
- * Subelements are stored as indices.
- * All points are assumed to be of the same dimension.
- * @todo Coming soon to theaters near you: A PolytopeV class!
- * PolytopeV would represent a polytope as a convex hull.
- * Or, we could make that into "another" constructor for PolytopeC.
- * We'll probably embed QHull to make that work.
+ * @classdesc A helper class for reading imported text files.
+ * Reads through a file, keeping track of its position, line, and column.
+ * @param {string} contents The contents of the file.
  */
-function PolytopeC(elementList, constructionRoot) {
-	this.dimensions = elementList.length - 1; //The rank of the polytope.
-	if(!constructionRoot) //The construction defaults to just the polytope itself.
-	constructionRoot = new ConstructionNode(ConstructionNodeType.Plain,
-		[
-			elementList[elementList.length - 2].length,
-			this.dimensions
-		]);
-	Polytope.call(this, constructionRoot);
-	this.elementList = elementList;
-	if(this.elementList[0])
-		this.spaceDimensions = this.elementList[0][0].dimensions();
+function Caret(contents) {
+	this.contents = contents;
+	/** The current position of the caret.
+	 * @type {number} */
+	this.pos = 0;
+	/** The line number of the caret.
+	 * @type {number} */
+	this.line = 0; //Line
+	/** The column number of the caret.
+	 * @type {number} */
+	this.column = 0;
+	/** Stores whether the caret has reached the end of the file or not.
+	 * @type {boolean} */
+	this.EOF = contents.length === 0;
+	this.skipToContent();
+};
+
+/** Moves the caret to the next column or the next line.
+ * Automatically keeps track of [this.pos]{@linkcode Caret#pos},
+ * [this.line]{@linkcode Caret#line}, [this.column]{@linkcode Caret#column}, and
+ * [this.EOF]{@linkcode Caret#EOF}. Assumes Windows-style line endings.
+ * @see [Caret.prototype.advance]{@linkcode Caret#advance}.
+ * @todo Take care of Unix and Macintosh line endings.
+ */
+Caret.prototype.increment = function() {
+	if(this.getChar() === '\n') {
+		this.line++;
+		this.column = 0;
+	}
 	else
-		this.spaceDimensions = -1; //The almighty nullitope (aka nothing)
-};
-
-PolytopeC.prototype = Polytope.prototype;
-
-/**
- * Calculates the centroid of a polytope.
- * @returns {Point} The centroid of the polytope.
- */
-PolytopeC.prototype.gravicenter = function() {
-	var d = this.spaceDimensions,
-	res = [],
-	i, j;
-
-	for(j = 0; j &lt; d; j++)
-		res.push(0);
-
-	for(i = 0; i &lt; this.elementList[0].length; i++)
-		for(j = 0; j &lt; d; j++)
-			res[j] += this.elementList[0][i].coordinates[j];
-
-	for(j = 0; j &lt; d; j++)
-		res[j] /= this.elementList[0].length;
-
-	return new Point(res);
+		this.column++;
+	this.EOF = ++this.pos > this.contents.length; //Checks if next position is the EOF
 };
 
 /**
- * Makes every vertex have a set number of coordinates either by adding zeros or removing numbers.
- * @param {number} dim The new number of coordinates for each vertex.
+ * Shortcut for calling [Caret.prototype.increment]{@linkcode Caret#increment}
+ * repeatedly.
+ * @param {number} n The number of times to call
+ * [Caret.prototype.increment]{@linkcode Caret#increment}-
  */
-PolytopeC.prototype.setSpaceDimensions = function(dim) {
-	for(var i = 0; i &lt; this.elementList[0].length; i++) {
-		if(this.elementList[0][i].coordinates.length > dim)
-			this.elementList[0].coordinates = this.elementList[0].coordinates.slice(0, dim);
-		else if(this.elementList[0][i].coordinates.length &lt; dim)
-			for(var j = 0; j &lt; dim - this.elementList[0][i].coordinates.length; j++)
-				this.elementList[0][i].coordinates.push(0);
+Caret.prototype.advance = function(n) {
+	for(var i = 0; i &lt; n; i++)
+		this.increment();
+};
+
+/** Gets the character at the caret.
+ * @returns {string} The current character.
+ */
+Caret.prototype.getChar = function() {
+	return this.contents[this.pos];
+};
+
+//Increments the caret but skips whitespaces, new lines, and comments
+//Runs automatically every time a read function is called
+Caret.prototype.skipToContent = function() {
+	while(!this.EOF) {
+		switch(this.getChar()) {
+			case '\n': //New Line (\n)
+			case '\r': //Carriage Return (\r)
+			case ' ':  //Skips Whitespace
+				this.increment(); break;
+			case '#':  //Skips Comments
+				this.increment();
+				//A comment lasts from the # until the end of the line.
+				//Increments until you hit the EOF or a new line character.
+				while(!this.EOF &amp;&amp; this.getChar() !== '\n')
+					this.increment();
+				this.increment();
+				break;
+			default:
+				return;
+		}
 	}
-	this.spaceDimensions = dim;
 };
 
 /**
- * Converts the edge representation of the i-th face to an ordered array of vertices.
- * @param {number} i The selected face.
- * @returns {number[]} An array with the indices of the vertices of the i-th face in order.
+ * Increments the caret until a certain character is reached.
+ * Caret ends up before the character.
+ * @param {string} char A character to search for.
+ * @example
+ * var C = new Caret("The quick brown fox jumps over the lazy dog.");
+ * C.skipToChar('q');
+ * //The |quick brown fox jumps over the lazy dog.
+ *
+ * //4
+ * console.log(C.pos);
  */
-PolytopeC.prototype.faceToVertices = function(i) {
-	//Enumerates the vertices in order.
-	//A doubly linked list does the job easily.
-	var vertexDLL = [];
-	for(var j = 0; j &lt; this.elementList[2][i].length; j++) {
-		var edge = this.elementList[1][this.elementList[2][i][j]];
-		if(vertexDLL[edge[0]] === undefined)
-			vertexDLL[edge[0]] = new LinkedListNode(edge[0]);
-		if(vertexDLL[edge[1]] === undefined)
-			vertexDLL[edge[1]] = new LinkedListNode(edge[1]);
+ Caret.prototype.skipToChar = function(char) {
+	while(!this.EOF &amp;&amp; this.getChar() !== char)
+		this.increment();
+};
 
-		vertexDLL[edge[0]].linkTo(vertexDLL[edge[1]]);
+/**
+ * Increments the caret until a certain string is read.
+ * Caret ends up after the string.
+ * @see [Caret.prototype.skipToStringList]{@linkcode Caret#skipToStringList}.
+ * @param {string} str A string to search for.
+ * @example
+ * var C = new Caret("The quick brown fox jumps over the lazy dog.");
+ * C.skipToString("fox");
+ * //The quick brown fox| jumps over the lazy dog.
+ *
+ * //19
+ * console.log(C.pos);
+ */
+Caret.prototype.skipToString = function(str) {
+	var matches = 0;
+
+	while(!this.EOF &amp;&amp; matches &lt; str.length) {
+		if(this.getChar() === str[matches])
+			matches++;
+		else
+			matches = 0;
+		this.increment();
+	}
+};
+
+/**
+ * Increments the caret until one in a list of strings is read.
+ * Caret ends up after the string.
+ * @see [Caret.prototype.skipToString]{@linkcode Caret#skipToString}.
+ * @param {string[]} strs The list of strings to search for.
+ * @returns {number} The index of the first found string.
+ * @example
+ * var C = new Caret("The quick brown fox jumps over the lazy dog.");
+ * C.skipToStringList(["quick", "lazy"]);
+ * //The quick| brown fox jumps over the lazy dog.
+ *
+ * //9
+ * console.log(C.pos);
+ */
+Caret.prototype.skipToStringList = function(strs) {
+	var matches = []; //Counts the amount of matching letters per string.
+
+	while(!this.EOF) {
+		var c = this.getChar();
+
+		//Updates matches.
+		for(var i = 0; i &lt; strs.length; i++) {
+			if(c === strs[i][matches[i]])
+				matches[i]++;
+			else
+				matches[i] = 0;
+		}
+
+		this.increment();
+
+		//Checks if a match was completed.
+		for(var i = 0; i &lt; strs.length; i++)
+			if(matches[i] >= strs[i].length)
+				return i;
 	}
 
-	//Cycle of vertex indices.
-	//"this.elementList[1][this.elementList[2][i][0]][0]" is just some vertex index.
-	return vertexDLL[this.elementList[1][this.elementList[2][i][0]][0]].getCycle();
+	return -1; //EOF.
 };
 
-/**
- * Places the gravicenter of the polytope at the origin.
- * @returns {PolytopeC} The recentered polytope.
- */
-PolytopeC.prototype.recenter = function() {
-	return this.moveNeg(this.gravicenter());
+//Reads the next word from the caret position until a whitespace, newline or hash appears.
+//Caret skips to next content.
+Caret.prototype.readWord = function() {
+	if(this.EOF) //EOF error
+		this.throwError("unexpectedEOF");
+
+	var initIndx = this.pos, endIndx;
+
+	WHILELOOP:
+	do {
+		switch(this.getChar()) {
+			case '\n': //New Line (\n)
+			case '\r': //Carriage Return (\r)
+			case ' ': //Space ( )
+			case '#': //Hashtag (#)
+				break WHILELOOP; //Leave the do-while loop immediately
+			default:
+				this.increment();
+				break;
+		}
+	}
+	while(!this.EOF); //Until you hit the EOF.
+
+	var endIndx = this.pos;
+	this.skipToContent();
+
+	//Returns the substring found
+	return this.contents.substr(initIndx, endIndx - initIndx);
 };
 
-/**
- * Ensures that we can always correctly call toPolytopeC on a polytope.
- * @returns {PolytopeC} The polytope, unchanged.
- */
-PolytopeC.prototype.toPolytopeC = function() {
-	return this;
+Caret.prototype.readUntil = function(char) {
+	if(this.EOF) //EOF error
+		this.throwError("unexpectedEOF");
+
+	var initIndx = this.pos, endIndx;
+
+	do {
+		if(this.getChar() === char)
+			break; //Leave the do-while loop immediately
+		else
+			this.increment();
+	}
+	while(!this.EOF); //Until you hit the EOF.
+
+	var endIndx = this.pos;
+
+	//Returns the substring found
+	return this.contents.substr(initIndx, endIndx - initIndx);
+};
+
+//Reads the next number from the caret position, until a non-numeric character appears
+//Supports numbers in the scientific notation format (e.g. 1E+10)
+//Caret ends up after the number.
+Caret.prototype.readNumber = function() {
+	if(this.EOF) //EOF error
+		this.throwError("unexpectedEOF");
+
+	var initIndx = this.pos, endIndx;
+
+	WHILELOOP:
+	do {
+		switch(this.getChar()) {
+			case '+':
+			case '-':
+			case '.':
+			case 'e':
+			case 'E':
+			case '0': case '1': case '2': case '3': case '4':
+			case '5': case '6': case '7': case '8': case '9':
+				this.increment();
+				break;
+			default:
+				break WHILELOOP; //Leave the do-while loop immediately
+		}
+	}
+	while(!this.EOF); //Until you hit EOF
+
+	endIndx = this.pos;
+	this.skipToContent();
+
+	//We return NaN only when the read number is in fact the empty string.
+	if(endIndx === initIndx)
+		return NaN;
+
+	var res = parseFloat(this.contents.substr(initIndx, endIndx - initIndx));
+	if(isNaN(res))
+		this.throwError("invalidNumber");
+	return res;
+};
+
+Caret.prototype.throwError = function(code) {
+	throw new Error(
+		Translation.get("error/" + code,
+		{
+			line: this.line,
+			column: this.column
+		}
+	));
 };
 </code></pre>
         </article>

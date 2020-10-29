@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>Global - Documentation</title>
+    <title>Caret - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -34,7 +34,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Global</h1>
+    <h1 class="page-title">Caret</h1>
     
 
     
@@ -47,8 +47,11 @@
 <header>
     
         <h2>
-        
+        Caret
         </h2>
+        
+            <div class="class-description usertext"><p>A helper class for reading imported text files.
+Reads through a file, keeping track of its position, line, and column.</p></div>
         
     
 </header>
@@ -59,70 +62,13 @@
         
             
 
-<dl class="details">
-
+    
+    <h2>Constructor</h2>
     
 
-    
+    <h4 class="name" id="Caret"><span class="type-signature"></span>new Caret<span class="signature">(contents)</span><span class="type-signature"></span></h4>
 
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-            
-
-            
-        
-        </div>
-    
-
-    
-
-    
-
-    
-    
-    
-
-     
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<h4 class="name" id="BalanceState"><span class="type-signature"></span>BalanceState<span class="type-signature"></span></h4>
-
 
 
 
@@ -132,7 +78,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data%20structures_avl-tree.js.html">data structures/avl-tree.js</a>, <a href="data%20structures_avl-tree.js.html#line437">line 437</a>
+        <a href="importing_caret.js.html">importing/caret.js</a>, <a href="importing_caret.js.html#line10">line 10</a>
     </li></ul></dd>
     
 
@@ -172,7 +118,7 @@
 
 
 <div class="description usertext">
-    <p>Represents how balanced an <a href="AvlNode.html">AvlNode</a>'s left and right children are.</p>
+    <p>Constructor for Caret.</p>
 </div>
 
 
@@ -182,61 +128,13 @@
 
 
 
-        
-            
-<h4 class="name" id="ConstructionNodeType"><span class="type-signature">(constant) </span>ConstructionNodeType<span class="type-signature"> :number</span></h4>
 
 
 
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data%20structures_constructionNode.js.html">data structures/constructionNode.js</a>, <a href="data%20structures_constructionNode.js.html#line7">line 7</a>
-    </li></ul></dd>
+    <h5>Parameters:</h5>
     
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
+<table class="params">
     <thead>
     <tr>
         
@@ -258,13 +156,13 @@
 
         <tr>
             
-                <td class="name"><code>Plain</code></td>
+                <td class="name"><code>contents</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">string</span>
 
 
             
@@ -274,344 +172,7 @@
 
             
 
-            <td class="description last"><p>Has two children <code>[n, d]</code>,
-representing the number of facets <code>n</code>
-and the number of dimensions <code>d</code> of the polytope.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>Polygon</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Has two children <code>[n, d]</code>, representing
-the regular polygon {<code>n</code>/<code>d</code>}.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>Multiprism</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Has an array with the factors of a prism product
-as children.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>Multitegum</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Has an array with the factors of a tegum product
-as children.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>Multipyramid</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Has an array with the factors of a pyramid product
-as children.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>Antiprism</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Has a single child representing the antiprismatic base.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>Pyramid</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Has a single child representing the pyramidal base.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>Cupola</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Has a single child representing the cupoidal base.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>Cuploid</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Has two children <code>[n, d]</code>, representing
-the regular polygonal base {<code>n</code>/<code>d</code>}
-of a cuploid.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>CupolaicBlend</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Has two children <code>[n, d]</code>, representing
-the regular polygonal base {<code>n</code>/<code>d</code>}
-of a cupolaic blend.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>Codename</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Has a polytope's &quot;code name&quot; as a child.
-Used for polytopes whose names are in loadMessages.js.
-Can be translated.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>Name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Has a polytope's name as a child.
-The default for imported polytopes,
-or polytopes not built out of anything else whose name is known.
-Can <strong>not</strong> be translated.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>Hypercube</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Has the dimension of a hypercube as a child.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>Simplex</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Has the dimension of a simplex as a child.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>Cross</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Has the dimension of an orthoplex as a child.</p></td>
+            <td class="description last"><p>The contents of the file.</p></td>
         </tr>
 
     
@@ -623,8 +184,311 @@ Can <strong>not</strong> be translated.</p></td>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        </div>
+    
+
+    
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="column"><span class="type-signature"></span>column<span class="type-signature"> :number</span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="importing_caret.js.html">importing/caret.js</a>, <a href="importing_caret.js.html#line20">line 20</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
 <div class="description usertext">
-    <p>An object containing the possible types of <a href="ConstructionNode.html">ConstructionNodes</a>.</p>
+    <p>The column number of the caret.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">number</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="EOF"><span class="type-signature"></span>EOF<span class="type-signature"> :boolean</span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="importing_caret.js.html">importing/caret.js</a>, <a href="importing_caret.js.html#line23">line 23</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Stores whether the caret has reached the end of the file or not.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="line"><span class="type-signature"></span>line<span class="type-signature"> :number</span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="importing_caret.js.html">importing/caret.js</a>, <a href="importing_caret.js.html#line17">line 17</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>The line number of the caret.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">number</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="pos"><span class="type-signature"></span>pos<span class="type-signature"> :number</span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="importing_caret.js.html">importing/caret.js</a>, <a href="importing_caret.js.html#line14">line 14</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>The current position of the caret.</p>
 </div>
 
 
@@ -655,7 +519,7 @@ Can <strong>not</strong> be translated.</p></td>
 
     
 
-    <h4 class="name" id="getBalanceState"><span class="type-signature">(private) </span>getBalanceState<span class="signature">(node)</span><span class="type-signature"> &rarr; {<a href="global.html#BalanceState">BalanceState</a>}</span></h4>
+    <h4 class="name" id="advance"><span class="type-signature"></span>advance<span class="signature">(n)</span><span class="type-signature"></span></h4>
 
     
 
@@ -667,7 +531,7 @@ Can <strong>not</strong> be translated.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data%20structures_avl-tree.js.html">data structures/avl-tree.js</a>, <a href="data%20structures_avl-tree.js.html#line453">line 453</a>
+        <a href="importing_caret.js.html">importing/caret.js</a>, <a href="importing_caret.js.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -707,8 +571,8 @@ Can <strong>not</strong> be translated.</p></td>
 
 
 <div class="description usertext">
-    <p>Gets the balance state of a node, indicating whether the left or right
-sub-trees are unbalanced.</p>
+    <p>Shortcut for calling <a href="Caret.html#increment"><code>Caret.prototype.increment</code></a>
+repeatedly.</p>
 </div>
 
 
@@ -746,13 +610,13 @@ sub-trees are unbalanced.</p>
 
         <tr>
             
-                <td class="name"><code>node</code></td>
+                <td class="name"><code>n</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="AvlNode.html">AvlNode</a></span>
+<span class="param-type">number</span>
 
 
             
@@ -762,7 +626,8 @@ sub-trees are unbalanced.</p>
 
             
 
-            <td class="description last"><p>The node to get the difference from.</p></td>
+            <td class="description last"><p>The number of times to call
+<a href="Caret.html#increment"><code>Caret.prototype.increment</code></a>-</p></td>
         </tr>
 
     
@@ -784,11 +649,98 @@ sub-trees are unbalanced.</p>
 
 
 
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getChar"><span class="type-signature"></span>getChar<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="importing_caret.js.html">importing/caret.js</a>, <a href="importing_caret.js.html#line58">line 58</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Gets the character at the caret.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <h5>Returns:</h5>
 
         
 <div class="param-desc">
-    <p>The BalanceState of the node.</p>
+    <p>The current character.</p>
 </div>
 
 
@@ -799,7 +751,7 @@ sub-trees are unbalanced.</p>
     </dt>
     <dd>
         
-<span class="param-type"><a href="global.html#BalanceState">BalanceState</a></span>
+<span class="param-type">string</span>
 
 
     </dd>
@@ -814,7 +766,7 @@ sub-trees are unbalanced.</p>
 
     
 
-    <h4 class="name" id="maxValueNode"><span class="type-signature">(private) </span>maxValueNode<span class="signature">(root)</span><span class="type-signature"> &rarr; {<a href="AvlNode.html">AvlNode</a>}</span></h4>
+    <h4 class="name" id="increment"><span class="type-signature"></span>increment<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
@@ -826,7 +778,7 @@ sub-trees are unbalanced.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data%20structures_avl-tree.js.html">data structures/avl-tree.js</a>, <a href="data%20structures_avl-tree.js.html#line380">line 380</a>
+        <a href="importing_caret.js.html">importing/caret.js</a>, <a href="importing_caret.js.html#line34">line 34</a>
     </li></ul></dd>
     
 
@@ -857,113 +809,59 @@ sub-trees are unbalanced.</p>
     
 
     
-
-    
-</dl>
-
-
-
-
-
-<div class="description usertext">
-    <p>Gets the maximum value node, rooted in a particular node.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>root</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="AvlNode.html">AvlNode</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The node to search.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>The node with the maximum key in the tree.</p>
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="AvlNode.html">AvlNode</a></span>
-
-
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><p><a href="Caret.html#advance"><code>Caret.prototype.advance</code></a>.</p></li>
+        </ul>
     </dd>
-</dl>
+    
 
     
+    <dt class="tag-todo">To Do:</dt>
+    <dd class="tag-todo">
+        <ul>
+            <li>Take care of Unix and Macintosh line endings.</li>
+        </ul>
+    </dd>
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Moves the caret to the next column or the next line.
+Automatically keeps track of <a href="Caret.html#pos"><code>this.pos</code></a>,
+<a href="Caret.html#line"><code>this.line</code></a>, <a href="Caret.html#column"><code>this.column</code></a>, and
+<a href="Caret.html#EOF"><code>this.EOF</code></a>. Assumes Windows-style line endings.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -972,7 +870,7 @@ sub-trees are unbalanced.</p>
 
     
 
-    <h4 class="name" id="minValueNode"><span class="type-signature">(private) </span>minValueNode<span class="signature">(root)</span><span class="type-signature"> &rarr; {<a href="AvlNode.html">AvlNode</a>}</span></h4>
+    <h4 class="name" id="skipToChar"><span class="type-signature"></span>skipToChar<span class="signature">(char)</span><span class="type-signature"></span></h4>
 
     
 
@@ -984,7 +882,7 @@ sub-trees are unbalanced.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data%20structures_avl-tree.js.html">data structures/avl-tree.js</a>, <a href="data%20structures_avl-tree.js.html#line347">line 347</a>
+        <a href="importing_caret.js.html">importing/caret.js</a>, <a href="importing_caret.js.html#line97">line 97</a>
     </li></ul></dd>
     
 
@@ -1024,7 +922,8 @@ sub-trees are unbalanced.</p>
 
 
 <div class="description usertext">
-    <p>Gets the minimum value node, rooted in a particular node.</p>
+    <p>Increments the caret until a certain character is reached.
+Caret ends up before the character.</p>
 </div>
 
 
@@ -1033,6 +932,11 @@ sub-trees are unbalanced.</p>
 
 
 
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var C = new Caret("The quick brown fox jumps over the lazy dog.");C.skipToChar('q');//The |quick brown fox jumps over the lazy dog.//4console.log(C.pos);</code></pre>
 
 
 
@@ -1062,13 +966,13 @@ sub-trees are unbalanced.</p>
 
         <tr>
             
-                <td class="name"><code>root</code></td>
+                <td class="name"><code>char</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="AvlNode.html">AvlNode</a></span>
+<span class="param-type">string</span>
 
 
             
@@ -1078,7 +982,305 @@ sub-trees are unbalanced.</p>
 
             
 
-            <td class="description last"><p>The node to search.</p></td>
+            <td class="description last"><p>A character to search for.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="skipToString"><span class="type-signature"></span>skipToString<span class="signature">(str)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="importing_caret.js.html">importing/caret.js</a>, <a href="importing_caret.js.html#line115">line 115</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><p><a href="Caret.html#skipToStringList"><code>Caret.prototype.skipToStringList</code></a>.</p></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Increments the caret until a certain string is read.
+Caret ends up after the string.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var C = new Caret("The quick brown fox jumps over the lazy dog.");C.skipToString("fox");//The quick brown fox| jumps over the lazy dog.//19console.log(C.pos);</code></pre>
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>str</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A string to search for.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="skipToStringList"><span class="type-signature"></span>skipToStringList<span class="signature">(strs)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="importing_caret.js.html">importing/caret.js</a>, <a href="importing_caret.js.html#line141">line 141</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><p><a href="Caret.html#skipToString"><code>Caret.prototype.skipToString</code></a>.</p></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    <p>Increments the caret until one in a list of strings is read.
+Caret ends up after the string.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var C = new Caret("The quick brown fox jumps over the lazy dog.");C.skipToStringList(["quick", "lazy"]);//The quick| brown fox jumps over the lazy dog.//9console.log(C.pos);</code></pre>
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>strs</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The list of strings to search for.</p></td>
         </tr>
 
     
@@ -1104,7 +1306,7 @@ sub-trees are unbalanced.</p>
 
         
 <div class="param-desc">
-    <p>The node with the minimum key in the tree.</p>
+    <p>The index of the first found string.</p>
 </div>
 
 
@@ -1115,7 +1317,7 @@ sub-trees are unbalanced.</p>
     </dt>
     <dd>
         
-<span class="param-type"><a href="AvlNode.html">AvlNode</a></span>
+<span class="param-type">number</span>
 
 
     </dd>

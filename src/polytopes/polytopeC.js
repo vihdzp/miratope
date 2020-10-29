@@ -6,8 +6,7 @@
  * @param {ConstructionNode} construction The constructionNode representing how the polytope was built.
  * @classDesc Represents a polytope as a list of elements, in ascending order of dimensions,
  * similarly (but not identically) to an OFF file.
- * We don't only store the facets, because we don't want to deal with O(2<sup>n</sup>) code.<br />
- * &emsp;Subelements are stored as indices.
+ * Subelements are stored as indices.
  * All points are assumed to be of the same dimension.
  * @todo Coming soon to theaters near you: A PolytopeV class!
  * PolytopeV would represent a polytope as a convex hull.

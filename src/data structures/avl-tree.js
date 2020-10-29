@@ -8,33 +8,41 @@
 
 /**
  * Creates a new AVL Tree.
+ * @classdesc
+ * Implements the {@link https://en.wikipedia.org/wiki/AVL_tree|AVL Tree data structure}
+ * for fast insertion and sorting.
  * @constructor
- * @param {function=} customCompare An optional custom compare function.
+ * @param {function} [customCompare] An optional custom compare function.
+ * Overrides [AVLTree.prototype.compare]{@link AVLTree#compare}, and has to
+ * work similarly.
  */
 var AvlTree = function (customCompare) {
+  /** The root of the tree.
+   * @private */
   this._root = null;
+  /** The size of the tree.
+   * @private */
   this._size = 0;
 
-  if (customCompare) {
+  if (customCompare)
+    /** The compare function for the AVL tree. */
     this._compare = customCompare;
-  }
 };
 
 /**
- * Compares two keys with each other.
+ * The default compare function. Can be overwritten in the constructor.
  *
  * @private
  * @param {Object} a The first key to compare.
  * @param {Object} b The second key to compare.
- * @return {number} -1, 0 or 1 if a < b, a == b or a > b respectively.
+ * @return {number} -1, 0 or 1 depending on whether `a` is smaller, equal or
+ * larger than `b`, respectively.
  */
 AvlTree.prototype._compare = function (a, b) {
-  if (a > b) {
+  if (a > b)
     return 1;
-  }
-  if (a < b) {
+  if (a < b)
     return -1;
-  }
   return 0;
 };
 
@@ -56,13 +64,13 @@ AvlTree.prototype.insert = function (key, value) {
  * @private
  * @param {Object} key The key being inserted.
  * @param {Object} value The value being inserted.
- * @param {Node} root The root of the tree to insert in.
- * @return {Node} The new tree root.
+ * @param {AvlNode} root The root of the tree to insert in.
+ * @return {AvlNode} The new tree root.
  */
 AvlTree.prototype._insert = function (key, value, root) {
   // Perform regular BST insertion
   if (root === null) {
-    AvlTree.insertedNode = new Node(key, value);
+    AvlTree.insertedNode = new AvlNode(key, value);
 	return AvlTree.insertedNode;
   }
 
@@ -109,8 +117,8 @@ AvlTree.prototype._insert = function (key, value, root) {
  * Finds the next node in the tree.
  *
  * @private
- * @param {Node} node The current node in the tree.
- * @return {Node} The next node in the tree.
+ * @param {AvlNode} node The current node in the tree.
+ * @return {AvlNode} The next node in the tree.
  */
 AvlTree.prototype.next = function(node) {
 	if(node.right) {
@@ -133,8 +141,8 @@ AvlTree.prototype.next = function(node) {
  * Finds the previous node in the tree.
  *
  * @private
- * @param {Node} node The current node in the tree.
- * @return {Node} The previous node in the tree.
+ * @param {AvlNode} node The current node in the tree.
+ * @return {AvlNode} The previous node in the tree.
  */
 AvlTree.prototype.prev = function(node) {
 	if(node.left) {
@@ -168,8 +176,8 @@ AvlTree.prototype.delete = function (key) {
  *
  * @private
  * @param {Object} key The key being deleted.
- * @param {Node} root The root of the tree to delete from.
- * @return {Node} The new tree root.
+ * @param {AvlNode} root The root of the tree to delete from.
+ * @return {AvlNode} The new tree root.
  */
 AvlTree.prototype._delete = function (key, root) {
   // Perform regular BST deletion
@@ -274,7 +282,7 @@ AvlTree.prototype.getNode = function (key) {
  *
  * @private
  * @param {Object} key The key being searched for.
- * @param {Node} root The root of the tree to search in.
+ * @param {AvlNode} root The root of the tree to search in.
  * @return {Object} The node or null if it doesn't exist.
  */
 AvlTree.prototype._get = function (key, root) {
@@ -333,8 +341,8 @@ AvlTree.prototype.findMinimumNode = function () {
  * Gets the minimum value node, rooted in a particular node.
  *
  * @private
- * @param {Node} root The node to search.
- * @return {Node} The node with the minimum key in the tree.
+ * @param {AvlNode} root The node to search.
+ * @return {AvlNode} The node with the minimum key in the tree.
  */
 function minValueNode(root) {
   var current = root;
@@ -366,8 +374,8 @@ AvlTree.prototype.findMaximumNode = function () {
  * Gets the maximum value node, rooted in a particular node.
  *
  * @private
- * @param {Node} root The node to search.
- * @return {Node} The node with the maximum key in the tree.
+ * @param {AvlNode} root The node to search.
+ * @return {AvlNode} The node with the maximum key in the tree.
  */
 function maxValueNode(root) {
   var current = root;
@@ -424,9 +432,7 @@ AvlTree.prototype.checkSorted = function() {
 };
 
 /**
- * Represents how balanced a node's left and right children are.
- *
- * @private
+ * Represents how balanced an {@link AvlNode}'s left and right children are.
  */
 var BalanceState = {
   UNBALANCED_RIGHT: 1,
@@ -441,7 +447,7 @@ var BalanceState = {
  * sub-trees are unbalanced.
  *
  * @private
- * @param {Node} node The node to get the difference from.
+ * @param {AvlNode} node The node to get the difference from.
  * @return {BalanceState} The BalanceState of the node.
  */
 function getBalanceState(node) {
@@ -457,12 +463,12 @@ function getBalanceState(node) {
 
 /**
  * Creates a new AVL Tree node.
- *
- * @private
+ * @constructor
+ * @classdesc A node in an [AVL tree]{@link AvlTree}.
  * @param {Object} key The key of the new node.
  * @param {Object} value The value of the new node.
  */
-var Node = function (key, value) {
+var AvlNode = function (key, value) {
   this.left = null;
   this.right = null;
   this.parent = null;
@@ -473,16 +479,16 @@ var Node = function (key, value) {
 
 /**
  * Performs a right rotate on this node.
- *
+ *```
  *       b                           a
  *      / \                         / \
  *     a   e -> b.rotateRight() -> c   b
  *    / \                             / \
  *   c   d                           d   e
- *
- * @return {Node} The root of the sub-tree; the node where this node used to be.
+ *```
+ * @return {AvlNode} The root of the sub-tree, the node where this node used to be.
  */
-Node.prototype.rotateRight = function () {
+AvlNode.prototype.rotateRight = function () {
   var other = this.left;
   this.linkLeft(other.right);
   other.linkRight(this);
@@ -493,16 +499,16 @@ Node.prototype.rotateRight = function () {
 
 /**
  * Performs a left rotate on this node.
- *
+ *```
  *     a                              b
  *    / \                            / \
  *   c   b   -> a.rotateLeft() ->   a   e
  *      / \                        / \
  *     d   e                      c   d
- *
- * @return {Node} The root of the sub-tree; the node where this node used to be.
+ *```
+ * @return {AvlNode} The root of the sub-tree, the node where this node used to be.
  */
-Node.prototype.rotateLeft = function () {
+AvlNode.prototype.rotateLeft = function () {
   var other = this.right;
   this.linkRight(other.left);
   other.linkLeft(this);
@@ -517,10 +523,9 @@ Node.prototype.rotateLeft = function () {
  *
  * @return {number} The height of the left child, or -1 if it doesn't exist.
  */
-Node.prototype.leftHeight = function () {
-  if (!this.left) {
+AvlNode.prototype.leftHeight = function () {
+  if (!this.left)
     return -1;
-  }
   return this.left.height;
 };
 
@@ -530,10 +535,9 @@ Node.prototype.leftHeight = function () {
  *
  * @return {number} The height of the right child, or -1 if it doesn't exist.
  */
-Node.prototype.rightHeight = function () {
-  if (!this.right) {
+AvlNode.prototype.rightHeight = function () {
+  if (!this.right)
     return -1;
-  }
   return this.right.height;
 };
 
@@ -542,12 +546,12 @@ Node.prototype.rightHeight = function () {
  *
  * @param {Object} node The node to be linked.
  */
-Node.prototype.linkLeft = function (node) {
+AvlNode.prototype.linkLeft = function (node) {
   if(this.left && this.left.parent === this)
     this.left.parent = null;
   this.left = node;
   if(node)
-	node.parent = this;
+	 node.parent = this;
 };
 
 /**
@@ -555,10 +559,10 @@ Node.prototype.linkLeft = function (node) {
  *
  * @param {Object} node The node to be linked.
  */
-Node.prototype.linkRight = function (node) {
+AvlNode.prototype.linkRight = function (node) {
   if(this.right && this.right.parent === this)
     this.right.parent = null;
   this.right = node;
   if(node)
-	node.parent = this;
+	 node.parent = this;
 };
