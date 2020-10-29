@@ -213,8 +213,8 @@ Polytope._prismProduct = function(P, Q) {
 };
 
 //Polytope._tegumProduct, but also supports P being an array.
-Polytope.tegumProduct = function(P, Q) {
-	return Polytope._product(P, Q, ConstructionNodeType.Multitegum, Polytope._tegumProduct);
+Polytope.tegumProduct = function(...P) {
+	return Polytope._product(P, ConstructionNodeType.Multitegum, Polytope._tegumProduct);
 };
 
 //Calculates the tegum product, or rather the dual of the Cartesian product, of P and Q.
@@ -367,8 +367,8 @@ Polytope._tegumProduct = function(P, Q) {
 };
 
 //Polytope._pyramidProduct, but also supports P being an array.
-Polytope.pyramidProduct = function(P, Q) {
-	return Polytope._product(P, Q, ConstructionNodeType.Multipyramid, Polytope._pyramidProduct);
+Polytope.pyramidProduct = function(...P) {
+	return Polytope._product(P, ConstructionNodeType.Multipyramid, Polytope._pyramidProduct);
 };
 
 //Calculates the pyramid product of P and Q.

@@ -21,5 +21,10 @@
     "templates": {
         "cleverLinks": false,
         "monospaceLinks": false
-    }
+    },
+	"docdash": {
+		"sort": true,
+		"private": true,
+		"search": true
+	}
 }

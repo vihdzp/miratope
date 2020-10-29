@@ -9,7 +9,7 @@ Miratope can generate the classes of polytopes, among others:
 * Polyhedral antiprisms
 * Cupolae, cuploids and cupolaic blends
 
-Miratope can also read and export OFF files.
+Miratope can also read and export OFF files and GGB files.
 
 ## FAQ
 ### How do I use Miratope?
@@ -26,7 +26,7 @@ Polytope.hypercube(3).renderTo(mainScene);
 Polytope.prismProduct(Polytope.regularPolygon(5), Polytope.regularPolygon(5, 2)).saveAsOFF(true);
 
 //Exports a hexadecachoral prism as a GeoGebra file.
-Polytope.cross(4).extrudeToPrism(1).saveAsGGB(); 
+Polytope.cross(4).extrudeToPrism(1).saveAsGGB();
 ```
 
 ### Where do I get these "OFF files"?
@@ -56,4 +56,4 @@ Longer term but more substantial changes include:
 * 4D+ rendering
 * Different fill types for faces
 * Creation of a dedicated file format and a polytope library
-* More operations on polytopes 
+* More operations on polytopes
