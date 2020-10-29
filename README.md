@@ -23,7 +23,7 @@ Here's some other commands to try out:
 Polytope.hypercube(3).renderTo(mainScene);
 
 //OFF file for a pentagon-pentagram duoprism.
-Polytope.prismProduct(Polytope.regularPolygon(5), Polytope.regularPolygon(5, 2)).saveAsOFF(true);
+Polytope.prismProduct(Polytope.regularPolygon(5), Polytope.regularPolygon(5, 2)).saveAsOFF({comments: true});
 
 //Exports a hexadecachoral prism as a GeoGebra file.
 Polytope.cross(4).extrudeToPrism(1).saveAsGGB();

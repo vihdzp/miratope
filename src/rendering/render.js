@@ -154,10 +154,10 @@ Polytope.prototype.renderTo = function(scene) {
 
 			//Runs P code on both edges adjacent to E's vertex.
 			for(j = 0; j <= 1; j++) {
-				var edge; //E's edge in the SL format.
-				var ord = E.value.coordinates[window.index0] - E.getNode(j).value.coordinates[window.index0];
-				var pos = 0;
-				var node, prevNode, nextNode;
+				var edge, //E's edge in the SL format.
+				ord = E.value.coordinates[window.index0] - E.getNode(j).value.coordinates[window.index0],
+				pos = 0,
+				node, prevNode, nextNode;
 
 				//Vertex E is a left endpoint of the edge:
 				if(ord < -epsilon) {
@@ -274,8 +274,8 @@ Polytope._divide = function(edgeA, edgeB) {
 	newNode2.linkToNext(edgeADir[1]);
 
 	//Adds the edges' new IDs to the redirect table, so that they remain equal and consistent.
-	edgeA.updateID();
-	edgeB.updateID();
+	edgeA.updateRedirectTable();
+	edgeB.updateRedirectTable();
 
 	EQ.insert(newNode1);
 	EQ.insert(newNode2);

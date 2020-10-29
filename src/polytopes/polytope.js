@@ -7,7 +7,8 @@
  * @classDesc A class for general polytopes, and functions of general polytopes.
  * Other than the construction property (which stores how the polytope was created),
  * instances of this class doesn't contain any properties by default.
- * These are set in the PolytopeC (combinatorial) and PolytopeS (symmetry) subclasses.
+ * These are set in the {@link PolytopeC} (combinatorial) and {@link PolytopeS}
+ * (symmetry) subclasses.
  */
 function Polytope(construction) {
 	this.construction = construction;
