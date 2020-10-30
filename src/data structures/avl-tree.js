@@ -84,7 +84,7 @@ AvlTree.prototype._insert = function (key, root) {
 
   // Update height and rebalance tree
   root.height = Math.max(root.leftHeight(), root.rightHeight()) + 1;
-  var balanceState = getBalanceState(root);
+  var balanceState = AvlTree.getBalanceState(root);
 
   if (balanceState === BalanceState.UNBALANCED_LEFT) {
     if (this._compare(key, root.left.key) < 0) {
@@ -215,16 +215,16 @@ AvlTree.prototype._delete = function (key, root) {
 
   // Update height and rebalance tree
   root.height = Math.max(root.leftHeight(), root.rightHeight()) + 1;
-  var balanceState = getBalanceState(root);
+  var balanceState = AvlTree.getBalanceState(root);
 
   if (balanceState === BalanceState.UNBALANCED_LEFT) {
     // Left left case
-    if (getBalanceState(root.left) === BalanceState.BALANCED ||
-        getBalanceState(root.left) === BalanceState.SLIGHTLY_UNBALANCED_LEFT) {
+    if (AvlTree.getBalanceState(root.left) === BalanceState.BALANCED ||
+        AvlTree.getBalanceState(root.left) === BalanceState.SLIGHTLY_UNBALANCED_LEFT) {
       return root.rotateRight();
     }
     // Left right case
-    if (getBalanceState(root.left) === BalanceState.SLIGHTLY_UNBALANCED_RIGHT) {
+    if (AvlTree.getBalanceState(root.left) === BalanceState.SLIGHTLY_UNBALANCED_RIGHT) {
       root.linkLeft(root.left.rotateLeft());
       return root.rotateRight();
     }
@@ -232,12 +232,12 @@ AvlTree.prototype._delete = function (key, root) {
 
   if (balanceState === BalanceState.UNBALANCED_RIGHT) {
     // Right right case
-    if (getBalanceState(root.right) === BalanceState.BALANCED ||
-        getBalanceState(root.right) === BalanceState.SLIGHTLY_UNBALANCED_RIGHT) {
+    if (AvlTree.getBalanceState(root.right) === BalanceState.BALANCED ||
+        AvlTree.getBalanceState(root.right) === BalanceState.SLIGHTLY_UNBALANCED_RIGHT) {
       return root.rotateLeft();
     }
     // Right left case
-    if (getBalanceState(root.right) === BalanceState.SLIGHTLY_UNBALANCED_LEFT) {
+    if (AvlTree.getBalanceState(root.right) === BalanceState.SLIGHTLY_UNBALANCED_LEFT) {
       root.linkRight(root.right.rotateRight());
       return root.rotateLeft();
     }
@@ -426,12 +426,10 @@ var BalanceState = {
 /**
  * Gets the balance state of a node, indicating whether the left or right
  * sub-trees are unbalanced.
- *
- * @private
  * @param {AvlNode} node The node to get the difference from.
  * @return {BalanceState} The BalanceState of the node.
  */
-function getBalanceState(node) {
+AvlTree.getBalanceState = function(node) {
   var heightDifference = node.leftHeight() - node.rightHeight();
   switch (heightDifference) {
     case -2: return BalanceState.UNBALANCED_RIGHT;

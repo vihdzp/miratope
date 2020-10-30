@@ -1,8 +1,15 @@
 "use strict";
 
-//Class for points in arbitary amounts of dimension, works with number of dimensions or with objects
-
-//Meant for Euclidean space, idk what we can do with hyperbolics
+/**
+ * Creates a new Point.
+ * @constructor
+ * @classdesc
+ * A class for points in arbitary dimensions.
+ * Meant for Euclidean space, though hyperbolic space may be eventually
+ * implemented.
+ * @param {(number[]|number)} x The coordinates of the point, or its number of
+ * dimensions.
+ */
 function Point(x) {
 	//Constructor from the number of dimensions "x", initializes a point at the origin of R^x
 	if(typeof(x) === "number") {
@@ -15,13 +22,18 @@ function Point(x) {
 		this.coordinates = x;       //Set Point.coordinates to "x"
 };
 
-//Returns the number of dimensions of the point's space.
+/**
+ * Returns the number of dimensions of the point's space.
+ * @returns {number} The number of coordinates of the point.
+ */
 Point.prototype.dimensions = function() {
 	return this.coordinates.length;
 };
 
-//Makes a Point object with the same coordinates.
-//Simple shallow copy.
+/**
+ * Clones a Point object. Uses a simple shallow copy.
+ * @returns {Point} A new Point object with the same coordinates as `this`.
+ */
 Point.prototype.clone = function() {
 	var coordinates = [];
 	for(var i = 0; i < this.coordinates.length; i++)
@@ -57,35 +69,45 @@ Point.prototype.subtract = function(x) {
 	return this;
 };
 
-//Scales up the point by a factor of "r"
+/**
+ * Scales up a point by a factor of `r`.
+ * Simple scalar multiplication.
+ * @param {number} r The scaling factor.
+ */
 Point.prototype.scale = function(r) {
 	for(var i = 0; i < this.dimensions(); i++)
 		this.coordinates[i] = this.coordinates[i] * r; //Multiplies each of the coordinates of x by r.
 };
 
-//Takes the Cartesian product of two points
-Point.product = function(p, q) {
-	return new Point(p.coordinates.concat(q.coordinates)); //Simply concatenates the coordinates of both points.
+/**
+ * Takes the Cartesian product of two points.
+ * Simply concatenates the coordinates of both points.
+ * @param {Point} P The first point to multiply.
+ * @param {Point} Q The second point to multiply.
+ * @returns {Point} The product of both points.
+ */
+ Point.product = function(P, Q) {
+	return new Point(P.coordinates.concat(Q.coordinates)); //Simply concatenates the coordinates of both points.
 };
 
 //Adds n zeros to the left of the point's coordinates
-Point.padLeft = function(point, n) {
-	var coordinates = [], i;                      //Set "coordinates" to an empty array, and declare "i".
-	for(i = 0; i < n; i++)                        //Adds the required amount of zeros to the left.
+Point.padLeft = function(P, n) {
+	var coordinates = [], i;
+	for(i = 0; i < n; i++)
 		coordinates.push(0);
-	for(i = 0; i < point.coordinates.length; i++) //Fills out the rest of the coordinates.
-		coordinates.push(point.coordinates[i]);
-	return new Point(coordinates);                //Returns the padded set of coordinates.
+	for(i = 0; i < P.coordinates.length; i++)
+		coordinates.push(P.coordinates[i]);
+	return new Point(coordinates);
 };
 
 //Adds n zeros to the right of the point's coordinates
-Point.padRight = function(point, n) {
-	var coordinates = [], i;                      //Set "coordinates" to an empty array, and declare "i".
-	for(i = 0; i < point.coordinates.length; i++) //Fills out the coordinates.
-		coordinates.push(point.coordinates[i]);
-	for(i = 0; i < n; i++)                        //Adds the required amount of zeros to the right.
+Point.padRight = function(P, n) {
+	var coordinates = [], i;
+	for(i = 0; i < P.coordinates.length; i++)
+		coordinates.push(P.coordinates[i]);
+	for(i = 0; i < n; i++)
 		coordinates.push(0);
-	return new Point(coordinates);                //Returns the padded set of coordinates.
+	return new Point(coordinates);
 };
 
 //Adds the given coordinate at the end of the coordinate list

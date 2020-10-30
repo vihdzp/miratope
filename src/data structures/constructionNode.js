@@ -98,7 +98,7 @@ const ConstructionNodeType = {
 };
 
 /**
- * The constructor for the ConstructionNode class.
+ * Creates a new ConstructionNode.
  * @constructor
  * @classdesc A ConstructionNode represents how a polytope has been built up.
  * ConstructionNodes come in various types, and always have at least one child.
@@ -172,11 +172,18 @@ ConstructionNode.prototype.getName = function() {
 /**
  * Sets the grammatical gender of the noun representing the root node's type
  * as the gender of all children nodes.
- * e.g. in Spanish, we'd say "prisma cupoidal pentagrámico cruzado", not
- * "prisma cupoidal pentagrámica cruzada"; even though "cúpula" is femenine,
- * the male "prisma" takes over.<br />
- * &emsp;Is automatically called whenever the {@link ConstructionNode} constructor
+ * Is automatically called whenever the {@link ConstructionNode} constructor
  * is called.
+ * @example
+ * Translation.setLanguage("es");
+ *
+ * //setGenders() is automatically called when the polytope is generated.
+ * //As a result, even though the word "cúpula" is femenine in Spanish,
+ * //the final result will have the gender of the word "prisma", which is masculine.
+ * var P = Polytope.cupola(5, 3).extrudeToPrism();
+ *
+ * //"prisma cupoidal pentagrámico cruzado"
+ * console.log(P.getName());
  */
 ConstructionNode.prototype.setGenders = function() {
 	if(!Translation.genderedLanguage) return;

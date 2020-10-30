@@ -205,7 +205,7 @@ Translation.polytopeEnding = function(d, options = {}) {
 				case 4:
 					if(options.count > 1) res = "chora"; else res = "choron"; break;
 				default:
-					if(d > 20)
+					if(d > 31)
 						return n + "-polytope" + (options.count > 1? "s" : "");
 					return Translation.elementName(d - 1, options);
 			}

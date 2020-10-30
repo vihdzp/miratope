@@ -46,7 +46,7 @@ Translation._endings = {
 		new Ending("lda", -2, "ular"), //5-cel(da/ular)
 		new Ending("nda", -1, "áic", SPANISH_MODIFIER), //Rotund(a/áic[o/a])
 		new Ending("ia", 0, "l"), //Essenc(ia/ial)
-		new Ending("la", -3, "oidal"), //Cupu(la/idal)
+		new Ending("la", -5, "upoidal"), //Cúpu(la/idal)
 		new Ending("gula", -6, "angular"), //Estrella oct(ángula/angular)
 		new Ending("ma", -3, "ámic", SPANISH_MODIFIER), //Pentagr(ama/ámic[o/a])
 		new Ending("sma", -1, "átic", SPANISH_MODIFIER), //Prism(a/átic[o/a])

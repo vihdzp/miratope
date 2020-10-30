@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * Constructor for Caret.
+ * Creates a new Caret.
  * @constructor
  * @classdesc A helper class for reading imported text files.
  * Reads through a file, keeping track of its position, line, and column.

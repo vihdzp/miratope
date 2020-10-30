@@ -3,7 +3,8 @@
  * as well as a simplification algorithm
  * to triangulate general polygons.
  * @summary Renders a polytope into a scene.
- * @todo Guarantee that all edge cases work properly.
+ * @todo Guarantee that all edge cases work properly (zero length edges,
+* collinear edges, concurrent edges, etc.)
  * @see {@link http://geomalgorithms.com/a09-_intersect-3.html|[1] Dan Sunday. Intersections for a Set of Segments. 2012.}
  */
 Polytope.prototype.renderTo = function(scene) {
