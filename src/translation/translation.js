@@ -1,5 +1,11 @@
 "use strict";
-//Class for translating words, phrases, or generating names for polytopes in various languages.
+
+/**
+ * Class for translating words, phrases, or generating names for polytopes in
+ * various languages.
+ * @namespace Translation
+ */
+var Translation = {};
 
 Translation.firstToLower = function(str) {
 	return str.charAt(0).toLowerCase() + str.slice(1);
@@ -41,10 +47,16 @@ Translation.get = function(message, params = {}) {
 	return msg;
 };
 
-//Adds an appropriately declensed adjective to a noun.
-
-//Possible options:
-/* uppercase */
+/**
+ * Adds an appropriately declensed adjective to a noun.
+ * @param {string} adj The adjective, already declensed.
+ * @param {string} noun The noun to which the adjective will be added.
+ * @param {Object} [options={}] Result modifiers.
+ * @param {boolean} [options.uppercase] Capitalizes the first letter of
+ * the result.
+ * @returns The adjective placed before or after the noun, according to the
+ * target language.
+ */
 Translation.addAdjective = function(adj, noun, options = {}) {
 	var res;
 
@@ -57,5 +69,3 @@ Translation.addAdjective = function(adj, noun, options = {}) {
 		return Translation.firstToUpper(res);
 	return res;
 };
-
-Translation.setLanguage("en");

@@ -34,7 +34,8 @@ function SweeplineEdge(leftVertex, rightVertexIndex) {
 };
 
 /**
- * The rightmost vertex of the edge, as determined by `this.rightVertexIndex`.
+ * The rightmost vertex of the edge, as determined by
+ * [this.rightVertexIndex]{@linkcode SweeplineEdge#rightVertexIndex}.
  * @returns {Point} The rightmost vertex of the edge.
  */
 SweeplineEdge.prototype.rightVertex = function() {

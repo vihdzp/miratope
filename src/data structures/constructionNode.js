@@ -3,6 +3,7 @@
 /**
  * An object containing the possible types of {@link ConstructionNode|ConstructionNodes}.
  * @enum {number}
+ * @namespace ConstructionNodeType
  */
 const ConstructionNodeType = {
 	/**

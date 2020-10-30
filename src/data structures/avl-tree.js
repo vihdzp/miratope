@@ -291,9 +291,8 @@ AvlTree.prototype._get = function (key, root) {
  * @return {boolean} Whether a node with the key exists.
  */
 AvlTree.prototype.contains = function (key) {
-  if (this._root === null) {
+  if (this._root === null)
     return false;
-  }
 
   return !!this._get(key, this._root);
 };
@@ -304,7 +303,7 @@ AvlTree.prototype.contains = function (key) {
 AvlTree.prototype.findMinimum = function () {
   if(this._size === 0)
 	  return null;
-  return minValueNode(this._root).key;
+  return AvlTree.minValueNode(this._root).key;
 };
 
 /**
@@ -313,7 +312,7 @@ AvlTree.prototype.findMinimum = function () {
 AvlTree.prototype.findMinimumNode = function () {
   if(this._size === 0)
 	  return null;
-  return minValueNode(this._root);
+  return AvlTree.minValueNode(this._root);
 };
 
 /**
@@ -323,11 +322,9 @@ AvlTree.prototype.findMinimumNode = function () {
  * @param {AvlNode} root The node to search.
  * @return {AvlNode} The node with the minimum key in the tree.
  */
-function minValueNode(root) {
+AvlTree.minValueNode = function(root) {
   var current = root;
-  while (current.left) {
     current = current.left;
-  }
   return current;
 };
 
@@ -337,7 +334,7 @@ function minValueNode(root) {
 AvlTree.prototype.findMaximum = function () {
   if(this._size === 0)
 	  return null;
-  return maxValueNode(this._root).key;
+  return AvlTree.maxValueNode(this._root).key;
 };
 
 /**
@@ -346,7 +343,7 @@ AvlTree.prototype.findMaximum = function () {
 AvlTree.prototype.findMaximumNode = function () {
   if(this._size === 0)
 	  return null;
-  return maxValueNode(this._root);
+  return AvlTree.maxValueNode(this._root);
 };
 
 /**
@@ -356,11 +353,9 @@ AvlTree.prototype.findMaximumNode = function () {
  * @param {AvlNode} root The node to search.
  * @return {AvlNode} The node with the maximum key in the tree.
  */
-function maxValueNode(root) {
+AvlTree.maxValueNode = function(root) {
   var current = root;
-  while (current.right) {
     current = current.right;
-  }
   return current;
 };
 
@@ -412,12 +407,19 @@ AvlTree.prototype.checkSorted = function() {
 
 /**
  * Represents how balanced an {@link AvlNode}'s left and right children are.
+ * @enum {number}
+ * @namespace BalanceState
  */
 var BalanceState = {
+  /** Has a height difference of 2 to the right. */
   UNBALANCED_RIGHT: 1,
+  /** Has a height difference of 1 to the right. */
   SLIGHTLY_UNBALANCED_RIGHT: 2,
+  /** The children are balanced. */
   BALANCED: 3,
+  /** Has a height difference of 1 to the left. */
   SLIGHTLY_UNBALANCED_LEFT: 4,
+  /** Has a height difference of 2 to the left. */
   UNBALANCED_LEFT: 5
 };
 

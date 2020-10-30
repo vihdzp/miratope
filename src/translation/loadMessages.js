@@ -1,14 +1,5 @@
 "use strict";
 
-//-, one, two, three, four, five, six, seven, eight, nine, to Greek, back to each language.
-//Used for Translation.greekPrefix.
-var Translation = {};
-Translation._units = {
-	en: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "ennea"],
-	es: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "enea"],
-	de: ["", "hen", "di", "tri", "tetra", "penta", "hexa", "hepta", "okto", "ennea"]
-};
-
 //WARNING: THESE LABELS WILL PROBABLY BE MOVED AROUND A LOT.
 Globalize.loadMessages({
 	root: { //English is used as a fall-back.
@@ -22,16 +13,39 @@ Globalize.loadMessages({
 			invalidNumber: "Invalid number!\nLine: {line}, column: {column}."
 		},
 		shape: {
-			polytope: "polytope",
-			nullitope: "nullitope",
-			point: "point",
-			dyad: "dyad",
-			rectangle: "rectangle",
-			triangle: "{count, plural, one {triangle} other {triangles}}",
-			square: "{count, plural, one {square} other {squares}}",
-			cube: "cube",
-			tesseract: "tesseract",
-			bowtie: "bowtie"
+			polytope: "polytope{count, plural, one {} other {s}}",
+			nullitope: "nullitope{count, plural, one {} other {s}}",
+			point: "point{count, plural, one {} other {s}}",
+			dyad: "dyad{count, plural, one {} other {s}}",
+			rectangle: "rectangle{count, plural, one {} other {s}}",
+			triangle: "triangle{count, plural, one {} other {s}}",
+			square: "square{count, plural, one {} other {s}}",
+			cube: "cube{count, plural, one {} other {s}}",
+			tesseract: "tesseract{count, plural, one {} other {s}}",
+			bowtie: "bowtie{count, plural, one {} other {s}}"
+		},
+		element: {
+			el0: "vert{count, plural, one {ex} other {ices}}",
+			el1: "edge{count, plural, one {} other {s}}",
+			el2: "face{count, plural, one {} other {s}}",
+			el3: "cell{count, plural, one {} other {s}}",
+			el4: "ter{count, plural, one {on} other {a}}",
+			el5: "pet{count, plural, one {on} other {a}}",
+			el6: "ex{count, plural, one {on} other {a}}",
+			el7: "zett{count, plural, one {on} other {a}}",
+			el8: "yott{count, plural, one {on} other {a}}",
+			el9: "xenn{count, plural, one {on} other {a}}",
+			el10: "dak{count, plural, one {on} other {a}}",
+			el11: "hendak{count, plural, one {on} other {a}}",
+			el12: "dok{count, plural, one {on} other {a}}",
+			el13: "tradak{count, plural, one {on} other {a}}",
+			el14: "teradak{count, plural, one {on} other {a}}",
+			el15: "petadak{count, plural, one {on} other {a}}",
+			el16: "exadak{count, plural, one {on} other {a}}",
+			el17: "zettadak{count, plural, one {on} other {a}}",
+			el18: "yottadak{count, plural, one {on} other {a}}",
+			el19: "xendak{count, plural, one {on} other {a}}",
+			el20: "ic{count, plural, one {on} other {a}}"
 		},
 		family: {
 			prism: "prism",
@@ -44,7 +58,7 @@ Globalize.loadMessages({
 			cupolaicBlend: "cupolaic blend"
 		},
 		grammar: {
-			starName: "{count, plural, one {{prefix}gram} other {{prefix}grams}}"
+			starName: "{prefix}gram{count, plural, one {} other {s}}"
 		},
 		greekPrefixes: {
 			nulli: "nulli",
