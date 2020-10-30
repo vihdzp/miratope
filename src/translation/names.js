@@ -160,7 +160,7 @@ Translation.plainName = function(n, dimension, options) {
  * [Wendy Krieger's polygloss]{@link http://os2fan2.com/gloss/pglosstu.html}.
  * This is an extension of the scheme Jonathan Bowers uses on
  * [his website]{@link http://www.polytope.net/hedrondude/home.htm}.
- * Works up to d = 20. Defaults to `"d-element"`.<br />
+ * Works up to d = 30. Defaults to `"d-element"`.<br />
  * &emsp;Most of these are neologisms, so feel free to translate them as you think
  * is appropriate.
  * @param {Object} [options={}] Result modifiers.
@@ -176,11 +176,11 @@ Translation.plainName = function(n, dimension, options) {
  * //teron
  * console.log(Translation.elementName(4));
  *
- * //26-element
+ * //icexon
  * console.log(Translation.elementName(26));
  */
 Translation.elementName = function(n, options = {}) {
-	if(n > 20)
+	if(n > 30)
 		return d + "-" + Translation.get("elements/element",
 		{
 			uppercase: Translation.nounCapitalization,

@@ -45,7 +45,17 @@ Globalize.loadMessages({
 			el17: "zettadak{count, plural, one {on} other {a}}",
 			el18: "yottadak{count, plural, one {on} other {a}}",
 			el19: "xendak{count, plural, one {on} other {a}}",
-			el20: "ic{count, plural, one {on} other {a}}"
+			el20: "ic{count, plural, one {on} other {a}}",
+			el21: "iken{count, plural, one {on} other {a}}",
+			el22: "icod{count, plural, one {on} other {a}}",
+			el23: "ictr{count, plural, one {on} other {a}}",
+			el24: "icter{count, plural, one {on} other {a}}",
+			el25: "icpet{count, plural, one {on} other {a}}",
+			el26: "icex{count, plural, one {on} other {a}}",
+			el27: "iczett{count, plural, one {on} other {a}}",
+			el28: "icyott{count, plural, one {on} other {a}}",
+			el29: "icxenn{count, plural, one {on} other {a}}",
+			el30: "trac{count, plural, one {on} other {a}}",
 		},
 		family: {
 			prism: "prism",
