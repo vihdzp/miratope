@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * Creates a new Polytope.
+ * The constructor for the Polytope class.
  * @constructor
  * @param {ConstructionNode} construction The constructionNode representing how the polytope was built.
  * @classDesc A class for general polytopes, and functions of general polytopes.
@@ -110,9 +110,7 @@ Polytope.point = function() {
 /**
  * Calculates the prism product (Cartesian product) of a set of polytopes.
  * Vertices are the products of vertices, edges are the products of vertices
- * with edges or viceversa, and so on.<br />
- * &emsp;This function actually delegates all of the hard work to
- * {@linkCode Polytope._product} and {@linkCode Polytope._prismProduct}.
+ * with edges or viceversa, and so on.
  * @summary Calculates the prism product of a set of polytopes.
  * @param {...Polytope} P The list of polytopes to "multiply" together.
  */
@@ -121,13 +119,12 @@ Polytope.prismProduct = function(...P) {
 };
 
 /**
- * Helper function for {@linkcode Polytope.prismProduct}.
+ * Helper function for {@link Polytope.prismProduct}.
  * Is the one actually performing the product.
  * Takes the prism product of two polytopes.
  * @private
  * @param {Polytope} P The first polytope to multiply.
  * @param {Polytope} Q The second polytope to multiply.
- * @returns {Polytope} The prism product of `P` and `Q`.
  */
 Polytope._prismProduct = function(P, Q) {
 	//Deals with the point, nullitope cases.
@@ -179,11 +176,11 @@ Polytope._prismProduct = function(P, Q) {
 };
 
 /**
- * Helper function for {@linkcode Polytope.prismProduct}.
- * Gets the index of the product of the `i`-th `m`-element of `P`
- * and the `j`-th `n`-element of `Q` in the new polytope.
+ * Helper function for {@link Polytope.prismProduct}.
+ * Gets the index of the product of the ith m-element of P
+ * and the jth n-element of Q in the new polytope.
  * Takes into account the order in which the elements are calculated and added.
- * @summary Helper function for {@linkcode Polytope.prismProduct}.
+ * @summary Helper function for {@link Polytope.prismProduct}.
  * @private
  * @param {number} m The dimension of an element on the first polytope.
  * @param {number} i The index of an element on the first polytope.
@@ -192,8 +189,6 @@ Polytope._prismProduct = function(P, Q) {
  * @param {Polytope} P The first polytope to multiply.
  * @param {Polytope} Q The second polytope to multiply.
  * @param {number[][]} memoizer An array to store past calculations.
- * @returns {number} The index of the product of the `i`-th `m`-element of `P`
- * and the `j`-th `n`-element of `Q` in the new polytope.
  */
  Polytope._getIndexOfPrismProduct = function(m, i, n, j, P, Q, memoizer) {
 	//Recall that the elements of a single dimension are added in order vertex * facet, edge * ridge, ...
@@ -206,7 +201,7 @@ Polytope._prismProduct = function(P, Q) {
 	if(memoizer[m]) {
 		if(memoizer[m][n])
 			return memoizer[m][n] + offset;
-  }
+	}
 	else
 		memoizer[m] = [];
 
@@ -217,28 +212,13 @@ Polytope._prismProduct = function(P, Q) {
 	return memoizer[m][n] + offset;
 };
 
-/**
- * Calculates the tegum product (tent product) of a set of polytopes.
- * Edges are the products of vertices, faces are the products of vertices with
- * edges or viceversa, and so on.<br />
- * &emsp;This function actually delegates all of the hard work to
- * {@linkCode Polytope._product} and {@linkCode Polytope._tegumProduct}.
- * @summary Calculates the tegum product of a set of polytopes.
- * @param {...Polytope} P The list of polytopes to "multiply" together.
- */
+//Polytope._tegumProduct, but also supports P being an array.
 Polytope.tegumProduct = function(...P) {
 	return Polytope._product(P, ConstructionNodeType.Multitegum, Polytope._tegumProduct);
 };
 
-/**
- * Helper function for {@linkcode Polytope.tegumProduct}.
- * Is the one actually performing the product.
- * Takes the tegum product of two polytopes.
- * @private
- * @param {Polytope} P The first polytope to multiply.
- * @param {Polytope} Q The second polytope to multiply.
- * @returns {Polytope} The tegum product of `P` and `Q`.
- */
+//Calculates the tegum product, or rather the dual of the Cartesian product, of P and Q.
+//Edges are the products of vertices, faces are the products of vertices with edges or viceversa, and so on.
 Polytope._tegumProduct = function(P, Q) {
 	//Deals with the point, nullitope cases.
 	if(P.dimensions <= 0)
@@ -386,44 +366,20 @@ Polytope._tegumProduct = function(P, Q) {
 	return new PolytopeC(newElementList); //The construction gets added in the main function.
 };
 
-/**
- * Calculates the pyramid product of a set of polytopes.
- * Edges are the products of vertices, faces are the products of vertices with
- * edges or viceversa, and so on.
- * &emsp;This function actually delegates all of the hard work to
- * {@linkCode Polytope._product} and {@linkCode Polytope._pyramidProduct}.
- * @summary Calculates the pyramid product of a set of polytopes.
- * @param {number} [height=1] The height difference between the polytopes.
- * @param {...Polytope} P The list of polytopes to "multiply" together.
- */
-Polytope.pyramidProduct = function(height, ...P) {
-  //If the height isn't passed, and the height argument is a polytope instead:
-  if(typeof(height) !== 'number') {
-    P.push(height);
-    Polytope._height = 1;
-  }
-  else
-    Polytope._height = height;
-
+//Polytope._pyramidProduct, but also supports P being an array.
+Polytope.pyramidProduct = function(...P) {
 	return Polytope._product(P, ConstructionNodeType.Multipyramid, Polytope._pyramidProduct);
 };
 
-/**
- * Helper function for {@linkcode Polytope.pyramidProduct}.
- * Is the one actually performing the product.
- * Takes the pyramid product of two polytopes.
- * @private
- * @param {Polytope} P The first polytope to multiply.
- * @param {Polytope} Q The second polytope to multiply.
- * @returns {Polytope} The pyramid product of `P` and `Q`.
- */
-Polytope._pyramidProduct = function(P, Q) {
+//Calculates the pyramid product of P and Q.
+//Edges are the products of vertices, faces are the products of vertices with edges or viceversa, and so on.
+//Very similar to the tegum code.
+Polytope._pyramidProduct = function(P, Q, height) {
 	if(P.dimensions === -1)
 		return Q;
 	if(Q.dimensions === -1)
 		return P;
 
-  var height = Polytope._height;
 	if(height === undefined)
 		height = 0.5;
 	else
@@ -526,27 +482,10 @@ Polytope._pyramidProduct = function(P, Q) {
 	return new PolytopeC(newElementList); //The construction gets added in the main function.
 };
 
-/**
- * Helper function for {@linkcode Polytope.tegumProduct}
- * and {@linkcode Polytope.pyramidProduct}.
- * Gets the index of the product of the `i`-th `m`-element of `P`
- * and the `j`-th `n`-element of `Q` in the new polytope.
- * Takes into account the order in which the elements are calculated and added.
- * The only difference between the tegum case and the pyramid case is that for
- * pyramids, we need to consider an extra column in `memoizer`.
- * @summary Helper function for {@linkcode Polytope.prismProduct}
- * and {@linkcode Polytope.pyramidProduct}.
- * @private
- * @param {number} m The dimension of an element on the first polytope.
- * @param {number} i The index of an element on the first polytope.
- * @param {number} n The dimension of an element on the second polytope.
- * @param {number} j The index of an element on the second polytope.
- * @param {Polytope} P The first polytope to multiply.
- * @param {Polytope} Q The second polytope to multiply.
- * @param {number[][]} memoizer An array to store past calculations.
- * @returns {number} The index of the product of the `i`-th `m`-element of `P`
- * and the `j`-th `n`-element of `Q` in the new polytope.
- */
+//Helper function for tegumProduct and pyramidProduct.
+//Gets the index of the product of the ith m-element and the jth n-element in the new polytope.
+//Takes into account the order in which the elements are calculated and added.
+//The only difference between the tegum case and the pyramid case is that for pyramids, we need to consider an extra column in memoizer.
 Polytope._getIndexOfTegumProduct = function(m, i, n, j, P, Q, memoizer, tegum) {
 	//Recall that the elements of a single dimension are added in order nullitope * facet, vertex * ridge, ...
 	//memoizer[m][n] counts the number of such elements that we have to skip before we reach the multiplication we actually care about.
@@ -581,14 +520,10 @@ Polytope._getIndexOfTegumProduct = function(m, i, n, j, P, Q, memoizer, tegum) {
 /**
  * Helper function for {@link Polytope.prismProduct},
  * {@link Polytope.tegumProduct}, and {@link Polytope.pyramidProduct}.
- * Performs a product of a set of polytopes, by calling the two argument
- * function repeatedly. Automatically handles the zero argument cases, and
- * the {@linkcode ConstructionNode} creation.
  * @summary Performs a product of a set of polytopes.
  * @private
  * @param {Polytope[]} P An array of polytopes to "multiply."
- * @param {ConstructionNodeType} type The `ConstructionNodeType` corresponding
- * to the product operation.
+ * @param {ConstructionNodeType} type The ConstructionNodeType corresponding to the product operation.
  * @param {function} The function used to perform the product.
  * @returns {Polytope} The resulting product.
  * */
@@ -596,15 +531,15 @@ Polytope._product = function(P, type, fun) {
 	if(P.length === 0)
 		return Polytope.nullitope();
 
-	var constructions = [], res = P.pop();
-	constructions.push(res.construction);
+	var constructions = [], res;
 
+	res = P.pop();
+	constructions.push(res.construction);
 	while(P.length) {
 		//Stores the constructions of the elements of P in a temporary array.
 		constructions.push(P[P.length - 1].construction);
 		res = fun(P.pop(), res);
 	}
-
 	res.construction = new ConstructionNode(type, constructions);
 	return res;
 };
@@ -615,13 +550,7 @@ Polytope._product = function(P, type, fun) {
 //(i+[(n+1)-elements in the original polytope])th element in the new polytope.
 
 /**
- * Extrudes a polytope to a pyramid with an apex at the specified point
- * (or at a point at the specified height.)
- * Constructs pyramids out of elements recursively.
- * The `i`-th `d`-element in the original polytope gets extruded to the
- * `(i + ((d + 1)-elements in the original polytope))`-th element in the new
- * polytope.
- * @summary Extrudes a polytope into a pyramid.
+ * Extrudes a polytope into a pyramid.
  * @param  {(Point|number)} apex The apex of the pyramid, or its height.
  * @returns {Polytope} The resulting pyramid.
  */
@@ -671,6 +600,32 @@ Polytope.prototype.extrudeToPyramid = function(apex) {
 //TODO: Add a PolytopeS version.
 Polytope.prototype.extrudeToPrism = function(height) {
 	return Polytope.prismProduct(this.toPolytopeC(), Polytope.dyad(height));
+};
+
+//Creates a graph from the verticies of a polyhedron
+//Adds labels edges based on their adjacent faces
+//TODO: Could this be changed to work for higher/lower dimensions too?
+Polytope.prototype.polyToGraph = function() {
+	var gNodes = [];
+	var gLinks = [];
+	for(var v = 0; v < elementList[0].length; v++) {
+		var gNode = new GraphNode(v);
+		gNodes.push(gNode);
+	}
+	for(var f = 0; f < this.elementList[2].length; f++) {
+		for(var e = 0; e < this.elementList[2][f].length; e++) {
+			p1 = gNodes[this.elementList[1][this.elementList[2][f][e]][0]];
+			p2 = gNodes[this.elementList[1][this.elementList[2][f][e]][1]];
+			if(gLinks.contains([p1, p2])){
+				p1.labels[p1.neighbors.indexOf(p2)] = f;
+				p2.labels[p2.neighbors.indexOf(p1)] = f;
+			} else {
+				p1.connectTo(p2, f);
+				gLinks.push([p1, p2]);
+			}
+		}
+	}
+	return gNodes;
 };
 
 //Builds a polygon from the vertices given in order.
@@ -766,7 +721,13 @@ Polytope._gcd = function(a, b) {
 	return a;
 };
 
-//Builds a Grünbaumian n/d star with edge length s.
+//Returns if two elements of the same type are adjacent
+//TODO: maybe adjust this so it works for elements of different types too?
+Polytope.checkAdjacent = function(otherelement) {
+	return this.some(item => otherelement.includes(item))
+}
+
+//Builds a Grünbaumian n/d star with edge lenth s.
 //In the future, should be replaced by the PolytopeS version.
 Polytope.regularPolygonG = function(n, d, s) {
 	if(d === undefined)
