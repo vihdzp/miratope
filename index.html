@@ -57,6 +57,24 @@
 	<div style="float:right;width:100px"><a href="out/Miratope/α/index.html">Documentation</a></div>
 	<!--Loads the application.-->
 	<script src="src/main.js"></script>
+
+	<!-- TEST WASM CODE -->
+	<script>
+	function loadWasm(fileName) {
+		return fetch(filename)
+		.then(response => response.arrayBuffer())
+		.then(bits => WebAssembly.compile(bits))
+		.then(module => { return new WebAssembly.Instance(module) });
+	}
+
+	var fun;
+
+	loadWasm("src/qhull/qhull.wasm")
+	.then(instance => {
+		fun = instance.exports.run_qhull;
+	});
+	</script>
+
 	<!--This is just some test code. This whole script tag should be removed eventually.-->
 	<script>
 		//Test pentagrammic pyramid.
