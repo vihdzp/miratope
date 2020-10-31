@@ -1,3 +1,5 @@
-Miratope has a complex built-in system to generate the names of many polytopes automatically. This makes translating Miratope quite more difficult than simply translating a set of messages. The following guide will help you contribute to making Miratope accessible for international users, by describing how Miratope's translation system works, and how to modify it.
+Miratope has a complex built-in system to generate the names of many polytopes automatically. This makes translating Miratope quite more difficult than simply translating a set of messages. The following guide will help you contribute to making Miratope accessible for international users, by describing how Miratope's translation system works in detail, and how to modify it.
 
-## The [ConstructionNode](ConstructionNode.html) namespace.
+## The [`ConstructionNode`](ConstructionNode.html) class
+
+To understand how Miratope generates the name for a constructed polytope, we need to start from the `ConstructionNode` class. Every time you call a function such as [`Polytope.regularPolygon`](Polytope.html#regularPolygon) or [`Polytope.prismProduct`](Polytope.html#prismProduct), Miratope generates a `ConstructionNode` that encodes. Every `ConstructionNode` has a `type` attribute

@@ -179,7 +179,8 @@ ConstructionNode.prototype.getName = function() {
  *
  * //setGenders() is automatically called when the polytope is generated.
  * //As a result, even though the word "cúpula" is femenine in Spanish,
- * //the final result will have the gender of the word "prisma", which is masculine.
+ * //the final result will have the gender of the word "prisma",
+ * //which is masculine.
  * var P = Polytope.cupola(5, 3).extrudeToPrism();
  *
  * //"prisma cupoidal pentagrámico cruzado"

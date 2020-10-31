@@ -19,11 +19,22 @@ Translation._greekUnits = {
  * the target language). Based on [George Hart's scheme for greek numerical prefixes]{@link https://www.georgehart.com/virtual-polyhedra/greek-prefixes.html}.
  * Works only from 0 to 99999. Defaults to `"n-"`.
  * @param {number} n The number to convert.
- * @param {Object} [options={}]
+ * @param {Object} [options={}] Result modifiers.
+ * @param {boolean} [options.uppercase] Capitalizes the first letter of
+ * the result.
  * @returns {string} The number `n` as a greek prefix.
+ * @example
+ * Translation.setLanguage("en");
  *
-//Possible options:
-/* uppercase */
+ * //"penta"
+ * console.log(Translation.greekPrefix(5));
+ *
+ * //"icositetra"
+ * Translation.greekPrefix(24));
+ * 
+ * //"enneacosioctacontahepta"
+ * console.log(Translation.greekPrefix(987));
+ */
 Translation.greekPrefix = function(n, options = {}) {
 	if(n === 0)
 		return Translation.get("greekPrefixes/nulli", options);

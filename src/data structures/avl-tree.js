@@ -203,7 +203,7 @@ AvlTree.prototype._delete = function (key, root) {
 	  root.parent = null;
     } else {
       // Node has 2 children, get the in-order successor
-      var inOrderSuccessor = minValueNode(root.right);
+      var inOrderSuccessor = AvlTree.minValueNode(root.right);
       root.key = inOrderSuccessor.key;
       root.linkRight(this._delete(inOrderSuccessor.key, root.right));
     }
@@ -324,6 +324,7 @@ AvlTree.prototype.findMinimumNode = function () {
  */
 AvlTree.minValueNode = function(root) {
   var current = root;
+  while (current.left)
     current = current.left;
   return current;
 };
@@ -355,6 +356,7 @@ AvlTree.prototype.findMaximumNode = function () {
  */
 AvlTree.maxValueNode = function(root) {
   var current = root;
+  while (current.right)
     current = current.right;
   return current;
 };

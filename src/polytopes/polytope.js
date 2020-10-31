@@ -602,10 +602,13 @@ Polytope.prototype.extrudeToPrism = function(height) {
 	return Polytope.prismProduct(this.toPolytopeC(), Polytope.dyad(height));
 };
 
-//Creates a graph from the verticies of a polyhedron
-//Adds labels edges based on their adjacent faces
-//TODO: Could this be changed to work for higher/lower dimensions too?
-Polytope.prototype.polyToGraph = function() {
+/**
+ * Creates a graph from the vertices and edges of a polyhedron.
+ * Adds labels edges based on their adjacent faces.
+ * @todo Could this be changed to work for higher/lower dimensions too?
+ * @returns {GraphNode[]} The graph of the polytope.
+ */
+Polytope.prototype.polytopeToGraph = function() {
 	var gNodes = [];
 	var gLinks = [];
 	for(var v = 0; v < elementList[0].length; v++) {
@@ -724,7 +727,7 @@ Polytope._gcd = function(a, b) {
 //Returns if two elements of the same type are adjacent
 //TODO: maybe adjust this so it works for elements of different types too?
 Polytope.checkAdjacent = function(otherelement) {
-	return this.some(item => otherelement.includes(item))
+	return this.some(item => otherelement.includes(item));
 }
 
 //Builds a Grünbaumian n/d star with edge lenth s.
