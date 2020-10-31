@@ -524,7 +524,7 @@ Polytope._getIndexOfTegumProduct = function(m, i, n, j, P, Q, memoizer, tegum) {
  * @private
  * @param {Polytope[]} P An array of polytopes to "multiply."
  * @param {ConstructionNodeType} type The ConstructionNodeType corresponding to the product operation.
- * @param {function} The function used to perform the product.
+ * @param {function} fun The function used to perform the product.
  * @returns {Polytope} The resulting product.
  * */
 Polytope._product = function(P, type, fun) {
@@ -630,6 +630,36 @@ Polytope.prototype.polytopeToGraph = function() {
 	}
 	return gNodes;
 };
+
+//Generates the petrie dual of a polytope
+Polytope.prototype.petrial = function() {
+	this.polytopeToGraph()
+  for(var f = 0; f < this.elementList[2].length; f++) {
+    for(var v = 0; v < this.elementList[2][f][]) {
+
+    }
+  }
+}
+
+/**
+ * Returns the subelements that are adjacent to an element of elementList d layers down.
+ * @param {number} type The index of the type of element in newElementList.
+ * @param {number} elem The index of the element selected.
+ * @param {number} d The subelement type (type-d) you want from elem.
+ * @returns {Polytope} The adjacent subelements.
+ */
+Polytope.adjacentEls = function(type, elem, d) {
+  var down = 1;
+  var subels = this.elementList[type][elem]
+  while(down < d) {
+    down++;
+    for(var i = 0; i < subels.length; i++) {
+      subels = [...new Set([].concat(this.elementList[type-1][subels[i]]))];
+    }
+    type--;
+  }
+  return subel
+}
 
 //Builds a polygon from the vertices given in order.
 Polytope.polygon = function(points) {
