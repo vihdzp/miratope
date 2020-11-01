@@ -5390,7 +5390,6 @@ var _setjmp; // stub for _setjmp
             'wav': 'audio/wav',
             'mp3': 'audio/mpeg'
           }[name.substr(-3)];
-          return ret;
         }
   
         if (!Module["preloadPlugins"]) Module["preloadPlugins"] = [];
