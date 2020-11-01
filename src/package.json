@@ -4,6 +4,9 @@
 	"bugs": "https://github.com/OfficialURL/miratope/issues",
 	"license": "MIT",
 	"script": {
-	  "generate-docs": "jsdoc -c templates/docdash/default.jsdoc.json --verbose"
+		"generate-docs": "jsdoc -c templates/docdash/default.jsdoc.json --verbose"
+	},
+	"dependencies": {
+		"qhull-js": "0.0.1"
 	}
 }

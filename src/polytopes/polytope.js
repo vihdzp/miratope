@@ -632,6 +632,7 @@ Polytope.prototype.polytopeToGraph = function() {
 };
 
 //Generates the petrie dual of a polytope
+/*
 Polytope.prototype.petrial = function() {
 	this.polytopeToGraph()
   for(var f = 0; f < this.elementList[2].length; f++) {
@@ -640,6 +641,7 @@ Polytope.prototype.petrial = function() {
     }
   }
 }
+*/
 
 /**
  * Returns the subelements that are adjacent to an element of elementList d layers down.
