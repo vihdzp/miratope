@@ -104,7 +104,7 @@ Space.collinear = function(a, b, c) {
 Space.distance = function(a, b) {
 	var res = 0;
 	for(var i = 0; i < a.coordinates.length; i++) {
-		var t = a.cooordinates[i] - b.coordinates[i];
+		var t = a.coordinates[i] - b.coordinates[i];
 		res += t * t;
 	}
 	return Math.sqrt(res);
@@ -116,7 +116,7 @@ Space.distance = function(a, b) {
 Space.distanceSq = function(a, b) {
 	var res = 0;
 	for(var i = 0; i < a.coordinates.length; i++) {
-		var t = a.cooordinates[i] - b.coordinates[i];
+		var t = a.coordinates[i] - b.coordinates[i];
 		res += t * t;
 	}
 	return res;
