@@ -49,8 +49,19 @@ Polytope.prototype.moveNeg = function(P) {
 }
 
 /**
- * Gets the name of a polytope.
+ * Gets the name of a polytope. Internally calls
+ * [ConstructionNode.prototype.getName]{@linkcode ConstructionNode#getName}.
  * @returns {string} The name of the polytope.
+ * @example
+ * //"great heptagram"
+ * Polytope.regularPolygon(7,3).getName();
+ *
+ * //"pentachoric prism"
+ * Polytope.simplex(4).extrudeToPrism(1).getName();
+ *
+ * //"pentagonal bipyramid"
+ * Polytope.tegumProduct(Polytope.regularPolygon(5), Polytope.dyad()).getName();
+
 */
 Polytope.prototype.getName = function() {
 	return this.construction.getName();
