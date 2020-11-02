@@ -4,17 +4,18 @@
         "dictionaries": ["jsdoc", "closure"]
     },
     "source": {
-        "include": ["C:/Users/erici/github/miratope/src/package.json", "C:/Users/erici/github/miratope/readme.md"],
+        "include": ["package.json", "../readme.md", "../src/"],
         "includePattern": "\\.js$",
         "excludePattern": "(node_modules/|docs)"
     },
     "plugins": [
-        "C:/Users/erici/.atom/packages/jsdoc-generator/node_modules/jsdoc/plugins/markdown"
+        "plugins/markdown"
     ],
     "opts": {
-        "template": "C:/Users/erici/.atom/packages/jsdoc-generator/node_modules/jsdoc/node_modules/docdash",
+        "template": "docdash",
         "encoding": "utf8",
-        "destination": "C:/Users/erici/github/miratope/out",
+		"destination": "../out/",
+		"tutorials": "../tutorials/",
         "recurse": true,
         "verbose": true
     },

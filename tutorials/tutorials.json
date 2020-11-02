@@ -1,5 +1,8 @@
 {
 	"translation": {
 		"title": "How to translate Miratope?"
+	},
+	"dependencies": {
+		"title": "How to update Miratope's dependencies?"
 	}
 }

@@ -99,8 +99,12 @@ Space.collinear = function(a, b, c) {
 	return 1 - Math.abs(dot / Math.sqrt(norm0 * norm1)) <= epsilon;
 };
 
-//Calculates the Euclidean distance between a and b.
-//Nothing clever here.
+/**
+ * Calculates the Euclidean distance between two points.
+ * @param {Point} a The first point.
+ * @param {Point} b The second point.
+ * @returns {number} The distance between `a` and `b`.
+ */
 Space.distance = function(a, b) {
 	var res = 0;
 	for(var i = 0; i < a.coordinates.length; i++) {
@@ -110,9 +114,13 @@ Space.distance = function(a, b) {
 	return Math.sqrt(res);
 };
 
-//Calculates the squared Euclidean distance between a and b.
-//For when you don't need that last square root.
-//Again, nothing clever here.
+/**
+ * Calculates the squared Euclidean distance between two points.
+ * For when you don't need that last square root.
+ * @param {Point} a The first point.
+ * @param {Point} b The second point.
+ * @returns {number} The squared distance between `a` and `b`.
+ */
 Space.distanceSq = function(a, b) {
 	var res = 0;
 	for(var i = 0; i < a.coordinates.length; i++) {
@@ -125,6 +133,8 @@ Space.distanceSq = function(a, b) {
 //Returns whether the line from (0, 0) to (a, b) and the line from (0, 0) to (c, d)
 //have the same (neglibly different) slopes
 Space.sameSlope = function(a, b, c, d) {
-	var s = Math.atan(a / b) - Math.atan(c / d); //s is the difference between the angles.
-	return (s + Math.PI + epsilon) % Math.PI < 2 * epsilon; //Returns true if the angles (mod pi) are different by less than epsilon.
+	//s is the difference between the angles.
+	var s = Math.atan(a / b) - Math.atan(c / d);
+	//Returns whether the angles (mod pi) are different by less than epsilon.
+	return (s + Math.PI + epsilon) % Math.PI < 2 * epsilon;
 };

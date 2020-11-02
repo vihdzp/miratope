@@ -4,8 +4,8 @@
  * to triangulate general polygons.
  * @summary Renders a polytope into a scene.
  * @todo Guarantee that all edge cases work properly (zero length edges,
-* collinear edges, concurrent edges, etc.)
- * @see {@link http://geomalgorithms.com/a09-_intersect-3.html|[1] Dan Sunday. Intersections for a Set of Segments. 2012.}
+ * collinear edges, concurrent edges, etc.)
+ * @see {@link http://geomalgorithms.com/a09-_intersect-3.html|Dan Sunday. Intersections for a Set of Segments. 2012.}
  */
 Polytope.prototype.renderTo = function(scene) {
 	var P = this.toPolytopeC().recenter();
@@ -281,7 +281,6 @@ Polytope._divide = function(edgeA, edgeB) {
 	EQ.insert(newNode1);
 	EQ.insert(newNode2);
 };
-
 
 /* Orders two points lexicographically based on the coordinates on indices 0 and 1.
  * Uses the IDs of the vertices to order them consistently if their coordinates are identical.
