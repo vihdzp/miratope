@@ -27,6 +27,14 @@
 		"sort": true,
 		"private": true,
 		"search": true,
-		"collapse": true
+		"collapse": true,
+        "menu":{
+            "Github repo":{
+                "href":"https://github.com/officialurl/miratope",
+                "target":"_blank",
+                "class":"menu-item",
+                "id":"repository"
+            }
+        }
 	}
 }

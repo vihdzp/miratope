@@ -1,12 +1,23 @@
-//A class for operations on points
-var Space = {}; //Sets Space as an object
+/**
+ * A namespace for operations on points.
+ * @namespace Space
+ */
+var Space = {};
 
 //Uses functions from point.js
 
-//Calculates the intersection of a line ab with a line cd (where the letters are the points used)
-//Assumes that these lines are coplanar, but not colinear
-//Returns null if this does not exist
-//Currently only implemented for Euclidean points, in at least 2D
+/**
+ * Calculates the intersection of two segments.
+ * Assumes that these segments are coplanar, but not collinear.
+ * Ignores the intersection if it lies outside of the segments, or
+ * "too close" to the endpoints.
+ * @param {Point} a The first endpoint of the first segment.
+ * @param {Point} b The second endpoint of the first segment.
+ * @param {Point} c The first endpoint of the second segment.
+ * @param {Point} d The second endpoint of the second segment.
+ * @returns {Point?} The intersection point of segments `ab` and `cd`, or
+ * `null` if there's none.
+ */
 Space.intersect = function(a, b, c, d) {
 	//Checks if any of the points are in different dimensional spaces
 	if(a.dimensions() !== b.dimensions() || a.dimensions() !== c.dimensions() || a.dimensions() !== d.dimensions())

@@ -26,11 +26,11 @@ Translation._endings = {
 		new Ending("um", -2, "matic"), //Duoteg(um/matic)
 		new Ending("ium", -2, "al"), //Gyrobifastigi(um/al)
 		new Ending("lum", -2, "ar"), //Disphenocingul(um/ar)
-		new Ending("on", -2, "al"), //Tetrahedr(on/al)
 		new Ending("gon", 0, "al"), //Pentagon(al)
 		new Ending("ion", -3, "e"), //Square tesselat(ion/e)
 		new Ending("lon", -2, "ar"), //Ditel(on/ar)
 		new Ending("ron", -2, "ic"), //Pentachor(on/ic)
+		new Ending("dron", -2, "al"), //Tetrahedr(on/al)
 		//new Ending("ss", 0, ""), // Pentacross
 		new Ending("us", -2, "ic"), //Triamb(us/ic)
 		//new Ending("nt", 0, ""), // Point
