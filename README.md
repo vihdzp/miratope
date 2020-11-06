@@ -1,7 +1,7 @@
 A renderer for polytopes. Still in alpha.
 
 ## What can Miratope do now?
-Miratope can generate the classes of polytopes, among others:
+Miratope can generate these classes of polytopes, among others:
 * Simplexes
 * Hypercubes
 * Orthoplexes
@@ -30,7 +30,7 @@ Polytope.cross(4).extrudeToPrism(1).saveAsGGB();
 ```
 
 ### Where do I get these "OFF files"?
-The OFF file format is a quite specialized file format. It was initially meant for the [Geomview software](https://people.sc.fsu.edu/~jburkardt/data/off/off.html), and was later adapted for the [Stella software](https://www.software3d.com/StellaManual.php?prod=stella4D#import). Miratope uses a further generalization of the Stella OFF format for any amount of dimensions.
+The OFF file format is a format for storing certain kinds of geometric shapes. Although not in widespread use, it has become the standard format for those who investigate polyhedra and polytopes. It was initially meant for the [Geomview software](https://people.sc.fsu.edu/~jburkardt/data/off/off.html), and was later adapted for the [Stella software](https://www.software3d.com/StellaManual.php?prod=stella4D#import). Miratope uses a further generalization of the Stella OFF format for any amount of dimensions.
 
 Miratope does not yet include a library of OFF files. Nevertheless, many of them can be downloaded from [OfficialURL's personal collection](https://drive.google.com/drive/u/0/folders/1nQZ-QVVBfgYSck4pkZ7he0djF82T9MVy). Eventually, they'll be browsable from Miratope itself.
 
