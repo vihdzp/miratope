@@ -714,7 +714,7 @@ Polytope.cdToMatrix = function(diagram) {
   var marked = "";
   var v = false;
   for(var i = 0; i < diagram.length; i++){
-    char = diagram.charAt(i)
+    var char = diagram.charAt(i)
     check:
     if(/[^1234567890/ \u221E\u00D8]/.test(char)) {
       if(/\*/.test(char)) {v = true; break check };
