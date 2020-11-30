@@ -643,35 +643,173 @@ Polytope.prototype.polytopeToGraph = function() {
 };
 
 //Generates the petrie dual of a polytope
-/*
 Polytope.prototype.petrial = function() {
-	this.polytopeToGraph()
+	gNodes = this.polytopeToGraph();
+  var faces = [];
+  var edges = [];
+  var edgeCount = [];
   for(var f = 0; f < this.elementList[2].length; f++) {
-    for(var v = 0; v < this.elementList[2][f][]) {
+    adjVerts = this.adjacentEls(2, f, 2);
+    build_faces:
+    for(sVert in adjVerts) {
+      var nVert = undefined
+      while(nVert != sVert) {
+        //Oh god, this one definition relies on so many things being in sync
+        nEdge = [this.elementList[0].indexOf(sVert), gNodes[this.elementList[0].indexOf(sVert)].neighbors[0].value];
+        //newEdge is an array of the indexes of the points that make up the new edge: [a, b]
+        switch(edgeCount[nEdge.toString()]) {
+          case undefined:
+            edgeCount[nEdge.toString()] = 1;
+            edges.push(nEdge);
+            break;
+          case 1:
+            edgeCount[nEdge.toString()] = 2;
+            break;
+          case 2:
+            break build_faces;
+        };
+        nVert = nEdge[1]
+        //Select nEdge's adjacent face
+        //Set f to the index of newEdge's adjacent face
+      }
 
     }
   }
-}
-*/
+};
 
 /**
  * Returns the subelements that are adjacent to an element of elementList d layers down.
  * @param {number} type The index of the type of element in newElementList.
  * @param {number} elem The index of the element selected.
  * @param {number} d The subelement type (type-d) you want from elem.
- * @returns {Polytope} The adjacent subelements.
+ * @returns {Polytope} The adjacent subelements in an array.
  */
 Polytope.adjacentEls = function(type, elem, d) {
   var down = 1;
-  var subels = this.elementList[type][elem]
+  var subels = this.elementList[type][elem];
+  var subelsTemp = []
   while(down < d) {
     down++;
-    for(var i = 0; i < subels.length; i++) {
-      subels = [...new Set([].concat(this.elementList[type-1][subels[i]]))];
+    for(i in subels) {
+      subelsTemp = [...new Set(subelsTemp.concat(this.elementList[type-1][i]))];
     }
+    subels = subelsTemp
     type--;
   }
-  return subel
+  return subels;
+};
+
+/**
+ * Creates a schlafli matrix from a coxeter diagram
+ * @param {string} diagram The input coxeter ciagram
+ * @returns {array} A 2D array corresponding to the CD's schlafli matrix
+ */
+Polytope.cdToMatrix = function(diagram) {
+  if(/[a-z][a-z]/.test(diagram)) {throw new error("Hey! I see you inputting a compound! Stop that >:[")}
+  if(/[#]/.test(diagram)) {throw new error("Laces don't work yet, sorry :/")}
+  if(/[']/.test(diagram)) {throw new error("Retrograde stuff doesn't work yet, sorry :/")}
+  diagram = diagram.replace(/-/gi, "");
+  var dimen = diagram.replace(/\*.|[^a-z\u03B2]/gi, "").length
+  var alpha = 0;
+  var marked = "";
+  var v = false;
+  for(var i = 0; i < diagram.length; i++){
+    char = diagram.charAt(i)
+    check:
+    if(/[^1234567890/ \u221E\u00D8]/.test(char)) {
+      if(/\*/.test(char)) {v = true; break check };
+      if(v) {v = false; break check };
+      alpha++;
+      char = (alpha + 9).toString(36);
+    };
+    marked = marked + char
+  };
+  marked = marked.replace(/\*/gi, "");
+  var pat = /(?=(([a-z]\d+[a-z])|([a-z]\d+\/\d+[a-z])|([a-z]\u221E+[a-z])|([a-z]\u00D8+[a-z])))./g
+  var angles = [];
+  var match;
+  while((match=pat.exec(marked))!=null) {angles.push(match[1])};
+  var schlafl = [];
+  for(var i = 0; i < dimen; i++) {
+    schlafl[i] = [];
+    for(var j = 0; j < dimen; j++) {
+      schlafl[i][j] = 0;
+      if(i == j) {
+      schlafl[i][j] = 2;
+      }
+    }
+  }
+  for(var i = 0; i < angles.length; i++) {
+    var mira1 = angles[i].charCodeAt(0) - 97
+      var mira2 = angles[i].charCodeAt(angles[i].length-1) - 97
+      if(mira2 > mira1) {
+        mira1 = angles[i].charCodeAt(angles[i].length-1) - 97
+        mira2 = angles[i].charCodeAt(0) - 97
+      };
+      var num1 = parseInt(angles[i].substring(1, angles[i].length-1))
+      var num2;
+      var ang = -2*Math.cos(Math.PI/num1)
+      if(/[\u221E\u00D8]/.test(angles[i].substring(1,angles[i].length-1))) {ang = -2};
+      if(/\//.test(angles[i])) {
+        num1 = parseInt(angles[i].substring(1, angles[i].search("/")))
+        num2 = parseInt(angles[i].substring(angles[i].search("/")+1, angles[i].length-1))
+        ang = -2*Math.cos(Math.PI/(num1/num2))
+      }
+      schlafl[mira1][mira2] = ang
+      schlafl[mira2][mira1] = ang
+  }
+  return schlafl
+}
+
+/**
+ * Returns a polytope's dimension and space shape from a coxeter diagram
+ * @param {string} diagram The input coxeter ciagram
+ * @returns {array} An array with the first entry being the dimension and the second is 1 for spherical, 0 for euclidean, and -1 for hyperbolic (and "uhoh" when something is wrong)
+ */
+Polytope.spaceShape = function(diagram) {
+  var schlafl = Polytope.cdToMatrix(diagram)
+  var det = Math.round(Polytope._determinant(schlafl)*1000)/1000
+  //document.write(det)
+  var space = []
+  diagram = diagram.replace(/-/gi, "");
+  var dimen = diagram.replace(/\*.|[^a-z\u03B2]/gi, "").length
+  if(det > 0) {var shape = 1} else if (det == 0) {var shape = 0} else if (det < 0) {var shape = -1} else {var shape = "oops"};
+  return [dimen, shape]
+}
+
+/**
+ * Returns the determinant of a matrix
+ * @param {array} diagram A matrix in the form of a 2D array
+ * @returns {float} The matrix's determinant
+ */
+Polytope._determinant = function(schlafl) {
+    if (schlafl.length==1) {
+      if (typeof schlafl[0] === 'object' ){
+          return schlafl[0][0];
+      } else {
+          return schlafl[0];
+      }
+    }
+
+    var minors = [];
+    for (var i = 0; i < schlafl[0].length; i += 1) {
+        minors[i] = [];
+        for (var j = 0; j < schlafl[0].length; j += 1) {
+            if (j==0) continue;
+            if (!minors[i][j-1]) minors[i][j-1] = [];
+            for (var k = 0; k < schlafl[0].length; k += 1 ) {
+                if (k==i) continue;
+                minors[i][j-1].push(schlafl[j][k]);
+            }
+        }
+    }
+    var multiplier = 1;
+    var subResults = [];
+    for (var i = 0; i < schlafl.length; i += 1 ) {
+        subResults[i] = multiplier * schlafl[0][i] * Polytope._determinant(minors[i]);
+        multiplier *= -1;
+    }
+    return subResults.reduce( function( sum, val ) {return sum + val; }, 0 );
 }
 
 //Builds a polygon from the vertices given in order.
