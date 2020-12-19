@@ -28,7 +28,7 @@ Polytope.prototype.renderTo = function(scene) {
 		b = x.rightVertex().value,
 		c = y.leftVertex.value,
 		d = y.rightVertex().value,
-		k = E.value.coordinates[window.index0], slopeMod;
+		k = E.value.coordinates[window.index0];
 
 		//Calculates where in the segments the intersection with the sweepline lies.
 		var lambda0 = (k - b.coordinates[window.index0])/(a.coordinates[window.index0] - b.coordinates[window.index0]);
@@ -49,16 +49,16 @@ Polytope.prototype.renderTo = function(scene) {
 
 			//If both edges start at the same point, sort by increasing slope.
 			if(lambda0 > 1 - epsilon)
-				slopeMod = 1;
+				res = 1;
 			//If both edges end at the same point, sort by decreasing slope.
 			else if(lambda0 < epsilon)
-				slopeMod = -1;
+				res = -1;
 			//The edges are just really close, so compare them normally.
 			else
 				return res;
 
 			//The difference between the slopes.
-			res = slopeMod * (Math.atan(x.slope) - Math.atan(y.slope));
+			res *= (Math.atan(x.slope) - Math.atan(y.slope));
 
 			//If both lines are the same, might as well compare using indices.
 			if(Math.abs(res) < epsilon)
@@ -148,7 +148,7 @@ Polytope.prototype.renderTo = function(scene) {
 			counter++;
 			var E = EQ.findMinimum(); //The next "event" in the event queue.
 			EQ.delete(E);
-			if(!SL.checkSorted()) { //If the code worked perfectly, we could skip this part.
+			if(!SL.checkSorted()) { //If the code worked perfectly, we could skip this expensive check.
 				alert("Something went wrong!");
 				//return; //Uncomment if you want the code not to throw an exception.
 			}

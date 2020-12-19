@@ -8,7 +8,7 @@ function Scene() {
 
 	//Defines renderer.
 	this.renderer = new THREE.WebGLRenderer({antialias:true});
-	this.renderer.setSize( window.innerWidth, window.innerHeight );
+	this.renderer.setSize( window.innerWidth, window.innerHeight - 44);
 	document.body.appendChild( this.renderer.domElement );
 
 	//Adds and configures the camera.
@@ -16,8 +16,8 @@ function Scene() {
 	this.camera.position.z = 2;
 
 	//Adds both ambient light and directional light.
-	this.ambientLight = new THREE.AmbientLight( 0x777777 );
-	this.directionalLight = new THREE.DirectionalLight( 0x777777, 2 );
+	this.ambientLight = new THREE.AmbientLight( 0x777777, 0.8);
+  this.directionalLight = new THREE.DirectionalLight( 0xffffff, 0.8 );
 	this.directionalLight.position.set( 1,1,1 ).normalize();
 	this.scene.add( this.ambientLight );
 	this.scene.add( this.directionalLight );
