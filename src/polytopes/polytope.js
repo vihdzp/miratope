@@ -622,15 +622,15 @@ Polytope.prototype.extrudeToPrism = function(height) {
 Polytope.prototype.polytopeToGraph = function() {
 	var gNodes = [];
 	var gLinks = [];
-	for(var v = 0; v < elementList[0].length; v++) {
+	for(var v = 0; v < this.elementList[0].length; v++) {
 		var gNode = new GraphNode(v);
 		gNodes.push(gNode);
 	}
 	for(var f = 0; f < this.elementList[2].length; f++) {
 		for(var e = 0; e < this.elementList[2][f].length; e++) {
-			p1 = gNodes[this.elementList[1][this.elementList[2][f][e]][0]];
-			p2 = gNodes[this.elementList[1][this.elementList[2][f][e]][1]];
-			if(gLinks.contains([p1, p2])){
+			var p1 = gNodes[this.elementList[1][this.elementList[2][f][e]][0]];
+			var p2 = gNodes[this.elementList[1][this.elementList[2][f][e]][1]];
+			if(gLinks.includes([p1, p2])){
 				p1.labels[p1.neighbors.indexOf(p2)] = f;
 				p2.labels[p2.neighbors.indexOf(p1)] = f;
 			} else {
@@ -717,8 +717,14 @@ Polytope.cdToMatrix = function(diagram) {
     var char = diagram.charAt(i);
     check:
     if(/[^1234567890/ \u221E\u00D8]/.test(char)) {
-      if(/\*/.test(char)) {v = true; break check };
-      if(v) {v = false; break check };
+      if(/\*/.test(char)) {
+        v = true;
+        break check;
+      }
+      if(v) {
+        v = false;
+        break check;
+      }
       alpha++;
       char = (alpha + 9).toString(36);
     };
@@ -728,7 +734,8 @@ Polytope.cdToMatrix = function(diagram) {
   var pat = /(?=(([a-z]\d+[a-z])|([a-z]\d+\/\d+[a-z])|([a-z]\u221E+[a-z])|([a-z]\u00D8+[a-z])))./g;
   var angles = [];
   var match;
-  while((match=pat.exec(marked))!=null) {angles.push(match[1])};
+  while((match=pat.exec(marked)) != null)
+    angles.push(match[1]);
   var schlafl = [];
   for(var i = 0; i < dimen; i++) {
     schlafl[i] = [];
@@ -746,9 +753,9 @@ Polytope.cdToMatrix = function(diagram) {
         mira1 = angles[i].charCodeAt(angles[i].length-1) - 97;
         mira2 = angles[i].charCodeAt(0) - 97;
       }
-      var num1 = parseInt(angles[i].substring(1, angles[i].length-1))
+      var num1 = parseInt(angles[i].substring(1, angles[i].length-1));
       var num2;
-      var ang = -2*Math.cos(Math.PI/num1)
+      var ang = -2*Math.cos(Math.PI/num1);
       if(/[\u221E\u00D8]/.test(angles[i].substring(1,angles[i].length-1))) {ang = -2};
       if(/\//.test(angles[i])) {
         num1 = parseInt(angles[i].substring(1, angles[i].search("/")));
@@ -769,19 +776,11 @@ Polytope.cdToMatrix = function(diagram) {
 Polytope.spaceShape = function(diagram) {
   var schlafl = Polytope.cdToMatrix(diagram);
   var det = Math.round(Polytope._determinant(schlafl)*1000)/1000;
-  //document.write(det)
   var space = [];
   diagram = diagram.replace(/-/gi, "");
   var dimen = diagram.replace(/\*.|[^a-z\u03B2]/gi, "").length;
-  var shape;
-  if(det > 0)
-    shape = 1;
-  else if (det == 0)
-    shape = 0;
-  else if (det < 0)
-    shape = -1;
-  else
-    shape = "oops";
+  var shape = Math.sign(det);
+  if(isNaN(det)) shape = "oops";
   return [dimen, shape];
 }
 
@@ -793,22 +792,21 @@ Polytope.spaceShape = function(diagram) {
  */
 Polytope._determinant = function(schlafl) {
     if (schlafl.length==1) {
-      if (typeof schlafl[0] === 'object' ){
+      if (typeof schlafl[0] === 'object' )
           return schlafl[0][0];
-      } else {
+      else
           return schlafl[0];
-      }
     }
 
     var minors = [];
     for (var i = 0; i < schlafl[0].length; i++) {
         minors[i] = [];
         for (var j = 0; j < schlafl[0].length; j++) {
-            if (j==0) continue;
-            if (!minors[i][j-1]) minors[i][j-1] = [];
+            if (j == 0) continue;
+            if (!minors[i][j-1]) minors[i][j - 1] = [];
             for (var k = 0; k < schlafl[0].length; k++) {
-                if (k==i) continue;
-                minors[i][j-1].push(schlafl[j][k]);
+                if (k == i) continue;
+                minors[i][j - 1].push(schlafl[j][k]);
             }
         }
     }
