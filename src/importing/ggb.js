@@ -2,11 +2,17 @@
 
 //The part of the Polytope class for reading and writing to GGB files.
 
-//A GGB file is really just a ZIP file in disguise.
-//This ZIP file contains an XML called geogebra.xml.
-//This last file contains all of the relevant info of the GGB.
-//This function will be called with the XML's data as a string.
-//It will store the 3D polyhedron into the global variable P.
+/**
+ * A GGB file is really just a ZIP file in disguise.
+ * This ZIP file contains an XML called geogebra.xml.
+ * This function will be called with the XML's data as a string.
+ * It will store the 3D polyhedron into the global variable `P`.
+ * @summary Stores the polyhedron described by an XML file
+ * into the global variable `P`.
+ * @param {string} e The contents of the file.
+ * @todo Load the polyhedron into a scene,
+ * instead of loading it into a global variable.
+ */
 Polytope._GGBReaderOnload = function(e) {
 	var caret = new Caret(e),
   elementList = [[], [], [], []],
