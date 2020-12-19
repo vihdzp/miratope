@@ -806,7 +806,7 @@ Polytope._determinant = function(schlafl) {
         minors[i] = [];
         for (var j = 0; j < schlafl[0].length; j++) {
             if (j == 0) continue;
-            if (!minors[i][j-1]) minors[i][j - 1] = [];
+            if (!minors[i][j - 1]) minors[i][j - 1] = [];
             for (var k = 0; k < schlafl[0].length; k++) {
                 if (k == i) continue;
                 minors[i][j - 1].push(schlafl[j][k]);
