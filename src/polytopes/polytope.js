@@ -705,18 +705,26 @@ Polytope.adjacentEls = function(type, elem, d) {
  * @returns {array} A 2D array corresponding to the CD's Schläfli matrix
  */
 Polytope.cdToMatrix = function(diagram) {
+  //checks for two nodes directly next to each other
   if(/[a-z][a-z]/.test(diagram)) {throw new error("Hey! I see you inputting a compound! Stop that >:[")}
+  //checks for lace stuff
   if(/[#]/.test(diagram)) {throw new error("Laces don't work yet, sorry :/")}
+  //checks for retrograde diagrams
   if(/[']/.test(diagram)) {throw new error("Retrograde stuff doesn't work yet, sorry :/")}
+  //removes "-" from diagram
   diagram = diagram.replace(/-/gi, "");
+  //removes all but nodes (a-z or "β", ignore letters after "*") and returns count
   var dimen = diagram.replace(/\*.|[^a-z\u03B2]/gi, "").length;
+
   var alpha = 0;
   var marked = "";
   var v = false;
   for(var i = 0; i < diagram.length; i++){
     var char = diagram.charAt(i);
     check:
-    if(/[^1234567890/ \u221E\u00D8]/.test(char)) {
+    //if the current character isn't a digit, "/", " ", "∞", or "Ø"
+    if(/[^0-9/ \u221E\u00D8]/.test(char)) {
+      //if the next character is part of a virtual node
       if(/\*/.test(char)) {
         v = true;
         break check;
@@ -730,12 +738,17 @@ Polytope.cdToMatrix = function(diagram) {
     };
     marked = marked + char;
   };
+
+  //removes "*"
   marked = marked.replace(/\*/gi, "");
+  //checks for (letters digits letters), (letters digits "/" digits letters), (letters "∞" letters), or (letters "Ø" letters)
   var pat = /(?=(([a-z]\d+[a-z])|([a-z]\d+\/\d+[a-z])|([a-z]\u221E+[a-z])|([a-z]\u00D8+[a-z])))./g;
   var angles = [];
   var match;
-  while((match=pat.exec(marked)) != null)
+  while((match=pat.exec(marked))!=null) {
     angles.push(match[1]);
+  }
+
   var schlafl = [];
   for(var i = 0; i < dimen; i++) {
     schlafl[i] = [];
@@ -746,6 +759,7 @@ Polytope.cdToMatrix = function(diagram) {
       }
     }
   }
+
   for(var i = 0; i < angles.length; i++) {
     var mira1 = angles[i].charCodeAt(0) - 97;
       var mira2 = angles[i].charCodeAt(angles[i].length-1) - 97;
@@ -756,7 +770,9 @@ Polytope.cdToMatrix = function(diagram) {
       var num1 = parseInt(angles[i].substring(1, angles[i].length-1));
       var num2;
       var ang = -2*Math.cos(Math.PI/num1);
+      //if it has "∞" or "Ø"
       if(/[\u221E\u00D8]/.test(angles[i].substring(1,angles[i].length-1))) {ang = -2};
+      //if it has "/"
       if(/\//.test(angles[i])) {
         num1 = parseInt(angles[i].substring(1, angles[i].search("/")));
         num2 = parseInt(angles[i].substring(angles[i].search("/")+1, angles[i].length-1));
@@ -778,9 +794,10 @@ Polytope.spaceShape = function(diagram) {
   var det = Math.round(Polytope._determinant(schlafl)*1000)/1000;
   var space = [];
   diagram = diagram.replace(/-/gi, "");
+  //removes all but nodes (a-z or "β", ignore letters after "*") and returns count
   var dimen = diagram.replace(/\*.|[^a-z\u03B2]/gi, "").length;
   var shape = Math.sign(det);
-  if(isNaN(det)) shape = "oops";
+  if(isNaN(shape)) {shape = "oops";}
   return [dimen, shape];
 }
 
