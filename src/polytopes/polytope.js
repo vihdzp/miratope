@@ -622,15 +622,15 @@ Polytope.prototype.extrudeToPrism = function(height) {
 Polytope.prototype.polytopeToGraph = function() {
 	var gNodes = [];
 	var gLinks = [];
-	for(var v = 0; v < elementList[0].length; v++) {
+	for(var v = 0; v < this.elementList[0].length; v++) {
 		var gNode = new GraphNode(v);
 		gNodes.push(gNode);
 	}
 	for(var f = 0; f < this.elementList[2].length; f++) {
 		for(var e = 0; e < this.elementList[2][f].length; e++) {
-			p1 = gNodes[this.elementList[1][this.elementList[2][f][e]][0]];
-			p2 = gNodes[this.elementList[1][this.elementList[2][f][e]][1]];
-			if(gLinks.contains([p1, p2])){
+			var p1 = gNodes[this.elementList[1][this.elementList[2][f][e]][0]];
+			var p2 = gNodes[this.elementList[1][this.elementList[2][f][e]][1]];
+			if(gLinks.includes([p1, p2])){
 				p1.labels[p1.neighbors.indexOf(p2)] = f;
 				p2.labels[p2.neighbors.indexOf(p1)] = f;
 			} else {
@@ -709,26 +709,26 @@ Polytope.cdToMatrix = function(diagram) {
   if(/[#]/.test(diagram)) {throw new error("Laces don't work yet, sorry :/")}
   if(/[']/.test(diagram)) {throw new error("Retrograde stuff doesn't work yet, sorry :/")}
   diagram = diagram.replace(/-/gi, "");
-  var dimen = diagram.replace(/\*.|[^a-z\u03B2]/gi, "").length
+  var dimen = diagram.replace(/\*.|[^a-z\u03B2]/gi, "").length;
   var alpha = 0;
   var marked = "";
   var v = false;
   for(var i = 0; i < diagram.length; i++){
-    var char = diagram.charAt(i)
+    var char = diagram.charAt(i);
     check:
     if(/[^1234567890/ \u221E\u00D8]/.test(char)) {
-      if(/\*/.test(char)) {v = true; break check };
-      if(v) {v = false; break check };
+      if(/\*/.test(char)) {v = true; break check }
+      if(v) {v = false; break check }
       alpha++;
       char = (alpha + 9).toString(36);
     };
-    marked = marked + char
+    marked = marked + char;
   };
   marked = marked.replace(/\*/gi, "");
-  var pat = /(?=(([a-z]\d+[a-z])|([a-z]\d+\/\d+[a-z])|([a-z]\u221E+[a-z])|([a-z]\u00D8+[a-z])))./g
+  var pat = /(?=(([a-z]\d+[a-z])|([a-z]\d+\/\d+[a-z])|([a-z]\u221E+[a-z])|([a-z]\u00D8+[a-z])))./g;
   var angles = [];
   var match;
-  while((match=pat.exec(marked))!=null) {angles.push(match[1])};
+  while((match=pat.exec(marked))!=null) {angles.push(match[1])}
   var schlafl = [];
   for(var i = 0; i < dimen; i++) {
     schlafl[i] = [];
@@ -740,23 +740,23 @@ Polytope.cdToMatrix = function(diagram) {
     }
   }
   for(var i = 0; i < angles.length; i++) {
-    var mira1 = angles[i].charCodeAt(0) - 97
-      var mira2 = angles[i].charCodeAt(angles[i].length-1) - 97
+    var mira1 = angles[i].charCodeAt(0) - 97;
+      var mira2 = angles[i].charCodeAt(angles[i].length-1) - 97;
       if(mira2 > mira1) {
-        mira1 = angles[i].charCodeAt(angles[i].length-1) - 97
-        mira2 = angles[i].charCodeAt(0) - 97
-      };
-      var num1 = parseInt(angles[i].substring(1, angles[i].length-1))
+        mira1 = angles[i].charCodeAt(angles[i].length-1) - 97;
+        mira2 = angles[i].charCodeAt(0) - 97;
+      }
+      var num1 = parseInt(angles[i].substring(1, angles[i].length-1));
       var num2;
-      var ang = -2*Math.cos(Math.PI/num1)
+      var ang = -2*Math.cos(Math.PI/num1);
       if(/[\u221E\u00D8]/.test(angles[i].substring(1,angles[i].length-1))) {ang = -2};
       if(/\//.test(angles[i])) {
-        num1 = parseInt(angles[i].substring(1, angles[i].search("/")))
-        num2 = parseInt(angles[i].substring(angles[i].search("/")+1, angles[i].length-1))
-        ang = -2*Math.cos(Math.PI/(num1/num2))
+        num1 = parseInt(angles[i].substring(1, angles[i].search("/")));
+        num2 = parseInt(angles[i].substring(angles[i].search("/")+1, angles[i].length-1));
+        ang = -2*Math.cos(Math.PI/(num1/num2));
       }
-      schlafl[mira1][mira2] = ang
-      schlafl[mira2][mira1] = ang
+      schlafl[mira1][mira2] = ang;
+      schlafl[mira2][mira1] = ang;
   }
   return schlafl
 }
@@ -767,13 +767,13 @@ Polytope.cdToMatrix = function(diagram) {
  * @returns {array} An array with the first entry being the dimension and the second is 1 for spherical, 0 for euclidean, and -1 for hyperbolic (and "uhoh" when something is wrong)
  */
 Polytope.spaceShape = function(diagram) {
-  var schlafl = Polytope.cdToMatrix(diagram)
-  var det = Math.round(Polytope._determinant(schlafl)*1000)/1000
-  //document.write(det)
-  var space = []
+  var schlafl = Polytope.cdToMatrix(diagram);
+  var det = Math.round(Polytope._determinant(schlafl)*1000)/1000;
+  var space = [];
   diagram = diagram.replace(/-/gi, "");
-  var dimen = diagram.replace(/\*.|[^a-z\u03B2]/gi, "").length
-  if(det > 0) {var shape = 1} else if (det == 0) {var shape = 0} else if (det < 0) {var shape = -1} else {var shape = "oops"};
+  var dimen = diagram.replace(/\*.|[^a-z\u03B2]/gi, "").length;
+  var shape = Math.sign(det);
+  if(isNaN(det)) {shape = "oops"}
   return [dimen, shape]
 }
 
