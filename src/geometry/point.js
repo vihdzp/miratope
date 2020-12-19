@@ -41,31 +41,44 @@ Point.prototype.clone = function() {
 	return new Point(coordinates);
 };
 
-//Projects the point into 3D
-//For now, just the simplest orthographic projection possible.
+/**
+ * Projects the point into 3D.
+ * For now, just the simplest orthographic projection possible.
+ * @returns {Point} The projected point.
+ */
 Point.prototype.project = function() {
 	return Point.padRight(this, 3 - this.coordinates.length);
 };
 
-//Adds the coordinates of "x" to the coordinates of a point.
-//Both need to have the same amount of dimensions.
-Point.prototype.add = function(x) {
-	if(x.dimensions() !== this.dimensions()) //The points need to have the same number of coordinates.
+/**
+ * Adds the coordinates of `P` to the coordinates of a point.
+ * Both need to have the same amount of dimensions.
+ * @returns {Point} The point with the added coordinates.
+ * @throws Will throw an error if the added point does not have the same
+ * number of dimensions.
+ */
+Point.prototype.add = function(P) {
+	if(P.dimensions() !== this.dimensions()) //The points need to have the same number of coordinates.
 		throw new Error("You can't add points with different amounts of dimensions!");
 	var coordinates = [];
-	for(var i = 0; i < x.dimensions(); i++) //Add the respective coordinates.
-		this.coordinates[i] += x.coordinates[i];
+	for(var i = 0; i < P.dimensions(); i++) //Add the respective coordinates.
+		this.coordinates[i] += P.coordinates[i];
 	return this;
 };
 
-//Substracts the coordinates of "x" from the coordinates of a point.
-//Both need to have the same amount of dimensions.
-Point.prototype.subtract = function(x) {
-	if(x.dimensions() !== this.dimensions()) //The points need to have the same number of coordinates.
+/**
+ * Subtracts the coordinates of `P` to the coordinates of a point.
+ * Both need to have the same amount of dimensions.
+ * @returns {Point} The point with the subtracted coordinates.
+ * @throws Will throw an error if the subtracted point does not have the same
+ * number of dimensions.
+ */
+Point.prototype.subtract = function(P) {
+	if(P.dimensions() !== this.dimensions()) //The points need to have the same number of coordinates.
 		throw new Error("You can't add points with different amounts of dimensions!");
 	var coordinates = [];
-	for(var i = 0; i < x.dimensions(); i++) //Add the respective coordinates.
-		this.coordinates[i] -= x.coordinates[i];
+	for(var i = 0; i < P.dimensions(); i++) //Add the respective coordinates.
+		this.coordinates[i] -= P.coordinates[i];
 	return this;
 };
 
@@ -90,7 +103,12 @@ Point.prototype.scale = function(r) {
 	return new Point(P.coordinates.concat(Q.coordinates)); //Simply concatenates the coordinates of both points.
 };
 
-//Adds n zeros to the left of the point's coordinates
+/**
+ * Pads a point's coordinates with zeros to the left.
+ * @param {Point} P The point to be padded.
+ * @param {number} n The number of added zeros.
+ * @returns {Point} The padded point.
+ */
 Point.padLeft = function(P, n) {
 	var coordinates = [], i;
 	for(i = 0; i < n; i++)
@@ -100,7 +118,12 @@ Point.padLeft = function(P, n) {
 	return new Point(coordinates);
 };
 
-//Adds n zeros to the right of the point's coordinates
+/**
+ * Pads a point's coordinates with zeros to the right.
+ * @param {Point} P The point to be padded.
+ * @param {number} n The number of added zeros.
+ * @returns {Point} The padded point.
+ */
 Point.padRight = function(P, n) {
 	var coordinates = [], i;
 	for(i = 0; i < P.coordinates.length; i++)
@@ -110,7 +133,11 @@ Point.padRight = function(P, n) {
 	return new Point(coordinates);
 };
 
-//Adds the given coordinate at the end of the coordinate list
+/**
+ * Adds a given coordinate to the end of the coordinate list.
+ * @param {Number} coord The coordinate to be added.
+ * @returns {Point} The modified point.
+ */
 Point.prototype.addCoordinate = function(coord) {
 	this.coordinates.push(coord);
 	return this;

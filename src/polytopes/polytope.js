@@ -1,7 +1,7 @@
 "use strict";
 
 /**
- * The constructor for the Polytope class.
+ * The constructor for the `Polytope` class.
  * @constructor
  * @param {ConstructionNode} construction The constructionNode representing how the polytope was built.
  * @classDesc A class for general polytopes, and functions of general polytopes.
@@ -110,7 +110,7 @@ Polytope.point = function() {
  */
  Polytope.dyad = function(length) {
 	//The dyad's length defaults to 1.
-	//Note that the variable length is actually a misnomer, and will store half of the length instead.
+	//Note that the variable name length is actually a misnomer, and will store half of the length instead.
 	if(length === undefined)
 		length = 0.5;
 	else
@@ -296,7 +296,7 @@ Polytope._tegumProduct = function(P, Q) {
 					//The pyramid product of a polytope and the nullitope is just the polytope itself.
 					els = [];
 
-					//This loop won't be entered if m = -1.
+					//This loop won't be entered if m == -1.
 					for(k = 0; k < iElCount; k++) {
 						//A vertex has only a single nullitope, we index it as "the zeroth nullitope".
 						if(m === 0)
@@ -668,7 +668,7 @@ Polytope.prototype.petrial = function() {
           case 2:
             break build_faces;
         };
-        nVert = nEdge[1]
+        nVert = nEdge[1];
         //Select nEdge's adjacent face
         //Set f to the index of newEdge's adjacent face
       }
@@ -687,13 +687,13 @@ Polytope.prototype.petrial = function() {
 Polytope.adjacentEls = function(type, elem, d) {
   var down = 1;
   var subels = this.elementList[type][elem];
-  var subelsTemp = []
+  var subelsTemp = [];
   while(down < d) {
     down++;
     for(i in subels) {
       subelsTemp = [...new Set(subelsTemp.concat(this.elementList[type-1][i]))];
     }
-    subels = subelsTemp
+    subels = subelsTemp;
     type--;
   }
   return subels;
@@ -705,9 +705,12 @@ Polytope.adjacentEls = function(type, elem, d) {
  * @returns {array} A 2D array corresponding to the CD's Schläfli matrix
  */
 Polytope.cdToMatrix = function(diagram) {
-  if(/[a-z][a-z]/.test(diagram)) {throw new error("Hey! I see you inputting a compound! Stop that >:[")}
-  if(/[#]/.test(diagram)) {throw new error("Laces don't work yet, sorry :/")}
-  if(/[']/.test(diagram)) {throw new error("Retrograde stuff doesn't work yet, sorry :/")}
+  if(/[a-z][a-z]/.test(diagram))
+    throw new error("Hey! I see you inputting a compound! Stop that >:[");
+  if(/[#]/.test(diagram))
+    throw new error("Laces don't work yet, sorry :/");
+  if(/[']/.test(diagram))
+    throw new error("Retrograde stuff doesn't work yet, sorry :/");
   diagram = diagram.replace(/-/gi, "");
   var dimen = diagram.replace(/\*.|[^a-z\u03B2]/gi, "").length;
   var alpha = 0;
@@ -734,7 +737,7 @@ Polytope.cdToMatrix = function(diagram) {
   var pat = /(?=(([a-z]\d+[a-z])|([a-z]\d+\/\d+[a-z])|([a-z]\u221E+[a-z])|([a-z]\u00D8+[a-z])))./g;
   var angles = [];
   var match;
-  while((match=pat.exec(marked)) != null)
+  while((match = pat.exec(marked)) != null)
     angles.push(match[1]);
   var schlafl = [];
   for(var i = 0; i < dimen; i++) {
@@ -753,14 +756,14 @@ Polytope.cdToMatrix = function(diagram) {
         mira1 = angles[i].charCodeAt(angles[i].length-1) - 97;
         mira2 = angles[i].charCodeAt(0) - 97;
       }
-      var num1 = parseInt(angles[i].substring(1, angles[i].length-1));
+      var num1 = parseInt(angles[i].substring(1, angles[i].length - 1));
       var num2;
       var ang = -2*Math.cos(Math.PI/num1);
-      if(/[\u221E\u00D8]/.test(angles[i].substring(1,angles[i].length-1))) {ang = -2};
+      if(/[\u221E\u00D8]/.test(angles[i].substring(1,angles[i].length - 1))) {ang = -2};
       if(/\//.test(angles[i])) {
         num1 = parseInt(angles[i].substring(1, angles[i].search("/")));
-        num2 = parseInt(angles[i].substring(angles[i].search("/")+1, angles[i].length-1));
-        ang = -2*Math.cos(Math.PI/(num1/num2));
+        num2 = parseInt(angles[i].substring(angles[i].search("/") + 1, angles[i].length-1));
+        ang = -2 * Math.cos(Math.PI / (num1 / num2));
       }
       schlafl[mira1][mira2] = ang;
       schlafl[mira2][mira1] = ang;
@@ -775,7 +778,7 @@ Polytope.cdToMatrix = function(diagram) {
  */
 Polytope.spaceShape = function(diagram) {
   var schlafl = Polytope.cdToMatrix(diagram);
-  var det = Math.round(Polytope._determinant(schlafl)*1000)/1000;
+  var det = Math.round(Polytope._determinant(schlafl) * 1000) / 1000;
   var space = [];
   diagram = diagram.replace(/-/gi, "");
   var dimen = diagram.replace(/\*.|[^a-z\u03B2]/gi, "").length;
@@ -786,8 +789,8 @@ Polytope.spaceShape = function(diagram) {
 
 /**
  * Returns the determinant of a matrix.
- * @param {Number[][]} diagram A matrix in the form of a 2D array
- * @returns {Number} The matrix's determinant
+ * @param {number[][]} diagram A matrix in the form of a 2D array
+ * @returns {number} The matrix's determinant
  * @todo Use Gaussian elimination to calculate the determinant much quicker.
  */
 Polytope._determinant = function(schlafl) {

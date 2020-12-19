@@ -52,10 +52,10 @@
 <body>
 	<!-- Used to download files.-->
 	<!--For OFF importing, should get placed somewhere more appropriate eventually.-->
-	<div style="float:left;width:500px">OFF import:<input type="file" id="file-input" accept=".off,.ggb"/></div>
+	<div style="float:left; width:500px">OFF import:<input type="file" id="file-input" accept=".off,.ggb"/></div>
 	<a id = "download"></a>
 	<!-- Documentation link, should also get placed somewhere more appropriate eventually.-->
-	<div style="float:right;width:100px"><a href="out/Miratope/α/index.html">Documentation</a></div>
+	<div style="float:right; width:100px"><a href="out/Miratope/α/index.html">Documentation</a></div>
 	<!--Loads the application.-->
 	<script src="src/main.js"></script>
 	<!--This is just some test code. This whole script tag should be removed eventually.-->
@@ -80,14 +80,14 @@
 		//Polytope.polygon([new Point([-1,-1]), new Point([-1,0]), new Point([-1,1]), new Point([0,-1]), new Point([0,1]), new Point([1,-1]), new Point([1,0]), new Point([1,1])]).renderTo(scene);
 	</script>
 	<!--Textbox console.-->
-	<form action="#" onsubmit="eval(document.getElementById('command').value);return false;">
-		<input type="text" id="command" name="command" style="width:100%;margin: 0 auto;position:fixed" />
+	<form action="#" onsubmit="try{eval(document.getElementById('command').value);}catch(e){alert(e);}finally{return false;}">
+		<input type="text" id="command" name="command" style="width:100%; margin: 0 auto; position:fixed" />
 		<input type="submit" style="display: none" />
 	</form>
 	<!--Render loop.-->
 	<script>
 	function animate() {
-		requestAnimationFrame( animate );
+		requestAnimationFrame(animate);
 		mainScene.controls.update();
 
 		/*for(var i = 0; i < scene.children.length; i++) {
@@ -95,7 +95,7 @@
 				scene.children[i].rotation.x += 0.01; scene.children[i].rotation.y += 0.01;
 			}
 		}*/
-		mainScene.renderer.render( mainScene.scene, mainScene.camera );
+		mainScene.renderer.render(mainScene.scene, mainScene.camera);
 	}
 	animate();
 

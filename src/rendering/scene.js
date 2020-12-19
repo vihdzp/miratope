@@ -1,6 +1,10 @@
 "use strict";
 
-//Class for drawing objects to the scene more efficiently.
+/**
+ * The constructor for the `Scene` class.
+ * @classdesc Wrapper for a scene, an object that shows a polytope.
+ * Class for drawing objects to the scene more efficiently.
+*/
 function Scene() {
 	//Defines scene.
 	this.scene = new THREE.Scene();
@@ -9,18 +13,18 @@ function Scene() {
 	//Defines renderer.
 	this.renderer = new THREE.WebGLRenderer({antialias:true});
 	this.renderer.setSize( window.innerWidth, window.innerHeight - 44);
-	document.body.appendChild( this.renderer.domElement );
+	document.body.appendChild(this.renderer.domElement);
 
 	//Adds and configures the camera.
-	this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+	this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 	this.camera.position.z = 2;
 
 	//Adds both ambient light and directional light.
-	this.ambientLight = new THREE.AmbientLight( 0x777777, 0.8);
-  this.directionalLight = new THREE.DirectionalLight( 0xffffff, 0.8 );
-	this.directionalLight.position.set( 1,1,1 ).normalize();
-	this.scene.add( this.ambientLight );
-	this.scene.add( this.directionalLight );
+	this.ambientLight = new THREE.AmbientLight(0x777777, 0.8);
+  this.directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+	this.directionalLight.position.set(1, 1, 1).normalize();
+	this.scene.add(this.ambientLight);
+	this.scene.add(this.directionalLight);
 
 	//Sets material.
 	this.material = new THREE.MeshLambertMaterial({color: 0xffffff, side: THREE.DoubleSide, flatShading: true});
@@ -84,9 +88,8 @@ Scene.prototype._renderHoledPolygon = function(poly, hole) {
 			a[window.index2] = poly[geometry.attributes.position.count - i - 1].z;
 		else
 			a[window.index2] = poly[i].z;
-		for(var j = 0; j < 3; j++) {
+		for(var j = 0; j < 3; j++)
 			geometry.attributes.position.array[3 * i + j] = a[j];
-		}
 	}
 
 	geometry.attributes.position.needsUpdate = true;
