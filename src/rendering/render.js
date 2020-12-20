@@ -58,9 +58,9 @@ Polytope.prototype.renderTo = function(scene) {
 				return res;
 
 			//The difference between the slopes.
-			res *= (Math.atan(x.slope) - Math.atan(y.slope));
+			res *= Math.atan(x.slope) - Math.atan(y.slope);
 
-			//If both lines are the same, might as well compare using indices.
+			//If both lines are the same, might as well compare using IDs.
 			if(Math.abs(res) < epsilon)
 				return x.id - y.id;
 		}
@@ -108,30 +108,22 @@ Polytope.prototype.renderTo = function(scene) {
 		//Stores such coordinates' indices in window.index0, window.index1.
 		//That way, they become global variables that can be used elsewhere.
 		var maxArea = 0,
-		Area,
+		area,
 		va = vertexDLL[a].value,
 		vb = vertexDLL[b].value,
 		v0 = vertexDLL[0].value;
 		window.index0 = 0;
 		window.index1 = 1;
-		for(j = 0; j < v0.dimensions(); j++) {
-			for(k = j + 1; k < v0.dimensions(); k++) {
-				if((Area = Math.abs(
-					v0.coordinates[j] * (va.coordinates[k] - vb.coordinates[k])
-					+ va.coordinates[j] * (vb.coordinates[k] - v0.coordinates[k])
-					+ vb.coordinates[j] * (v0.coordinates[k] - va.coordinates[k])
-				))
-				> maxArea) {
+		for(j = 0; j < v0.dimensions(); j++)
+			for(k = j + 1; k < v0.dimensions(); k++)
+				if((area = Space.area(v0, va, vb, j, k)) > maxArea) {
 					window.index0 = j;
 					window.index1 = k;
-					maxArea = Area;
+					maxArea = area;
 				}
-			}
-		}
 
 		//Event queue for Bentley-Ottmann, stores vertices.
 		//Sorts EQ by lexicographic order of the vertices (EQ is read backwards at the moment).
-
 		Polytope.EQ = new AvlTree(Polytope._order); var EQ = Polytope.EQ;
 		for(j = 0; j < vertexDLL.length; j++)
 			EQ.insert(vertexDLL[j]);
@@ -140,20 +132,20 @@ Polytope.prototype.renderTo = function(scene) {
 		//rightVertexIndex should be 0 if leftVertex.node0.value is to the right of leftVertex.value, 1 if leftVertex.node1.value is.
 		//This format is useful because an edge on the sweep line can only be cut to the right.
 		//That way, we don't need to modify the SL objects after the division process: only the nodes' connections change.
-
-		var SL = new AvlTree(SLSort), counter=0;
+		var SL = new AvlTree(SLSort); //counter is just a debug variable.
 
 		//Bentley-Ottmann:
 		while(!EQ.isEmpty()) {
-			counter++;
 			var E = EQ.findMinimum(); //The next "event" in the event queue.
 			EQ.delete(E);
-			if(!SL.checkSorted()) { //If the code worked perfectly, we could skip this expensive check.
+      //If the code worked perfectly, we could skip this expensive check.
+      /*
+      if(!SL.checkSorted()) {
 				alert("Something went wrong!");
 				//return; //Uncomment if you want the code not to throw an exception.
 			}
-
-			//Runs P code on both edges adjacent to E's vertex.
+      */
+			//Runs the code on both edges adjacent to E's vertex.
 			for(j = 0; j <= 1; j++) {
 				var edge, //E's edge in the SL format.
 				ord = E.value.coordinates[window.index0] - E.getNode(j).value.coordinates[window.index0],

@@ -79,13 +79,22 @@
 		//Test polygon with collinear points.
 		//Polytope.polygon([new Point([-1,-1]), new Point([-1,0]), new Point([-1,1]), new Point([0,-1]), new Point([0,1]), new Point([1,-1]), new Point([1,0]), new Point([1,1])]).renderTo(scene);
 	</script>
-	<!--Textbox console.-->
-	<form action="#" onsubmit="try{eval(document.getElementById('command').value);}catch(e){alert(e);}finally{return false;}">
-		<input type="text" id="command" name="command" style="width:100%; margin: 0 auto; position:fixed" />
-		<input type="submit" style="display: none" />
-	</form>
 	<!--Render loop.-->
 	<script>
+	function submitJS() {
+		try {
+			var command = document.getElementById('command');
+			eval(command.value);
+			command.value = "";
+		}
+		catch(e) {
+			alert(e);
+		}
+		finally {
+			return false;
+		}
+	}
+
 	function animate() {
 		requestAnimationFrame(animate);
 		mainScene.controls.update();
@@ -98,7 +107,12 @@
 		mainScene.renderer.render(mainScene.scene, mainScene.camera);
 	}
 	animate();
-
 	</script>
+
+	<!--Textbox console.-->
+	<form action="#" onsubmit="return submitJS();">
+		<input type="text" id="command" name="command" style="width:100%; margin: 0 auto; position:fixed" />
+		<input type="submit" style="display: none" />
+	</form>
 </body>
 </html>

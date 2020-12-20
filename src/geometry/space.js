@@ -23,46 +23,13 @@ Space.intersect = function(a, b, c, d) {
 	if(a.dimensions() !== b.dimensions() || a.dimensions() !== c.dimensions() || a.dimensions() !== d.dimensions())
 		throw new Error("You can't intersect edges with different amounts of dimensions!");
 
-	//Now, we calculate the where each line segment coordinates change the most
-	//That way, we avoid projecting lines into points when we calculate in 2D (like looking at a pencil straight down the length of it)
-	//No need to calculate it in 2D, though.
-	var ab_MAX = 0, ab_MAX_indx = 0, cd_MAX = 0, cd_MAX_indx = 1;
-
-	if(a.dimensions() !== 2) {
-		for(var i = 0; i < a.dimensions(); i++) {
-			var ab = Math.abs(a.coordinates[i] - b.coordinates[i]); //Change in the segment ab in the i direction.
-			var cd = Math.abs(c.coordinates[i] - d.coordinates[i]); //Change in the segment cd in the i direction.
-			if(ab > ab_MAX){
-				ab_MAX = ab;
-				ab_MAX_indx = i;
-			}
-			if(cd > cd_MAX){
-				cd_MAX = cd;
-				cd_MAX_indx = i;
-			}
-			//At the end, "ab_MAX" is the largest difference between "a" and "b", and "ab_MAX_indx" is the dimension that happens in.
-			//"cd_MAX" and "cd_MAX_indx" are analogous.
-		}
-
-		//If both indices are the same (if the largest differences happen in the same dimension for both lines), we can take the second one to be anything different
-		//This if statement makes sure that "ab_MAX_indx" and "cd_MAX_indx" have different values
-		if(ab_MAX_indx === cd_MAX_indx) {
-			if(cd_MAX_indx === 0)
-				cd_MAX_indx = 1;
-			else
-				cd_MAX_indx = 0;
-		}
-	}
-
+  var ab_MAX_indx = window.index0, cd_MAX_indx = window.index1;
 	//This projects a, b-a, c, d-c onto the a plane
 	//Then, adapts the method from https://stackoverflow.com/a/565282 (by Gareth Rees)
-	var p = [a.coordinates[ab_MAX_indx], a.coordinates[cd_MAX_indx]],
-
-	    r = [b.coordinates[ab_MAX_indx] - a.coordinates[ab_MAX_indx], b.coordinates[cd_MAX_indx] - a.coordinates[cd_MAX_indx]],
-
-	    q = [c.coordinates[ab_MAX_indx], c.coordinates[cd_MAX_indx]],
-
-	    s = [d.coordinates[ab_MAX_indx] - c.coordinates[ab_MAX_indx], d.coordinates[cd_MAX_indx] - c.coordinates[cd_MAX_indx]];
+	var p = [a.coordinates[window.index0], a.coordinates[window.index1]],
+	    r = [b.coordinates[window.index0] - a.coordinates[window.index0], b.coordinates[window.index1] - a.coordinates[window.index1]],
+	    q = [c.coordinates[window.index0], c.coordinates[window.index1]],
+	    s = [d.coordinates[window.index0] - c.coordinates[window.index0], d.coordinates[window.index1] - c.coordinates[window.index1]];
 
 	//If the two lines' slopes are very similar, do nothing.
 	//They either not intersect or are too similar for us to care.
@@ -106,7 +73,7 @@ Space.collinear = function(a, b, c) {
 		norm1 += sub1 * sub1;
 	}
 
-    //Returns true iff the cosine of the angle between b - a and c - a is at a distance epsilon from 1 or -1.
+  //Returns true iff the cosine of the angle between b - a and c - a is at a distance epsilon from 1 or -1.
 	return 1 - Math.abs(dot / Math.sqrt(norm0 * norm1)) <= epsilon;
 };
 
@@ -117,12 +84,24 @@ Space.collinear = function(a, b, c) {
  * @returns {number} The distance between `a` and `b`.
  */
 Space.distance = function(a, b) {
-	var res = 0;
-	for(var i = 0; i < a.coordinates.length; i++) {
-		var t = a.coordinates[i] - b.coordinates[i];
-		res += t * t;
-	}
-	return Math.sqrt(res);
+	return Math.sqrt(Space.distanceSq(a, b));
+};
+
+/**
+ * Calculates the area of the triangle determined by three vertices
+ * when projected onto a specific plane.
+ * @param {Point} a The first of the triangle's vertices.
+ * @param {Point} b The first of the triangle's vertices.
+ * @param {Point} c The first of the triangle's vertices.
+ * @param {number} j The first coordinate of the projection plane.
+ * @param {number} k The second coordinate of the projection plane.
+ */
+Space.area = function(a, b, c, j, k) {
+  return Math.abs(
+      a.coordinates[j] * (b.coordinates[k] - c.coordinates[k])
+    + b.coordinates[j] * (c.coordinates[k] - a.coordinates[k])
+    + c.coordinates[j] * (a.coordinates[k] - b.coordinates[k])
+  );
 };
 
 /**
@@ -141,8 +120,15 @@ Space.distanceSq = function(a, b) {
 	return res;
 };
 
-//Returns whether the line from (0, 0) to (a, b) and the line from (0, 0) to (c, d)
-//have the same (neglibly different) slopes
+/**
+ * Returns whether the line from (0, 0) to (a, b) and the line from (0, 0) to (c, d)
+ * have the same (neglibly different) slopes
+ * @param {number} a The first coordinate.
+ * @param {number} a The second coordinate.
+ * @param {number} a The third coordinate.
+ * @param {number} a The fourth coordinate.
+ * @returns {boolean} Whether the slopes are approximately equal or not.
+ */
 Space.sameSlope = function(a, b, c, d) {
 	//s is the difference between the angles.
 	var s = Math.atan(a / b) - Math.atan(c / d);

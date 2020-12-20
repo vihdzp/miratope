@@ -730,9 +730,9 @@ Polytope.cdToMatrix = function(diagram) {
       }
       alpha++;
       char = (alpha + 9).toString(36);
-    };
+    }
     marked = marked + char;
-  };
+  }
   marked = marked.replace(/\*/gi, "");
   var pat = /(?=(([a-z]\d+[a-z])|([a-z]\d+\/\d+[a-z])|([a-z]\u221E+[a-z])|([a-z]\u00D8+[a-z])))./g;
   var angles = [];
@@ -794,7 +794,7 @@ Polytope.spaceShape = function(diagram) {
  * @todo Use Gaussian elimination to calculate the determinant much quicker.
  */
 Polytope._determinant = function(schlafl) {
-    if (schlafl.length==1) {
+    if (schlafl.length == 1) {
       if (typeof schlafl[0] === 'object' )
           return schlafl[0][0];
       else
