@@ -791,6 +791,7 @@ Polytope.spaceShape = function(diagram) {
  * Returns the determinant of a matrix.
  * @param {number[][]} diagram A matrix in the form of a 2D array
  * @returns {number} The matrix's determinant
+ * @private
  * @todo Use Gaussian elimination to calculate the determinant much quicker.
  */
 Polytope._determinant = function(schlafl) {
@@ -1401,35 +1402,75 @@ Polytope.cupolaicBlend = function(n, d) {
 	return new PolytopeC(newElementList, new ConstructionNode(ConstructionNodeType.CupolaicBlend, new ConstructionNode(ConstructionNodeType.Polygon, [n, d])));
 };
 
-//The event triggered by the import button.
-//Reads the file into the global variable P.
-//Eventually, P should be replaced by scene.Polytope or something of the sort.
+/**
+ * Opens a file and stores it into the global variable `P`.
+ * @param {Object|string} e Either the event triggered by the import button,
+ * or a local filepath.
+ * @todo Replace P by scene.polytope or something similar.
+ * @todo Add support for more file formats.
+ */
 Polytope.openFile = function(e) {
-	var file = e.target.files[0];
-	if (!file)
-		return;
-	var reader = new FileReader(),
-	contents; //Contents of OFF file.
+  var file;
 
-	//File name of imported polytope. Stored in a global variable so it can be accessed from Polytope._readerOnload.
-	Polytope.fileName = e.target.files[0].name;
+  //If e is an event.
+  if(e.target) {
+  	file = e.target.files[0];
+  	if (!file)
+  		return;
 
+  	var reader = new FileReader(),
+  	contents; //Contents of file.
+
+  	//File name of imported polytope.
+    //Stored in a global variable so it can be accessed from Polytope._readerOnload.
+    Polytope.fileName = e.target.files[0].name;
+  }
+  //If e is a string.
+  else
+    Polytope.fileName = e;
+
+  //Extracts the filename and extension.
   var i = Polytope.fileName.lastIndexOf("."),
   ext = Polytope.fileName.substr(i + 1); //Extension of file.
-	Polytope.fileName = Polytope.fileName.substr(0, i); //Removes extension from file name.
-	if(Translation.language !== "de")
-		Polytope.fileName = Translation.firstToLower(Polytope.fileName); //Lowercase name.
+  Polytope.fileName = Polytope.fileName.substr(0, i); //Removes extension from file name.
+  if(Translation.language !== "de")
+    Polytope.fileName = Translation.firstToLower(Polytope.fileName); //Lowercase name.
 
-  //Handles the file according to its extension.
-  switch(ext) {
-    case "off":
-      reader.onload = Polytope._OFFReaderOnload;
-			reader.readAsText(file);
-      break;
-    case "ggb":
-			reader.onload = _ggb;
-			reader.readAsArrayBuffer(file);
-      break;
+  //If e is an event.
+  if(e.target) {
+    //Handles the file according to its extension.
+    switch(ext) {
+      case "off":
+        reader.onload = function(e) {
+          Polytope._OFFReaderOnload(e.target.result);
+        }
+  			reader.readAsText(file);
+        break;
+      case "ggb":
+  			reader.onload = function(e) {
+          JSZip.loadAsync(e.target.result).then(
+            function(e) {
+              e.file("geogebra.xml").async("string").then(
+                Polytope._GGBReaderOnload
+              )
+            }
+          );
+        };
+  			reader.readAsArrayBuffer(file);
+        break;
+    }
+  }
+  //If e is a string.
+  else {
+    //Reads the file as an OFF file.
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      //this.status === 0 is for debug purposes only!
+      if (this.readyState === 4 && this.status === 200)
+       Polytope._OFFReaderOnload(this.responseText);
+    };
+    xhttp.open("GET", e, true);
+    xhttp.send();
   }
 };
 
@@ -1446,7 +1487,3 @@ Polytope._saveBlob = function(blob) {
 		window.URL.revokeObjectURL(a.href);
 	}
 };
-
-//Auxiliary functions for Polytope.openFile
-var _ggb2 = function(e) {e.file("geogebra.xml").async("string").then(Polytope._GGBReaderOnload)},
-_ggb = function(e) {JSZip.loadAsync(e.target.result).then(_ggb2);};

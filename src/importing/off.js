@@ -6,10 +6,10 @@
  * Helper function for {@link Polytope.openFile}.
  * Is called when an OFF file is loaded.
  * @private
- * @param {Object} e The event handler.
+ * @param {string} contents The contents of the file.
  */
-Polytope._OFFReaderOnload = function(e) {
-	var caret = new Caret(e.target.result), //Caret for reading the OFF file.
+Polytope._OFFReaderOnload = function(contents) {
+	var caret = new Caret(contents), //Caret for reading the OFF file.
 	component, //A component of the polytope.
 	dimensions = caret.readNumber(), //The number of dimensions of the OFF file's polytope.
 	el, //An element of the polytope.

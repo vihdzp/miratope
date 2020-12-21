@@ -10,12 +10,12 @@
  * @summary Stores the polyhedron described by an XML file
  * into the global variable `P`.
  * @private
- * @param {string} e The contents of the file.
+ * @param {string} contents The contents of the file.
  * @todo Load the polyhedron into a scene,
  * instead of loading it into a global variable.
  */
-Polytope._GGBReaderOnload = function(e) {
-	var caret = new Caret(e),
+Polytope._GGBReaderOnload = function(contents) {
+	var caret = new Caret(contents),
   elementList = [[], [], [], []],
   vertDict = {}, //Dictionary to convert from GeoGebra point names to indices.
   edgeDict = {}, //Dictionary to convert from edges to indices.
