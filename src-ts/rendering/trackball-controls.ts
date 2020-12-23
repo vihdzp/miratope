@@ -117,8 +117,8 @@ const TrackballControls = function (object, domElement) {
     const box = scope.domElement.getBoundingClientRect();
     // Adjustments come from similar code in the jquery offset() function.
     const d = scope.domElement.ownerDocument.documentElement;
-    scope.screen.left = box.left + window.pageXOffset - d.clientLeft;
-    scope.screen.top = box.top + window.pageYOffset - d.clientTop;
+    scope.screen.left = box.left + globalThis.pageXOffset - d.clientLeft;
+    scope.screen.top = box.top + globalThis.pageYOffset - d.clientTop;
     scope.screen.width = box.width;
     scope.screen.height = box.height;
 
@@ -383,7 +383,7 @@ const TrackballControls = function (object, domElement) {
 
     if (scope.enabled === false) return;
 
-    window.removeEventListener('keydown', keydown);
+    globalThis.removeEventListener('keydown', keydown);
 
     if (_keyState !== STATE.NONE) {
       return;
@@ -403,7 +403,7 @@ const TrackballControls = function (object, domElement) {
 
     _keyState = STATE.NONE;
 
-    window.addEventListener('keydown', keydown, false);
+    globalThis.addEventListener('keydown', keydown, false);
 
   }
 
@@ -635,8 +635,8 @@ const TrackballControls = function (object, domElement) {
     scope.domElement.ownerDocument.removeEventListener( 'pointermove', onPointerMove, false );
 		scope.domElement.ownerDocument.removeEventListener( 'pointerup', onPointerUp, false );
 
-    window.removeEventListener('keydown', keydown, false);
-    window.removeEventListener('keyup', keyup, false);
+    globalThis.removeEventListener('keydown', keydown, false);
+    globalThis.removeEventListener('keyup', keyup, false);
 
   };
 
@@ -652,8 +652,8 @@ const TrackballControls = function (object, domElement) {
   this.domElement.ownerDocument.addEventListener( 'pointermove', onPointerMove, false );
 	this.domElement.ownerDocument.addEventListener( 'pointerup', onPointerUp, false );
 
-  window.addEventListener('keydown', keydown, false);
-  window.addEventListener('keyup', keyup, false);
+  globalThis.addEventListener('keydown', keydown, false);
+  globalThis.addEventListener('keyup', keyup, false);
 
   this.handleResize();
 

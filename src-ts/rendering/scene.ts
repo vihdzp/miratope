@@ -25,11 +25,11 @@ export class Scene {
 
   	//Defines renderer.
   	this.renderer = new THREE.WebGLRenderer({antialias:true});
-  	this.renderer.setSize( window.innerWidth, window.innerHeight - 44);
+  	this.renderer.setSize( globalThis.innerWidth, globalThis.innerHeight - 44);
   	document.body.appendChild(this.renderer.domElement);
 
   	//Adds and configures the camera.
-  	this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  	this.camera = new THREE.PerspectiveCamera(75, globalThis.innerWidth / globalThis.innerHeight, 0.1, 1000);
   	this.camera.position.z = 2;
 
   	//Adds both ambient light and directional light.

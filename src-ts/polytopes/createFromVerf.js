@@ -34,7 +34,7 @@ Polytope.createFromVerf = function(V, S) {
 		//Under the action of S, each of the verf's vertices has an orbit.
 		//We want to find the place where these orbits coincide.
 		//When they do, we'll be able to build an isogonal and thus uniform polytope.
-		window.P = P; window.S = S;
+		globalThis.P = P; globalThis.S = S;
 		var sol = Polytope._minimize(Polytope._orbitDistance, angles);
 
 		//Tries again from a new starting point if the minimum wasn't found.
@@ -58,7 +58,7 @@ Polytope.createFromVerf = function(V, S) {
 //Will return 0 (or something small) iff the orbits are all equal.
 Polytope._orbitDistance = function(angles) {
 	var matrix = Polytope._matrixFromAngles(angles),
-	P = window.P, S = window.S,
+	P = globalThis.P, S = globalThis.S,
 	res = 0,
 	i, j;
 

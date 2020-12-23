@@ -9306,7 +9306,7 @@
 		},
 
 		/*
-		 * Sets an offset in a larger frustum. This is useful for multi-window or
+		 * Sets an offset in a larger frustum. This is useful for multi-globalThis or
 		 * multi-monitor/multi-machine setups.
 		 *
 		 * For example, if you have 3x2 monitors and each monitor is 1920x1080 and
@@ -16236,8 +16236,8 @@
 					pinching: false
 				};
 
-				if (window.XRHand) {
-					for (var i = 0; i <= window.XRHand.LITTLE_PHALANX_TIP; i++) {
+				if (globalThis.XRHand) {
+					for (var i = 0; i <= globalThis.XRHand.LITTLE_PHALANX_TIP; i++) {
 						// The transform of this joint will be updated with the joint pose on each frame
 						var joint = new Group();
 						joint.matrixAutoUpdate = false;
@@ -16318,7 +16318,7 @@
 				if (hand && inputSource.hand) {
 					handPose = true;
 
-					for (var i = 0; i <= window.XRHand.LITTLE_PHALANX_TIP; i++) {
+					for (var i = 0; i <= globalThis.XRHand.LITTLE_PHALANX_TIP; i++) {
 						if (inputSource.hand[i]) {
 							// Update the joints groups with the XRJoint poses
 							var jointPose = frame.getJointPose(inputSource.hand[i], referenceSpace);
@@ -16333,8 +16333,8 @@
 							joint.visible = jointPose !== null; // Custom events
 							// Check pinch
 
-							var indexTip = hand.joints[window.XRHand.INDEX_PHALANX_TIP];
-							var thumbTip = hand.joints[window.XRHand.THUMB_PHALANX_TIP];
+							var indexTip = hand.joints[globalThis.XRHand.INDEX_PHALANX_TIP];
+							var thumbTip = hand.joints[globalThis.XRHand.THUMB_PHALANX_TIP];
 							var distance = indexTip.position.distanceTo(thumbTip.position);
 							var distanceToPinch = 0.02;
 							var threshold = 0.005;
@@ -17854,7 +17854,7 @@
 
 		var animation = new WebGLAnimation();
 		animation.setAnimationLoop(onAnimationFrame);
-		if (typeof window !== 'undefined') animation.setContext(window);
+		if (typeof globalThis !== 'undefined') animation.setContext(globalThis);
 
 		this.setAnimationLoop = function (callback) {
 			onAnimationFrameCallback = callback;
@@ -23502,7 +23502,7 @@
 				var shapeHoles = points.holes; // check direction of vertices
 
 				if (ShapeUtils.isClockWise(shapeVertices) === false) {
-					shapeVertices = shapeVertices.reverse(); window._polyReversed = true;
+					shapeVertices = shapeVertices.reverse(); globalThis._polyReversed = true;
 				}
 
 				for (var _i = 0, l = shapeHoles.length; _i < l; _i++) {
@@ -30603,7 +30603,7 @@
 	var AudioContext = {
 		getContext: function getContext() {
 			if (_context === undefined) {
-				_context = new (window.AudioContext || window.webkitAudioContext)();
+				_context = new (globalThis.AudioContext || globalThis.webkitAudioContext)();
 			}
 
 			return _context;

@@ -115,6 +115,6 @@ PolytopeB.prototype.saveAsOFF = function(options: OFFOptions = {}): void {
     }
   }
 
-  globalThis.fileName = Translation.firstToUpper(P.getName()) + ".off";
+  FileOperations.fileName = Translation.firstToUpper(P.getName()) + ".off";
   FileOperations.saveBlob(new Blob(data, {type:"text/plain"}));
 };

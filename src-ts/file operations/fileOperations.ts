@@ -8,6 +8,8 @@ import { Translation } from "../translation/translation";
 import { Caret } from "./caret";
 
 export abstract class FileOperations {
+  static fileName: string;
+  
   /**
    * Helper function for {@link Polytope.openFile},
    * and more specifically for {@link Polytope._OFFReaderOnload}.
@@ -39,15 +41,15 @@ export abstract class FileOperations {
 
   //Saves the file with the given data, the given MIME type, and the given extension.
   static saveBlob(blob: Blob) {
-  	var fileName = globalThis.fileName.replace("/", "_");
+  	var fileName = FileOperations.fileName.replace("/", "_");
   	if(navigator.msSaveOrOpenBlob)
   		navigator.msSaveOrOpenBlob(blob, fileName);
   	else {
   		let a: HTMLAnchorElement = document.getElementById("download") as HTMLAnchorElement;
-  		a.href = window.URL.createObjectURL(blob);
+  		a.href = globalThis.URL.createObjectURL(blob);
   		a.download = fileName;
   		a.click();
-  		window.URL.revokeObjectURL(a.href);
+  		globalThis.URL.revokeObjectURL(a.href);
   	}
   };
 
@@ -71,14 +73,14 @@ export abstract class FileOperations {
 
     	//File name of imported polytope.
       //Stored in a global variable so it can be accessed from Polytope._readerOnload.
-      globalThis.fileName = file.name;
+      FileOperations.fileName = file.name;
 
       //Extracts the filename and extension.
-      var i = globalThis.fileName.lastIndexOf("."),
-      ext = globalThis.fileName.substr(i + 1); //Extension of file.
-      globalThis.fileName = globalThis.fileName.substr(0, i); //Removes extension from file name.
+      var i = FileOperations.fileName.lastIndexOf("."),
+      ext = FileOperations.fileName.substr(i + 1); //Extension of file.
+      FileOperations.fileName = FileOperations.fileName.substr(0, i); //Removes extension from file name.
       if(Translation.language !== "de")
-        globalThis.fileName = Translation.firstToLower(globalThis.fileName); //Lowercase name.
+        FileOperations.fileName = Translation.firstToLower(FileOperations.fileName); //Lowercase name.
 
         //Handles the file according to its extension.
         switch(ext) {
@@ -105,14 +107,14 @@ export abstract class FileOperations {
     }
     //If e is a string.
     else {
-      globalThis.fileName = e;
+      FileOperations.fileName = e;
 
       //Extracts the filename and extension.
-      var i = globalThis.fileName.lastIndexOf("."),
-      ext = globalThis.fileName.substr(i + 1); //Extension of file.
-      globalThis.fileName = globalThis.fileName.substr(0, i); //Removes extension from file name.
+      var i = FileOperations.fileName.lastIndexOf("."),
+      ext = FileOperations.fileName.substr(i + 1); //Extension of file.
+      FileOperations.fileName = FileOperations.fileName.substr(0, i); //Removes extension from file name.
       if(Translation.language !== "de")
-        globalThis.fileName = Translation.firstToLower(globalThis.fileName); //Lowercase name.
+        FileOperations.fileName = Translation.firstToLower(FileOperations.fileName); //Lowercase name.
 
       //Reads the file as an OFF file.
       var xhttp = new XMLHttpRequest();
@@ -247,7 +249,6 @@ export abstract class FileOperations {
   /**
    * Helper function for {@link Polytope.openFile}.
    * Is called when an OFF file is loaded.
-   * @private
    * @param {string} contents The contents of the file.
    */
   static onloadOFF(contents: string): void {
@@ -401,7 +402,7 @@ export abstract class FileOperations {
   		elementList,
   		new ConstructionNode(
   			ConstructionNodeType.Name,
-  			globalThis.fileName
+  			FileOperations.fileName
   		)
   	);
   };
