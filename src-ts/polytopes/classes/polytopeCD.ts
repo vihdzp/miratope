@@ -78,7 +78,7 @@ export abstract class PolytopeCD {
   /**
    * Returns a polytope's dimension and space shape from a Coxeter diagram
    * @param {string} diagram The input Coxeter diagram
-   * @returns {[number, number?]} An array with the first entry being the dimension and the second is 1 for spherical, 0 for euclidean, and -1 for hyperbolic (and null when something is wrong)
+   * @returns {number[]} An array with the first entry being the dimension and the second is 1 for spherical, 0 for euclidean, and -1 for hyperbolic (and null when something is wrong)
    */
   static spaceShape(diagram: string): [number, number | null] {
     let schlafl = PolytopeCD.cdToMatrix(diagram);
@@ -133,7 +133,7 @@ export abstract class PolytopeCD {
  * Creates a graph from the vertices and edges of a polyhedron.
  * Adds labels edges based on their adjacent faces.
  * @todo Could this be changed to work for higher/lower dimensions too?
- * @returns {GraphNode<number>[]} The graph of the polytope.
+ * @returns {GraphNode[]} The graph of the polytope.
  */
 PolytopeB.prototype.polytopeToGraph = function(): GraphNode<number>[] {
   let P = this.toPolytopeC();

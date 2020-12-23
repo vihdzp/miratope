@@ -1,21 +1,17 @@
 {
-  "name": "miratope",
+  "name": "Miratope",
   "version": "1.0.0",
   "description": "A renderer for polytopes. Still in alpha.",
-  "main": "index.js",
-  "directories": {
-    "lib": "lib"
-  },
   "scripts": {
-    "build": "echo @off & echo Running TypeScript... & tsc & echo Done! & echo Running Browserify + Babelify + Tinyify... & browserify src-js/main.js -o out-js/main.js -t [ babelify --presets [ @babel/preset-env ] ] -p tinyify & echo Done!",
-    "jsdoc": "jsdoc -c jsdoc/jsdoc.json"
+    "build": "echo Running TypeScript... & tsc & echo Done! & echo Running Browserify + Babelify + Tinyify... & browserify src-js/main.js -o out-js/main.js -t [ babelify --presets [ @babel/preset-env ] ] -p tinyify & echo Done!",
+    "jsdoc": "jsdoc -c jsdoc.json"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/OfficialURL/miratope.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Miratope authors",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/OfficialURL/miratope/issues"
   },
@@ -31,6 +27,8 @@
     "@types/globalize": "^1.5.0",
     "@types/node": "^14.14.14",
     "babelify": "^10.0.0",
+    "docdash": "^1.2.0",
+    "jsdoc": "^3.6.6",
     "tinyify": "^3.0.0"
   }
 }

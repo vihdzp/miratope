@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>polytopes/polytopeTypes.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/officialurl/miratope" target="_blank" class="menu-item" id="repository" >Github repo</a></h2><h3>Classes</h3><ul><li><a href="AvlNode.html">AvlNode</a><ul class='methods'><li data-type='method' style='display: none;'><a href="AvlNode.html#leftHeight">leftHeight</a></li><li data-type='method' style='display: none;'><a href="AvlNode.html#linkLeft">linkLeft</a></li><li data-type='method' style='display: none;'><a href="AvlNode.html#linkRight">linkRight</a></li><li data-type='method' style='display: none;'><a href="AvlNode.html#rightHeight">rightHeight</a></li><li data-type='method' style='display: none;'><a href="AvlNode.html#rotateLeft">rotateLeft</a></li><li data-type='method' style='display: none;'><a href="AvlNode.html#rotateRight">rotateRight</a></li></ul></li><li><a href="AvlTree.html">AvlTree</a><ul class='methods'><li data-type='method' style='display: none;'><a href="AvlTree.html#.getBalanceState">getBalanceState</a></li><li data-type='method' style='display: none;'><a href="AvlTree.html#contains">contains</a></li><li data-type='method' style='display: none;'><a href="AvlTree.html#delete">delete</a></li><li data-type='method' style='display: none;'><a href="AvlTree.html#findMaximum">findMaximum</a></li><li data-type='method' style='display: none;'><a href="AvlTree.html#findMaximumNode">findMaximumNode</a></li><li data-type='method' style='display: none;'><a href="AvlTree.html#findMinimum">findMinimum</a></li><li data-type='method' style='display: none;'><a href="AvlTree.html#findMinimumNode">findMinimumNode</a></li><li data-type='method' style='display: none;'><a href="AvlTree.html#getNode">getNode</a></li><li data-type='method' style='display: none;'><a href="AvlTree.html#insert">insert</a></li><li data-type='method' style='display: none;'><a href="AvlTree.html#isEmpty">isEmpty</a></li><li data-type='method' style='display: none;'><a href="AvlTree.html#size">size</a></li></ul></li><li><a href="Caret.html">Caret</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Caret.html#advance">advance</a></li><li data-type='method' style='display: none;'><a href="Caret.html#getChar">getChar</a></li><li data-type='method' style='display: none;'><a href="Caret.html#increment">increment</a></li><li data-type='method' style='display: none;'><a href="Caret.html#readNumber">readNumber</a></li><li data-type='method' style='display: none;'><a href="Caret.html#readUntil">readUntil</a></li><li data-type='method' style='display: none;'><a href="Caret.html#readWord">readWord</a></li><li data-type='method' style='display: none;'><a href="Caret.html#skipToChar">skipToChar</a></li><li data-type='method' style='display: none;'><a href="Caret.html#skipToContent">skipToContent</a></li><li data-type='method' style='display: none;'><a href="Caret.html#skipToString">skipToString</a></li><li data-type='method' style='display: none;'><a href="Caret.html#skipToStringList">skipToStringList</a></li><li data-type='method' style='display: none;'><a href="Caret.html#throwError">throwError</a></li></ul></li><li><a href="ConstructionNode.html">ConstructionNode</a><ul class='methods'><li data-type='method' style='display: none;'><a href="ConstructionNode.html#getName">getName</a></li><li data-type='method' style='display: none;'><a href="ConstructionNode.html#setGenders">setGenders</a></li></ul></li><li><a href="Point.html">Point</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Point.html#.padLeft">padLeft</a></li><li data-type='method' style='display: none;'><a href="Point.html#.padRight">padRight</a></li><li data-type='method' style='display: none;'><a href="Point.html#.product">product</a></li><li data-type='method' style='display: none;'><a href="Point.html#add">add</a></li><li data-type='method' style='display: none;'><a href="Point.html#addCoordinate">addCoordinate</a></li><li data-type='method' style='display: none;'><a href="Point.html#clone">clone</a></li><li data-type='method' style='display: none;'><a href="Point.html#dimensions">dimensions</a></li><li data-type='method' style='display: none;'><a href="Point.html#project">project</a></li><li data-type='method' style='display: none;'><a href="Point.html#scale">scale</a></li><li data-type='method' style='display: none;'><a href="Point.html#subtract">subtract</a></li></ul></li><li><a href="PolytopeC.html">PolytopeC</a><ul class='methods'><li data-type='method' style='display: none;'><a href="PolytopeC.html#faceToVertices">faceToVertices</a></li><li data-type='method' style='display: none;'><a href="PolytopeC.html#gravicenter">gravicenter</a></li><li data-type='method' style='display: none;'><a href="PolytopeC.html#recenter">recenter</a></li><li data-type='method' style='display: none;'><a href="PolytopeC.html#scale">scale</a></li><li data-type='method' style='display: none;'><a href="PolytopeC.html#setSpaceDimensions">setSpaceDimensions</a></li><li data-type='method' style='display: none;'><a href="PolytopeC.html#toPolytopeC">toPolytopeC</a></li></ul></li><li><a href="Scene.html">Scene</a></li><li><a href="SweeplineEdge.html">SweeplineEdge</a><ul class='methods'><li data-type='method' style='display: none;'><a href="SweeplineEdge.html#getId">getId</a></li><li data-type='method' style='display: none;'><a href="SweeplineEdge.html#rightVertex">rightVertex</a></li><li data-type='method' style='display: none;'><a href="SweeplineEdge.html#updateRedirectTable">updateRedirectTable</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="BalanceState.html">BalanceState</a></li><li><a href="ConstructionNodeType.html">ConstructionNodeType</a></li><li><a href="Space.html">Space</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Space.html#.area">area</a></li><li data-type='method' style='display: none;'><a href="Space.html#.distance">distance</a></li><li data-type='method' style='display: none;'><a href="Space.html#.distanceSq">distanceSq</a></li><li data-type='method' style='display: none;'><a href="Space.html#.intersect">intersect</a></li><li data-type='method' style='display: none;'><a href="Space.html#.sameSlope">sameSlope</a></li></ul></li><li><a href="Translation.html">Translation</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Translation.html#.addAdjective">addAdjective</a></li><li data-type='method' style='display: none;'><a href="Translation.html#.elementName">elementName</a></li><li data-type='method' style='display: none;'><a href="Translation.html#.greekPrefix">greekPrefix</a></li></ul></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-dependencies.html">How to update Miratope's dependencies?</a></li><li><a href="tutorial-translation_.html">How to translate Miratope?</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BalanceState%255Bundefined%255D">BalanceState[undefined]</a></li><li><a href="global.html#ConstructionNodeType%255Bundefined%255D">ConstructionNodeType[undefined]</a></li><li><a href="global.html#keys">keys</a></li><li><a href="global.html#mouseButtons">mouseButtons</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">polytopes/polytopeTypes.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PolytopeC = exports.PolytopeB = exports.PolytopeType = void 0;
+const constructionNode_1 = require("../data structures/constructionNode");
+const linkedListNode_1 = require("../data structures/linkedListNode");
+const point_1 = require("../geometry/point");
+var PolytopeType;
+(function (PolytopeType) {
+    PolytopeType[PolytopeType["C"] = 0] = "C";
+    PolytopeType[PolytopeType["S"] = 1] = "S";
+})(PolytopeType = exports.PolytopeType || (exports.PolytopeType = {}));
+;
+class PolytopeB {
+    getName() {
+        return this.construction.getName();
+    }
+    ;
+    //Declared in off.ts.
+    saveAsOFF(_options) {
+        throw new Error("saveAsOFF called before implementation!");
+    }
+    ;
+    //Declared in ggb.ts.
+    saveAsGGB(_wireframe) {
+        throw new Error("saveAsGGB called before implementation!");
+    }
+    ;
+    //Declared in polytopeBuild.ts.
+    extrudeToPyramid(_apex) {
+        throw new Error("extrudeToPyramid called before implementation!");
+    }
+    ;
+    //Declared in polytopeProducts.ts.
+    extrudeToPrism(_height) {
+        throw new Error("extrudeToPrism called before implementation!");
+    }
+    ;
+    //Declared in polytopeCD.ts.
+    polytopeToGraph() {
+        throw new Error("polytopeToGraph called before implementation!");
+    }
+    ;
+    //Declared in render.ts.
+    renderTo(_scene) {
+        throw new Error("renderTo called before implementation!");
+    }
+    ;
+}
+exports.PolytopeB = PolytopeB;
+class PolytopeC extends PolytopeB {
+    /**
+     * The constructor for the PolytopeC class.
+     * @constructor
+     * @param {ElementList} elementList The polytope's element list.
+     * @param {ConstructionNode} constructionRoot The constructionNode representing how the polytope was built.
+     * @classDesc Represents a polytope as a list of elements, in ascending order of dimensions,
+     * similarly (but not identically) to an OFF file.
+     * Subelements are stored as indices.
+     * All points are assumed to be of the same dimension.
+     * @todo Coming soon to theaters near you: A PolytopeV class!
+     * PolytopeV would represent a polytope as a convex hull.
+     * Or, we could make that into "another" constructor for PolytopeC.
+     * We'll probably embed QHull to make that work.
+     */
+    constructor(elementList, constructionRoot) {
+        super();
+        if (!constructionRoot) //The construction defaults to just the polytope itself.
+            constructionRoot = new constructionNode_1.ConstructionNode(constructionNode_1.ConstructionNodeType.Plain, [
+                elementList[elementList.length - 2].length,
+                elementList.length - 1
+            ]);
+        this.construction = constructionRoot;
+        this.dimensions = elementList.length - 1; //The rank of the polytope.
+        this.elementList = elementList;
+        this.type = PolytopeType.C;
+        if (this.elementList[0])
+            this.spaceDimensions = this.elementList[0][0].dimensions();
+        else
+            this.spaceDimensions = -1; //The almighty nullitope (aka nothing)
+    }
+    ;
+    /**
+     * Scales a polytope up or down.
+     * @param {number} r The scaling factor.
+     * @returns {Polytope} The scaled polytope.
+    */
+    scale(r) {
+        if (!this.elementList[0])
+            return this;
+        for (var i = 0; i &lt; this.elementList[0].length; i++)
+            this.elementList[0][i].scale(r);
+        return this;
+    }
+    /**
+     * Calculates the centroid of a polytope.
+     * @returns {Point} The centroid of the polytope.
+     */
+    gravicenter() {
+        if (!this.elementList[0])
+            return new point_1.Point(0);
+        let d = this.spaceDimensions;
+        let res = [];
+        for (let i = 0; i &lt; d; i++)
+            res.push(0);
+        for (let i = 0; i &lt; this.elementList[0].length; i++)
+            for (let j = 0; j &lt; d; j++)
+                res[j] += this.elementList[0][i].coordinates[j];
+        for (let i = 0; i &lt; d; i++)
+            res[i] /= this.elementList[0].length;
+        return new point_1.Point(res);
+    }
+    ;
+    circumradius() {
+        return this.toPolytopeC().elementList[0][0].magnitude();
+    }
+    ;
+    move(P, mult) {
+        if (!this.elementList[0])
+            return this;
+        let Q = P.clone().scale(mult);
+        for (let i = 0; i &lt; this.elementList[0].length; i++)
+            this.elementList[0][i].add(Q);
+        return this;
+    }
+    /**
+     * Makes every vertex have a set number of coordinates either by adding zeros or removing numbers.
+     * @param {number} dim The new number of coordinates for each vertex.
+     */
+    setSpaceDimensions(dim) {
+        if (!this.elementList[0])
+            return;
+        for (let i = 0; i &lt; this.elementList[0].length; i++) {
+            if (this.elementList[0][i].coordinates.length > dim)
+                this.elementList[0][i].coordinates = this.elementList[0][i].coordinates.slice(0, dim);
+            else if (this.elementList[0][i].coordinates.length &lt; dim)
+                for (let j = 0; j &lt; dim - this.elementList[0][i].coordinates.length; j++)
+                    this.elementList[0][i].coordinates.push(0);
+        }
+        this.spaceDimensions = dim;
+    }
+    ;
+    /**
+     * Converts the edge representation of the i-th face to an ordered array of vertices.
+     * @param {number} i The selected face.
+     * @returns {number[]} An array with the indices of the vertices of the i-th face in order.
+     */
+    faceToVertices(i) {
+        if (!this.elementList[2] || !this.elementList[2][i])
+            throw RangeError("The polytope does not have that many 2-faces!");
+        //Enumerates the vertices in order.
+        //A doubly linked list does the job easily.
+        let vertexDLL = [];
+        for (let j = 0; j &lt; this.elementList[2][i].length; j++) {
+            var edge = this.elementList[1][this.elementList[2][i][j]];
+            if (vertexDLL[edge[0]] === undefined)
+                vertexDLL[edge[0]] = new linkedListNode_1.LinkedListNode(edge[0]);
+            if (vertexDLL[edge[1]] === undefined)
+                vertexDLL[edge[1]] = new linkedListNode_1.LinkedListNode(edge[1]);
+            vertexDLL[edge[0]].linkTo(vertexDLL[edge[1]]);
+        }
+        //Cycle of vertex indices.
+        //"this.elementList[1][this.elementList[2][i][0]][0]" is just some vertex index.
+        return vertexDLL[this.elementList[1][this.elementList[2][i][0]][0]].getCycle();
+    }
+    ;
+    /**
+     * Places the gravicenter of the polytope at the origin.
+     * @returns {PolytopeC} The recentered polytope.
+     */
+    recenter() {
+        return this.move(this.gravicenter(), -1);
+    }
+    ;
+    /**
+     * Ensures that we can always correctly call toPolytopeC on a polytope.
+     * @returns {PolytopeC} The polytope, unchanged.
+     */
+    toPolytopeC() {
+        return this;
+    }
+    ;
+}
+exports.PolytopeC = PolytopeC;
+//# sourceMappingURL=polytopeTypes.js.map</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Wed Dec 23 2020 17:36:43 GMT-0600 (Central Standard Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>
