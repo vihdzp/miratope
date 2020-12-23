@@ -67967,7 +67967,7 @@ const JSZip = require("jszip");
 const constructionNode_1 = require("../data structures/constructionNode");
 const graphNode_1 = require("../data structures/graphNode");
 const point_1 = require("../geometry/point");
-const polytopeBuild_1 = require("../polytopes/polytope/polytopeBuild");
+const polytopeBuild_1 = require("../polytopes/classes/polytopeBuild");
 const polytopeTypes_1 = require("../polytopes/polytopeTypes");
 const translation_1 = require("../translation/translation");
 const caret_1 = require("./caret");
@@ -68333,7 +68333,7 @@ class FileOperations {
 }
 exports.FileOperations = FileOperations;
 
-},{"../data structures/constructionNode":97,"../data structures/graphNode":98,"../geometry/point":105,"../polytopes/polytope/polytopeBuild":110,"../polytopes/polytopeTypes":108,"../translation/translation":119,"./caret":101,"jszip":51}],103:[function(require,module,exports){
+},{"../data structures/constructionNode":97,"../data structures/graphNode":98,"../geometry/point":105,"../polytopes/classes/polytopeBuild":109,"../polytopes/polytopeTypes":112,"../translation/translation":119,"./caret":101,"jszip":51}],103:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const JSZip = require("jszip");
@@ -68499,7 +68499,7 @@ polytopeTypes_1.PolytopeB.prototype.saveAsGGB = function (wireframe) {
     ggb.generateAsync({ type: "blob" }).then(fileOperations_1.FileOperations.saveBlob);
 };
 
-},{"../polytopes/polytopeTypes":108,"../translation/translation":119,"./fileOperations":102,"jszip":51}],104:[function(require,module,exports){
+},{"../polytopes/polytopeTypes":112,"../translation/translation":119,"./fileOperations":102,"jszip":51}],104:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const polytopeTypes_1 = require("../polytopes/polytopeTypes");
@@ -68613,7 +68613,7 @@ polytopeTypes_1.PolytopeB.prototype.saveAsOFF = function (options = {}) {
     fileOperations_1.FileOperations.saveBlob(new Blob(data, { type: "text/plain" }));
 };
 
-},{"../polytopes/polytopeTypes":108,"../translation/translation":119,"./fileOperations":102}],105:[function(require,module,exports){
+},{"../polytopes/polytopeTypes":112,"../translation/translation":119,"./fileOperations":102}],105:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Point = void 0;
@@ -68921,9 +68921,7 @@ exports.Space = Space;
 },{"./point":105}],107:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-require("./file operations/off");
-require("./file operations/ggb");
-const polytope_1 = require("./polytopes/polytope/polytope");
+require("./polytopes/classes/polytope");
 require("./rendering/render");
 const scene_1 = require("./rendering/scene");
 const fileOperations_1 = require("./file operations/fileOperations");
@@ -68960,208 +68958,20 @@ globalThis.mainScene = new scene_1.Scene();
 //elementList = [[points], [edges], [faces],..., [ridges], [facets]]
 //A single array in elementList is itself a list of that type of element
 //The third edge of a polytope would be elementList[1][2]
-window.Polytope = polytope_1.Polytope;
 
-},{"./file operations/fileOperations":102,"./file operations/ggb":103,"./file operations/off":104,"./polytopes/polytope/polytope":109,"./rendering/render":113,"./rendering/scene":114}],108:[function(require,module,exports){
+},{"./file operations/fileOperations":102,"./polytopes/classes/polytope":108,"./rendering/render":113,"./rendering/scene":114}],108:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PolytopeC = exports.PolytopeB = exports.PolytopeType = void 0;
-const constructionNode_1 = require("../data structures/constructionNode");
-const linkedListNode_1 = require("../data structures/linkedListNode");
-const point_1 = require("../geometry/point");
-var PolytopeType;
-(function (PolytopeType) {
-    PolytopeType[PolytopeType["C"] = 0] = "C";
-    PolytopeType[PolytopeType["S"] = 1] = "S";
-})(PolytopeType = exports.PolytopeType || (exports.PolytopeType = {}));
-;
-class PolytopeB {
-    getName() {
-        return this.construction.getName();
-    }
-    ;
-    //Declared in off.ts.
-    saveAsOFF(_options) {
-        throw new Error("saveAsOFF called before implementation!");
-    }
-    ;
-    //Declared in ggb.ts.
-    saveAsGGB(_wireframe) {
-        throw new Error("saveAsGGB called before implementation!");
-    }
-    ;
-    //Declared in polytopeBuild.ts.
-    extrudeToPyramid(_apex) {
-        throw new Error("extrudeToPyramid called before implementation!");
-    }
-    ;
-    //Declared in polytopeProducts.ts.
-    extrudeToPrism(_height) {
-        throw new Error("extrudeToPrism called before implementation!");
-    }
-    ;
-    //Declared in polytopeCD.ts.
-    polytopeToGraph() {
-        throw new Error("polytopeToGraph called before implementation!");
-    }
-    ;
-    //Declared in render.ts.
-    renderTo(_scene) {
-        throw new Error("renderTo called before implementation!");
-    }
-    ;
-}
-exports.PolytopeB = PolytopeB;
-class PolytopeC extends PolytopeB {
-    /**
-     * The constructor for the PolytopeC class.
-     * @constructor
-     * @param {ElementList} elementList The polytope's element list.
-     * @param {ConstructionNode} constructionRoot The constructionNode representing how the polytope was built.
-     * @classDesc Represents a polytope as a list of elements, in ascending order of dimensions,
-     * similarly (but not identically) to an OFF file.
-     * Subelements are stored as indices.
-     * All points are assumed to be of the same dimension.
-     * @todo Coming soon to theaters near you: A PolytopeV class!
-     * PolytopeV would represent a polytope as a convex hull.
-     * Or, we could make that into "another" constructor for PolytopeC.
-     * We'll probably embed QHull to make that work.
-     */
-    constructor(elementList, constructionRoot) {
-        super();
-        if (!constructionRoot) //The construction defaults to just the polytope itself.
-            constructionRoot = new constructionNode_1.ConstructionNode(constructionNode_1.ConstructionNodeType.Plain, [
-                elementList[elementList.length - 2].length,
-                elementList.length - 1
-            ]);
-        this.construction = constructionRoot;
-        this.dimensions = elementList.length - 1; //The rank of the polytope.
-        this.elementList = elementList;
-        this.type = PolytopeType.C;
-        if (this.elementList[0])
-            this.spaceDimensions = this.elementList[0][0].dimensions();
-        else
-            this.spaceDimensions = -1; //The almighty nullitope (aka nothing)
-    }
-    ;
-    /**
-     * Scales a polytope up or down.
-     * @param {number} r The scaling factor.
-     * @returns {Polytope} The scaled polytope.
-    */
-    scale(r) {
-        if (!this.elementList[0])
-            return this;
-        for (var i = 0; i < this.elementList[0].length; i++)
-            this.elementList[0][i].scale(r);
-        return this;
-    }
-    /**
-     * Calculates the centroid of a polytope.
-     * @returns {Point} The centroid of the polytope.
-     */
-    gravicenter() {
-        if (!this.elementList[0])
-            return new point_1.Point(0);
-        let d = this.spaceDimensions;
-        let res = [];
-        for (let i = 0; i < d; i++)
-            res.push(0);
-        for (let i = 0; i < this.elementList[0].length; i++)
-            for (let j = 0; j < d; j++)
-                res[j] += this.elementList[0][i].coordinates[j];
-        for (let i = 0; i < d; i++)
-            res[i] /= this.elementList[0].length;
-        return new point_1.Point(res);
-    }
-    ;
-    circumradius() {
-        return this.toPolytopeC().elementList[0][0].magnitude();
-    }
-    ;
-    move(P, mult) {
-        if (!this.elementList[0])
-            return this;
-        let Q = P.clone().scale(mult);
-        for (let i = 0; i < this.elementList[0].length; i++)
-            this.elementList[0][i].add(Q);
-        return this;
-    }
-    /**
-     * Makes every vertex have a set number of coordinates either by adding zeros or removing numbers.
-     * @param {number} dim The new number of coordinates for each vertex.
-     */
-    setSpaceDimensions(dim) {
-        if (!this.elementList[0])
-            return;
-        for (let i = 0; i < this.elementList[0].length; i++) {
-            if (this.elementList[0][i].coordinates.length > dim)
-                this.elementList[0][i].coordinates = this.elementList[0][i].coordinates.slice(0, dim);
-            else if (this.elementList[0][i].coordinates.length < dim)
-                for (let j = 0; j < dim - this.elementList[0][i].coordinates.length; j++)
-                    this.elementList[0][i].coordinates.push(0);
-        }
-        this.spaceDimensions = dim;
-    }
-    ;
-    /**
-     * Converts the edge representation of the i-th face to an ordered array of vertices.
-     * @param {number} i The selected face.
-     * @returns {number[]} An array with the indices of the vertices of the i-th face in order.
-     */
-    faceToVertices(i) {
-        if (!this.elementList[2] || !this.elementList[2][i])
-            throw RangeError("The polytope does not have that many 2-faces!");
-        //Enumerates the vertices in order.
-        //A doubly linked list does the job easily.
-        let vertexDLL = [];
-        for (let j = 0; j < this.elementList[2][i].length; j++) {
-            var edge = this.elementList[1][this.elementList[2][i][j]];
-            if (vertexDLL[edge[0]] === undefined)
-                vertexDLL[edge[0]] = new linkedListNode_1.LinkedListNode(edge[0]);
-            if (vertexDLL[edge[1]] === undefined)
-                vertexDLL[edge[1]] = new linkedListNode_1.LinkedListNode(edge[1]);
-            vertexDLL[edge[0]].linkTo(vertexDLL[edge[1]]);
-        }
-        //Cycle of vertex indices.
-        //"this.elementList[1][this.elementList[2][i][0]][0]" is just some vertex index.
-        return vertexDLL[this.elementList[1][this.elementList[2][i][0]][0]].getCycle();
-    }
-    ;
-    /**
-     * Places the gravicenter of the polytope at the origin.
-     * @returns {PolytopeC} The recentered polytope.
-     */
-    recenter() {
-        return this.move(this.gravicenter(), -1);
-    }
-    ;
-    /**
-     * Ensures that we can always correctly call toPolytopeC on a polytope.
-     * @returns {PolytopeC} The polytope, unchanged.
-     */
-    toPolytopeC() {
-        return this;
-    }
-    ;
-}
-exports.PolytopeC = PolytopeC;
-
-},{"../data structures/constructionNode":97,"../data structures/linkedListNode":99,"../geometry/point":105}],109:[function(require,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Polytope = void 0;
 const polytopeBuild_1 = require("./polytopeBuild");
 const polytopeCD_1 = require("./polytopeCD");
 const polytopeProduct_1 = require("./polytopeProduct");
-class Polytope {
-}
-exports.Polytope = Polytope;
-Polytope.Build = polytopeBuild_1.PolytopeBuild;
-Polytope.CD = polytopeCD_1.PolytopeCD;
-Polytope.Product = polytopeProduct_1.PolytopeProduct;
+require("../../file operations/off");
+require("../../file operations/ggb");
+window.Build = polytopeBuild_1.PolytopeBuild;
+window.CD = polytopeCD_1.PolytopeCD;
+window.Product = polytopeProduct_1.PolytopeProduct;
 
-},{"./polytopeBuild":110,"./polytopeCD":111,"./polytopeProduct":112}],110:[function(require,module,exports){
+},{"../../file operations/ggb":103,"../../file operations/off":104,"./polytopeBuild":109,"./polytopeCD":110,"./polytopeProduct":111}],109:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PolytopeBuild = void 0;
@@ -69823,7 +69633,7 @@ polytopeTypes_1.PolytopeB.prototype.extrudeToPyramid = function (apex) {
     return P;
 };
 
-},{"../../data structures/constructionNode":97,"../../geometry/point":105,"../polytopeTypes":108}],111:[function(require,module,exports){
+},{"../../data structures/constructionNode":97,"../../geometry/point":105,"../polytopeTypes":112}],110:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PolytopeCD = void 0;
@@ -69994,7 +69804,7 @@ polytopeTypes_1.PolytopeB.prototype.polytopeToGraph = function () {
     return gNodes;
 };
 
-},{"../../data structures/graphNode":98,"../polytopeTypes":108}],112:[function(require,module,exports){
+},{"../../data structures/graphNode":98,"../polytopeTypes":112}],111:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PolytopeProduct = void 0;
@@ -70413,7 +70223,192 @@ polytopeTypes_1.PolytopeB.prototype.extrudeToPrism = function (height) {
     return PolytopeProduct.prismProduct(this.toPolytopeC(), polytopeBuild_1.PolytopeBuild.dyad(height));
 };
 
-},{"../../data structures/constructionNode":97,"../../geometry/point":105,"../polytopeTypes":108,"./polytopeBuild":110}],113:[function(require,module,exports){
+},{"../../data structures/constructionNode":97,"../../geometry/point":105,"../polytopeTypes":112,"./polytopeBuild":109}],112:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PolytopeC = exports.PolytopeB = exports.PolytopeType = void 0;
+const constructionNode_1 = require("../data structures/constructionNode");
+const linkedListNode_1 = require("../data structures/linkedListNode");
+const point_1 = require("../geometry/point");
+var PolytopeType;
+(function (PolytopeType) {
+    PolytopeType[PolytopeType["C"] = 0] = "C";
+    PolytopeType[PolytopeType["S"] = 1] = "S";
+})(PolytopeType = exports.PolytopeType || (exports.PolytopeType = {}));
+;
+class PolytopeB {
+    getName() {
+        return this.construction.getName();
+    }
+    ;
+    //Declared in off.ts.
+    saveAsOFF(_options) {
+        throw new Error("saveAsOFF called before implementation!");
+    }
+    ;
+    //Declared in ggb.ts.
+    saveAsGGB(_wireframe) {
+        throw new Error("saveAsGGB called before implementation!");
+    }
+    ;
+    //Declared in polytopeBuild.ts.
+    extrudeToPyramid(_apex) {
+        throw new Error("extrudeToPyramid called before implementation!");
+    }
+    ;
+    //Declared in polytopeProducts.ts.
+    extrudeToPrism(_height) {
+        throw new Error("extrudeToPrism called before implementation!");
+    }
+    ;
+    //Declared in polytopeCD.ts.
+    polytopeToGraph() {
+        throw new Error("polytopeToGraph called before implementation!");
+    }
+    ;
+    //Declared in render.ts.
+    renderTo(_scene) {
+        throw new Error("renderTo called before implementation!");
+    }
+    ;
+}
+exports.PolytopeB = PolytopeB;
+class PolytopeC extends PolytopeB {
+    /**
+     * The constructor for the PolytopeC class.
+     * @constructor
+     * @param {ElementList} elementList The polytope's element list.
+     * @param {ConstructionNode} constructionRoot The constructionNode representing how the polytope was built.
+     * @classDesc Represents a polytope as a list of elements, in ascending order of dimensions,
+     * similarly (but not identically) to an OFF file.
+     * Subelements are stored as indices.
+     * All points are assumed to be of the same dimension.
+     * @todo Coming soon to theaters near you: A PolytopeV class!
+     * PolytopeV would represent a polytope as a convex hull.
+     * Or, we could make that into "another" constructor for PolytopeC.
+     * We'll probably embed QHull to make that work.
+     */
+    constructor(elementList, constructionRoot) {
+        super();
+        if (!constructionRoot) //The construction defaults to just the polytope itself.
+            constructionRoot = new constructionNode_1.ConstructionNode(constructionNode_1.ConstructionNodeType.Plain, [
+                elementList[elementList.length - 2].length,
+                elementList.length - 1
+            ]);
+        this.construction = constructionRoot;
+        this.dimensions = elementList.length - 1; //The rank of the polytope.
+        this.elementList = elementList;
+        this.type = PolytopeType.C;
+        if (this.elementList[0])
+            this.spaceDimensions = this.elementList[0][0].dimensions();
+        else
+            this.spaceDimensions = -1; //The almighty nullitope (aka nothing)
+    }
+    ;
+    /**
+     * Scales a polytope up or down.
+     * @param {number} r The scaling factor.
+     * @returns {Polytope} The scaled polytope.
+    */
+    scale(r) {
+        if (!this.elementList[0])
+            return this;
+        for (var i = 0; i < this.elementList[0].length; i++)
+            this.elementList[0][i].scale(r);
+        return this;
+    }
+    /**
+     * Calculates the centroid of a polytope.
+     * @returns {Point} The centroid of the polytope.
+     */
+    gravicenter() {
+        if (!this.elementList[0])
+            return new point_1.Point(0);
+        let d = this.spaceDimensions;
+        let res = [];
+        for (let i = 0; i < d; i++)
+            res.push(0);
+        for (let i = 0; i < this.elementList[0].length; i++)
+            for (let j = 0; j < d; j++)
+                res[j] += this.elementList[0][i].coordinates[j];
+        for (let i = 0; i < d; i++)
+            res[i] /= this.elementList[0].length;
+        return new point_1.Point(res);
+    }
+    ;
+    circumradius() {
+        return this.toPolytopeC().elementList[0][0].magnitude();
+    }
+    ;
+    move(P, mult) {
+        if (!this.elementList[0])
+            return this;
+        let Q = P.clone().scale(mult);
+        for (let i = 0; i < this.elementList[0].length; i++)
+            this.elementList[0][i].add(Q);
+        return this;
+    }
+    /**
+     * Makes every vertex have a set number of coordinates either by adding zeros or removing numbers.
+     * @param {number} dim The new number of coordinates for each vertex.
+     */
+    setSpaceDimensions(dim) {
+        if (!this.elementList[0])
+            return;
+        for (let i = 0; i < this.elementList[0].length; i++) {
+            if (this.elementList[0][i].coordinates.length > dim)
+                this.elementList[0][i].coordinates = this.elementList[0][i].coordinates.slice(0, dim);
+            else if (this.elementList[0][i].coordinates.length < dim)
+                for (let j = 0; j < dim - this.elementList[0][i].coordinates.length; j++)
+                    this.elementList[0][i].coordinates.push(0);
+        }
+        this.spaceDimensions = dim;
+    }
+    ;
+    /**
+     * Converts the edge representation of the i-th face to an ordered array of vertices.
+     * @param {number} i The selected face.
+     * @returns {number[]} An array with the indices of the vertices of the i-th face in order.
+     */
+    faceToVertices(i) {
+        if (!this.elementList[2] || !this.elementList[2][i])
+            throw RangeError("The polytope does not have that many 2-faces!");
+        //Enumerates the vertices in order.
+        //A doubly linked list does the job easily.
+        let vertexDLL = [];
+        for (let j = 0; j < this.elementList[2][i].length; j++) {
+            var edge = this.elementList[1][this.elementList[2][i][j]];
+            if (vertexDLL[edge[0]] === undefined)
+                vertexDLL[edge[0]] = new linkedListNode_1.LinkedListNode(edge[0]);
+            if (vertexDLL[edge[1]] === undefined)
+                vertexDLL[edge[1]] = new linkedListNode_1.LinkedListNode(edge[1]);
+            vertexDLL[edge[0]].linkTo(vertexDLL[edge[1]]);
+        }
+        //Cycle of vertex indices.
+        //"this.elementList[1][this.elementList[2][i][0]][0]" is just some vertex index.
+        return vertexDLL[this.elementList[1][this.elementList[2][i][0]][0]].getCycle();
+    }
+    ;
+    /**
+     * Places the gravicenter of the polytope at the origin.
+     * @returns {PolytopeC} The recentered polytope.
+     */
+    recenter() {
+        return this.move(this.gravicenter(), -1);
+    }
+    ;
+    /**
+     * Ensures that we can always correctly call toPolytopeC on a polytope.
+     * @returns {PolytopeC} The polytope, unchanged.
+     */
+    toPolytopeC() {
+        return this;
+    }
+    ;
+}
+exports.PolytopeC = PolytopeC;
+
+},{"../data structures/constructionNode":97,"../data structures/linkedListNode":99,"../geometry/point":105}],113:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Render = void 0;
@@ -70671,7 +70666,7 @@ polytopeTypes_1.PolytopeB.prototype.renderTo = function (scene) {
     Render.to(this, scene);
 };
 
-},{"../data structures/avl-tree":96,"../data structures/linkedListNode":99,"../data structures/sweeplineEdge":100,"../geometry/point":105,"../geometry/space":106,"../polytopes/polytopeTypes":108}],114:[function(require,module,exports){
+},{"../data structures/avl-tree":96,"../data structures/linkedListNode":99,"../data structures/sweeplineEdge":100,"../geometry/point":105,"../geometry/space":106,"../polytopes/polytopeTypes":112}],114:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Scene = void 0;
@@ -70703,7 +70698,6 @@ class Scene {
         //Sets material.
         this.material = new THREE.MeshLambertMaterial({ color: 0xffffff, side: THREE.DoubleSide, flatShading: true });
         //Sets up controls.
-        console.log(trackball_controls_1.default);
         this.controls = new trackball_controls_1.default(this.camera, this.renderer.domElement);
         this.controls.target.set(0, 0, 0);
         this.controls.rotateSpeed = 4;

@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-require("./file operations/off");
-require("./file operations/ggb");
-const polytope_1 = require("./polytopes/polytope/polytope");
+require("./polytopes/classes/polytope");
 require("./rendering/render");
 const scene_1 = require("./rendering/scene");
 const fileOperations_1 = require("./file operations/fileOperations");
@@ -39,5 +37,4 @@ globalThis.mainScene = new scene_1.Scene();
 //elementList = [[points], [edges], [faces],..., [ridges], [facets]]
 //A single array in elementList is itself a list of that type of element
 //The third edge of a polytope would be elementList[1][2]
-window.Polytope = polytope_1.Polytope;
 //# sourceMappingURL=main.js.map

@@ -43,7 +43,6 @@ export class Scene {
   	this.material = new THREE.MeshLambertMaterial({color: 0xffffff, side: THREE.DoubleSide, flatShading: true});
 
   	//Sets up controls.
-    console.log(TrackballControls);
   	this.controls = new TrackballControls(this.camera, this.renderer.domElement);
   	this.controls.target.set(0, 0, 0);
   	this.controls.rotateSpeed = 4;

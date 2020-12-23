@@ -29,7 +29,6 @@ class Scene {
         //Sets material.
         this.material = new THREE.MeshLambertMaterial({ color: 0xffffff, side: THREE.DoubleSide, flatShading: true });
         //Sets up controls.
-        console.log(trackball_controls_1.default);
         this.controls = new trackball_controls_1.default(this.camera, this.renderer.domElement);
         this.controls.target.set(0, 0, 0);
         this.controls.rotateSpeed = 4;

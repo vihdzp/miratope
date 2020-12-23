@@ -1,6 +1,5 @@
-import "./file operations/off";
-import "./file operations/ggb";
-import { Polytope } from "./polytopes/polytope/polytope";
+
+import "./polytopes/classes/polytope";
 import "./rendering/render";
 import { Scene } from "./rendering/scene";
 import { FileOperations } from "./file operations/fileOperations";
@@ -47,5 +46,3 @@ globalThis.mainScene = new Scene();
 //elementList = [[points], [edges], [faces],..., [ridges], [facets]]
 //A single array in elementList is itself a list of that type of element
 //The third edge of a polytope would be elementList[1][2]
-
-window.Polytope = Polytope;

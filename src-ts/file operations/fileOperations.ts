@@ -2,7 +2,7 @@ import * as JSZip from "jszip";
 import { ConstructionNode, ConstructionNodeType } from "../data structures/constructionNode";
 import { GraphNode } from "../data structures/graphNode";
 import { Point } from "../geometry/point";
-import { PolytopeBuild } from "../polytopes/polytope/polytopeBuild";
+import { PolytopeBuild } from "../polytopes/classes/polytopeBuild";
 import { ElementList, PolytopeC } from "../polytopes/polytopeTypes";
 import { Translation } from "../translation/translation";
 import { Caret } from "./caret";

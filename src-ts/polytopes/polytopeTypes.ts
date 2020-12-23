@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import * as TrackballControls from 'three-trackballcontrols';
+import TrackballControls from '../rendering/trackball-controls';
 import { ConstructionNode, ConstructionNodeType } from "../data structures/constructionNode";
 import { GraphNode } from '../data structures/graphNode';
 import { LinkedListNode } from "../data structures/linkedListNode";
