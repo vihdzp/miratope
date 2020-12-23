@@ -1,53 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8" />
 	<title>Miratope</title>
 	<link rel="icon" href="./miratope-logo.ico" />
 	<style> body { margin: 0; } canvas { display: block; } </style>
-
-	<script src="src/data structures/constructionNode.js"></script>    <!--Nodes for the representation of how a polytope is built.-->
-	<script src="src/data structures/linkedListNode.js"></script>      <!--Nodes for a doubly-linked list.-->
-	<script src="src/data structures/graphNode.js"></script>           <!--Nodes for a graph.-->
-	<script src="src/data structures/group.js"></script>               <!--Implementation of symmetry groups.-->
-	<script src="src/data structures/matrix.js"></script>              <!--Implementation of matrices-->
-	<script src="src/data structures/avl-tree.js"></script>            <!--Implementation of the AVL tree data structure.-->
-	<script src="src/data structures/sweeplineEdge.js"></script>       <!--Helper class for PolytopeC rendering.-->
-
-	<script src="src/translation/cldr/cldr.js"></script>             <!--Globalize.js dependency.-->
-	<script src="src/translation/cldr/event.js"></script>            <!--Globalize,js dependency.-->
-	<script src="src/translation/cldr/supplemental.js"></script>     <!--Globalize,js dependency.-->
-	<script src="src/translation/cldr/unresolved.js"></script>       <!--Globalize,js dependency.-->
-
-	<script src="src/translation/globalize/globalize.js"></script>   <!--Library for localization/globalization.-->
-	<script src="src/translation/globalize/message.js"></script>     <!--Formats messages in different languages.-->
-	<script src="src/translation/globalize/number.js"></script>      <!--Formats numbers in different languages.-->
-	<script src="src/translation/globalize/plural.js"></script>      <!--Formats plurals in different languages.-->
-
-	<script src="src/translation/loadJSON.js"></script>                <!--Loads the necessary JSON files for Globalize.-->
-	<script src="src/translation/loadMessages.js"></script>            <!--Loads all possible messages in Miratope.-->
-	<script src="src/translation/translation.js"></script>             <!--Loads all possible messages in Miratope.-->
-	<script src="src/translation/ending.js"></script>             <!--Loads all possible messages in Miratope.-->
-	<script src="src/translation/toAdjective.js"></script>             <!--Loads all possible messages in Miratope.-->
-	<script src="src/translation/names.js"></script>             <!--Loads all possible messages in Miratope.-->
-
-	<script src="src/geometry/point.js"></script>                      <!--Class for points.-->
-	<script src="src/geometry/space.js"></script>                      <!--Class for calculations related to points.-->
-
-	<script src="src/polytopes/polytope.js"></script>                  <!--Master class for polytopes.-->
-	<script src="src/polytopes/polytopeC.js"></script>                 <!--Class for polytopes in Combinatorial representation.-->
-	<script src="src/polytopes/polytopeS.js"></script>                 <!--Class for polytopes in Symmetry representation.-->
-
-	<script src="src/importing/off.js"></script>                       <!--Methods for OFF importing.-->
-	<script src="src/importing/ggb.js"></script>                       <!--Methods for GGB importing.-->
-	<script src="src/importing/caret.js"></script>                     <!--Helper class for off.js.-->
-	<script src="src/importing/jszip.js"></script>
-
-	<script src="src/rendering/three.js"></script>                     <!--Library for 3D rendering.-->
-	<script src="src/rendering/scene.js"></script>                     <!--Class for scenes.-->
-	<script src="src/rendering/render.js"></script>                    <!--Renderer bit of the Polytope class.-->
-	<script src="src/rendering/trackballControls.js"></script>         <!--Camera control.-->
-</head>
+	</head>
 <body>
 	<!-- Used to download files.-->
 	<!--For OFF/GGB importing, should get placed somewhere more appropriate eventually.-->
@@ -56,7 +14,7 @@
 	<!-- Documentation link, should also get placed somewhere more appropriate eventually.-->
 	<div style="float:right; width:100px"><a href="out/Miratope/α/index.html">Documentation</a></div>
 	<!--Loads the application.-->
-	<script src="src/main.js"></script>
+	<script src="out-js/main.js"></script>
 	<!--This is just some test code. This whole script tag should be removed eventually.-->
 	<script>
 		//Test pentagrammic pyramid.

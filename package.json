@@ -1,0 +1,32 @@
+{
+  "name": "miratope",
+  "version": "1.0.0",
+  "description": "A renderer for polytopes. Still in alpha.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "tsc": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OfficialURL/miratope.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OfficialURL/miratope/issues"
+  },
+  "homepage": "https://github.com/OfficialURL/miratope#readme",
+  "dependencies": {
+    "globalize": "^1.6.0",
+    "jszip": "^3.5.0",
+    "three": "^0.123.0",
+    "three-trackballcontrols": "^0.9.0"
+  },
+  "devDependencies": {
+    "@types/globalize": "^1.5.0",
+    "@types/node": "^14.14.14"
+  }
+}
