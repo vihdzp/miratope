@@ -9,10 +9,6 @@ export interface LanguageOptions {
   count?: number
 }
 
-interface Math {
-  gcd(a: number, b: number): number;
-}
-
 /**
  * Class for translating words, phrases, or generating names for polytopes in
  * various languages.

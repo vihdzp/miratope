@@ -1,11 +1,12 @@
-
 import "./polytopes/classes/polytope";
 import "./rendering/render";
 import { Scene } from "./rendering/scene";
 import { FileOperations } from "./file operations/fileOperations";
 
-interface Math {
-  gcd(a: number, b: number): number
+declare global {
+  interface Math {
+    gcd(a: number, b: number): number;
+  }
 }
 
 if(!Math.gcd) {

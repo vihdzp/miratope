@@ -1,10 +1,8 @@
 import { ConstructionNode, ConstructionNodeType } from "../../data structures/constructionNode";
+import { FlagClass } from "../../data structures/flag";
+import { ConcreteGroup } from "../../data structures/group";
 import { Point } from "../../geometry/point";
-import { ElementList, PolytopeB, PolytopeC } from "../polytopeTypes";
-
-interface Math {
-  gcd(a: number, b: number): number;
-}
+import { ElementList, PolytopeB, PolytopeC, PolytopeS } from "../polytopeTypes";
 
 export abstract class PolytopeBuild {
   /**
@@ -219,52 +217,15 @@ export abstract class PolytopeBuild {
   //Positioned in the standard orientation with edge length 1.
   //In the future, will be replaced by the PolytopeS version.
   static hypercube(dimensions: number): PolytopeB {
-  	let els: ElementList = [[]];
+    let symmetries = ConcreteGroup.BC(dimensions);
+  	let flagClasses: FlagClass[] = [];
   	for(let i = 0; i < dimensions; i++)
-  		els.push([]);
-  	//Mapping from pairs of the indices below to indices of the corresponding els.
-  	let locations: number[][] = [];
-  	//i and i^j are the indices of the vertices of the current subelement.
-  	//i^j is used instead of j to ensure that facets of els
-  	//are generated before the corresponding element.
-  	for(let i = 0; i < Math.pow(2, dimensions); i++) {
-  		for(let j = 0; j < Math.pow(2, dimensions); j++) {
-  			//If the indices are the same, this is a vertex
-  			if(i == 0) {
-  				let coordinates: number[] = [];
-  				for(let k = 1; k <= dimensions; k++)
-  					coordinates.push(j % (Math.pow(2, k)) < Math.pow(2, k - 1) ? 0.5 : -0.5);
-  				locations[j] = [els[0].length];
-  				els[0].push(new Point(coordinates));
-  				continue;
-  			}
-  			//To avoid redundancy, i^j should be >=i using the obvious partial ordering on bitstrings.
-  			//This is equivalent to i and j being disjoint
-  			if((j & i) != 0)
-  				continue;
-  			//Everything else is a higher-dimensional element
-  			let elementDimension = 0;
-  			let difference = i; //Notice that i !== 0.
-  			let differences: number[] = [];
-  			do {
-  				elementDimension++;
-  				differences.push(difference & ~(difference - 1));
-  				difference = difference & (difference - 1);
-  			}
-        while(difference > 0);
-  			let facets: number[] = [];
-  			//facets connected to i
-  			for(var k = 0; k < differences.length; k++)
-  				facets.push(locations[j][i ^ differences[k]]);
-  			//facets connected to i^j
-  			for(var k = 0; k < differences.length; k++)
-  				facets.push(locations[j ^ differences[k]][i ^ differences[k]]);
-  			locations[j][i] = els[elementDimension].length;
-  			(els[elementDimension] as number[][]).push(facets);
-  		}
-  	}
-
-  	return new PolytopeC(els, new ConstructionNode(ConstructionNodeType.Hypercube, dimensions));
+  		flagClasses.push([[0, [i]]]);
+  	let coordinates: number[] = [];
+  	for(let i = 0; i < dimensions; i++)
+  		coordinates.push(0.5);
+  	let vertices = [new Point(coordinates)];
+  	return new PolytopeS(symmetries, flagClasses, vertices, dimensions);
   };
 
   //Builds a simplex in the specified amount of dimensions.
@@ -325,54 +286,48 @@ export abstract class PolytopeBuild {
   //Positioned in the standard orientation with edge length 1.
   //In the future, will be replaced by the PolytopeS version.
   static cross(dimensions: number): PolytopeB {
-  	//i is the set of nonzero dimensions, j is the set of negative dimensions
-  	let els: ElementList = [[]];
+    let symmetries = ConcreteGroup.BC(dimensions);
+  	let flagClasses: FlagClass[] = [];
   	for(let i = 0; i < dimensions; i++)
-  		els.push([]);
-  	let locations: number[][] = [];
-  	//The full polytope is best handled separately
-  	for(let i = 1; i < Math.pow(2, dimensions); i++) {
-  		for(let j = 0; j < Math.pow(2, dimensions); j++) {
-  			//No negative zero dimensions
-  			if((i & j) != j)
-  				continue;
-  			if(!j)
-  				locations[i] = [];
-  			if(!(i & (i - 1))) {
-  				let coordinates: number[] = [];
-  				let sign = j ? -1 : 1;
-  				for(let k = 0; k < dimensions; k++)
-  					coordinates.push((Math.pow(2, k)) == i ? sign * Math.SQRT1_2 : 0);
-  				locations[i][j] = els[0].length;
-  				els[0].push(new Point(coordinates));
-  				continue;
-  			}
-  			let elementDimension = -1;
-  			let t = i;
-  			let elemVertices : number[] = [];
+  		flagClasses.push([[0, [dimensions - (i + 1)]]]);
+  	let coordinates: number[] = [];
+  	for(let i = 1; i < dimensions; i++)
+  		coordinates.push(0);
+  	coordinates.push(Math.SQRT1_2);
+  	let vertices = [new Point(coordinates)];
+  	return new PolytopeS(symmetries, flagClasses, vertices, dimensions);
+};
 
-  			do {
-  				elementDimension++;
-  				elemVertices.push(t & ~(t - 1));
-  				t = t & (t - 1);
-  			}
-        while(t > 0);
+//Generates a rectified orthoplex as a PolytopeS.
+//Will probably get replaced once more general methods for generating from CDs are added.
+static recticross(dimensions: number): PolytopeB {
+	let flagClasses: FlagClass[] = [];
+	for(let i = 0; i < dimensions; i++) {
+		let row: FlagClass = [];
+		//i is change, j is flagclass
+		for(let j = 0; j < dimensions - 1; j++) {
+			if(j >= i)
+				row.push([j, [dimensions - (i + 2)]]);
+			else if(j == 0 && i == 1)
+				row.push([0, [dimensions - 1]]);
+			else if(i == j + 1)
+				row.push([j - 1, []]);
+			else if(i == j + 2)
+				row.push([j + 1, []]);
+			else
+				row.push([j, [dimensions - (i + 1)]]);
+		}
+		flagClasses.push(row);
+	}
+	let coordinates: number[] = [];
+	for(let i = 2; i < dimensions; i++)
+		coordinates.push(0);
 
-  			let facets: number[] = [];
-  			for(var k = 0; k < elemVertices.length; k++)
-  				facets.push(locations[i ^ elemVertices[k]][j & ~elemVertices[k]]);
-  			locations[i][j] = els[elementDimension].length;
-  			(els[elementDimension] as number[][]).push(facets);
-  		}
-  	}
-  	let facets: number[] = [];
-  	for(var i = 0; i < els[dimensions - 1].length; i++) {
-  		facets.push(i);
-  	}
-  	(els[dimensions] as number[][]).push(facets);
-
-  	return new PolytopeC(els, new ConstructionNode(ConstructionNodeType.Cross, dimensions));
-  };
+	coordinates.push(Math.SQRT1_2);
+	coordinates.push(Math.SQRT1_2);
+	let vertices = [new Point(coordinates)];
+	return new PolytopeS(ConcreteGroup.BC(dimensions), flagClasses, vertices, dimensions);
+};
 
   //Creates a uniform {n / d} antiprism.
   //Only meant for when (n, d) = 1.

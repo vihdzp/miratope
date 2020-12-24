@@ -1,9 +1,12 @@
 import * as THREE from 'three';
-import TrackballControls from '../rendering/trackball-controls';
+import type TrackballControls from '../rendering/trackball-controls';
 import { ConstructionNode, ConstructionNodeType } from "../data structures/constructionNode";
 import { GraphNode } from '../data structures/graphNode';
 import { LinkedListNode } from "../data structures/linkedListNode";
 import { Point } from "../geometry/point";
+import { ConcreteGroup } from '../data structures/group';
+import { Matrix } from '../data structures/matrix';
+import { Flag, FlagClass, Simplifier } from '../data structures/flag';
 
 export type ElementList = [Point[], ...number[][][]] | [];
 
@@ -28,7 +31,7 @@ export abstract class PolytopeB {
   abstract construction: ConstructionNode;
   abstract dimensions: number;
   abstract spaceDimensions: number;
-  abstract type: PolytopeType;
+  abstract readonly type: PolytopeType;
   abstract toPolytopeC(): PolytopeC;
   abstract scale(r: number): PolytopeB;
   abstract move(P: Point, mult: number): PolytopeB;
@@ -75,7 +78,7 @@ export class PolytopeC extends PolytopeB {
   construction: ConstructionNode;
   dimensions: number;
   spaceDimensions: number;
-  type: PolytopeType;
+  readonly type: PolytopeType;
   elementList: ElementList;
 
   /**
@@ -217,5 +220,296 @@ export class PolytopeC extends PolytopeB {
    */
   toPolytopeC(): PolytopeC {
   	return this;
+  };
+}
+
+//Represents a polytope in a way that takes advantage of symmetry
+//Obviously, this requires a representation of the symmetry group.
+//The other components are a description of how the flags (tuples of vertex/edge/face...)
+//within a single domain connect to each other under "change vertex/edge/..." operations,
+//matrices describing how the symmetry group affects the physical representation of the polytope,
+//and positions of each class of vertices.
+//In this implementation the symmetry group and its physical effects are bundled.
+export class PolytopeS<T> extends PolytopeB {
+  symmetries: ConcreteGroup<T>
+  flagClasses: FlagClass[];
+  vertices: Point[];
+  dimensions: number;
+  spaceDimensions: number;
+  construction: ConstructionNode;
+  readonly type: PolytopeType;
+  private identitySimplifier: Simplifier<T>;
+
+  constructor (symmetries: ConcreteGroup<T>, flagClasses: FlagClass[], vertices: Point[], dimensions: number) {
+    super();
+    this.symmetries = symmetries;
+  	this.flagClasses = flagClasses;
+  	this.vertices = vertices;
+  	this.dimensions = dimensions;
+    this.identitySimplifier = {};
+    this.spaceDimensions = vertices[0].dimensions();
+    this.type = PolytopeType.S;
+
+    this.construction = new ConstructionNode(ConstructionNodeType.Name, "temp");
+  };
+
+  //The gravicenter is the gravicenter of the original vertices,
+  //weighted by the inverse of the number of domains each vertex appears in,
+  //projected onto the intersection of the eigenspaces of the generators
+  //with eigenvalues 1.
+  gravicenter(): Point {
+  	throw new Error("PolytopeS.gravicenter is not yet implemented");
+  };
+
+  scale(r: number): PolytopeB {
+    for(let i = 0; i < this.vertices.length; i++)
+      this.vertices[i].scale(r);
+    return this;
+  }
+
+  move(_P: Point): PolytopeB {
+    throw new Error("PolytopeS move not yet implemented!");
+  }
+
+  circumradius(): number {
+      throw new Error("PolytopeS circumradius not yet implemented!");
+  }
+
+  //Apply a flag-change operation to a flag.
+  //Operators numbered from vertex to facet.
+  moveFlag(flag: Flag<T>, generator: number): Flag<T> {
+  	let flagClass = flag.number;
+  	let flagDomain = flag.element;
+  	let effects = this.flagClasses[generator][flagClass];
+  	let newFlagClass = effects[0];
+  	let newFlagDomain = flagDomain;
+  	for(let i = 0; i < effects[1].length; i++)
+  		newFlagDomain = this.symmetries.multiply(newFlagDomain, this.symmetries.generators[effects[1][i]]);
+
+  	return new Flag(newFlagClass, newFlagDomain);
+  };
+
+  compareFlags(flag1: Flag<T>, flag2: Flag<T>) {
+  	if(flag1.number < flag2.number)
+  		return -1;
+  	if(flag1.number > flag2.number)
+  		return 1;
+  	return this.symmetries.compare(flag1.element, flag2.element)
+  };
+
+  //Utility function for toPolytopeC.
+  //Modifies a simplifier to use another generator.
+  //Almost identical to the merge function but I don't really care rn.
+  extendSimplifier(simplifier: Simplifier<T>, generator: number) {
+  	let newSimplifier: Simplifier<T> = {};
+  	for(let i in simplifier)
+  		newSimplifier[i] = simplifier[i];
+  	for(let i in simplifier) {
+  		let oldLeftElem = new Flag(0, this.symmetries.identity());
+  		let leftElem = this.identitySimplifier[i];
+  		let oldRightElem = this.moveFlag(oldLeftElem, generator);
+  		let rightElem = this.moveFlag(leftElem, generator);
+  		while(oldLeftElem.number!=leftElem.number||!this.symmetries.equal(oldLeftElem.element,leftElem.element)) {
+  			oldLeftElem = leftElem;
+  			leftElem = newSimplifier[leftElem.toString()];
+  			//console.log("upd left", ""+oldLeftElem, ""+leftElem);
+  		}
+  		while(oldRightElem.number!=rightElem.number||!this.symmetries.equal(oldRightElem.element,rightElem.element)) {
+  			oldRightElem = rightElem;
+  			rightElem = newSimplifier[rightElem.toString()];
+  			//console.log("upd right", ""+oldRightElem, ""+rightElem);
+  		}
+  		let order = this.compareFlags(leftElem, rightElem);
+  		//console.log("order", ""+leftElem, ""+rightElem, order);
+  		if(order == 0)
+  			continue;
+  		if(order == -1)
+  			newSimplifier[rightElem.toString()] = leftElem;
+  		if(order == 1)
+  			newSimplifier[leftElem.toString()] = rightElem;
+  	}
+  	let betterSimplifier = {};
+  	for(let i in newSimplifier) {
+  		let oldElem = new Flag(0, this.symmetries.identity());
+  		let elem = newSimplifier[i];
+  		while(this.compareFlags(oldElem, elem)) {
+  			oldElem = elem;
+  			elem = newSimplifier[elem.toString()];
+  		}
+  		betterSimplifier[i] = elem;
+  	}
+  	return betterSimplifier;
+  };
+
+  //Utility function for toPolytopeC.
+  //Merges two simplifiers.
+  private mergeSimplifiers(simplifier1: Simplifier<T>, simplifier2: Simplifier<T>) {
+  	let newSimplifier: Simplifier<T> = {};
+  	for(let i in simplifier1)
+  		newSimplifier[i] = simplifier1[i];
+  	for(let i in simplifier1) {
+  		let oldLeftElem = new Flag(0, this.symmetries.identity());
+  		let leftElem = simplifier1[i];
+  		let oldRightElem = new Flag(0, this.symmetries.identity());
+  		let rightElem = simplifier2[i];
+  		while(oldLeftElem.number!=leftElem.number||!this.symmetries.equal(oldLeftElem.element,leftElem.element)) {
+  			oldLeftElem = leftElem;
+  			leftElem = newSimplifier[leftElem.toString()];
+  		}
+  		while(oldRightElem.number!=rightElem.number||!this.symmetries.equal(oldRightElem.element,rightElem.element)) {
+  			oldRightElem = rightElem;
+  			rightElem = newSimplifier[rightElem.toString()];
+  		}
+  		let order = this.compareFlags(leftElem, rightElem);
+  		if(order == 0)
+  			continue;
+  		if(order == -1)
+  			newSimplifier[rightElem.toString()] = leftElem;
+  		if(order == 1)
+  			newSimplifier[leftElem.toString()] = rightElem;
+  	}
+  	let betterSimplifier: Simplifier<T> = {};
+  	for(let i in newSimplifier) {
+  		let oldElem = new Flag(0, this.symmetries.identity());
+  		let elem = newSimplifier[i];
+  		while(this.compareFlags(oldElem, elem)) {
+  			oldElem = elem;
+  			elem = newSimplifier[elem.toString()];
+  		}
+  		betterSimplifier[i] = elem;
+  	}
+  	return betterSimplifier;
+  };
+
+  //Count a simplifier's cosets. Not needed except for debugging.
+  simplifierCosets(simplifier: Simplifier<T>): number {
+  	let count = 0;
+  	for(let i in simplifier)
+  		if(i == simplifier[i].toString())
+  			count++;
+  	return count;
+  };
+
+  //This is basically the algorithm from the Grünbaumian thing,
+  //but modified to work for higher dimensions and calculate incidences.
+  toPolytopeC(): PolytopeC {
+    const maxDomains = 500;	//Change to Infinity if you dare
+  	let domains: [T, Matrix][] = this.symmetries.enumerateElements(maxDomains);
+
+    //Maps each flag to itself. Used as a base for the later simplifiers.
+  	let identitySimplifier: Simplifier<T> = {};
+  	for(let i = 0; i < domains.length; i++) {
+  		for(let j = 0; j < this.flagClasses[0].length; j++) {
+  			identitySimplifier[j + "," + domains[i]] = new Flag(j, domains[i]);
+  		}
+  	}
+
+  	//Used in the simplifier operations to convert from stringified flags to flags
+  	this.identitySimplifier = identitySimplifier;
+
+    //Maps each flag to a representative flag of its subwhatever
+  	//generated by the first n change vertex/face/etc operations.
+  	let ascendingSimplifiers = [identitySimplifier];
+  	console.log("Ascending simplifiers")
+  	for(let i = 0; i < this.dimensions; i++) {
+  		let lastSimplifier = ascendingSimplifiers[ascendingSimplifiers.length - 1];
+  		console.log(lastSimplifier, this.simplifierCosets(lastSimplifier));
+  		ascendingSimplifiers.push(this.extendSimplifier(lastSimplifier, i));
+  	}
+
+  	//Maps each flag to a representative flag of its subwhatever
+  	//generated by the first n change facet/ridge/etc operations.
+  	let descendingSimplifiers = [identitySimplifier];
+  	console.log("Descending simplifiers")
+  	for(let i = 0; i < this.dimensions; i++) {
+  		let lastSimplifier = descendingSimplifiers[descendingSimplifiers.length - 1];
+  		console.log(lastSimplifier, this.simplifierCosets(lastSimplifier));
+  		descendingSimplifiers.push(this.extendSimplifier(lastSimplifier, this.dimensions - (i + 1)));
+  	}
+
+  	//Maps each flag to a representative flag of the subwhatever
+  	//fixing that flag's vertex/edge/etc.
+  	let elementSimplifiers: Simplifier<T>[] = [];
+  	console.log("Element simplifiers")
+  	for(let i = 0; i < this.dimensions; i++) {
+  		let simplifier = this.mergeSimplifiers(ascendingSimplifiers[i], descendingSimplifiers[this.dimensions - (i + 1)])
+  		console.log(simplifier, this.simplifierCosets(simplifier));
+  		elementSimplifiers.push(simplifier);
+  	}
+  	elementSimplifiers.push(ascendingSimplifiers[this.dimensions]);
+
+    //Maps each flag to a representative flag of the subwhatever
+  	//fixing that flag's vertex-edge/edge-face/etc pair.
+  	let intersectionSimplifiers: Simplifier<T>[] = [];
+  	console.log("Intersection simplifiers")
+  	for(let i = 0; i < this.dimensions - 1; i++) {
+  		let simplifier = this.mergeSimplifiers(ascendingSimplifiers[i], descendingSimplifiers[this.dimensions - (i + 2)])
+  		console.log(simplifier, this.simplifierCosets(simplifier));
+  		intersectionSimplifiers.push(simplifier);
+  	}
+  	intersectionSimplifiers.push(ascendingSimplifiers[this.dimensions - 1]);
+
+    //Vertices are inherently different from other elements, so compute them separately.
+  	let vertices: Point[] = [];
+  	for(let i = 0; i < domains.length; i++) {
+  		for(let j = 0; j < this.flagClasses[0].length; j++) {
+  			let flag = new Flag(j, domains[i]);
+  			//Skip flags that aren't vertex representatives
+  			if(this.compareFlags(flag, elementSimplifiers[0][flag.toString()])) {
+  				continue;
+  			}
+  			let vertex = flag.element[1].movePoint(this.vertices[flag.number]);
+  			vertices.push(vertex);
+  		}
+  	}
+  	console.log("Vertices")
+  	console.log(vertices);
+
+  	//Map representatives to IDs.
+  	let locations: {[key: string]: number}[] = [];
+  	let locationsLengths: number[] = [];
+  	for(let i = 0; i < this.dimensions + 1; i++) {
+  		let locationsRow: {[key: string]: number} = {};
+  		let nextID = 0;
+  		for(let j = 0; j < domains.length; j++) {
+  			for(let k = 0; k < this.flagClasses[0].length; k++) {
+  				let flag = new Flag(k, domains[j]);
+  				if(this.compareFlags(flag, elementSimplifiers[i][flag.toString()])) {
+  					continue;
+  				}
+  				locationsRow[flag.toString()] = nextID++;
+  			}
+  		}
+  		locations.push(locationsRow);
+  		locationsLengths.push(nextID);
+  	}
+  	console.log("Locations")
+  	console.log(locations, locationsLengths);
+  	console.log("Higher elements")
+
+  	let elems: ElementList = [vertices];
+  	for(let i = 1; i < this.dimensions + 1; i++) {
+  		//TODO rename this to something better
+  		let someElems: number[][] = [];
+  		for(let j = 0; j < locationsLengths[i]; j++)
+  			someElems.push([]);
+  		for(let j = 0; j < domains.length; j++) {
+  			for(let k = 0; k < this.flagClasses[0].length; k++) {
+  				let flag = new Flag(k, domains[j]);
+  				if(this.compareFlags(flag, intersectionSimplifiers[i - 1][flag.toString()])) {
+  					continue;
+  				}
+  				let leftFlag = elementSimplifiers[i - 1][flag.toString()];
+  				let rightFlag = elementSimplifiers[i][flag.toString()];
+  				let leftID = locations[i - 1][leftFlag.toString()];
+  				let rightID = locations[i][rightFlag.toString()];
+  				someElems[rightID].push(leftID);
+  			}
+  		}
+  		console.log(someElems);
+  		elems.push(someElems);
+  	}
+
+  	return new PolytopeC(elems);
   };
 }
