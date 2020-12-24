@@ -15,18 +15,18 @@ Miratope can also read and export OFF files and GGB files.
 ### How do I use Miratope?
 Miratope doesn't have an interface yet, so you'll have to use the Console to write down JavaScript commands.
 
-Most of the cool generating commands are on the `Polytope` class. For example, to generate a uniform octagrammic antiprism and render it to the screen, you can use `Polytope.uniformAntiprism(8, 3).renderTo(mainScene);`.
+Most of the cool generating commands are on the `Build` class. For example, to generate a uniform octagrammic antiprism and render it to the screen, you can use `Build.uniformAntiprism(8, 3).renderTo(mainScene);`.
 
 Here's some other commands to try out:
 ```javascript
 //Renders a cube on screen.
-Polytope.hypercube(3).renderTo(mainScene);
+Build.hypercube(3).renderTo(mainScene);
 
 //OFF file for a pentagon-pentagram duoprism.
-Polytope.prismProduct(Polytope.regularPolygon(5), Polytope.regularPolygon(5, 2)).saveAsOFF({comments: true});
+Product.prism(Build.regularPolygon(5), Build.regularPolygon(5, 2)).saveAsOFF();
 
 //Exports a hexadecachoral prism as a GeoGebra file.
-Polytope.cross(4).extrudeToPrism(1).saveAsGGB();
+Build.cross(4).extrudeToPrism(1).saveAsGGB();
 ```
 
 ### Where do I get these "OFF files"?
