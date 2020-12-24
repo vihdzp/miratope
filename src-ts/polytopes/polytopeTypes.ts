@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import type TrackballControls from '../rendering/trackball-controls';
-import { ConstructionNode, ConstructionNodeType } from "../data structures/constructionNode";
+import { CNName, CNPlain, ConstructionNode } from "../data structures/constructionNode";
 import { GraphNode } from '../data structures/graphNode';
 import { LinkedListNode } from "../data structures/linkedListNode";
 import { Point } from "../geometry/point";
@@ -28,7 +28,7 @@ interface Scene {
 }
 
 export abstract class PolytopeB {
-  abstract construction: ConstructionNode;
+  abstract construction: ConstructionNode<any>;
   abstract dimensions: number;
   abstract spaceDimensions: number;
   abstract readonly type: PolytopeType;
@@ -75,7 +75,7 @@ export abstract class PolytopeB {
 }
 
 export class PolytopeC extends PolytopeB {
-  construction: ConstructionNode;
+  construction: ConstructionNode<any>;
   dimensions: number;
   spaceDimensions: number;
   readonly type: PolytopeType;
@@ -90,15 +90,11 @@ export class PolytopeC extends PolytopeB {
    * similarly (but not identically) to an OFF file.
    * Subelements are stored as indices.
    * All points are assumed to be of the same dimension.
-   * @todo Coming soon to theaters near you: A PolytopeV class!
-   * PolytopeV would represent a polytope as a convex hull.
-   * Or, we could make that into "another" constructor for PolytopeC.
-   * We'll probably embed QHull to make that work.
    */
-  constructor(elementList: ElementList, constructionRoot?: ConstructionNode) {
+  constructor(elementList: ElementList, constructionRoot?: ConstructionNode<any>) {
     super();
   	if(!constructionRoot) //The construction defaults to just the polytope itself.
-    	constructionRoot = new ConstructionNode(ConstructionNodeType.Plain,
+    	constructionRoot = new CNPlain(
     		[
     			elementList[elementList.length - 2].length,
     			elementList.length - 1
@@ -114,6 +110,11 @@ export class PolytopeC extends PolytopeB {
   	else
   		this.spaceDimensions = -1; //The almighty nullitope (aka nothing)
   };
+
+  setConstruction(construction: ConstructionNode<any>) {
+    this.construction = construction;
+    construction.polytope = this;
+  }
 
   /**
    * Scales a polytope up or down.
@@ -236,7 +237,7 @@ export class PolytopeS<T> extends PolytopeB {
   vertices: Point[];
   dimensions: number;
   spaceDimensions: number;
-  construction: ConstructionNode;
+  construction: ConstructionNode<any>;
   readonly type: PolytopeType;
   private identitySimplifier: Simplifier<T>;
 
@@ -250,7 +251,7 @@ export class PolytopeS<T> extends PolytopeB {
     this.spaceDimensions = vertices[0].dimensions();
     this.type = PolytopeType.S;
 
-    this.construction = new ConstructionNode(ConstructionNodeType.Name, "temp");
+    this.construction = new CNName("temp");
   };
 
   //The gravicenter is the gravicenter of the original vertices,

@@ -1,4 +1,4 @@
-import { ConstructionNode, ConstructionNodeType } from "../../data structures/constructionNode";
+import { CNAntiprism, CNCodename, CNCuploid, CNCupola, CNCupolaicBlend, CNPolygon, CNPyramid, CNSimplex } from "../../data structures/constructionNode";
 import { FlagClass } from "../../data structures/flag";
 import { ConcreteGroup } from "../../data structures/group";
 import { Point } from "../../geometry/point";
@@ -21,7 +21,7 @@ export abstract class PolytopeBuild {
    * @returns {Polytope} An instance of the null polytope.
    */
   static nullitope(): PolytopeB {
-  	return new PolytopeC([], new ConstructionNode(ConstructionNodeType.Codename, "nullitope"));
+  	return new PolytopeC([], new CNCodename("nullitope"));
   };
 
   /**
@@ -29,7 +29,7 @@ export abstract class PolytopeBuild {
    * @returns An instance of the point polytope.
    */
   static point(): PolytopeB {
-  	return new PolytopeC([[new Point([])]], new ConstructionNode(ConstructionNodeType.Codename, "point"));
+  	return new PolytopeC([[new Point([])]], new CNCodename("point"));
   };
 
   /**
@@ -44,7 +44,7 @@ export abstract class PolytopeBuild {
   		length = 0.5;
   	else
   		length /= 2;
-  	return new PolytopeC([[new Point([-length]), new Point([length])], [[0, 1]]], new ConstructionNode(ConstructionNodeType.Codename, "dyad"));
+  	return new PolytopeC([[new Point([-length]), new Point([length])], [[0, 1]]], new CNCodename("dyad"));
   };
 
   //Builds a polygon from the vertices given in order.
@@ -62,7 +62,7 @@ export abstract class PolytopeBuild {
     newElementList[1].push([i, 0]);
     newElementList[2][0].push(i);
 
-    return new PolytopeC(newElementList, new ConstructionNode(ConstructionNodeType.Polygon, [points.length, 1]));
+    return new PolytopeC(newElementList, new CNPolygon([points.length, 1]));
   };
 
   /**
@@ -115,7 +115,7 @@ export abstract class PolytopeBuild {
   		x++; y++;
   	}
 
-  	return new PolytopeC(els, new ConstructionNode(ConstructionNodeType.Polygon, [n, d]));
+  	return new PolytopeC(els, new CNPolygon([n, d]));
   };
 
   //Builds a Grünbaumian n/d star with edge lenth s.
@@ -142,7 +142,7 @@ export abstract class PolytopeBuild {
   		els[1].push([i, i + 1]); //Edges
   	els[1].push([els[0].length - 1, 0]);
 
-  	return new PolytopeC(els, new ConstructionNode(ConstructionNodeType.Polygon, [n, d]));
+  	return new PolytopeC(els, new CNPolygon([n, d]));
   };
 
   /**
@@ -176,7 +176,7 @@ export abstract class PolytopeBuild {
   				[[0, 1], [1, 2], [2, 3], [3, 0]],
   				[[0, 1, 2, 3]]
   			],
-  			new ConstructionNode(ConstructionNodeType.Codename, "bowtie")
+  			new CNCodename("bowtie")
   		);
   	}
 
@@ -210,7 +210,7 @@ export abstract class PolytopeBuild {
   		els[1].push([i, i + 1]); //Edges
   	els[1].push([els[0].length - 1, 0]);
 
-  	return new PolytopeC(els, new ConstructionNode(ConstructionNodeType.Polygon, [n, d]));
+  	return new PolytopeC(els, new CNPolygon([n, d]));
   };
 
   //Builds a hypercube in the specified amount of dimensions.
@@ -279,7 +279,7 @@ export abstract class PolytopeBuild {
   		(els[elementDimension] as number[][]).push(facets);
   	}
 
-  	return new PolytopeC(els, new ConstructionNode(ConstructionNodeType.Simplex, dimensions));
+  	return new PolytopeC(els, new CNSimplex(dimensions));
   };
 
   //Builds a cross-polytope in the specified amount of dimensions.
@@ -379,7 +379,9 @@ static recticross(dimensions: number): PolytopeB {
   	for(i = 0; i < 2 * (n + 1); i++)
   		newElementList[3][0].push(i);
 
-  	return new PolytopeC(newElementList, new ConstructionNode(ConstructionNodeType.Antiprism, new ConstructionNode(ConstructionNodeType.Polygon, [n, d])));
+    //We call PolytopeBuild.regularPolygon(n, d).construction instead of instanciating the CNPolygon directly
+    //so that the ConstructionNode has an associated polytope.
+  	return new PolytopeC(newElementList, new CNAntiprism(PolytopeBuild.regularPolygon(n, d).construction));
   };
 
   //Creates an {n / d} cupola with regular faces.
@@ -439,7 +441,9 @@ static recticross(dimensions: number): PolytopeB {
   	for(i = 0; i < 2 * n + 2; i++)
   		newElementList[3][0].push(i);
 
-  	return new PolytopeC(newElementList, new ConstructionNode(ConstructionNodeType.Cupola, new ConstructionNode(ConstructionNodeType.Polygon, [n, d])));
+    //We call PolytopeBuild.regularPolygon(n, d).construction instead of instanciating the CNPolygon directly
+    //so that the ConstructionNode has an associated polytope.
+  	return new PolytopeC(newElementList, new CNCupola(PolytopeBuild.regularPolygon(n, d).construction));
   };
 
   //Creates an {n / d} cuploid with regular faces.
@@ -496,7 +500,9 @@ static recticross(dimensions: number): PolytopeB {
   	for(i = 0; i < 2 * n + 1; i++)
   		newElementList[3][0].push(i);
 
-  	return new PolytopeC(newElementList, new ConstructionNode(ConstructionNodeType.Cuploid, new ConstructionNode(ConstructionNodeType.Polygon, [n, d])));
+    //We call PolytopeBuild.regularPolygon(n, d).construction instead of instanciating the CNPolygon directly
+    //so that the ConstructionNode has an associated polytope.
+  	return new PolytopeC(newElementList, new CNCuploid(PolytopeBuild.regularPolygon(n, d).construction));
   };
 
   //Creates an {n / d} cupolaic blend with regular faces.
@@ -570,7 +576,9 @@ static recticross(dimensions: number): PolytopeB {
   	for(i = 0; i < 2 * n + 1; i++)
   		newElementList[3][0].push(i);
 
-  	return new PolytopeC(newElementList, new ConstructionNode(ConstructionNodeType.CupolaicBlend, new ConstructionNode(ConstructionNodeType.Polygon, [n, d])));
+    //We call PolytopeBuild.regularPolygon(n, d).construction instead of instanciating the CNPolygon directly
+    //so that the ConstructionNode has an associated polytope.
+  	return new PolytopeC(newElementList, new CNCupolaicBlend(PolytopeBuild.regularPolygon(n, d).construction));
   };
 }
 
@@ -709,7 +717,7 @@ PolytopeB.prototype.extrudeToPyramid = function(apex: (Point | number)): Polytop
 		}
 	}
 
-	var construction = new ConstructionNode(ConstructionNodeType.Pyramid, P.construction);
-	P.construction = construction;
+	var construction = new CNPyramid(P.construction);
+	P.setConstruction(construction);
 	return P;
 };

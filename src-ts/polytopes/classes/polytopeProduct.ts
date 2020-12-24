@@ -1,4 +1,4 @@
-import { ConstructionNode, ConstructionNodeType } from "../../data structures/constructionNode";
+import { CNMultiprism, CNMultipyramid, CNMultitegum, CNType, ConstructionNode } from "../../data structures/constructionNode";
 import { Point } from "../../geometry/point";
 import { ElementList, PolytopeB, PolytopeC } from "../polytopeTypes";
 import { PolytopeBuild } from "./polytopeBuild";
@@ -11,8 +11,8 @@ export abstract class PolytopeProduct {
    * @summary Calculates the prism product of a set of polytopes.
    * @param {...Polytope} P The list of polytopes to "multiply" together.
    */
-  static prismProduct(...P: PolytopeB[]) {
-  	return PolytopeProduct._product(P, ConstructionNodeType.Multiprism, PolytopeProduct._prismProduct);
+  static prism(...P: PolytopeB[]) {
+  	return PolytopeProduct._product(P, CNType.Multiprism, PolytopeProduct._prism);
   };
 
   /**
@@ -23,7 +23,7 @@ export abstract class PolytopeProduct {
    * @param {PolytopeB} P The first polytope to multiply.
    * @param {PolytopeB} Q The second polytope to multiply.
    */
-  private static _prismProduct(P: PolytopeB, Q: PolytopeB) {
+  private static _prism(P: PolytopeB, Q: PolytopeB) {
   	//Deals with the point, nullitope cases.
   	if(P.dimensions === 0)
   		return Q;
@@ -112,13 +112,13 @@ export abstract class PolytopeProduct {
   };
 
   //Polytope._tegumProduct, but also supports P being an array.
-  static tegumProduct(...P: PolytopeB[]) : PolytopeB {
-  	return PolytopeProduct._product(P, ConstructionNodeType.Multitegum, PolytopeProduct._tegumProduct);
+  static tegum(...P: PolytopeB[]) : PolytopeB {
+  	return PolytopeProduct._product(P, CNType.Multitegum, PolytopeProduct._tegum);
   };
 
   //Calculates the tegum product, or rather the dual of the Cartesian product, of P and Q.
   //Edges are the products of vertices, faces are the products of vertices with edges or viceversa, and so on.
-  private static _tegumProduct(P: PolytopeB, Q: PolytopeB): PolytopeB {
+  private static _tegum(P: PolytopeB, Q: PolytopeB): PolytopeB {
   	//Deals with the point, nullitope cases.
   	if(P.dimensions <= 0)
   		return Q;
@@ -280,14 +280,14 @@ export abstract class PolytopeProduct {
   };
 
   //Polytope._pyramidProduct, but also supports P being an array.
-  static pyramidProduct(...P: PolytopeB[]): PolytopeB {
-  	return PolytopeProduct._product(P, ConstructionNodeType.Multipyramid, PolytopeProduct._pyramidProduct);
+  static pyramid(...P: PolytopeB[]): PolytopeB {
+  	return PolytopeProduct._product(P, CNType.Multipyramid, PolytopeProduct._pyramid);
   };
 
   //Calculates the pyramid product of P and Q.
   //Edges are the products of vertices, faces are the products of vertices with edges or viceversa, and so on.
   //Very similar to the tegum code.
-  private static _pyramidProduct(P: PolytopeB, Q: PolytopeB, height: number): PolytopeB {
+  private static _pyramid(P: PolytopeB, Q: PolytopeB, height: number): PolytopeB {
   	if(P.dimensions === -1)
   		return Q;
   	if(Q.dimensions === -1)
@@ -448,24 +448,35 @@ export abstract class PolytopeProduct {
    * @param {Function} fun The function used to perform the product.
    * @returns {Polytope} The resulting product.
    * */
-  private static _product(P: PolytopeB[], type: ConstructionNodeType, fun: Function): PolytopeB {
+  private static _product(P: PolytopeB[], type: CNType, fun: Function): PolytopeB {
     let res_: PolytopeB | undefined = P.pop();
     if(!res_)
   		return PolytopeBuild.nullitope();
     let res = res_;
 
-  	let constructions: ConstructionNode[] = [];
+  	let constructions: ConstructionNode<ConstructionNode<any>[]>[] = [];
   	constructions.push(res.construction);
   	while(P.length) {
   		//Stores the constructions of the elements of P in a temporary array.
   		constructions.push(P[P.length - 1].construction);
   		res = fun(P.pop(), res);
   	}
-  	res.construction = new ConstructionNode(type, constructions);
+
+    switch(type) {
+      case CNType.Multiprism:
+        res.construction = new CNMultiprism(constructions);
+        break;
+      case CNType.Multitegum:
+   	    res.construction = new CNMultitegum(constructions);
+        break;
+      case CNType.Multipyramid:
+        res.construction = new CNMultipyramid(constructions);
+        break;
+    }
   	return res;
   };
 }
 
 PolytopeB.prototype.extrudeToPrism = function(height: number): PolytopeB {
-  return PolytopeProduct.prismProduct(this.toPolytopeC(), PolytopeBuild.dyad(height));
+  return PolytopeProduct.prism(this.toPolytopeC(), PolytopeBuild.dyad(height));
 };
