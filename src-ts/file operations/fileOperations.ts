@@ -1,5 +1,5 @@
 import * as JSZip from "jszip";
-import { ConstructionNode, ConstructionNodeType } from "../data structures/constructionNode";
+import { CNName } from "../data structures/constructionNode";
 import { GraphNode } from "../data structures/graphNode";
 import { Point } from "../geometry/point";
 import { PolytopeBuild } from "../polytopes/classes/polytopeBuild";
@@ -9,7 +9,7 @@ import { Caret } from "./caret";
 
 export abstract class FileOperations {
   static fileName: string;
-  
+
   /**
    * Helper function for {@link Polytope.openFile},
    * and more specifically for {@link Polytope._OFFReaderOnload}.
@@ -398,12 +398,6 @@ export abstract class FileOperations {
   		}
   	}
 
-  	globalThis.P = new PolytopeC(
-  		elementList,
-  		new ConstructionNode(
-  			ConstructionNodeType.Name,
-  			FileOperations.fileName
-  		)
-  	);
+  	globalThis.P = new PolytopeC(elementList, new CNName(FileOperations.fileName));
   };
 }

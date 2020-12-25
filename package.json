@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "A renderer for polytopes. Still in alpha.",
   "scripts": {
-	"_bbt": "browserify src-js/main.js -o out-js/main.js -t [ babelify --presets [ @babel/preset-env ] ] -p tinyify",
-	"_b": "browserify src-js/main.js -o out-js/main.js",
+    "_bbt": "browserify src-js/main.js -o out-js/main.js -t [ babelify --presets [ @babel/preset-env ] ] -p tinyify",
+    "_b": "browserify src-js/main.js -o out-js/main.js",
     "build": "echo Running TypeScript... & tsc & echo Done! & echo Running Browserify + Babelify + Tinyify...& npm run _bbt & echo Done!",
     "debug": "echo Running TypeScript... & tsc & echo Done! & echo Running Browserify...& npm run _b & echo Done!",
     "jsdoc": "jsdoc -c jsdoc.json"
