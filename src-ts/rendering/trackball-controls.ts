@@ -94,9 +94,7 @@ export class TrackballControls extends THREE.EventDispatcher {
    * of codes. All elements are required.
    */
    readonly keys = [
-     65, // A
-     83, // S
-     68, // D
+     "a", "s", "d"
    ];
 
    /**
@@ -139,7 +137,7 @@ export class TrackballControls extends THREE.EventDispatcher {
     this.handleResize();
 
     // force an update at start
-    this.update();
+    //this.update();
   }
 
   handleResize () {
@@ -360,11 +358,11 @@ export class TrackballControls extends THREE.EventDispatcher {
 
     if (trackball.keyState !== STATE.NONE)
       return;
-    else if (event.keyCode === trackball.keys[STATE.ROTATE] && !trackball.noRotate)
+    else if (event.key === trackball.keys[STATE.ROTATE] && !trackball.noRotate)
       trackball.keyState = STATE.ROTATE;
-    else if (event.keyCode === trackball.keys[STATE.ZOOM] && !trackball.noZoom)
+    else if (event.key === trackball.keys[STATE.ZOOM] && !trackball.noZoom)
       trackball.keyState = STATE.ZOOM;
-    else if (event.keyCode === trackball.keys[STATE.PAN] && !trackball.noPan)
+    else if (event.key === trackball.keys[STATE.PAN] && !trackball.noPan)
       trackball.keyState = STATE.PAN;
   }
 

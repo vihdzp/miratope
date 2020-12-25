@@ -29,8 +29,8 @@ export class SweeplineEdge {
 
   	//Calculates the slope.
   	//This won't change even if the edge gets cut down to zero length, thus making the ordering consistent.
-  	this.slope = (leftVertex.value.coordinates[globalThis.index1] - rightVertex.value.coordinates[globalThis.index1])
-  	/ (leftVertex.value.coordinates[globalThis.index0] - rightVertex.value.coordinates[globalThis.index0]);
+  	this.slope = (leftVertex.value.coordinates[Point.index1] - rightVertex.value.coordinates[Point.index1])
+  	/ (leftVertex.value.coordinates[Point.index0] - rightVertex.value.coordinates[Point.index0]);
 
   	//Gives the edge an immutable ID in terms of its vertices.
   	//Uses the redirect table (read below).

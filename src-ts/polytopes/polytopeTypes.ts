@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import type TrackballControls from '../rendering/trackball-controls';
+import type { TrackballControls } from '../rendering/trackball-controls';
 import { CNName, CNPlain, ConstructionNode } from "../data structures/constructionNode";
 import { GraphNode } from '../data structures/graphNode';
 import { LinkedListNode } from "../data structures/linkedListNode";

@@ -24,10 +24,10 @@ export abstract class Space {
 
     //This projects a, b-a, c, d-c onto the a plane
   	//Then, adapts the method from https://stackoverflow.com/a/565282 (by Gareth Rees)
-  	let p = [a.coordinates[globalThis.index0], a.coordinates[globalThis.index1]],
-  	    r = [b.coordinates[globalThis.index0] - a.coordinates[globalThis.index0], b.coordinates[globalThis.index1] - a.coordinates[globalThis.index1]],
-  	    q = [c.coordinates[globalThis.index0], c.coordinates[globalThis.index1]],
-  	    s = [d.coordinates[globalThis.index0] - c.coordinates[globalThis.index0], d.coordinates[globalThis.index1] - c.coordinates[globalThis.index1]];
+  	let p = [a.coordinates[Point.index0], a.coordinates[Point.index1]],
+  	    r = [b.coordinates[Point.index0] - a.coordinates[Point.index0], b.coordinates[Point.index1] - a.coordinates[Point.index1]],
+  	    q = [c.coordinates[Point.index0], c.coordinates[Point.index1]],
+  	    s = [d.coordinates[Point.index0] - c.coordinates[Point.index0], d.coordinates[Point.index1] - c.coordinates[Point.index1]];
 
   	//If the two lines' slopes are very similar, do nothing.
   	//They either not intersect or are too similar for us to care.

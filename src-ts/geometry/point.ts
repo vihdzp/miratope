@@ -1,6 +1,16 @@
 import * as THREE from 'three';
 
 export class Point {
+  //As part of the render algorithm, every polygon is projected down into 2D.
+  //This projection is done by selecting only two of the coordinates of each point.
+  //The indices of the selected coordinates are stored in index0 and index1.
+  //index2 is provided as an auxiliary variable.
+  //These variables might better belong elsewhere.
+  //I just put them here 'cause I didn't want to pollute the global namespace.
+  static index0: number = -1;
+  static index1: number = -1;
+  static index2: number = -1;
+  
   coordinates: number[];
 
   /**

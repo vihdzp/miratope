@@ -69,9 +69,9 @@
 			requestAnimationFrame(animate);
 			mainScene.controls.update();
 
-			/*for(var i = 0; i < scene.children.length; i++) {
-				if(scene.children[i].type === "Mesh") {
-					scene.children[i].rotation.x += 0.01; scene.children[i].rotation.y += 0.01;
+			/*for(var i = 0; i < mainScene.scene.children.length; i++) {
+				if(mainScene.scene.children[i].type === "Mesh") {
+					mainScene.scene.children[i].rotation.x += 0.01; mainScene.scene.children[i].rotation.y += 0.01;
 				}
 			}*/
 			mainScene.renderer.render(mainScene.scene, mainScene.camera);

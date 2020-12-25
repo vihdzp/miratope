@@ -22,7 +22,7 @@ export abstract class Render {
    */
   static to(P_: PolytopeB, scene: Scene) {
   	function debug() {
-  		console.log(Render.Event.value.coordinates[globalThis.index0].toString());
+  		console.log(Render.Event.value.coordinates[Point.index0].toString());
   		console.log(SL.toString());
   	};
 
@@ -38,14 +38,14 @@ export abstract class Render {
   		b = x.rightVertex().value,
   		c = y.leftVertex.value,
   		d = y.rightVertex().value,
-  		k = Render.Event.value.coordinates[globalThis.index0];
+  		k = Render.Event.value.coordinates[Point.index0];
 
   		//Calculates where in the segments the intersection with the sweepline lies.
-  		var lambda0 = (k - b.coordinates[globalThis.index0])/(a.coordinates[globalThis.index0] - b.coordinates[globalThis.index0]);
-  		var lambda1 = (k - d.coordinates[globalThis.index0])/(c.coordinates[globalThis.index0] - d.coordinates[globalThis.index0]);
+  		var lambda0 = (k - b.coordinates[Point.index0])/(a.coordinates[Point.index0] - b.coordinates[Point.index0]);
+  		var lambda1 = (k - d.coordinates[Point.index0])/(c.coordinates[Point.index0] - d.coordinates[Point.index0]);
 
   		//The height difference between the intersections.
-  		var res = (a.coordinates[globalThis.index1] * lambda0 + b.coordinates[globalThis.index1] * (1 - lambda0)) - (c.coordinates[globalThis.index1] * lambda1 + d.coordinates[globalThis.index1] * (1 - lambda1));
+  		var res = (a.coordinates[Point.index1] * lambda0 + b.coordinates[Point.index1] * (1 - lambda0)) - (c.coordinates[Point.index1] * lambda1 + d.coordinates[Point.index1] * (1 - lambda1));
 
   		//If the intersections are so similar, we also need to consider the possibility
   		//that the edges actually have a common endpoint.
@@ -117,20 +117,20 @@ export abstract class Render {
 
   		//Calculates the coordinates such that the projection of our three non-collinear points onto their 2D plane has the highest area.
   		//Uses the shoelace formula.
-  		//Stores such coordinates' indices in globalThis.index0, globalThis.index1.
+  		//Stores such coordinates' indices in Point.index0, Point.index1.
   		//That way, they become global variables that can be used elsewhere.
   		let maxArea = 0,
   		area: number,
   		va = Render.vertexDLL[a].value,
   		vb = Render.vertexDLL[b].value,
   		v0 = Render.vertexDLL[0].value;
-  		globalThis.index0 = 0;
-  		globalThis.index1 = 1;
+  		Point.index0 = 0;
+  		Point.index1 = 1;
   		for(let j = 0; j < v0.dimensions(); j++)
   			for(let k = j + 1; k < v0.dimensions(); k++)
   				if((area = Space.area(v0, va, vb, j, k)) > maxArea) {
-  					globalThis.index0 = j;
-  					globalThis.index1 = k;
+  					Point.index0 = j;
+  					Point.index1 = k;
   					maxArea = area;
   				}
 
@@ -159,7 +159,7 @@ export abstract class Render {
         */
   			//Runs the code on both edges adjacent to E's vertex.
   			for(let j = 0; j <= 1; j++) {
-  				let ord = Render.Event.value.coordinates[globalThis.index0] - Render.Event.getNode(j)!.value.coordinates[globalThis.index0];
+  				let ord = Render.Event.value.coordinates[Point.index0] - Render.Event.getNode(j)!.value.coordinates[Point.index0];
 
   				//Vertex E is a left endpoint of the edge:
   				if(ord < -globalThis.epsilon) {
@@ -202,7 +202,7 @@ export abstract class Render {
   				}
   				//The edge is perpendicular to the first coordinate's axis:
   				//Runs only once per such an edge.
-  				else if(Render.Event.value.coordinates[globalThis.index1] > Render.Event.getNode(j)!.value.coordinates[globalThis.index1]) {
+  				else if(Render.Event.value.coordinates[Point.index1] > Render.Event.getNode(j)!.value.coordinates[Point.index1]) {
   					let edge = new SweeplineEdge(Render.Event, j);
 
   					//I really should only check intersections with segments at the "correct height".
@@ -281,9 +281,9 @@ export abstract class Render {
    * @returns {number} 1, 0 or -1 depending on whether a > b, a = b or a < b.
    */
   private static _order(a: LinkedListNode<Point>, b: LinkedListNode<Point>): number {
-  	var c = a.value.coordinates[globalThis.index0] - b.value.coordinates[globalThis.index0];
+  	var c = a.value.coordinates[Point.index0] - b.value.coordinates[Point.index0];
   	if(c === 0) { //DO NOT REPLACE BY Math.abs(c) < globalThis.epsilon
-  		c = a.value.coordinates[globalThis.index1] - b.value.coordinates[globalThis.index1];
+  		c = a.value.coordinates[Point.index1] - b.value.coordinates[Point.index1];
   		if(c === 0)
   			return a.id - b.id;
   	}
