@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Point } from "../geometry/point";
 import { PolytopeB } from "../polytopes/polytopeTypes";
-import TrackballControls from "./trackball-controls";
+import { TrackballControls } from "./trackball-controls";
 
 /**
  * The constructor for the `Scene` class.
