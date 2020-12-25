@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "description": "A renderer for polytopes. Still in alpha.",
   "scripts": {
-    "_bbt": "browserify src-js/main.js -o out-js/main.js -t [ babelify --presets [ @babel/preset-env ] ] -p tinyify",
-    "_b": "browserify src-js/main.js -o out-js/main.js",
-    "build": "echo Running TypeScript... & tsc & echo Done! & echo Running Browserify + Babelify + Tinyify...& npm run _bbt & echo Done!",
-    "debug": "echo Running TypeScript... & tsc & echo Done! & echo Running Browserify...& npm run _b & echo Done!",
-    "jsdoc": "jsdoc -c jsdoc.json"
+    "_bbt": "echo Running Browserify + Babelify + Tinyify... & browserify src-js\\main.js -o out-js\\main.js -t [ babelify --presets [ @babel/preset-env ] ] -p tinyify & echo Done!",
+    "_b": "echo Running Browserify... & browserify src-js\\main.js -o out-js\\main.js & echo Done!",
+    "build": "npm run tsc & npm run _bbt",
+    "debug": "npm run tsc & npm run _b",
+    "jsdoc": "echo Running JSDoc... & jsdoc -c jsdoc.json & echo Done!",
+    "eslint": "echo Running ESLint... & \"node_modules\\.bin\\eslint\" src-ts\\**\\*.ts{,x} --fix & echo Done!",
+    "tsc": "echo Running TypeScript... & tsc & echo Done!"
   },
   "repository": {
     "type": "git",
@@ -22,15 +24,20 @@
   "dependencies": {
     "globalize": "^1.6.0",
     "jszip": "^3.5.0",
-    "three": "^0.123.0"
+    "three": "^0.123.0",
+    "typescript": "^4.1.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "@types/globalize": "^1.5.0",
     "@types/node": "^14.14.14",
+    "@typescript-eslint/eslint-plugin": "^4.11.0",
+    "@typescript-eslint/parser": "^4.11.0",
     "babelify": "^10.0.0",
+    "browserify": "^17.0.0",
     "docdash": "^1.2.0",
+    "eslint": "^7.16.0",
     "jsdoc": "^3.6.6",
     "tinyify": "^3.0.0"
   }
