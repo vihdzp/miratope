@@ -267,5 +267,7 @@ PolytopeB.prototype.saveAsGGB = function (wireframe: boolean): void {
 
   //Save file.
   ggb.file("geogebra.xml", file);
-  ggb.generateAsync({ type: "blob" }).then(FileOperations.saveBlob);
+  ggb
+    .generateAsync({ type: "blob", mimeType: "application/ggb" })
+    .then(FileOperations.saveBlob);
 };
