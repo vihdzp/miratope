@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>Tutorial: How to update Miratope's dependencies? - Documentation</title>
+    <title>src-ts/data structures/sweeplineEdge.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -34,30 +34,123 @@
 
 <div id="main">
     
-    <h1 class="page-title">Tutorial: How to update Miratope's dependencies?</h1>
+    <h1 class="page-title">src-ts/data structures/sweeplineEdge.js</h1>
     
 
+    
+
+
+
+    
     <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SweeplineEdge = void 0;
+const global_1 = require("../../global");
+class SweeplineEdge {
+    /**
+     * Constructor for SweeplineEdge.
+     * @constructor
+     * @classdesc
+     * Helper class for [Polytope.prototype.renderTo]{@link Polytope#renderTo},
+     * used in the sweep line for Bentley-Ottmann. This format is useful because
+     * an edge on the sweep line can only be cut to the right. That way, we don't
+     * need to modify the SL objects after the division process: only the nodes'
+     * connections change.&lt;br />
+     * &amp;emsp;The constructor precomputes the slope and gives each edge a unique,
+     * immutable ID. These two properties permit consistent ordering of collinear
+     * or otherwise identical edges.
+     * @param {LinkedListNode&lt;Point>} leftVertex The leftmost vertex of the edge.
+     * @param {number} rightVertexIndex The index of the rightmost vertex of the
+     * edge,
+     * relative to `leftVertex`.
+     */
+    constructor(leftVertex, rightVertexIndex) {
+        this.leftVertex = leftVertex;
+        this.rightVertexIndex = rightVertexIndex;
+        const rightVertex = this.rightVertex();
+        //Calculates the slope.
+        //This won't change even if the edge gets cut down to zero length,
+        //thus making the ordering consistent.
+        this.slope =
+            (leftVertex.value.coordinates[global_1.Global.index1] -
+                rightVertex.value.coordinates[global_1.Global.index1]) /
+                (leftVertex.value.coordinates[global_1.Global.index0] -
+                    rightVertex.value.coordinates[global_1.Global.index0]);
+        //Gives the edge an immutable ID in terms of its vertices.
+        //Uses the redirect table (read below).
+        const x = leftVertex.id;
+        const y = rightVertex.id;
+        const newID = ((x + y) * (x + y + 1)) / 2 + y;
+        this.id =
+            SweeplineEdge.redirectTable[newID] === undefined
+                ? newID
+                : SweeplineEdge.redirectTable[newID];
+    }
+    /**
+     * The rightmost vertex of the edge, as determined by
+     * [this.rightVertexIndex]{@linkcode SweeplineEdge#rightVertexIndex}.
+     * @returns {LinkedListNode&lt;Point>} The rightmost vertex of the edge.
+     */
+    rightVertex() {
+        const rv = this.leftVertex.getNode(this.rightVertexIndex);
+        if (!rv)
+            throw new Error("An SLEdge must have two extremes!");
+        return rv;
+    }
+    /**
+     * Getter for the ID of the edge.
+     * @returns {number} The ID.
+     */
+    getId() {
+        return this.id;
+    }
+    directedEdge() {
+        if (this.rightVertexIndex === 0)
+            return [this.leftVertex, this.rightVertex()];
+        else
+            return [this.rightVertex(), this.leftVertex];
+    }
+    /**
+     * Updates the {@link SweeplineEdge.redirectTable|redirect table} so that the
+     * ID of the edge remains consisten even if the `leftVertex` changes.
+     */
+    updateRedirectTable() {
+        const x = this.leftVertex.id;
+        const y = this.rightVertex().id;
+        const newID = ((x + y) * (x + y + 1)) / 2 + y;
+        SweeplineEdge.redirectTable[newID] = this.id;
+    }
+    //TO DELETE
+    //Used for debugging purposes
+    toString() {
+        return ("([" +
+            this.leftVertex.value.coordinates.toString() +
+            "], [" +
+            this.rightVertex().value.coordinates.toString() +
+            "])");
+    }
+}
+exports.SweeplineEdge = SweeplineEdge;
+/**
+ * An edge's ID must be immutable, even if the vertices themselves change, so
+ * that sorting can occur consistently. At the same time, it needs to be
+ * uniquely identified from the vertices, so searches can be made. To be able
+ * to do both things simultaneously, we use a "redirect table". If the
+ * leftmost vertex of an edge changes, we "redirect" the new calculated ID to
+ * the old one.&lt;br />
+ * &amp;emsp;The redirect table is filled out as necesary by the
+ * [SweeplineEdge.prototype.updateRedirectTable]{@link SweeplineEdge#updateRedirectTable}
+ * function.
+ */
+SweeplineEdge.redirectTable = [];
+//# sourceMappingURL=sweeplineEdge.js.map</code></pre>
+        </article>
+    </section>
 
-<header>
-    
 
-    <h2>How to update Miratope's dependencies?</h2>
-</header>
 
-<article>
-    <p>Miratope has been built off on the shoulders of many open-source projects. Ideally, all of these dependencies should be kept up to date, at their latest release build, to ensure their best functionality. However, some of these dependencies have been modified, and directly replacing them may break the code. We present a detailed guide explaining whether and how each dependency should be updated.</p>
-<h2>[avl-tree.js](data structures_avl-tree.js.html)</h2>
-<p>The core AvlTree class was written by Daniel Imms, and is hosted here. Nevertheless, much of that core functionality has been heavily modified or removed: namely, the parent attribute was added to nodes, the next() and prev() functions were implemented, and the value attribute was removed from nodes. As such, Miratope’s AvlTree class is incompatible with the one on the repository, and should not be updated.</p>
-<h2><a href="importing_jszip.js.html">jszip.js</a></h2>
-<p>The JSZip class was written by Stuart Knightley, David Duponchel, Franz Buchinger, António Afonso, and is hosted here. It has been included unmodified in Miratope. It should be updated without modification, preferably by the unminified version, in case the need to edit the class arises.</p>
-<h2><a href="rendering_three.js.html">three.js</a></h2>
-<p>The THREE class was written by the three.js authors, and is hosted here. A single line has been added, namely line XXX, for convenience in the renderPolygon (what’s it called?) function. It should be updated, with the line added back in place.</p>
-<h2><a href="qhull_qhull.js.html">qhull.js</a></h2>
-<p>Qhull was originally written by X. In 2013, it was ported into JavaScript by Y, using</p>
-</article>
-
-</section>
 
     
     

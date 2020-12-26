@@ -3,6 +3,7 @@ import { Point } from "../geometry/point";
 import { Global } from "../global";
 import { PolytopeB } from "../polytopes/polytopeTypes";
 import { TrackballControls } from "./trackball-controls";
+import { ShapeBufferGeometry_ } from "./shapeBufferGeometryMock";
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 
@@ -42,7 +43,7 @@ export class Scene {
 
     //Adds both ambient light and directional light.
     this.ambientLight = new THREE.AmbientLight(0x777777, 0.8);
-    this.directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    this.directionalLight = new THREE.DirectionalLight(0x777777, 0.8);
     this.directionalLight.position.set(1, 1, -1).normalize();
 
     //Adds the ambient light, adds the directional light fixed w.r.t the scene.
@@ -106,8 +107,7 @@ export class Scene {
 		if(hole)
 			shape.holes.push(new THREE.Shape(hole));*/
 
-    const geometry = new THREE.ShapeBufferGeometry(shape);
-
+    const geometry = new ShapeBufferGeometry_(shape);
     //Reorders vertices and extrudes into 3D appropriately.
     let a: number[];
 

@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>Tutorial: How to update Miratope's dependencies? - Documentation</title>
+    <title>src-ts/rendering/scene.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -34,30 +34,126 @@
 
 <div id="main">
     
-    <h1 class="page-title">Tutorial: How to update Miratope's dependencies?</h1>
+    <h1 class="page-title">src-ts/rendering/scene.js</h1>
     
 
+    
+
+
+
+    
     <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Scene = void 0;
+const THREE = require("../../node_modules/three");
+const global_1 = require("../../global");
+const trackball_controls_1 = require("./trackball-controls");
+const shapeBufferGeometryMock_1 = require("./shapeBufferGeometryMock");
+/**
+ * The constructor for the `Scene` class.
+ * @classdesc Wrapper for a scene, an object that shows a polytope.
+ * Class for drawing objects to the scene more efficiently.
+ */
+class Scene {
+    constructor() {
+        //Defines scene.
+        this.scene = new THREE.Scene();
+        this.polytopes = [];
+        //Defines renderer.
+        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer.setSize(globalThis.innerWidth, globalThis.innerHeight - 44);
+        document.body.appendChild(this.renderer.domElement);
+        //Adds and configures the camera.
+        this.camera = new THREE.PerspectiveCamera(75, globalThis.innerWidth / globalThis.innerHeight, 0.1, 1000);
+        this.camera.position.z = 2;
+        //Adds both ambient light and directional light.
+        this.ambientLight = new THREE.AmbientLight(0x777777, 0.8);
+        this.directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        this.directionalLight.position.set(1, 1, -1).normalize();
+        //Adds the ambient light, adds the directional light fixed w.r.t the scene.
+        this.scene.add(this.ambientLight);
+        this.camera.add(this.directionalLight);
+        this.scene.add(this.camera);
+        //Sets material.
+        this.material = new THREE.MeshLambertMaterial({
+            color: 0xffffff,
+            side: THREE.DoubleSide,
+            flatShading: true,
+        });
+        //Sets up controls.
+        this.controls = new trackball_controls_1.TrackballControls(this.camera, this.renderer.domElement);
+        this.controls.target.set(0, 0, 0);
+        this.controls.rotateSpeed = 4;
+        this.controls.update();
+    }
+    /** Adds a face to the scene.
+     * The face is an array of simple polygons that together, form the face.
+     * This code figures out which of these faces need to be rendered,
+     * and transforms the points into 3D. (or at least will when it's fully
+     * functional).
+     * @todo Make the code fully functional.
+     */
+    add(face) {
+        //A simple polygon of which the face is composed (temporary rendering).
+        const _poly = face[0], 
+        //The face projected into 3D, as an array of THREE.Vector3s.
+        poly2D = [];
+        //Here's where I'm supposed to project the face into 3D via the projection
+        //matrix.
+        //These are the analogs of Global.index0 and Global.index1 for the projected
+        //face. (at the moment, I just use the old values, since I'm not doing any
+        //projection yet)
+        //Global.index0 = something; Global.index1 = something;
+        //The last coordinate.
+        global_1.Global.index2 = 3 - global_1.Global.index0 - global_1.Global.index1;
+        for (let i = 0; i &lt; _poly.length; i++) {
+            poly2D.push(new THREE.Vector2(_poly[i].coordinates[global_1.Global.index0], _poly[i].coordinates[global_1.Global.index1]));
+        }
+        const shape = new THREE.Shape(poly2D);
+        //Probably won't work.
+        /*
+            if(hole)
+                shape.holes.push(new THREE.Shape(hole));*/
+        const geometry = new shapeBufferGeometryMock_1.ShapeBufferGeometry_(shape);
+        //Reorders vertices and extrudes into 3D appropriately.
+        let a;
+        for (let i = 0; i &lt; poly2D.length; i++) {
+            a = [];
+            a[global_1.Global.index0] = geometry.attributes.position.array[3 * i];
+            a[global_1.Global.index1] = geometry.attributes.position.array[3 * i + 1];
+            if (global_1.Global.reversePolygon)
+                a[global_1.Global.index2] =
+                    _poly[_poly.length - i - 1].coordinates[global_1.Global.index2];
+            else
+                a[global_1.Global.index2] = _poly[i].coordinates[global_1.Global.index2];
+            for (let j = 0; j &lt; 3; j++)
+                geometry.attributes.position.array[3 * i + j] = a[j];
+        }
+        geometry.attributes.position.needsUpdate = true;
+        geometry.computeVertexNormals();
+        this.scene.add(new THREE.Mesh(geometry, this.material));
+    }
+    //Clears and disposes of everything in the scene, except for the lighting.
+    clear() {
+        while (this.scene.children.length > 0) {
+            if (this.scene.children[0].type === "Mesh")
+                this.scene.children[0].geometry.dispose();
+            this.scene.remove(this.scene.children[0]);
+        }
+        this.scene.add(this.ambientLight);
+        this.scene.add(this.directionalLight);
+        this.polytopes = [];
+    }
+}
+exports.Scene = Scene;
+//# sourceMappingURL=scene.js.map</code></pre>
+        </article>
+    </section>
 
-<header>
-    
 
-    <h2>How to update Miratope's dependencies?</h2>
-</header>
 
-<article>
-    <p>Miratope has been built off on the shoulders of many open-source projects. Ideally, all of these dependencies should be kept up to date, at their latest release build, to ensure their best functionality. However, some of these dependencies have been modified, and directly replacing them may break the code. We present a detailed guide explaining whether and how each dependency should be updated.</p>
-<h2>[avl-tree.js](data structures_avl-tree.js.html)</h2>
-<p>The core AvlTree class was written by Daniel Imms, and is hosted here. Nevertheless, much of that core functionality has been heavily modified or removed: namely, the parent attribute was added to nodes, the next() and prev() functions were implemented, and the value attribute was removed from nodes. As such, Miratope’s AvlTree class is incompatible with the one on the repository, and should not be updated.</p>
-<h2><a href="importing_jszip.js.html">jszip.js</a></h2>
-<p>The JSZip class was written by Stuart Knightley, David Duponchel, Franz Buchinger, António Afonso, and is hosted here. It has been included unmodified in Miratope. It should be updated without modification, preferably by the unminified version, in case the need to edit the class arises.</p>
-<h2><a href="rendering_three.js.html">three.js</a></h2>
-<p>The THREE class was written by the three.js authors, and is hosted here. A single line has been added, namely line XXX, for convenience in the renderPolygon (what’s it called?) function. It should be updated, with the line added back in place.</p>
-<h2><a href="qhull_qhull.js.html">qhull.js</a></h2>
-<p>Qhull was originally written by X. In 2013, it was ported into JavaScript by Y, using</p>
-</article>
-
-</section>
 
     
     
