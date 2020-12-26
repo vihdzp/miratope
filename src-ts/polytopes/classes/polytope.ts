@@ -1,4 +1,4 @@
-//
+//Exposes the various polytope classes to the global namespace.
 
 import { PolytopeBuild } from "./polytopeBuild";
 import { PolytopeCD } from "./polytopeCD";

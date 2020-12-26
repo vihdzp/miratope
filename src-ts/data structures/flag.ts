@@ -14,5 +14,5 @@ export class Flag<T> {
   }
 }
 
-export type Simplifier<T> = {[key: string]: Flag<T>};
+export type Simplifier<T> = { [key: string]: Flag<T> };
 export type FlagClass = [number, number[]][];

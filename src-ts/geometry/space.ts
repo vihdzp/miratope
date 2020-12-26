@@ -1,4 +1,5 @@
-import { Point } from './point';
+import { Global } from "../global";
+import { Point } from "./point";
 
 /**
  * A namespace for operations on points.
@@ -18,60 +19,80 @@ export abstract class Space {
    * `null` if there's none.
    */
   static intersect(a: Point, b: Point, c: Point, d: Point): Point | null {
-  	//Checks if any of the points are in different dimensional spaces
-  	if(a.dimensions() !== b.dimensions() || a.dimensions() !== c.dimensions() || a.dimensions() !== d.dimensions())
-  		throw new Error("You can't intersect edges with different amounts of dimensions!");
+    //Checks if any of the points are in different dimensional spaces
+    if (
+      a.dimensions() !== b.dimensions() ||
+      a.dimensions() !== c.dimensions() ||
+      a.dimensions() !== d.dimensions()
+    )
+      throw new Error(
+        "You can't intersect edges with different amounts of dimensions!"
+      );
 
     //This projects a, b-a, c, d-c onto the a plane
-  	//Then, adapts the method from https://stackoverflow.com/a/565282 (by Gareth Rees)
-  	let p = [a.coordinates[Point.index0], a.coordinates[Point.index1]],
-  	    r = [b.coordinates[Point.index0] - a.coordinates[Point.index0], b.coordinates[Point.index1] - a.coordinates[Point.index1]],
-  	    q = [c.coordinates[Point.index0], c.coordinates[Point.index1]],
-  	    s = [d.coordinates[Point.index0] - c.coordinates[Point.index0], d.coordinates[Point.index1] - c.coordinates[Point.index1]];
+    //Then, adapts the method from https://stackoverflow.com/a/565282 (by Gareth Rees)
+    const p = [a.coordinates[Global.index0], a.coordinates[Global.index1]],
+      r = [
+        b.coordinates[Global.index0] - a.coordinates[Global.index0],
+        b.coordinates[Global.index1] - a.coordinates[Global.index1],
+      ],
+      q = [c.coordinates[Global.index0], c.coordinates[Global.index1]],
+      s = [
+        d.coordinates[Global.index0] - c.coordinates[Global.index0],
+        d.coordinates[Global.index1] - c.coordinates[Global.index1],
+      ];
 
-  	//If the two lines' slopes are very similar, do nothing.
-  	//They either not intersect or are too similar for us to care.
-  	if(Space.sameSlope(r[0], r[1], s[0], s[1]))
-  		return null;
+    //If the two lines' slopes are very similar, do nothing.
+    //They either not intersect or are too similar for us to care.
+    if (Space.sameSlope(r[0], r[1], s[0], s[1])) return null;
 
-  	//Wow, complicated formulas, @ is used to mean "at ab_MAX_indx" or "at cd_MAX_indx"
-  	let t = ((p[0] - q[0]) * s[1] - (p[1] - q[1]) * s[0])/ //(a@ab-c@ab)*(d@cd-c@cd)-(a@cd-c@cd)*(d@ab-c@ab) divided by
-  	        (s[0] * r[1] - s[1] * r[0]),                   //(d@ab-c@ab)*(b@cd-a@cd)-(d@cd-c@cd)*(b@ab-a@ab)
+    const t =
+        ((p[0] - q[0]) * s[1] - (p[1] - q[1]) * s[0]) /
+        (s[0] * r[1] - s[1] * r[0]),
+      u =
+        ((p[0] - q[0]) * r[1] - (p[1] - q[1]) * r[0]) /
+        (s[0] * r[1] - s[1] * r[0]);
 
-  	    u = ((p[0] - q[0]) * r[1] - (p[1] - q[1]) * r[0])/ //(a@ab-c@ab)*(b@cd-a@cd)-(a@cd-c@cd)*(b@ab-a@ab) divided by
-  	        (s[0] * r[1] - s[1] * r[0]);                   //(d@ab-c@ab)*(b@cd-a@cd)-(d@cd-c@cd)*(b@ab-a@ab)
+    //The intersection lies outside of the segments, or at infinity
+    //Makes sure that "t" and "u" are both inbetween Global.epsilon and 1
+    if (
+      t <= Global.epsilon ||
+      t >= 1 - Global.epsilon ||
+      u <= Global.epsilon ||
+      u >= 1 - Global.epsilon
+    )
+      return null;
 
-  	//The intersection lies outside of the segments, or at infinity
-  	//Makes sure that "t" and "u" are both inbetween globalThis.epsilon and 1
-  	if(t <= globalThis.epsilon || t >= 1 - globalThis.epsilon || u <= globalThis.epsilon || u >= 1 - globalThis.epsilon)
-  		return null;
-
-  	//Returns the point a + t * (b - a).
-  	let pt: number[] = [];
-  	for(var i = 0; i < a.dimensions(); i++)
-  		pt.push(a.coordinates[i] + (b.coordinates[i] - a.coordinates[i]) * t);
-  	return new Point(pt);
-  };
+    //Returns the point a + t * (b - a).
+    const pt: number[] = [];
+    for (let i = 0; i < a.dimensions(); i++)
+      pt.push(a.coordinates[i] + (b.coordinates[i] - a.coordinates[i]) * t);
+    return new Point(pt);
+  }
 
   //Checks if the angle between b - a and c - a is straight to a given precision
   static collinear(a: Point, b: Point, c: Point): boolean {
-  	if(Point.equal(a, b) || Point.equal(a, c)) //If "a" is the same as "b" or "c"
-  		return true;
+    if (Point.equal(a, b) || Point.equal(a, c))
+      //If "a" is the same as "b" or "c"
+      return true;
 
-  	//Calculates (b - a) . (c - a), |b - a|, |c - a|.
-  	//This will be used to calculate the angle between them.
-  	let dot = 0, norm0: number = 0, norm1: number = 0;
-  	for(var i = 0; i < a.coordinates.length; i++) {
-  		let sub0 = b.coordinates[i] - a.coordinates[i];
-  		let sub1 = c.coordinates[i] - a.coordinates[i];
-  		dot += sub0 * sub1;
-  		norm0 += sub0 * sub0;
-  		norm1 += sub1 * sub1;
-  	}
+    //Calculates (b - a) . (c - a), |b - a|, |c - a|.
+    //This will be used to calculate the angle between them.
+    let dot = 0,
+      norm0 = 0,
+      norm1 = 0;
+    for (let i = 0; i < a.coordinates.length; i++) {
+      const sub0 = b.coordinates[i] - a.coordinates[i];
+      const sub1 = c.coordinates[i] - a.coordinates[i];
+      dot += sub0 * sub1;
+      norm0 += sub0 * sub0;
+      norm1 += sub1 * sub1;
+    }
 
-    //Returns true iff the cosine of the angle between b - a and c - a is at a distance globalThis.epsilon from 1 or -1.
-  	return 1 - Math.abs(dot / Math.sqrt(norm0 * norm1)) <= globalThis.epsilon;
-  };
+    //Returns true iff the cosine of the angle between b - a and c - a is at a
+    //distance Global.epsilon from 1 or -1.
+    return 1 - Math.abs(dot / Math.sqrt(norm0 * norm1)) <= Global.epsilon;
+  }
 
   /**
    * Calculates the Euclidean distance between two points.
@@ -80,8 +101,8 @@ export abstract class Space {
    * @returns {number} The distance between `a` and `b`.
    */
   static distance(a: Point, b: Point): number {
-  	return Math.sqrt(Space.distanceSq(a, b));
-  };
+    return Math.sqrt(Space.distanceSq(a, b));
+  }
 
   /**
    * Calculates the area of the triangle determined by three vertices
@@ -92,13 +113,13 @@ export abstract class Space {
    * @param {number} j The first coordinate of the projection plane.
    * @param {number} k The second coordinate of the projection plane.
    */
-  static area(a: Point, b: Point, c: Point, j: number, k: number) {
+  static area(a: Point, b: Point, c: Point, j: number, k: number): number {
     return Math.abs(
-        a.coordinates[j] * (b.coordinates[k] - c.coordinates[k])
-      + b.coordinates[j] * (c.coordinates[k] - a.coordinates[k])
-      + c.coordinates[j] * (a.coordinates[k] - b.coordinates[k])
+      a.coordinates[j] * (b.coordinates[k] - c.coordinates[k]) +
+        b.coordinates[j] * (c.coordinates[k] - a.coordinates[k]) +
+        c.coordinates[j] * (a.coordinates[k] - b.coordinates[k])
     );
-  };
+  }
 
   /**
    * Calculates the squared Euclidean distance between two points.
@@ -108,17 +129,17 @@ export abstract class Space {
    * @returns {number} The squared distance between `a` and `b`.
    */
   static distanceSq(a: Point, b: Point): number {
-  	var res = 0;
-  	for(var i = 0; i < a.coordinates.length; i++) {
-  		var t = a.coordinates[i] - b.coordinates[i];
-  		res += t * t;
-  	}
-  	return res;
-  };
+    let res = 0;
+    for (let i = 0; i < a.coordinates.length; i++) {
+      const t = a.coordinates[i] - b.coordinates[i];
+      res += t * t;
+    }
+    return res;
+  }
 
   /**
-   * Returns whether the line from (0, 0) to (a, b) and the line from (0, 0) to (c, d)
-   * have the same (neglibly different) slopes
+   * Returns whether the line from (0, 0) to (a, b) and the line from (0, 0) to
+   * (c, d) have the same (neglibly different) slopes
    * @param {number} a The first coordinate.
    * @param {number} a The second coordinate.
    * @param {number} a The third coordinate.
@@ -126,9 +147,10 @@ export abstract class Space {
    * @returns {boolean} Whether the slopes are approximately equal or not.
    */
   static sameSlope(a: number, b: number, c: number, d: number): boolean {
-  	//s is the difference between the angles.
-  	var s = Math.atan(a / b) - Math.atan(c / d);
-  	//Returns whether the angles (mod pi) are different by less than globalThis.epsilon.
-  	return (s + Math.PI + globalThis.epsilon) % Math.PI < 2 * globalThis.epsilon;
-  };
+    //s is the difference between the angles.
+    const s = Math.atan(a / b) - Math.atan(c / d);
+    //Returns whether the angles (mod pi) are different by less than
+    //Global.epsilon.
+    return (s + Math.PI + Global.epsilon) % Math.PI < 2 * Global.epsilon;
+  }
 }

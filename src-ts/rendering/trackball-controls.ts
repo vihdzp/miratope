@@ -8,7 +8,7 @@
  ** @author Jon Lim / https://jonlim.ca
  */
 
-import * as THREE from 'three';
+import * as THREE from "three";
 
 const EPS = 0.000001;
 
@@ -19,12 +19,12 @@ enum STATE {
   PAN = 2,
   TOUCH_ROTATE = 3,
   TOUCH_ZOOM_PAN = 4,
-};
+}
 
 const EVENT = {
-  change: { type: 'change' },
-  start: { type: 'start' },
-  end: { type: 'end' }
+  change: { type: "change" },
+  start: { type: "start" },
+  end: { type: "end" },
 };
 
 interface Screen {
@@ -39,7 +39,7 @@ export class TrackballControls extends THREE.EventDispatcher {
   domElement: HTMLCanvasElement;
 
   //API
-  enabled: boolean = true;
+  enabled = true;
 
   screen: Screen = { left: 0, top: 0, width: 0, height: 0 };
 
@@ -93,21 +93,19 @@ export class TrackballControls extends THREE.EventDispatcher {
    * interaction states. Each element can be a single code or an array
    * of codes. All elements are required.
    */
-   readonly keys = [
-     "a", "s", "d"
-   ];
+  readonly keys = ["a", "s", "d"];
 
-   /**
-    * `Event` for pointer interactions which should trigger different
-    * interaction states.
-    */
-   readonly mouseButtons = {
-     LEFT: THREE.MOUSE.ROTATE,
-     MIDDLE: THREE.MOUSE.MIDDLE,
-     RIGHT: THREE.MOUSE.PAN,
-   };
+  /**
+   * `Event` for pointer interactions which should trigger different
+   * interaction states.
+   */
+  readonly mouseButtons = {
+    LEFT: THREE.MOUSE.ROTATE,
+    MIDDLE: THREE.MOUSE.MIDDLE,
+    RIGHT: THREE.MOUSE.PAN,
+  };
 
-  constructor (object: THREE.PerspectiveCamera, domElement: HTMLCanvasElement) {
+  constructor(object: THREE.PerspectiveCamera, domElement: HTMLCanvasElement) {
     super();
     this.object = object;
     this.domElement = domElement;
@@ -119,20 +117,52 @@ export class TrackballControls extends THREE.EventDispatcher {
     this.up0 = this.object.up.clone();
     this.zoom0 = this.object.zoom;
 
-    this.domElement.addEventListener('contextmenu', TrackballControls.contextmenu, false);
+    this.domElement.addEventListener(
+      "contextmenu",
+      TrackballControls.contextmenu,
+      false
+    );
 
-    this.domElement.addEventListener('pointerdown', TrackballControls.onPointerDown, false);
-    this.domElement.addEventListener('wheel', TrackballControls.mousewheel, false);
+    this.domElement.addEventListener(
+      "pointerdown",
+      TrackballControls.onPointerDown,
+      false
+    );
+    this.domElement.addEventListener(
+      "wheel",
+      TrackballControls.mousewheel,
+      false
+    );
 
-    this.domElement.addEventListener('touchstart', TrackballControls.touchstart, false);
-    this.domElement.addEventListener('touchend', TrackballControls.touchend, false);
-    this.domElement.addEventListener('touchmove', TrackballControls.touchmove, false);
+    this.domElement.addEventListener(
+      "touchstart",
+      TrackballControls.touchstart,
+      false
+    );
+    this.domElement.addEventListener(
+      "touchend",
+      TrackballControls.touchend,
+      false
+    );
+    this.domElement.addEventListener(
+      "touchmove",
+      TrackballControls.touchmove,
+      false
+    );
 
-    this.domElement.ownerDocument.addEventListener( 'pointermove', TrackballControls.onPointerMove, false );
-  	this.domElement.ownerDocument.addEventListener( 'pointerup', TrackballControls.onPointerUp, false );
+    this.domElement.ownerDocument.addEventListener(
+      "pointermove",
+      TrackballControls.onPointerMove,
+      false
+    );
+    this.domElement.ownerDocument.addEventListener(
+      "pointerup",
+      TrackballControls.onPointerUp,
+      false
+    );
 
-    globalThis.addEventListener('keydown', TrackballControls.keydown, false);
-    globalThis.addEventListener('keyup', TrackballControls.keyup, false);
+    globalThis.addEventListener("keydown", TrackballControls.keydown, false);
+    globalThis.addEventListener("keyup", TrackballControls.keyup, false);
 
     this.handleResize();
 
@@ -140,7 +170,7 @@ export class TrackballControls extends THREE.EventDispatcher {
     //this.update();
   }
 
-  handleResize () {
+  handleResize(): void {
     const box = this.domElement.getBoundingClientRect();
     // Adjustments come from similar code in the jquery offset() function.
     const d = this.domElement.ownerDocument.documentElement;
@@ -150,30 +180,35 @@ export class TrackballControls extends THREE.EventDispatcher {
     this.screen.height = box.height;
   }
 
-  getMouseOnScreen(pageX: number, pageY: number) {
+  getMouseOnScreen(pageX: number, pageY: number): THREE.Vector2 {
     return new THREE.Vector2(
       (pageX - this.screen.left) / this.screen.width,
-      (pageY - this.screen.top) / this.screen.height,
+      (pageY - this.screen.top) / this.screen.height
     );
   }
 
-  getMouseOnCircle(pageX: number, pageY: number) {
+  getMouseOnCircle(pageX: number, pageY: number): THREE.Vector2 {
     return new THREE.Vector2(
-      ((pageX - this.screen.width * 0.5 - this.screen.left) / (this.screen.width * 0.5)),
-      ((this.screen.height + 2 * (this.screen.top - pageY)) / this.screen.width), // screen.width intentional
+      (pageX - this.screen.width * 0.5 - this.screen.left) /
+        (this.screen.width * 0.5),
+      (this.screen.height + 2 * (this.screen.top - pageY)) / this.screen.width
     );
   }
 
-  rotateCamera() {
-    let axis = new THREE.Vector3(),
+  rotateCamera(): void {
+    const axis = new THREE.Vector3(),
       quaternion = new THREE.Quaternion(),
       eyeDirection = new THREE.Vector3(),
       objectUpDirection = new THREE.Vector3(),
       objectSidewaysDirection = new THREE.Vector3(),
-      moveDirection = new THREE.Vector3(),
-      angle: number;
+      moveDirection = new THREE.Vector3();
+    let angle: number;
 
-    moveDirection.set(this.moveCurr.x - this.movePrev.x, this.moveCurr.y - this.movePrev.y, 0);
+    moveDirection.set(
+      this.moveCurr.x - this.movePrev.x,
+      this.moveCurr.y - this.movePrev.y,
+      0
+    );
     angle = moveDirection.length();
 
     if (angle) {
@@ -181,7 +216,9 @@ export class TrackballControls extends THREE.EventDispatcher {
 
       eyeDirection.copy(this.eye).normalize();
       objectUpDirection.copy(this.object.up).normalize();
-      objectSidewaysDirection.crossVectors(objectUpDirection, eyeDirection).normalize();
+      objectSidewaysDirection
+        .crossVectors(objectUpDirection, eyeDirection)
+        .normalize();
 
       objectUpDirection.setLength(this.moveCurr.y - this.movePrev.y);
       objectSidewaysDirection.setLength(this.moveCurr.x - this.movePrev.x);
@@ -198,8 +235,7 @@ export class TrackballControls extends THREE.EventDispatcher {
 
       this.lastAxis.copy(axis);
       this.lastAngle = angle;
-    }
-    else if (!this.staticMoving && this.lastAngle) {
+    } else if (!this.staticMoving && this.lastAngle) {
       this.lastAngle *= Math.sqrt(1.0 - this.dynamicDampingFactor);
       this.eye.copy(this.object.position).sub(this.target);
       quaternion.setFromAxisAngle(this.lastAxis, this.lastAngle);
@@ -210,28 +246,26 @@ export class TrackballControls extends THREE.EventDispatcher {
     this.movePrev.copy(this.moveCurr);
   }
 
-  zoomCamera () {
+  zoomCamera(): void {
     let factor: number;
 
     if (this.state === STATE.TOUCH_ZOOM_PAN) {
       factor = this.touchZoomDistanceStart / this.touchZoomDistanceEnd;
       this.touchZoomDistanceStart = this.touchZoomDistanceEnd;
       this.eye.multiplyScalar(factor);
-    }
-    else {
+    } else {
       factor = 1.0 + (this.zoomEnd.y - this.zoomStart.y) * this.zoomSpeed;
-      if (factor !== 1.0 && factor > 0.0)
-        this.eye.multiplyScalar(factor);
+      if (factor !== 1.0 && factor > 0.0) this.eye.multiplyScalar(factor);
 
-      if (this.staticMoving)
-        this.zoomStart.copy(this.zoomEnd);
+      if (this.staticMoving) this.zoomStart.copy(this.zoomEnd);
       else
-        this.zoomStart.y += (this.zoomEnd.y - this.zoomStart.y) * this.dynamicDampingFactor;
+        this.zoomStart.y +=
+          (this.zoomEnd.y - this.zoomStart.y) * this.dynamicDampingFactor;
     }
   }
 
-  panCamera() {
-    let mouseChange = new THREE.Vector2(),
+  panCamera(): void {
+    const mouseChange = new THREE.Vector2(),
       objectUp = new THREE.Vector3(),
       pan = new THREE.Vector3();
 
@@ -246,38 +280,44 @@ export class TrackballControls extends THREE.EventDispatcher {
       this.object.position.add(pan);
       this.target.add(pan);
 
-      if (this.staticMoving)
-        this.panStart.copy(this.panEnd);
+      if (this.staticMoving) this.panStart.copy(this.panEnd);
       else
-        this.panStart.add(mouseChange.subVectors(this.panEnd, this.panStart).multiplyScalar(this.dynamicDampingFactor));
+        this.panStart.add(
+          mouseChange
+            .subVectors(this.panEnd, this.panStart)
+            .multiplyScalar(this.dynamicDampingFactor)
+        );
     }
   }
 
-  checkDistances() {
+  checkDistances(): void {
     if (!this.noZoom || !this.noPan) {
       if (this.eye.lengthSq() > this.maxDistance * this.maxDistance) {
-        this.object.position.addVectors(this.target, this.eye.setLength(this.maxDistance));
+        this.object.position.addVectors(
+          this.target,
+          this.eye.setLength(this.maxDistance)
+        );
         this.zoomStart.copy(this.zoomEnd);
       }
 
       if (this.eye.lengthSq() < this.minDistance * this.minDistance) {
-        this.object.position.addVectors(this.target, this.eye.setLength(this.minDistance));
+        this.object.position.addVectors(
+          this.target,
+          this.eye.setLength(this.minDistance)
+        );
         this.zoomStart.copy(this.zoomEnd);
       }
     }
   }
 
-  update() {
+  update(): void {
     this.eye.subVectors(this.object.position, this.target);
 
-    if (!this.noRotate)
-      this.rotateCamera();
+    if (!this.noRotate) this.rotateCamera();
 
-    if (!this.noZoom)
-      this.zoomCamera();
+    if (!this.noZoom) this.zoomCamera();
 
-    if (!this.noPan)
-      this.panCamera();
+    if (!this.noPan) this.panCamera();
 
     this.object.position.addVectors(this.target, this.eye);
     this.checkDistances();
@@ -289,7 +329,7 @@ export class TrackballControls extends THREE.EventDispatcher {
     }
   }
 
-  reset() {
+  reset(): void {
     this.state = STATE.NONE;
     this.keyState = STATE.NONE;
 
@@ -308,27 +348,27 @@ export class TrackballControls extends THREE.EventDispatcher {
   }
 
   // Listeners
-  static onPointerDown(this: HTMLCanvasElement, event: PointerEvent) {
-    const trackball: TrackballControls = globalThis.trackball;
-    if ( !trackball.enabled ) return;
-
-		switch ( event.pointerType ) {
-			case 'mouse':
-			case 'pen':
-				TrackballControls.onMouseDown(event);
-				break;
-
-			// TODO touch
-		}
-	}
-
-  static onPointerMove(this: Document, event: PointerEvent) {
+  static onPointerDown(this: HTMLCanvasElement, event: PointerEvent): void {
     const trackball: TrackballControls = globalThis.trackball;
     if (!trackball.enabled) return;
 
     switch (event.pointerType) {
-      case 'mouse':
-      case 'pen':
+      case "mouse":
+      case "pen":
+        TrackballControls.onMouseDown(event);
+        break;
+
+      // TODO touch
+    }
+  }
+
+  static onPointerMove(this: Document, event: PointerEvent): void {
+    const trackball: TrackballControls = globalThis.trackball;
+    if (!trackball.enabled) return;
+
+    switch (event.pointerType) {
+      case "mouse":
+      case "pen":
         TrackballControls.onMouseMove(event);
         break;
 
@@ -336,13 +376,13 @@ export class TrackballControls extends THREE.EventDispatcher {
     }
   }
 
-  static onPointerUp(this: Document, event: PointerEvent) {
+  static onPointerUp(this: Document, event: PointerEvent): void {
     const trackball: TrackballControls = globalThis.trackball;
     if (!trackball.enabled) return;
 
     switch (event.pointerType) {
-      case 'mouse':
-      case 'pen':
+      case "mouse":
+      case "pen":
         TrackballControls.onMouseUp(event);
         break;
 
@@ -350,14 +390,13 @@ export class TrackballControls extends THREE.EventDispatcher {
     }
   }
 
-  static keydown(this: Window, event: KeyboardEvent) {
+  static keydown(this: Window, event: KeyboardEvent): void {
     const trackball: TrackballControls = globalThis.trackball;
     if (!trackball.enabled) return;
 
-    globalThis.removeEventListener('keydown', TrackballControls.keydown);
+    globalThis.removeEventListener("keydown", TrackballControls.keydown);
 
-    if (trackball.keyState !== STATE.NONE)
-      return;
+    if (trackball.keyState !== STATE.NONE) return;
     else if (event.key === trackball.keys[STATE.ROTATE] && !trackball.noRotate)
       trackball.keyState = STATE.ROTATE;
     else if (event.key === trackball.keys[STATE.ZOOM] && !trackball.noZoom)
@@ -366,16 +405,16 @@ export class TrackballControls extends THREE.EventDispatcher {
       trackball.keyState = STATE.PAN;
   }
 
-  static keyup() {
+  static keyup(): void {
     const trackball = globalThis.trackball;
     if (!trackball.enabled) return;
 
     trackball.keyState = STATE.NONE;
 
-    globalThis.addEventListener('keydown', TrackballControls.keydown, false);
+    globalThis.addEventListener("keydown", TrackballControls.keydown, false);
   }
 
-  static onMouseDown(event: MouseEvent) {
+  static onMouseDown(event: MouseEvent): void {
     const trackball: TrackballControls = globalThis.trackball;
     event.preventDefault();
     event.stopPropagation();
@@ -396,47 +435,66 @@ export class TrackballControls extends THREE.EventDispatcher {
       }
     }
 
-    const state = (trackball.keyState !== STATE.NONE) ? trackball.keyState : trackball.state;
+    const state =
+      trackball.keyState !== STATE.NONE ? trackball.keyState : trackball.state;
 
     if (state === STATE.ROTATE && !trackball.noRotate) {
-      trackball.moveCurr.copy(trackball.getMouseOnCircle(event.pageX, event.pageY));
+      trackball.moveCurr.copy(
+        trackball.getMouseOnCircle(event.pageX, event.pageY)
+      );
       trackball.movePrev.copy(trackball.moveCurr);
-    }
-    else if (state === STATE.ZOOM && !trackball.noZoom) {
-      trackball.zoomStart.copy(trackball.getMouseOnScreen(event.pageX, event.pageY));
+    } else if (state === STATE.ZOOM && !trackball.noZoom) {
+      trackball.zoomStart.copy(
+        trackball.getMouseOnScreen(event.pageX, event.pageY)
+      );
       trackball.zoomEnd.copy(trackball.zoomStart);
-    }
-    else if (state === STATE.PAN && !trackball.noPan) {
-      trackball.panStart.copy(trackball.getMouseOnScreen(event.pageX, event.pageY));
+    } else if (state === STATE.PAN && !trackball.noPan) {
+      trackball.panStart.copy(
+        trackball.getMouseOnScreen(event.pageX, event.pageY)
+      );
       trackball.panEnd.copy(trackball.panStart);
     }
 
-    trackball.domElement.ownerDocument.addEventListener('pointermove', TrackballControls.onPointerMove, false);
-    trackball.domElement.ownerDocument.addEventListener('pointerup', TrackballControls.onPointerUp, false);
+    trackball.domElement.ownerDocument.addEventListener(
+      "pointermove",
+      TrackballControls.onPointerMove,
+      false
+    );
+    trackball.domElement.ownerDocument.addEventListener(
+      "pointerup",
+      TrackballControls.onPointerUp,
+      false
+    );
 
     trackball.dispatchEvent(EVENT.start);
   }
 
-  static onMouseMove(event: MouseEvent) {
+  static onMouseMove(event: MouseEvent): void {
     const trackball: TrackballControls = globalThis.trackball;
     if (!trackball.enabled) return;
 
     event.preventDefault();
     event.stopPropagation();
 
-    const state = (trackball.keyState !== STATE.NONE) ? trackball.keyState : trackball.state;
+    const state =
+      trackball.keyState !== STATE.NONE ? trackball.keyState : trackball.state;
 
     if (state === STATE.ROTATE && !trackball.noRotate) {
       trackball.movePrev.copy(trackball.moveCurr);
-      trackball.moveCurr.copy(trackball.getMouseOnCircle(event.pageX, event.pageY));
-    }
-    else if (state === STATE.ZOOM && !trackball.noZoom)
-      trackball.zoomEnd.copy(trackball.getMouseOnScreen(event.pageX, event.pageY));
+      trackball.moveCurr.copy(
+        trackball.getMouseOnCircle(event.pageX, event.pageY)
+      );
+    } else if (state === STATE.ZOOM && !trackball.noZoom)
+      trackball.zoomEnd.copy(
+        trackball.getMouseOnScreen(event.pageX, event.pageY)
+      );
     else if (state === STATE.PAN && !trackball.noPan)
-      trackball.panEnd.copy(trackball.getMouseOnScreen(event.pageX, event.pageY));
+      trackball.panEnd.copy(
+        trackball.getMouseOnScreen(event.pageX, event.pageY)
+      );
   }
 
-  static onMouseUp(event: MouseEvent) {
+  static onMouseUp(event: MouseEvent): void {
     const trackball: TrackballControls = globalThis.trackball;
     if (!trackball.enabled) return;
 
@@ -445,12 +503,18 @@ export class TrackballControls extends THREE.EventDispatcher {
 
     trackball.state = STATE.NONE;
 
-    trackball.domElement.ownerDocument.removeEventListener('pointermove', TrackballControls.onPointerMove);
-    trackball.domElement.ownerDocument.removeEventListener('pointerup', TrackballControls.onPointerUp);
+    trackball.domElement.ownerDocument.removeEventListener(
+      "pointermove",
+      TrackballControls.onPointerMove
+    );
+    trackball.domElement.ownerDocument.removeEventListener(
+      "pointerup",
+      TrackballControls.onPointerUp
+    );
     trackball.dispatchEvent(EVENT.end);
   }
 
-  static mousewheel(this: HTMLCanvasElement, event: WheelEvent) {
+  static mousewheel(this: HTMLCanvasElement, event: WheelEvent): void {
     const trackball: TrackballControls = globalThis.trackball;
     if (!trackball.enabled) return;
     if (trackball.noZoom === true) return;
@@ -477,7 +541,7 @@ export class TrackballControls extends THREE.EventDispatcher {
     trackball.dispatchEvent(EVENT.start);
   }
 
-  static touchstart(event: TouchEvent) {
+  static touchstart(event: TouchEvent): void {
     const trackball: TrackballControls = globalThis.trackball;
     if (!trackball.enabled) return;
 
@@ -486,17 +550,24 @@ export class TrackballControls extends THREE.EventDispatcher {
     switch (event.touches.length) {
       case 1:
         trackball.state = STATE.TOUCH_ROTATE;
-        trackball.moveCurr.copy(trackball.getMouseOnCircle(event.touches[0].pageX, event.touches[0].pageY));
+        trackball.moveCurr.copy(
+          trackball.getMouseOnCircle(
+            event.touches[0].pageX,
+            event.touches[0].pageY
+          )
+        );
         trackball.movePrev.copy(trackball.moveCurr);
         break;
-      default: // 2 or more
+      default:
+        // 2 or more
         trackball.state = STATE.TOUCH_ZOOM_PAN;
-        var dx = event.touches[0].pageX - event.touches[1].pageX;
-        var dy = event.touches[0].pageY - event.touches[1].pageY;
-        trackball.touchZoomDistanceEnd = trackball.touchZoomDistanceStart = Math.sqrt(dx * dx + dy * dy);
+        const dx = event.touches[0].pageX - event.touches[1].pageX;
+        const dy = event.touches[0].pageY - event.touches[1].pageY;
+        trackball.touchZoomDistanceEnd = Math.sqrt(dx * dx + dy * dy);
+        trackball.touchZoomDistanceStart = trackball.touchZoomDistanceEnd;
 
-        var x = (event.touches[0].pageX + event.touches[1].pageX) / 2;
-        var y = (event.touches[0].pageY + event.touches[1].pageY) / 2;
+        const x = (event.touches[0].pageX + event.touches[1].pageX) / 2;
+        const y = (event.touches[0].pageY + event.touches[1].pageY) / 2;
         trackball.panStart.copy(trackball.getMouseOnScreen(x, y));
         trackball.panEnd.copy(trackball.panStart);
         break;
@@ -505,7 +576,7 @@ export class TrackballControls extends THREE.EventDispatcher {
     trackball.dispatchEvent(EVENT.start);
   }
 
-  static touchmove(this: HTMLCanvasElement, event: TouchEvent) {
+  static touchmove(this: HTMLCanvasElement, event: TouchEvent): void {
     const trackball: TrackballControls = globalThis.trackball;
     if (!trackball.enabled) return;
 
@@ -515,21 +586,27 @@ export class TrackballControls extends THREE.EventDispatcher {
     switch (event.touches.length) {
       case 1:
         trackball.movePrev.copy(trackball.moveCurr);
-        trackball.moveCurr.copy(trackball.getMouseOnCircle(event.touches[0].pageX, event.touches[0].pageY));
+        trackball.moveCurr.copy(
+          trackball.getMouseOnCircle(
+            event.touches[0].pageX,
+            event.touches[0].pageY
+          )
+        );
         break;
-      default: // 2 or more
-        var dx = event.touches[0].pageX - event.touches[1].pageX;
-        var dy = event.touches[0].pageY - event.touches[1].pageY;
+      default:
+        // 2 or more
+        const dx = event.touches[0].pageX - event.touches[1].pageX;
+        const dy = event.touches[0].pageY - event.touches[1].pageY;
         trackball.touchZoomDistanceEnd = Math.sqrt(dx * dx + dy * dy);
 
-        var x = (event.touches[0].pageX + event.touches[1].pageX) / 2;
-        var y = (event.touches[0].pageY + event.touches[1].pageY) / 2;
+        const x = (event.touches[0].pageX + event.touches[1].pageX) / 2;
+        const y = (event.touches[0].pageY + event.touches[1].pageY) / 2;
         trackball.panEnd.copy(trackball.getMouseOnScreen(x, y));
         break;
     }
   }
 
-  static touchend(this: HTMLCanvasElement, event: TouchEvent) {
+  static touchend(this: HTMLCanvasElement, event: TouchEvent): void {
     const trackball: TrackballControls = globalThis.trackball;
     if (!trackball.enabled) return;
 
@@ -539,7 +616,12 @@ export class TrackballControls extends THREE.EventDispatcher {
         break;
       case 1:
         trackball.state = STATE.TOUCH_ROTATE;
-        trackball.moveCurr.copy(trackball.getMouseOnCircle(event.touches[0].pageX, event.touches[0].pageY));
+        trackball.moveCurr.copy(
+          trackball.getMouseOnCircle(
+            event.touches[0].pageX,
+            event.touches[0].pageY
+          )
+        );
         trackball.movePrev.copy(trackball.moveCurr);
         break;
     }
@@ -547,26 +629,58 @@ export class TrackballControls extends THREE.EventDispatcher {
     trackball.dispatchEvent(EVENT.end);
   }
 
-  static contextmenu(this: HTMLCanvasElement, event: MouseEvent) {
+  static contextmenu(this: HTMLCanvasElement, event: MouseEvent): void {
     const trackball: TrackballControls = globalThis.trackball;
     if (!trackball.enabled) return;
 
     event.preventDefault();
   }
 
-  dispose () {
-    this.domElement.removeEventListener('contextmenu', TrackballControls.contextmenu, false);
-    this.domElement.removeEventListener('pointerdown', TrackballControls.onPointerDown, false);
-    this.domElement.removeEventListener('wheel', TrackballControls.mousewheel, false);
+  dispose(): void {
+    this.domElement.removeEventListener(
+      "contextmenu",
+      TrackballControls.contextmenu,
+      false
+    );
+    this.domElement.removeEventListener(
+      "pointerdown",
+      TrackballControls.onPointerDown,
+      false
+    );
+    this.domElement.removeEventListener(
+      "wheel",
+      TrackballControls.mousewheel,
+      false
+    );
 
-    this.domElement.removeEventListener('touchstart', TrackballControls.touchstart, false);
-    this.domElement.removeEventListener('touchend', TrackballControls.touchend, false);
-    this.domElement.removeEventListener('touchmove', TrackballControls.touchmove, false);
+    this.domElement.removeEventListener(
+      "touchstart",
+      TrackballControls.touchstart,
+      false
+    );
+    this.domElement.removeEventListener(
+      "touchend",
+      TrackballControls.touchend,
+      false
+    );
+    this.domElement.removeEventListener(
+      "touchmove",
+      TrackballControls.touchmove,
+      false
+    );
 
-    this.domElement.ownerDocument.removeEventListener( 'pointermove', TrackballControls.onPointerMove, false );
-		this.domElement.ownerDocument.removeEventListener( 'pointerup', TrackballControls.onPointerUp, false );
+    this.domElement.ownerDocument.removeEventListener(
+      "pointermove",
+      TrackballControls.onPointerMove,
+      false
+    );
+    this.domElement.ownerDocument.removeEventListener(
+      "pointerup",
+      TrackballControls.onPointerUp,
+      false
+    );
 
-    globalThis.removeEventListener('keydown', TrackballControls.keydown, false);
-    globalThis.removeEventListener('keyup', TrackballControls.keyup, false);
+    globalThis.removeEventListener("keydown", TrackballControls.keydown, false);
+    globalThis.removeEventListener("keyup", TrackballControls.keyup, false);
   }
 }

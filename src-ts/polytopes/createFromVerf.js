@@ -109,62 +109,62 @@ Polytope._matrixFromAngles = function(angles, d) {
  * array of size N as an input, and returns a scalar value as output,
  * which is to be minimized.
  * @param {Array} x0 An array of values of size N, which is an initialization
- *  to the minimization algorithm.
+ *	to the minimization algorithm.
  * @return {Object} An object instance with two fields: argument, which
  * denotes the best argument found thus far, and fncvalue, which is a
  * value of the function at the best found argument.
 */
 Polytope._minimize = function (fnc, x0) {
-    var eps = 1e-2;
+		var eps = 1e-2;
 
-    var convergence = false;
-    var x = x0.slice(); // make copy of initialization
-    var alpha = 0.001; // scaling factor
+		var convergence = false;
+		var x = x0.slice(); // make copy of initialization
+		var alpha = 0.001; // scaling factor
 
-    var pfx = Math.exp(10);
-    var fx = fnc(x);
-    var pidx = 1;
-    while (!convergence) {
+		var pfx = Math.exp(10);
+		var fx = fnc(x);
+		var pidx = 1;
+		while (!convergence) {
 
-        var indicies = shuffleIndiciesOf(x);
-        convergence = true;
+				var indicies = shuffleIndiciesOf(x);
+				convergence = true;
 
-        // Perform update over all of the variables in random order
-        for (var i = 0; i < indicies.length; i++) {
+				// Perform update over all of the variables in random order
+				for (var i = 0; i < indicies.length; i++) {
 
-            x[indicies[i]] += 1e-6;
-            var fxi = fnc(x);
-            x[indicies[i]] -= 1e-6;
-            var dx = (fxi - fx) / 1e-6;
+						x[indicies[i]] += 1e-6;
+						var fxi = fnc(x);
+						x[indicies[i]] -= 1e-6;
+						var dx = (fxi - fx) / 1e-6;
 
-            if (Math.abs(dx) > eps) {
-                convergence = false;
-            }
+						if (Math.abs(dx) > eps) {
+								convergence = false;
+						}
 
-            x[indicies[i]] = x[indicies[i]] - alpha * dx;
-            fx = fnc(x);
+						x[indicies[i]] = x[indicies[i]] - alpha * dx;
+						fx = fnc(x);
 
-        }
+				}
 
-        // a simple step size selection rule. Near x function acts linear
-        // (this is assumed at least) and thus very small values of alpha
-        // should lead to (small) improvement. Increasing alpha would
-        // yield better improvement up to certain alpha size.
+				// a simple step size selection rule. Near x function acts linear
+				// (this is assumed at least) and thus very small values of alpha
+				// should lead to (small) improvement. Increasing alpha would
+				// yield better improvement up to certain alpha size.
 
-        alpha = pfx > fx ? alpha * 1.1 : alpha * 0.7;
-        pfx = fx;
+				alpha = pfx > fx ? alpha * 1.1 : alpha * 0.7;
+				pfx = fx;
 
-        pidx--;
-        if (pidx === 0) {
-            pidx = 1;
-        }
+				pidx--;
+				if (pidx === 0) {
+						pidx = 1;
+				}
 
-    }
+		}
 
-    var solution = {};
-    solution.argument = x;
-    solution.fncvalue = fx;
+		var solution = {};
+		solution.argument = x;
+		solution.fncvalue = fx;
 
-    return solution;
+		return solution;
 
 };
