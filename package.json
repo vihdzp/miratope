@@ -40,12 +40,10 @@
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
     "copyfiles": "^2.4.1",
-    "docdash": "^1.2.0",
     "eslint": "^7.16.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-prettier": "^3.3.0",
     "html-minifier": "^4.0.0",
-    "jsdoc": "^3.6.6",
     "prettier": "^2.2.1",
     "tinyify": "^3.0.0",
     "typedoc": "^0.19.2"
