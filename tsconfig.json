@@ -8,12 +8,12 @@
     "strict": true,
     "moduleResolution": "node",
     "downlevelIteration": true,
-    "outDir": "src-js",
+    "outDir": "src/js",
     "noImplicitAny": false,
     "removeComments": false,
     "suppressImplicitAnyIndexErrors": false
   },
   "include": [
-    "./src-ts/**/*.ts"
+    "./src/ts/**/*.ts"
   ]
 }

@@ -4,7 +4,7 @@
         "dictionaries": ["jsdoc", "closure"]
     },
     "source": {
-        "include": ["./package.json", "./README.md", "./src-js/"],
+        "include": ["./package.json", "./README.md", "./src/js/"],
         "includePattern": "\\.js$",
         "excludePattern": "(node_modules/|docs)"
     },
@@ -14,7 +14,7 @@
     "opts": {
         "template": "node_modules/docdash",
         "encoding": "utf8",
-		"destination": "./out-jsdoc/",
+		"destination": "./out/jsdoc/",
 		"tutorials": "./tutorials/",
         "recurse": true,
         "verbose": true
