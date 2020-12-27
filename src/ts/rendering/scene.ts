@@ -41,15 +41,11 @@ export class Scene {
     );
     this.camera.position.z = 2;
 
-    //Adds both ambient light and directional light.
+    //Declares and adds both ambient light and directional light.
     this.ambientLight = new THREE.AmbientLight(0x777777, 0.8);
     this.directionalLight = new THREE.DirectionalLight(0x777777, 0.8);
     this.directionalLight.position.set(1, 1, -1).normalize();
-
-    //Adds the ambient light, adds the directional light fixed w.r.t the scene.
-    this.scene.add(this.ambientLight);
-    this.camera.add(this.directionalLight);
-    this.scene.add(this.camera);
+    this.addLights();
 
     //Sets material.
     this.material = new THREE.MeshLambertMaterial({
@@ -66,6 +62,15 @@ export class Scene {
     this.controls.target.set(0, 0, 0);
     this.controls.rotateSpeed = 4;
     this.controls.update();
+  }
+
+  /**
+   * Adds the ambient light and the directional light, fixed w.r.t the scene.
+   */
+  private addLights(): void {
+    this.scene.add(this.ambientLight);
+    this.camera.add(this.directionalLight);
+    this.scene.add(this.camera);
   }
 
   /** Adds a face to the scene.
@@ -141,8 +146,7 @@ export class Scene {
       this.scene.remove(this.scene.children[0]);
     }
 
-    this.scene.add(this.ambientLight);
-    this.scene.add(this.directionalLight);
+    this.addLights();
 
     this.polytopes = [];
   }
