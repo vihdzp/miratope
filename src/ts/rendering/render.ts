@@ -1,11 +1,11 @@
-import { Point } from "../geometry/point";
-import { Space } from "../geometry/space";
+import Point from "../geometry/point";
+import Space from "../geometry/space";
 import { PolytopeB } from "../polytopes/polytopeTypes";
-import { Scene } from "./scene";
-import { LinkedListNode } from "../data structures/linkedListNode";
-import { SweeplineEdge } from "../data structures/sweeplineEdge";
-import { AvlTree } from "../data structures/avl-tree";
-import { Global } from "../global";
+import Scene from "./scene";
+import LinkedListNode from "../data structures/linkedListNode";
+import SweeplineEdge from "../data structures/sweeplineEdge";
+import AvlTree from "../data structures/avl-tree";
+import Global from "../global";
 
 export abstract class Render {
   static vertexDLL: LinkedListNode<Point>[];

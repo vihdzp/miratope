@@ -1,9 +1,16 @@
-import { GraphNode } from "../../data structures/graphNode";
+import GraphNode from "../../data structures/graphNode";
 import { PolytopeB } from "../polytopeTypes";
 
-export abstract class PolytopeCD {
+/**
+ * A class containing various methods to work with
+ * [[Coxeter-Dynkin diagrams | https://polytope.miraheze.org/wiki/Coxeter_diagram]].
+ *
+ * @category Polytope Method
+ */
+export default abstract class PolytopeCD {
   /**
    * Creates a Schläfli matrix from a Coxeter diagram
+   *
    * @param {string} diagram The input Coxeter diagram
    * @returns {number[][]} A 2D array corresponding to the CD's Schläfli matrix
    */
@@ -78,8 +85,11 @@ export abstract class PolytopeCD {
 
   /**
    * Returns a polytope's dimension and space shape from a Coxeter diagram
-   * @param {string} diagram The input Coxeter diagram
-   * @returns {number[]} An array with the first entry being the dimension and the second is 1 for spherical, 0 for euclidean, and -1 for hyperbolic (and null when something is wrong)
+   *
+   * @param diagram The input Coxeter diagram
+   * @returns An array with the first entry being the dimension and the second
+   * is 1 for spherical, 0 for euclidean, and -1 for hyperbolic (and null when
+   * something is wrong)
    */
   static spaceShape(diagram: string): [number, number | null] {
     const schlafl = PolytopeCD.cdToMatrix(diagram);
@@ -94,8 +104,8 @@ export abstract class PolytopeCD {
 
   /**
    * Returns the determinant of a matrix.
-   * @param {number[][]} diagram A matrix in the form of a 2D array
-   * @returns {number} The matrix's determinant
+   * @param diagram A matrix in the form of a 2D array
+   * @returns The matrix's determinant
    * @private
    * @todo Use Gaussian elimination to calculate the determinant much quicker.
    */
@@ -134,8 +144,9 @@ export abstract class PolytopeCD {
 /**
  * Creates a graph from the vertices and edges of a polyhedron.
  * Adds labels edges based on their adjacent faces.
+ *
  * @todo Could this be changed to work for higher/lower dimensions too?
- * @returns {GraphNode[]} The graph of the polytope.
+ * @returns The graph of the polytope.
  */
 PolytopeB.prototype.polytopeToGraph = function (): GraphNode<number>[] {
   const P = this.toPolytopeC();

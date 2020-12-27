@@ -1,7 +1,7 @@
 import * as Globalize from "globalize";
-import { Ending, GenderModificationType } from "./ending";
-import { loadJSON } from "./loadJSON";
-import { loadMessages } from "./loadMessages";
+import Ending, { GenderModificationType } from "./ending";
+import loadJSON from "./loadJSON";
+import loadMessages from "./loadMessages";
 
 export interface LanguageOptions {
   uppercase?: boolean;
@@ -11,87 +11,26 @@ export interface LanguageOptions {
 
 /**
  * Class for translating words, phrases, or generating names for polytopes in
- * various languages.
- * @namespace Translation
+ * various languages. Serves as a wrapper for
+ * [[https://github.com/globalizejs/globalize | Globalize.js]].
  */
 export abstract class Translation {
+  /** The wrapped Globalize object. */
   private static _globalize: Globalize;
+  /** A two letter string identifying the language. */
   static language: string;
+  /** Specifies whether the target language capitalizes all nouns. */
   static nounCapitalization: boolean;
+  /** Specifies whether the target language places adjectives before nouns. */
   static adjBeforeNoun: boolean;
+  /** Specifies whether the target language has grammatical gender. */
   static genderedLanguage: boolean;
-
-  static firstToLower(str: string): string {
-    return str.charAt(0).toLowerCase() + str.slice(1);
-  }
-
-  static firstToUpper(str: string): string {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
-  static setLanguage(lang: string): void {
-    Translation._globalize = new Globalize(lang);
-    Translation.language = lang;
-
-    //Sets properties about the chosen language.
-
-    //Does the language capitalize all nouns?
-    Translation.nounCapitalization =
-      Translation.get("meta/nounCapitalization") === "true";
-
-    //Does the language have adjectives generally precede nouns, or viceversa?
-    Translation.adjBeforeNoun =
-      Translation.get("meta/adjBeforeNoun") === "true";
-
-    //Does the language have grammatical gender?
-    Translation.genderedLanguage =
-      Translation.get("meta/genderedLanguage") === "true";
-  }
-
-  //Gets the translation of a message from loadMessages.js.
-  static get(message: string, options: LanguageOptions = {}): string {
-    options.count ||= 1;
-    options.gender ||= "male";
-    const msg: string = Translation._globalize.messageFormatter(message)(
-      options
-    );
-
-    //Uppercase message.
-    if (options.uppercase) return Translation.firstToUpper(msg);
-    return msg;
-  }
-
-  /**
-   * Adds an appropriately declensed adjective to a noun.
-   * @param {string} adj The adjective, already declensed.
-   * @param {string} noun The noun to which the adjective will be added.
-   * @param {Object} [options={}] Result modifiers.
-   * @param {boolean} [options.uppercase] Capitalizes the first letter of
-   * the result.
-   * @returns The adjective placed before or after the noun, according to the
-   * target language.
-   */
-  static addAdjective(
-    adj: string,
-    noun: string,
-    options: LanguageOptions = {}
-  ): string {
-    let res: string;
-
-    if (Translation.adjBeforeNoun) res = adj + " " + noun;
-    else res = noun + " " + adj;
-
-    if (options.uppercase) return Translation.firstToUpper(res);
-    return res;
-  }
-
   /**
    * -, one, two, three, four, five, six, seven, eight, nine,
    * to Greek, back to each language.
    * Used for {@linkcode Translation.greekPrefix}.
-   * @private
    */
-  private static _greekUnits = {
+  private static readonly _greekUnits = {
     en: [
       "",
       "hen",
@@ -130,15 +69,89 @@ export abstract class Translation {
     ],
   };
 
+  /**
+   * Makes the first letter of a string lowercase.
+   *
+   * @return The transformed string.
+   */
+  static firstToLower(str: string): string {
+    return str.charAt(0).toLowerCase() + str.slice(1);
+  }
+
+  /**
+   * Makes the first letter of a string uppercase.
+   *
+   * @return The transformed string.
+   */
+  static firstToUpper(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  static setLanguage(lang: string): void {
+    Translation._globalize = new Globalize(lang);
+    Translation.language = lang;
+
+    //Sets properties about the chosen language.
+
+    //Does the language capitalize all nouns?
+    Translation.nounCapitalization =
+      Translation.get("meta/nounCapitalization") === "true";
+
+    //Does the language have adjectives generally precede nouns, or viceversa?
+    Translation.adjBeforeNoun =
+      Translation.get("meta/adjBeforeNoun") === "true";
+
+    //Does the language have grammatical gender?
+    Translation.genderedLanguage =
+      Translation.get("meta/genderedLanguage") === "true";
+  }
+
+  /**
+   * Gets the translation of a message from loadMessages.js.
+   *
+   * @return The translated message.
+   */
+  static get(message: string, options: LanguageOptions = {}): string {
+    options.count ||= 1;
+    options.gender ||= "male";
+    const msg: string = Translation._globalize.messageFormatter(message)(
+      options
+    );
+
+    //Uppercase message.
+    if (options.uppercase) return Translation.firstToUpper(msg);
+    return msg;
+  }
+
+  /**
+   * Adds an appropriately declensed adjective to a noun.
+   * @param adj The adjective, already declensed.
+   * @param noun The noun to which the adjective will be added.
+   *
+   * @returns The adjective placed before or after the noun, according to the
+   * target language.
+   */
+  static addAdjective(
+    adj: string,
+    noun: string,
+    options: LanguageOptions = {}
+  ): string {
+    let res: string;
+
+    if (Translation.adjBeforeNoun) res = adj + " " + noun;
+    else res = noun + " " + adj;
+
+    if (options.uppercase) return Translation.firstToUpper(res);
+    return res;
+  }
+
   /** Converts a number `n` into a greek prefix (or whatever works similarly in
    * the target language). Based on
    * [George Hart's scheme for greek numerical prefixes]{@link https://www.georgehart.com/virtual-polyhedra/greek-prefixes.html}.
    * Works only from 0 to 99999. Defaults to `"n-"`.
-   * @param {number} n The number to convert.
-   * @param {Object} [options={}] Result modifiers.
-   * @param {boolean} [options.uppercase] Capitalizes the first letter of
-   * the result.
-   * @returns {string} The number `n` as a greek prefix.
+   * @param n The number to convert.
+   * @param Result modifiers.
+   * @returns The number `n` as a greek prefix.
    * @example
    * Translation.setLanguage("en");
    *

@@ -1,4 +1,4 @@
-export class GraphNode<T> {
+export default class GraphNode<T> {
   value: T;
   neighbors: GraphNode<T>[];
   labels: number[];

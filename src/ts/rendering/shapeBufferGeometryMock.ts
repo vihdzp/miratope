@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { Global } from "../global";
+import Global from "../global";
 
 //The reason this exists is that when a shape is defined, THREE.js sometimes
 //places the vertices backwards. This is troublesome, since it means that they
@@ -9,7 +9,7 @@ import { Global } from "../global";
 //some extra type checking, and the
 //Global.reversePolygon = !THREE.ShapeUtils.isClockWise(shapeVertices) line.
 
-export class ShapeBufferGeometry_ extends THREE.BufferGeometry {
+export default class ShapeBufferGeometry_ extends THREE.BufferGeometry {
   parameters: { shapes: THREE.Shape | THREE.Shape[]; curveSegments: number };
 
   constructor(shapes: THREE.Shape | THREE.Shape[], curveSegments = 12) {

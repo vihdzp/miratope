@@ -2,7 +2,7 @@
 //Each LinkedListNode is linked to two other nodes: linkage should be reflexive.
 //LinkedListNodes don't *necessarily* have a notion of a "previous" and a "next"
 //node. But when they do, node0 is the next node, and node1 is the previous.
-export class LinkedListNode<T> {
+export default class LinkedListNode<T> {
   value: T;
   private node0: LinkedListNode<T> | undefined;
   private node1: LinkedListNode<T> | undefined;

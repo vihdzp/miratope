@@ -13,7 +13,7 @@ export enum GenderModificationType {
 
 type CustomFunctionType = (name: string, gender: string) => string;
 
-export class Ending {
+export default class Ending {
   string: string;
   customFunction: CustomFunctionType | undefined;
   sliceDepth: number | undefined;

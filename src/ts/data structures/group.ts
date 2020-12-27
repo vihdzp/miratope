@@ -1,7 +1,7 @@
-import { Matrix } from "./matrix";
+import Matrix from "./matrix";
 
 //A class for abstract groups.
-export abstract class Group<T> {
+export default abstract class Group<T> {
   abstract generators: T[];
   abstract dimension: number;
 

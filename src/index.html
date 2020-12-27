@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>Miratope</title>
-		<link rel="icon" href="./miratope-logo.ico" />
+		<link rel="icon" href="./public/miratope.ico" />
 		<style>
 			body {
 				margin: 0;
@@ -18,7 +18,7 @@
 		<div style="float:left; width:500px">File import:<input type="file" id="file-input" accept=".off,.ggb"/></div>
 
 		<!-- Used to download files.-->
-		<a id = "download"></a>
+		<a id="download"></a>
 
 		<!-- Documentation link, should also get placed somewhere more appropriate eventually.-->
 		<div style="float:right; width:100px"><a href="./out/typedoc/index.html">Documentation</a></div>
@@ -81,7 +81,7 @@
 
 		<!--Textbox console.-->
 		<form action="#" onsubmit="return submitJS();">
-			<input type="text" id="command" name="command" style="width:100%; margin: 0 auto; position:fixed; font-family:Consolas" autofocus/>
+			<input type="text" id="command" name="command" style="width:100%; margin: 0 auto; position:fixed; font-family:Consolas" autofocus autocomplete="off"/>
 			<input type="submit" style="display: none" />
 		</form>
 	</body>

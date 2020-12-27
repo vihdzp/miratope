@@ -1,8 +1,8 @@
-import { Point } from "../geometry/point";
-import { LinkedListNode } from "./linkedListNode";
-import { Global } from "../global";
+import Point from "../geometry/point";
+import LinkedListNode from "./linkedListNode";
+import Global from "../global";
 
-export class SweeplineEdge {
+export default class SweeplineEdge {
   leftVertex: LinkedListNode<Point>;
   rightVertexIndex: number;
   slope: number;

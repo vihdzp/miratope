@@ -1,18 +1,19 @@
 {
   "name": "Miratope",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "A renderer for polytopes. Still in alpha.",
   "scripts": {
     "_bbt": "echo Running Browserify + Babelify + Tinyify... & browserify src/js/main.js -o out/main.js -t [ babelify --presets [ @babel/preset-env ] ] -p tinyify & echo Done!",
     "_b": "echo Running Browserify... & browserify src/js/main.js -o out/main.js & echo Done!",
     "_c": "echo Copying index.html to the project root folder... & copyfiles -u 1 src/index.html ./ & echo Done!",
-    "_h": "echo Running HTMLMinifier... & html-minifier --input-dir src --output-dir ./ --file-ext html --minify-js true --minify-css true --remove-comments --collapse-whitespace & echo Done!",
-    "_htypedoc": "echo Running HTMLMinifier... & html-minifier --input-dir out/typedoc --output-dir out/typedoc --file-ext html --minify-js true --minify-css true --remove-comments --collapse-whitespace & echo Done!",
+    "_h": "echo Running HTMLMinifier... & html-minifier --input-dir src --output-dir ./ --file-ext html --minify-js true --minify-css true --minify-urls true --remove-comments --collapse-whitespace & echo Done!",
+    "_htypedoc": "echo Running HTMLMinifier... & html-minifier --input-dir out/typedoc --output-dir out/typedoc --file-ext html --minify-js true --minify-css true --minify-urls true --remove-comments --collapse-whitespace & echo Done!",
     "build": "npm run tsc & npm run _bbt & npm run _h",
     "debug": "npm run tsc & npm run _b & npm run _c",
-    "typedoc": "echo Running TypeDoc... & typedoc src/ts --out out/typedoc & npm run _htypedoc",
+    "typedoc": "echo Running TypeDoc... & typedoc src/ts & npm run _htypedoc",
     "eslint": "echo Running ESLint... & eslint src/ts/**/*.ts{,x} --fix & echo Done!",
-    "tsc": "echo Running TypeScript... & tsc & echo Done!"
+    "tsc": "echo Running TypeScript... & tsc & echo Done!",
+    "fullbuild": "npm run eslint & npm run build & npm run typedoc"
   },
   "repository": {
     "type": "git",
@@ -46,6 +47,8 @@
     "html-minifier": "^4.0.0",
     "prettier": "^2.2.1",
     "tinyify": "^3.0.0",
-    "typedoc": "^0.19.2"
+    "typedoc": "^0.19.2",
+    "typedoc-plugin-example-tag": "^1.0.2",
+    "typedoc-plugin-extras": "^1.1.7"
   }
 }

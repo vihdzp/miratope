@@ -1,7 +1,7 @@
 import "./polytopes/classes/polytope";
 import "./rendering/render";
-import { Scene } from "./rendering/scene";
-import { FileOperations } from "./file operations/fileOperations";
+import Scene from "./rendering/scene";
+import FileOperations from "./file operations/fileOperations";
 
 declare global {
   interface Math {
@@ -14,10 +14,11 @@ if (!Math.gcd) {
    * Helper function for {@linkcode Polytope.regularPolygon} and
    * {@linkcode Translation.regularPolygonName}.
    * Just the most basic form of the Euclidean algorithm.
-   * @private
-   * @param {number} a The first number.
-   * @param {number} b The second number.
-   * @returns {number} The greatest common divisor of `a` and `b`.
+   *
+   * @internal
+   * @param a The first number.
+   * @param b The second number.
+   * @returns The greatest common divisor of `a` and `b`.
    */
   Math.gcd = function (a: number, b: number): number {
     let t: number;

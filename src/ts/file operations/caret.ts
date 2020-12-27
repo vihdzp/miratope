@@ -1,6 +1,6 @@
 import { Translation, LanguageOptions } from "../translation/translation";
 
-export class Caret {
+export default class Caret {
   contents: string;
   pos: number;
   line: number;

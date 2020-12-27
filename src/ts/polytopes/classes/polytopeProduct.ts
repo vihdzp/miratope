@@ -1,15 +1,14 @@
-import {
-  CNMultiprism,
-  CNMultipyramid,
-  CNMultitegum,
-  CNType,
-  ConstructionNode,
+import ConstructionNode, {
+  Multiprism as CNMultiprism,
+  Multipyramid as CNMultipyramid,
+  Multitegum as CNMultitegum,
+  Type as CNType,
 } from "../../data structures/constructionNode";
-import { Point } from "../../geometry/point";
+import Point from "../../geometry/point";
 import { ElementList, PolytopeB, PolytopeC } from "../polytopeTypes";
-import { PolytopeBuild } from "./polytopeBuild";
+import PolytopeBuild from "./polytopeBuild";
 
-export abstract class PolytopeProduct {
+export default abstract class PolytopeProduct {
   /**
    * Calculates the prism product (Cartesian product) of a set of polytopes.
    * Vertices are the products of vertices, edges are the products of vertices

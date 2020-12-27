@@ -26,6 +26,7 @@
 				"ignorePattern": "@link",
 				"ignoreRegExpLiterals": true
 			}
-		]
+		],
+		"no-unneeded-ternary": "warn"
 	}
 }

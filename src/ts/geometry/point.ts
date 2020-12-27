@@ -1,7 +1,7 @@
 import * as THREE from "three";
-import { Global } from "../global";
+import Global from "../global";
 
-export class Point {
+export default class Point {
   coordinates: number[];
 
   /**

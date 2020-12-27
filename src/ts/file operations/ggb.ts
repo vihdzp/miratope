@@ -1,8 +1,8 @@
 import * as JSZip from "jszip";
-import { Point } from "../geometry/point";
+import Point from "../geometry/point";
 import { PolytopeB } from "../polytopes/polytopeTypes";
 import { Translation } from "../translation/translation";
-import { FileOperations } from "./fileOperations";
+import FileOperations from "./fileOperations";
 
 /**
  * Saves a polytope as a GeoGebra file.

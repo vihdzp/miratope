@@ -1,12 +1,10 @@
 import { OFFOptions, PolytopeB } from "../polytopes/polytopeTypes";
 import { Translation } from "../translation/translation";
-import { FileOperations } from "./fileOperations";
+import FileOperations from "./fileOperations";
 
 /**
  * Saves the current polytope as an OFF file.
- * @param {Object=} options The file saving options.
- * @param {boolean=} options.comments Whether the file should contain comments
- * specifying separations between element types.
+ * @param options The file saving options.
  * @todo Deal with the nulltope case.
  */
 PolytopeB.prototype.saveAsOFF = function (options: OFFOptions = {}): void {

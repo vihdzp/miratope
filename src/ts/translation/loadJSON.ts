@@ -1,9 +1,8 @@
 import * as Globalize from "globalize";
 
-//Loads the necessary CLDR JSON files for Globalize to work.
-
-//likelySubtags.json
-export function loadJSON(): void {
+/** Loads the necessary CLDR JSON files for Globalize to work. */
+export default function loadJSON(): void {
+  //likelySubtags.json
   Globalize.load({
     supplemental: {
       version: {

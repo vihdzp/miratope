@@ -1,9 +1,9 @@
 import * as THREE from "three";
-import { Point } from "../geometry/point";
-import { Global } from "../global";
+import Point from "../geometry/point";
+import Global from "../global";
 import { PolytopeB } from "../polytopes/polytopeTypes";
-import { TrackballControls } from "./trackball-controls";
-import { ShapeBufferGeometry_ } from "./shapeBufferGeometryMock";
+import TrackballControls from "./trackball-controls";
+import ShapeBufferGeometry_ from "./shapeBufferGeometryMock";
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 
@@ -12,7 +12,7 @@ type Writeable<T> = { -readonly [P in keyof T]: T[P] };
  * @classdesc Wrapper for a scene, an object that shows a polytope.
  * Class for drawing objects to the scene more efficiently.
  */
-export class Scene {
+export default class Scene {
   readonly scene = new THREE.Scene();
   polytopes: PolytopeB[] = [];
   readonly renderer = new THREE.WebGLRenderer({ antialias: true });

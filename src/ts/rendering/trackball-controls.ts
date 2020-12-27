@@ -34,7 +34,7 @@ interface Screen {
   height: number;
 }
 
-export class TrackballControls extends THREE.EventDispatcher {
+export default class TrackballControls extends THREE.EventDispatcher {
   object: THREE.PerspectiveCamera;
   domElement: HTMLCanvasElement;
 

@@ -1,6 +1,6 @@
-import { Matrix } from "./matrix";
+import Matrix from "./matrix";
 
-export class Flag<T> {
+export default class Flag<T> {
   number: number;
   element: [T, Matrix];
 

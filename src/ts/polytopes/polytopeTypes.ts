@@ -1,21 +1,23 @@
-import * as THREE from "three";
-import { TrackballControls } from "../rendering/trackball-controls";
-import {
-  CNName,
-  CNPlain,
-  ConstructionNode,
+import ConstructionNode, {
+  Name as CNName,
+  Plain as CNPlain,
 } from "../data structures/constructionNode";
-import { GraphNode } from "../data structures/graphNode";
-import { LinkedListNode } from "../data structures/linkedListNode";
-import { Point } from "../geometry/point";
-import { ConcreteGroup } from "../data structures/group";
-import { Matrix } from "../data structures/matrix";
-import { Flag, FlagClass, Simplifier } from "../data structures/flag";
+import type GraphNode from "../data structures/graphNode";
+import LinkedListNode from "../data structures/linkedListNode";
+import Point from "../geometry/point";
+import type { ConcreteGroup } from "../data structures/group";
+import type Matrix from "../data structures/matrix";
+import type { FlagClass, Simplifier } from "../data structures/flag";
+import Flag from "../data structures/flag";
+import type Scene from "../rendering/scene";
 
 export type ElementList = [Point[], ...number[][][]] | [];
 
+/** Stores the type of any given [[`PolytopeB`]]. */
 export enum PolytopeType {
+  /** The object is a [[`PolytopeC`]]. */
   C,
+  /** The object is a [[`PolytopeS`]]. */
   S,
 }
 
@@ -23,21 +25,17 @@ export interface OFFOptions {
   comments?: boolean;
 }
 
-interface Scene {
-  scene: THREE.Scene;
-  polytopes: PolytopeB[];
-  renderer: THREE.WebGLRenderer;
-  camera: THREE.PerspectiveCamera;
-  ambientLight: THREE.AmbientLight;
-  directionalLight: THREE.DirectionalLight;
-  material: THREE.MeshLambertMaterial;
-  controls: TrackballControls;
-}
-
+/**
+ * The base class for polytopes.
+ */
 export abstract class PolytopeB {
+  /** Represents how a Polytope is built up. */
   abstract construction: ConstructionNode<unknown>;
+  /** The rank of the polytope. */
   abstract dimensions: number;
+  /** The number of dimensions of the space the polytope lives in. */
   abstract spaceDimensions: number;
+  /** The type of polytope. */
   abstract readonly type: PolytopeType;
   abstract toPolytopeC(): PolytopeC;
   abstract scale(r: number): PolytopeB;

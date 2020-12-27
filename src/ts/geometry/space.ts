@@ -1,11 +1,11 @@
-import { Global } from "../global";
-import { Point } from "./point";
+import Global from "../global";
+import Point from "./point";
 
 /**
  * A namespace for operations on points.
  * @namespace Space
  */
-export abstract class Space {
+export default abstract class Space {
   /**
    * Calculates the intersection of two segments.
    * Assumes that these segments are coplanar, but not collinear.

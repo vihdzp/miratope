@@ -1,13 +1,13 @@
 import * as JSZip from "jszip";
-import { CNName } from "../data structures/constructionNode";
-import { GraphNode } from "../data structures/graphNode";
-import { Point } from "../geometry/point";
-import { PolytopeBuild } from "../polytopes/classes/polytopeBuild";
+import { Name as CNName } from "../data structures/constructionNode";
+import GraphNode from "../data structures/graphNode";
+import Point from "../geometry/point";
+import PolytopeBuild from "../polytopes/classes/polytopeBuild";
 import { ElementList, PolytopeC } from "../polytopes/polytopeTypes";
 import { Translation } from "../translation/translation";
-import { Caret } from "./caret";
+import Caret from "./caret";
 
-export abstract class FileOperations {
+export default abstract class FileOperations {
   static fileName: string;
 
   /**

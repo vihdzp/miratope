@@ -1,7 +1,7 @@
 import * as Globalize from "globalize";
 
-//WARNING: THESE LABELS WILL PROBABLY BE MOVED AROUND A LOT.
-export function loadMessages(): void {
+/** Loads the messages used to translate Miratope. */
+export default function loadMessages(): void {
   Globalize.loadMessages({
     root: {
       //English is used as a fall-back.

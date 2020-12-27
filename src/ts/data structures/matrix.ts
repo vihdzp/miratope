@@ -1,7 +1,7 @@
-import { Point } from "../geometry/point";
+import Point from "../geometry/point";
 
 //A class for matrices.
-export class Matrix {
+export default class Matrix {
   els: number[][];
 
   constructor(els: number[][]) {
