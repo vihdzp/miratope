@@ -465,11 +465,11 @@ class AvlNode<T> {
   /**
    * Performs a right rotate on this node.
    *```
-   *			b													a
-   *			/ \												/ \
-   *		a	e -> b.rotateRight() -> c	b
-   *		/ \														/ \
-   *	c	d													d	e
+   *        b                           a
+   *       / \                         / \
+   *      a   e -> b.rotateRight() -> c   b
+   *     / \                             / \
+   *    c   d                           d   e
    *```
    * @return {AvlNode} The root of the sub-tree, the node where this node used
    * to be.
@@ -486,11 +486,11 @@ class AvlNode<T> {
   /**
    * Performs a left rotate on this node.
    *```
-   *		a															b
-   *		/ \														/ \
-   *	c	b	-> a.rotateLeft() ->	a	e
-   *			/ \												/ \
-   *		d	e											c	d
+   *      a                           b
+   *     / \                         / \
+   *    c   b  -> a.rotateLeft() -> a   e
+   *       / \                         / \
+   *      d   e                       c   d
    *```
    * @return {AvlNode} The root of the sub-tree, the node where this node used
    * to be.

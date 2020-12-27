@@ -7,10 +7,10 @@
     "_b": "echo Running Browserify... & browserify src/js/main.js -o out/main.js & echo Done!",
     "_c": "echo Copying index.html to the project root folder... & copyfiles -u 1 src/index.html ./ & echo Done!",
     "_h": "echo Running HTMLMinifier... & html-minifier --input-dir src --output-dir ./ --file-ext html --minify-js true --minify-css true --remove-comments --collapse-whitespace & echo Done!",
-    "_hjsdoc": "echo Running HTMLMinifier... & html-minifier --input-dir out/jsdoc --output-dir out/jsdoc --file-ext html --minify-js true --minify-css true --remove-comments --collapse-whitespace & echo Done!",
+    "_htypedoc": "echo Running HTMLMinifier... & html-minifier --input-dir out/typedoc --output-dir out/typedoc --file-ext html --minify-js true --minify-css true --remove-comments --collapse-whitespace & echo Done!",
     "build": "npm run tsc & npm run _bbt & npm run _h",
     "debug": "npm run tsc & npm run _b & npm run _c",
-    "jsdoc": "echo Running JSDoc... & jsdoc -c jsdoc.json & echo Done! & npm run _hjsdoc",
+    "typedoc": "echo Running TypeDoc... & typedoc src/ts --out out/typedoc & npm run _htypedoc",
     "eslint": "echo Running ESLint... & eslint src/ts/**/*.ts{,x} --fix & echo Done!",
     "tsc": "echo Running TypeScript... & tsc & echo Done!"
   },
@@ -47,6 +47,7 @@
     "html-minifier": "^4.0.0",
     "jsdoc": "^3.6.6",
     "prettier": "^2.2.1",
-    "tinyify": "^3.0.0"
+    "tinyify": "^3.0.0",
+    "typedoc": "^0.19.2"
   }
 }
