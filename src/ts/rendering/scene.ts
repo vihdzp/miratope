@@ -13,46 +13,35 @@ type Writeable<T> = { -readonly [P in keyof T]: T[P] };
  * Class for drawing objects to the scene more efficiently.
  */
 export class Scene {
-  scene: THREE.Scene;
-  polytopes: PolytopeB[];
-  renderer: THREE.WebGLRenderer;
-  camera: THREE.PerspectiveCamera;
-  ambientLight: THREE.AmbientLight;
-  directionalLight: THREE.DirectionalLight;
-  material: THREE.MeshLambertMaterial;
+  readonly scene = new THREE.Scene();
+  polytopes: PolytopeB[] = [];
+  readonly renderer = new THREE.WebGLRenderer({ antialias: true });
+  readonly camera = new THREE.PerspectiveCamera(
+    75,
+    globalThis.innerWidth / globalThis.innerHeight,
+    0.1,
+    1000
+  );
+  readonly ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+  readonly directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+  readonly material = new THREE.MeshLambertMaterial({
+    color: 0xffffff,
+    side: THREE.DoubleSide,
+    flatShading: true,
+  });
   controls: TrackballControls;
 
   constructor() {
-    //Defines scene.
-    this.scene = new THREE.Scene();
-    this.polytopes = [];
-
-    //Defines renderer.
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    //Sets up renderer.
     this.renderer.setSize(globalThis.innerWidth, globalThis.innerHeight - 44);
     document.body.appendChild(this.renderer.domElement);
 
-    //Adds and configures the camera.
-    this.camera = new THREE.PerspectiveCamera(
-      75,
-      globalThis.innerWidth / globalThis.innerHeight,
-      0.1,
-      1000
-    );
+    //Sets up the camera.
     this.camera.position.z = 2;
 
-    //Declares and adds both ambient light and directional light.
-    this.ambientLight = new THREE.AmbientLight(0x777777, 0.8);
-    this.directionalLight = new THREE.DirectionalLight(0x777777, 0.8);
+    //Sets up lighting.
     this.directionalLight.position.set(1, 1, -1).normalize();
     this.addLights();
-
-    //Sets material.
-    this.material = new THREE.MeshLambertMaterial({
-      color: 0xffffff,
-      side: THREE.DoubleSide,
-      flatShading: true,
-    });
 
     //Sets up controls.
     this.controls = new TrackballControls(
