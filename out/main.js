@@ -67163,7 +67163,6 @@ class ConstructionNode {
      * a multitegum of multitegums is just a larger multitegum, etc.
      * This function removes children nodes of the same type
      * and replaces them by their children.
-     * @private
      */
     _mergeChildren() {
         //If the children are an array.
@@ -70923,12 +70922,11 @@ class PolytopeProduct {
         return memoizer[m][n] + offset;
     }
     /**
-     * Helper function for {@link Polytope.prismProduct},
-     * {@link Polytope.tegumProduct}, and {@link Polytope.pyramidProduct}.
-     * @summary Performs a product of a set of polytopes.
-     * @private
+     * Helper function for [[`prismProduct`]], [[`tegumProduct`]], and
+     * [[`pyramidProduct`]].
+     *
      * @param P An array of polytopes to "multiply."
-     * @param type The ConstructionNodeType corresponding
+     * @param type The [[`type` | ConstructionNode Type]] corresponding
      * to the product operation.
      * @param fun The function used to perform the product.
      * @returns The resulting product.
@@ -70960,7 +70958,13 @@ class PolytopeProduct {
     }
 }
 exports.default = PolytopeProduct;
-polytopeTypes_1.PolytopeB.prototype.extrudeToPrism = function (height) {
+/**
+ * Extrudes a polytope into a prism.
+ *
+ * @param height The height of the prism.
+ * @return The resulting prism.
+ */
+polytopeTypes_1.PolytopeB.prototype.extrudeToPrism = function (height = 1) {
     return PolytopeProduct.prism(this.toPolytopeC(), polytopeBuild_1.default.dyad(height));
 };
 
@@ -70972,6 +70976,8 @@ const constructionNode_1 = require("../data structures/constructionNode");
 const linkedListNode_1 = require("../data structures/linkedListNode");
 const point_1 = require("../geometry/point");
 const flag_1 = require("../data structures/flag");
+const translation_1 = require("../translation/translation");
+const fileOperations_1 = require("../file operations/fileOperations");
 /** Stores the type of any given [[`PolytopeB`]]. */
 var PolytopeType;
 (function (PolytopeType) {
@@ -70987,10 +70993,111 @@ class PolytopeB {
     getName() {
         return this.construction.getName();
     }
-    //Declared in off.ts.
-    saveAsOFF(_options) {
-        _options;
-        throw new Error("saveAsOFF called before implementation!");
+    /**
+     * Saves the current polytope as an OFF file.
+     * @param options The file saving options.
+     * @todo Deal with the nulltope case.
+     */
+    saveAsOFF(options = {}) {
+        const P = this.toPolytopeC();
+        //We'll deal with this later.
+        if (!P.elementList[0])
+            return;
+        //Maybe automatically project the polytope?
+        if (P.spaceDimensions > P.dimensions)
+            throw new Error("The OFF format does not support polytopes in spaces with more dimensions than themselves.");
+        //The contexts of the OFF file, as an array of plaintext strings.
+        const data = [], 
+        //I should be using precise counts here.
+        pluralAndUppercase = { count: 1000, uppercase: true }, comments = options.comments;
+        //The element counts of the polytope, as strings.
+        const elementCounts = [];
+        for (let i = 0; i < P.elementList.length; i++)
+            elementCounts.push(P.elementList[i].length);
+        //Writes the element counts, and optionally,
+        //leaves a comment listing their names in order.
+        switch (P.dimensions) {
+            case 0: //LOL
+                data.push("0OFF");
+                break;
+            case 1: //Also LOL
+                data.push("1OFF\n");
+                if (comments)
+                    data.push("# ", translation_1.Translation.elementName(0, pluralAndUppercase), "\n");
+                data.push(elementCounts[0].toString(), "\n");
+                break;
+            case 2:
+                data.push("2OFF\n");
+                if (comments)
+                    data.push("# ", translation_1.Translation.elementName(0, pluralAndUppercase), ", ", translation_1.Translation.get("misc/component", pluralAndUppercase), "\n");
+                data.push(elementCounts[0].toString(), " ", elementCounts[2].toString(), "\n");
+                break;
+            case 3:
+                data.push("OFF\n"); //For compatibility with Stella.
+                if (comments)
+                    data.push("# ", translation_1.Translation.elementName(0, pluralAndUppercase), ", ", translation_1.Translation.elementName(2, pluralAndUppercase), ", ", translation_1.Translation.elementName(1, pluralAndUppercase), "\n");
+                data.push(elementCounts[0].toString(), " ", elementCounts[2].toString(), " ", elementCounts[1].toString(), "\n");
+                break;
+            default:
+                data.push(P.dimensions.toString(), "OFF\n");
+                if (comments) {
+                    data.push("# ", translation_1.Translation.elementName(0, pluralAndUppercase), ", ", translation_1.Translation.elementName(2, pluralAndUppercase), ", ", translation_1.Translation.elementName(1, pluralAndUppercase));
+                    for (let i = 3; i < P.dimensions; i++)
+                        data.push(", ", translation_1.Translation.elementName(i, pluralAndUppercase));
+                    data.push("\n");
+                }
+                data.push(elementCounts[0].toString(), " ", elementCounts[2].toString(), " ", elementCounts[1].toString(), " ");
+                for (let i = 3; i < P.dimensions - 1; i++)
+                    data.push(elementCounts[i].toString(), " ");
+                data.push(elementCounts[P.dimensions - 1].toString(), "\n");
+        }
+        //Adds vertices. Fills in zeros if spaceDimensions < dimensions.
+        if (comments)
+            data.push("\n# ", translation_1.Translation.elementName(0, pluralAndUppercase), "\n");
+        for (let i = 0; i < P.elementList[0].length; i++) {
+            for (let j = 0; j < P.dimensions - 1; j++) {
+                const coord = P.elementList[0][i].coordinates[j];
+                if (coord === undefined)
+                    data.push("0 ");
+                else
+                    data.push(coord.toString(), " ");
+            }
+            const coord = P.elementList[0][i].coordinates[P.dimensions - 1];
+            if (coord === undefined)
+                data.push("0\n");
+            else
+                data.push(coord.toString(), "\n");
+        }
+        //Adds faces, or copmonents for compound polygons.
+        if (P.elementList[2]) {
+            if (comments) {
+                if (P.dimensions === 2)
+                    data.push("\n# ", translation_1.Translation.get("misc/component", pluralAndUppercase), "\n");
+                else
+                    data.push("\n# ", translation_1.Translation.elementName(2, pluralAndUppercase), "\n");
+            }
+            for (let i = 0; i < elementCounts[2]; i++) {
+                const vertices = P.faceToVertices(i);
+                data.push(P.elementList[2][i].length.toString());
+                for (let j = 0; j < P.elementList[2][i].length; j++)
+                    data.push(" ", vertices[j].toString());
+                data.push("\n");
+            }
+        }
+        //Adds the rest of the elements.
+        for (let d = 3; d < P.dimensions; d++) {
+            if (comments)
+                data.push("\n# ", translation_1.Translation.elementName(d, pluralAndUppercase), "\n");
+            for (let i = 0; i < P.elementList[d].length; i++) {
+                const len = P.elementList[d][i].length;
+                data.push(len.toString());
+                for (let j = 0; j < len; j++)
+                    data.push(" ", P.elementList[d][i][j]);
+                data.push("\n");
+            }
+        }
+        fileOperations_1.default.fileName = translation_1.Translation.firstToUpper(P.getName()) + ".off";
+        fileOperations_1.default.saveBlob(new Blob(data, { type: "text/plain" }));
     }
     //Declared in ggb.ts.
     saveAsGGB(_wireframe) {
@@ -71423,7 +71530,7 @@ class PolytopeS extends PolytopeB {
 }
 exports.PolytopeS = PolytopeS;
 
-},{"../data structures/constructionNode":97,"../data structures/flag":98,"../data structures/linkedListNode":101,"../geometry/point":108}],117:[function(require,module,exports){
+},{"../data structures/constructionNode":97,"../data structures/flag":98,"../data structures/linkedListNode":101,"../file operations/fileOperations":105,"../geometry/point":108,"../translation/translation":124}],117:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Render = void 0;

@@ -1,4 +1,5 @@
 import { Translation } from "../translation/translation";
+import type { PolytopeB } from "../polytopes/polytopeTypes";
 
 /** An enumeration containing the possible types of [[`ConstructionNode`]]s.
  */
@@ -119,7 +120,7 @@ export default abstract class ConstructionNode<T> {
   /** The "child" of the node, stores information about the construction of a
    * polytope. The exact information it stores depends on the [[`type`]]. */
   abstract child: T;
-  abstract polytope: unknown;
+  abstract polytope: PolytopeB | undefined;
   abstract gender: string = "";
 
   /** Returns the name of the polytope represented by the `ConstructionNode`.
@@ -135,7 +136,6 @@ export default abstract class ConstructionNode<T> {
    * a multitegum of multitegums is just a larger multitegum, etc.
    * This function removes children nodes of the same type
    * and replaces them by their children.
-   * @private
    */
   _mergeChildren(): void {
     //If the children are an array.
@@ -298,7 +298,7 @@ export default abstract class ConstructionNode<T> {
 export class Plain extends ConstructionNode<[number, number]> {
   readonly type = Type.Plain;
   child: [number, number];
-  polytope: unknown;
+  polytope: PolytopeB | undefined;
   gender: string;
 
   constructor(child: [number, number]) {
@@ -333,7 +333,7 @@ export class Plain extends ConstructionNode<[number, number]> {
 export class Polygon extends ConstructionNode<[number, number]> {
   readonly type = Type.Polygon;
   child: [number, number];
-  polytope: unknown;
+  polytope: PolytopeB | undefined;
   gender: string;
 
   constructor(child: [number, number]) {
@@ -370,7 +370,7 @@ export class Polygon extends ConstructionNode<[number, number]> {
 export class Multiprism extends ConstructionNode<ConstructionNode<unknown>[]> {
   readonly type = Type.Multiprism;
   child: ConstructionNode<unknown>[];
-  polytope: unknown;
+  polytope: PolytopeB | undefined;
   gender: string;
 
   constructor(child: ConstructionNode<unknown>[]) {
@@ -414,7 +414,7 @@ export class Multiprism extends ConstructionNode<ConstructionNode<unknown>[]> {
 export class Multitegum extends ConstructionNode<ConstructionNode<unknown>[]> {
   readonly type = Type.Multitegum;
   child: ConstructionNode<unknown>[];
-  polytope: unknown;
+  polytope: PolytopeB | undefined;
   gender: string;
 
   constructor(child: ConstructionNode<unknown>[]) {
@@ -460,7 +460,7 @@ export class Multipyramid extends ConstructionNode<
 > {
   readonly type = Type.Multipyramid;
   child: ConstructionNode<unknown>[];
-  polytope: unknown;
+  polytope: PolytopeB | undefined;
   gender: string;
 
   constructor(child: ConstructionNode<unknown>[]) {
@@ -502,7 +502,7 @@ export class Multipyramid extends ConstructionNode<
 export class Antiprism extends ConstructionNode<ConstructionNode<unknown>> {
   readonly type = Type.Antiprism;
   child: ConstructionNode<unknown>;
-  polytope: unknown;
+  polytope: PolytopeB | undefined;
   gender: string;
 
   constructor(child: ConstructionNode<unknown>) {
@@ -538,7 +538,7 @@ export class Antiprism extends ConstructionNode<ConstructionNode<unknown>> {
 export class Pyramid extends ConstructionNode<ConstructionNode<unknown>> {
   readonly type = Type.Pyramid;
   child: ConstructionNode<unknown>;
-  polytope: unknown;
+  polytope: PolytopeB | undefined;
   gender: string;
 
   constructor(child: ConstructionNode<unknown>) {
@@ -572,7 +572,7 @@ export class Pyramid extends ConstructionNode<ConstructionNode<unknown>> {
 export class Cupola extends ConstructionNode<ConstructionNode<unknown>> {
   readonly type = Type.Cupola;
   child: ConstructionNode<unknown>;
-  polytope: unknown;
+  polytope: PolytopeB | undefined;
   gender: string;
 
   constructor(child: ConstructionNode<unknown>) {
@@ -606,7 +606,7 @@ export class Cupola extends ConstructionNode<ConstructionNode<unknown>> {
 export class Cuploid extends ConstructionNode<ConstructionNode<unknown>> {
   readonly type = Type.Cuploid;
   child: ConstructionNode<unknown>;
-  polytope: unknown;
+  polytope: PolytopeB | undefined;
   gender: string;
 
   constructor(child: ConstructionNode<unknown>) {
@@ -639,7 +639,7 @@ export class Cuploid extends ConstructionNode<ConstructionNode<unknown>> {
 export class CupolaicBlend extends ConstructionNode<ConstructionNode<unknown>> {
   readonly type = Type.CupolaicBlend;
   child: ConstructionNode<unknown>;
-  polytope: unknown;
+  polytope: PolytopeB | undefined;
   gender: string;
 
   constructor(child: ConstructionNode<unknown>) {
@@ -672,7 +672,7 @@ export class CupolaicBlend extends ConstructionNode<ConstructionNode<unknown>> {
 export class Codename extends ConstructionNode<string> {
   readonly type = Type.Codename;
   child: string;
-  polytope: unknown;
+  polytope: PolytopeB | undefined;
   gender: string;
 
   constructor(child: string) {
@@ -698,7 +698,7 @@ export class Codename extends ConstructionNode<string> {
 export class Name extends ConstructionNode<string> {
   readonly type = Type.Codename;
   child: string;
-  polytope: unknown;
+  polytope: PolytopeB | undefined;
   gender: string;
 
   constructor(child: string) {
@@ -724,7 +724,7 @@ export class Name extends ConstructionNode<string> {
 export class Hypercube extends ConstructionNode<number> {
   readonly type = Type.Hypercube;
   child: number;
-  polytope: unknown;
+  polytope: PolytopeB | undefined;
   gender: string;
 
   constructor(child: number) {
@@ -750,7 +750,7 @@ export class Hypercube extends ConstructionNode<number> {
 export class Simplex extends ConstructionNode<number> {
   readonly type = Type.Simplex;
   child: number;
-  polytope: unknown;
+  polytope: PolytopeB | undefined;
   gender: string;
 
   constructor(child: number) {
@@ -776,7 +776,7 @@ export class Simplex extends ConstructionNode<number> {
 export class Cross extends ConstructionNode<number> {
   readonly type = Type.Cross;
   child: number;
-  polytope: unknown;
+  polytope: PolytopeB | undefined;
   gender: string;
 
   constructor(child: number) {

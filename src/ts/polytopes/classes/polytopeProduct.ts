@@ -550,12 +550,11 @@ export default abstract class PolytopeProduct {
   }
 
   /**
-   * Helper function for {@link Polytope.prismProduct},
-   * {@link Polytope.tegumProduct}, and {@link Polytope.pyramidProduct}.
-   * @summary Performs a product of a set of polytopes.
-   * @private
+   * Helper function for [[`prismProduct`]], [[`tegumProduct`]], and
+   * [[`pyramidProduct`]].
+   *
    * @param P An array of polytopes to "multiply."
-   * @param type The ConstructionNodeType corresponding
+   * @param type The [[`type` | ConstructionNode Type]] corresponding
    * to the product operation.
    * @param fun The function used to perform the product.
    * @returns The resulting product.
@@ -593,6 +592,12 @@ export default abstract class PolytopeProduct {
   }
 }
 
-PolytopeB.prototype.extrudeToPrism = function (height: number): PolytopeB {
+/**
+ * Extrudes a polytope into a prism.
+ *
+ * @param height The height of the prism.
+ * @return The resulting prism.
+ */
+PolytopeB.prototype.extrudeToPrism = function (height = 1): PolytopeB {
   return PolytopeProduct.prism(this.toPolytopeC(), PolytopeBuild.dyad(height));
 };

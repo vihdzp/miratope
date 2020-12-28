@@ -3,6 +3,7 @@ import "./rendering/render";
 import Scene from "./rendering/scene";
 import FileOperations from "./file operations/fileOperations";
 
+/** @internal */
 declare global {
   interface Math {
     gcd(a: number, b: number): number;
