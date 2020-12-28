@@ -5,12 +5,9 @@ import FileOperations from "./fileOperations";
 /**
  * Saves the current polytope as an OFF file.
  * @param options The file saving options.
- * @todo Deal with the nulltope case.
  */
 PolytopeB.prototype.saveAsOFF = function (options: OFFOptions = {}): void {
   const P = this.toPolytopeC();
-  //We'll deal with this later.
-  if (!P.elementList[0]) return;
 
   //Maybe automatically project the polytope?
   if (P.spaceDimensions > P.dimensions)
@@ -32,6 +29,9 @@ PolytopeB.prototype.saveAsOFF = function (options: OFFOptions = {}): void {
   //Writes the element counts, and optionally,
   //leaves a comment listing their names in order.
   switch (P.dimensions) {
+    case -1: //LMAO
+      data.push("-1OFF");
+      break;
     case 0: //LOL
       data.push("0OFF");
       break;
@@ -111,15 +111,17 @@ PolytopeB.prototype.saveAsOFF = function (options: OFFOptions = {}): void {
   if (comments)
     data.push("\n# ", Translation.elementName(0, pluralAndUppercase), "\n");
 
-  for (let i = 0; i < P.elementList[0].length; i++) {
-    for (let j = 0; j < P.dimensions - 1; j++) {
-      const coord = P.elementList[0][i].coordinates[j];
-      if (coord === undefined) data.push("0 ");
-      else data.push(coord.toString(), " ");
+  if (P.elementList[0]) {
+    for (let i = 0; i < P.elementList[0].length; i++) {
+      for (let j = 0; j < P.dimensions - 1; j++) {
+        const coord = P.elementList[0][i].coordinates[j];
+        if (coord === undefined) data.push("0 ");
+        else data.push(coord.toString(), " ");
+      }
+      const coord = P.elementList[0][i].coordinates[P.dimensions - 1];
+      if (coord === undefined) data.push("0\n");
+      else data.push(coord.toString(), "\n");
     }
-    const coord = P.elementList[0][i].coordinates[P.dimensions - 1];
-    if (coord === undefined) data.push("0\n");
-    else data.push(coord.toString(), "\n");
   }
 
   //Adds faces, or copmonents for compound polygons.

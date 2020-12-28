@@ -3,7 +3,7 @@ export default class GraphNode<T> {
   neighbors: GraphNode<T>[];
   labels: number[];
   traversed: boolean;
-  private static _components: unknown[];
+  private static components: unknown[];
 
   //Class for nodes in a graph.
   //Not to be confused with the more common Node.js
@@ -44,14 +44,14 @@ export default class GraphNode<T> {
   //Gets the values of all nodes that are "attached" is some way
   //Also not meant to be called twice.
   getComponent(): T[] {
-    GraphNode._components = [];
+    GraphNode.components = [];
     this._getComponent();
-    return GraphNode._components as T[];
+    return GraphNode.components as T[];
   }
 
   //Private function does the hard work of getComponent().
   private _getComponent(): void {
-    GraphNode._components.push(this.value);
+    GraphNode.components.push(this.value);
     this.traversed = true;
     for (let i = 0; i < this.neighbors.length; i++)
       if (!this.neighbors[i].traversed) this.neighbors[i]._getComponent();

@@ -16,7 +16,7 @@ export interface LanguageOptions {
  */
 export abstract class Translation {
   /** The wrapped Globalize object. */
-  private static _globalize: Globalize;
+  private static globalize: Globalize;
   /** A two letter string identifying the language. */
   static language: string;
   /** Specifies whether the target language capitalizes all nouns. */
@@ -88,7 +88,7 @@ export abstract class Translation {
   }
 
   static setLanguage(lang: string): void {
-    Translation._globalize = new Globalize(lang);
+    Translation.globalize = new Globalize(lang);
     Translation.language = lang;
 
     //Sets properties about the chosen language.
@@ -114,7 +114,7 @@ export abstract class Translation {
   static get(message: string, options: LanguageOptions = {}): string {
     options.count ||= 1;
     options.gender ||= "male";
-    const msg: string = Translation._globalize.messageFormatter(message)(
+    const msg: string = Translation.globalize.messageFormatter(message)(
       options
     );
 
@@ -297,7 +297,7 @@ export abstract class Translation {
 
     //"Pentágono" en vez de "pentagono."
     if (Translation.language === "es" && dimension === 2)
-      prefix = Translation._lastVowelTilde(prefix);
+      prefix = Translation.lastVowelTilde(prefix);
 
     return prefix + Translation.polytopeEnding(dimension, options);
   }
@@ -492,26 +492,26 @@ export abstract class Translation {
   //Spanish helper function.
   //Adds a tilde to the last vowel of a word.
   //E.g. penta -> pentá
-  private static _lastVowelTilde = function (str: string) {
+  private static lastVowelTilde = function (str: string) {
     for (let i = str.length - 1; i >= 0; i--)
       switch (str.charAt(i)) {
         case "a":
-          return Translation._replaceAt(str, i, "á");
+          return Translation.replaceAt(str, i, "á");
         case "e":
-          return Translation._replaceAt(str, i, "é");
+          return Translation.replaceAt(str, i, "é");
         case "i":
-          return Translation._replaceAt(str, i, "í");
+          return Translation.replaceAt(str, i, "í");
         case "o":
-          return Translation._replaceAt(str, i, "ó");
+          return Translation.replaceAt(str, i, "ó");
         case "u":
-          return Translation._replaceAt(str, i, "ú");
+          return Translation.replaceAt(str, i, "ú");
       }
 
     throw new Error("No vowel to replace!");
   };
 
   //https://stackoverflow.com/a/1431113
-  private static _replaceAt(
+  private static replaceAt(
     str: string,
     index: number,
     replacement: string
@@ -550,7 +550,7 @@ export abstract class Translation {
         Translation.regularPolygonName(
           n,
           n - d,
-          Translation._lowercaseLanguageOptions(options)
+          Translation.lowercaseLanguageOptions(options)
         ),
         { uppercase: options.uppercase }
       );
@@ -563,19 +563,19 @@ export abstract class Translation {
 
     //Any polygon with more than 42 sides has at least 6 non-compound
     //stellations.
-    if (n > 42) return Translation._simpleStarName(n, d);
+    if (n > 42) return Translation.simpleStarName(n, d);
 
     //Calculates the index.
     while (i < d)
       if (Math.gcd(n, i++) === 1 && ++index >= 5)
-        return Translation._simpleStarName(n, d);
+        return Translation.simpleStarName(n, d);
 
     count = index;
 
     //Calculates the count.
     while (i < n / 2)
       if (Math.gcd(n, i++) === 1 && ++count >= 5)
-        return Translation._simpleStarName(n, d);
+        return Translation.simpleStarName(n, d);
 
     //Adds the great, grand, etc. modifiers.
     //This system is complicated, don't blame me, I didn't make it.
@@ -583,19 +583,19 @@ export abstract class Translation {
       case 30:
       case 40:
       case 50:
-        return Translation._starName(n, "modifiers/small", options);
+        return Translation.starName(n, "modifiers/small", options);
       case 52:
-        return Translation._starName(n, "modifiers/medial", options);
+        return Translation.starName(n, "modifiers/medial", options);
       case 21:
       case 32:
       case 42:
       case 53:
-        return Translation._starName(n, "modifiers/great", options);
+        return Translation.starName(n, "modifiers/great", options);
       case 43:
       case 54:
-        return Translation._starName(n, "modifiers/grand", options);
+        return Translation.starName(n, "modifiers/grand", options);
       default:
-        return Translation._starName(n, "", options);
+        return Translation.starName(n, "", options);
     }
   }
   /*
@@ -620,7 +620,7 @@ export abstract class Translation {
   /* uppercase
    * gender
    * count */
-  private static _simpleStarName(
+  private static simpleStarName(
     n: number,
     d: number,
     options: LanguageOptions = {}
@@ -643,7 +643,7 @@ export abstract class Translation {
   /* uppercase
    * gender
    * count */
-  private static _starName(
+  private static starName(
     n: number,
     mod: string,
     options: LanguageOptions = {}
@@ -669,7 +669,7 @@ export abstract class Translation {
   }
 
   //Clones the options and sets the uppercase attribute to false.
-  private static _lowercaseLanguageOptions = function (
+  private static lowercaseLanguageOptions = function (
     options: LanguageOptions
   ) {
     const newLanguageOptions = { ...options };
@@ -681,7 +681,7 @@ export abstract class Translation {
   //To be called within the Ending class.
   //Turns everything except for the last word into an adjective and adds the
   //last word unchanged.
-  private static _toAdjectiveBeforeLastWord = function (
+  private static toAdjectiveBeforeLastWord = function (
     name: string,
     gender: string
   ) {
@@ -694,7 +694,7 @@ export abstract class Translation {
   //To be called within the Ending class.
   //Turns everything except for the last word into an adjective and adds the
   //last word with its grammatical gender modified accordingly.
-  private static _toAdjectiveBeforeLastWordGendered = function (
+  private static toAdjectiveBeforeLastWordGendered = function (
     name: string,
     gender: string
   ) {
@@ -747,7 +747,7 @@ export abstract class Translation {
       new Ending("ny", -1, "ical"), //Octagonn(y/ical)
     ],
     es: [
-      new Ending("zada", Translation._toAdjectiveBeforeLastWord), //Cúpula pentagrámica cruzada
+      new Ending("zada", Translation.toAdjectiveBeforeLastWord), //Cúpula pentagrámica cruzada
       new Ending("íada", -4, "iádic", GenderModificationType.es), //D(íada/iádic[o/a])
       new Ending("lda", -2, "ular"), //5-cel(da/ular)
       new Ending("nda", -1, "áic", GenderModificationType.es), //Rotund(a/áic[o/a])
@@ -760,13 +760,13 @@ export abstract class Translation {
       new Ending("ce", -5, "elicoidal"), //H(élice/elicoidal)
       new Ending("ide", -5, "amidal"), //Pir(ámide/amidal)
       new Ending("oide", -1, "al"), //Disfenoid(e/al)
-      new Ending("nde", Translation._toAdjectiveBeforeLastWord), //Heptagrama grande
+      new Ending("nde", Translation.toAdjectiveBeforeLastWord), //Heptagrama grande
       new Ending("ng", -12, "l de Skilling"), //Figura( de Skilling/l de Skilling)
       new Ending("ium", -2, "al"), //Girobifastigi(um/al)
       new Ending("ón", -4, "d", GenderModificationType.es), //Tesela(ción/d[o/a])
       new Ending("bo", -3, "úbic", GenderModificationType.es), //C(ubo/úbic[o/a])
-      new Ending("co", Translation._toAdjectiveBeforeLastWord), //Heptadecaedro diestrófico
-      new Ending("ado", Translation._toAdjectiveBeforeLastWordGendered), //Pentagrama cruzado
+      new Ending("co", Translation.toAdjectiveBeforeLastWord), //Heptadecaedro diestrófico
+      new Ending("ado", Translation.toAdjectiveBeforeLastWordGendered), //Pentagrama cruzado
       //Icosaedro estrellado
       new Ending("rado", -1, "", GenderModificationType.es), //Cuadrad(o/[o/a])
       new Ending("go", -1, "mátic", GenderModificationType.es), //Teg(o/mátic[o/a])
@@ -775,7 +775,7 @@ export abstract class Translation {
       new Ending("lo", -1, "ar"), //Ditel(o/ar)
       new Ending("ángulo", -6, "angular"), //Tri(ángulo/angular)
       new Ending("íngulo", -6, "ingular"), //Dispfnoc(íngulo/ingular)
-      new Ending("ano", Translation._toAdjectiveBeforeLastWord), //Tridecagrama mediano
+      new Ending("ano", Translation.toAdjectiveBeforeLastWord), //Tridecagrama mediano
       new Ending("ono", -5, "agonal"), //Pent(ágono/agonal)
       new Ending("po", -3, "ópic", GenderModificationType.es), //Pentat(opo/ópic[o/a])
       new Ending("dro", -1, "al"), //Tetraed(ro/al)
@@ -783,9 +783,9 @@ export abstract class Translation {
       new Ending("to", -4, "áctic", GenderModificationType.es), //Teseract(o/ic[o/a])
       new Ending("nto", -1, "al"), //3-element(o/al)
       new Ending("unto", 1, "ual"), //Punt(o/ual)
-      new Ending("ño", Translation._toAdjectiveBeforeLastWord), //Hendecagrama pequeño
-      new Ending("or", Translation._toAdjectiveBeforeLastWord), //Hendecagrama mayor
-      new Ending("is", Translation._toAdjectiveBeforeLastWord), //Dodecaedral pentakis
+      new Ending("ño", Translation.toAdjectiveBeforeLastWord), //Hendecagrama pequeño
+      new Ending("or", Translation.toAdjectiveBeforeLastWord), //Hendecagrama mayor
+      new Ending("is", Translation.toAdjectiveBeforeLastWord), //Dodecaedral pentakis
       new Ending("ex", -2, "icial"), //Simpl(ex/icial)
       new Ending("uz", 0, "ad", GenderModificationType.es), //Pentacruz(ad[o/a])
       new Ending("ié", -2, "odal"), //Trip(ié/odal)
@@ -804,7 +804,7 @@ export abstract class Translation {
     const endings = Translation._endings[Translation.language];
 
     if (Translation.adjBeforeNoun) {
-      endingIndx = Translation._findEnding(name, endings);
+      endingIndx = Translation.findEnding(name, endings);
 
       if (endingIndx !== -1)
         return endings[endingIndx].changeEnding(name, gender);
@@ -814,7 +814,7 @@ export abstract class Translation {
         firstWord = indexOfSpace === -1 ? name : name.substr(0, indexOfSpace),
         restOfName = indexOfSpace === -1 ? "" : name.substr(indexOfSpace);
 
-      endingIndx = Translation._findEnding(firstWord, endings);
+      endingIndx = Translation.findEnding(firstWord, endings);
 
       if (endingIndx !== -1)
         return endings[endingIndx].changeEnding(firstWord, gender) + restOfName;
@@ -826,7 +826,7 @@ export abstract class Translation {
   //Finds the ending that fits a string among a list of endings.
   //Returns its index. -1 if no ending fits.
   //Uses a modified binary search.
-  private static _findEnding = function (name: string, endings: Ending[]) {
+  private static findEnding = function (name: string, endings: Ending[]) {
     let first: number,
       mid: number,
       last: number,

@@ -7,8 +7,7 @@ import FileOperations from "./fileOperations";
 /**
  * Saves a polytope as a GeoGebra file.
  * Writes most of the XML manually, just editing what's needed.
- * Only supports 3D stuff for now.
- * @summary Saves a polytope as a GeoGebra file.
+ *
  * @param wireframe Whether faces are to be omitted.
  * @todo Compress the file XML a bit?
  * @todo Add a "Made in Miratope v. ###" tag to the Geogebra file.

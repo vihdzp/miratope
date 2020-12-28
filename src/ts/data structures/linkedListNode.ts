@@ -9,15 +9,15 @@ export default class LinkedListNode<T> {
   private node0: LinkedListNode<T> | undefined;
   private node1: LinkedListNode<T> | undefined;
   traversed: boolean;
-  private _id: number;
+  private id: number;
   //Represents the number of existing nodes.
-  //Used to distinguish between _identical elements consistently.
-  private static _idCounter = 0;
+  //Used to distinguish between identical elements consistently.
+  private static idCounter = 0;
 
   constructor(value: T) {
     this.value = value;
     this.traversed = false;
-    this._id = LinkedListNode._idCounter++;
+    this.id = LinkedListNode.idCounter++;
   }
 
   linkTo(node: LinkedListNode<T>): void {
@@ -48,7 +48,7 @@ export default class LinkedListNode<T> {
     node.node0 = this;
   }
 
-  //Traverses all nodes, while avo_iding backtracking.
+  //Traverses all nodes, while avoiding backtracking.
   getCycle(): T[] {
     const cycle = [this.value];
     if (!this.node0) return cycle;
@@ -86,8 +86,8 @@ export default class LinkedListNode<T> {
     return i === 0 ? this.node0 : this.node1;
   }
 
-  /** Retrieves the LinkedListNode's [[`_id` | ID]]. */
+  /** Retrieves the LinkedListNode's [[`id` | ID]]. */
   getId(): number {
-    return this._id;
+    return this.id;
   }
 }

@@ -82,7 +82,7 @@ export default abstract class PolytopeProduct {
                 k++
               )
                 indices.push(
-                  PolytopeProduct._getIndexOfPrismProduct(
+                  PolytopeProduct.getIndexOfPrismProduct(
                     m - 1,
                     P_.elementList[m][i][k],
                     n,
@@ -99,7 +99,7 @@ export default abstract class PolytopeProduct {
                 k++
               )
                 indices.push(
-                  PolytopeProduct._getIndexOfPrismProduct(
+                  PolytopeProduct.getIndexOfPrismProduct(
                     m,
                     i,
                     n - 1,
@@ -134,10 +134,10 @@ export default abstract class PolytopeProduct {
    * @param j The index of an element on the second polytope.
    * @param P The first polytope to multiply.
    * @param Q The second polytope to multiply.
-   * @param {number[][]} memoizer An array to store past calculations.
+   * @param memoizer An array to store past calculations.
    * @returns The index described above.
    */
-  private static _getIndexOfPrismProduct(
+  private static getIndexOfPrismProduct(
     m: number,
     i: number,
     n: number,
@@ -260,7 +260,7 @@ export default abstract class PolytopeProduct {
               else elIndx = P_.elementList[m][i][k];
 
               indices.push(
-                PolytopeProduct._getIndexOfTegumProduct(
+                PolytopeProduct.getIndexOfTegumProduct(
                   m - 1,
                   elIndx,
                   n,
@@ -279,7 +279,7 @@ export default abstract class PolytopeProduct {
               else elIndx = Q_.elementList[n][j][k];
 
               indices.push(
-                PolytopeProduct._getIndexOfTegumProduct(
+                PolytopeProduct.getIndexOfTegumProduct(
                   m,
                   i,
                   n - 1,
@@ -344,7 +344,7 @@ export default abstract class PolytopeProduct {
             else elIndx2 = Q_.elementList[n][j][k];
 
             indices.push(
-              PolytopeProduct._getIndexOfTegumProduct(
+              PolytopeProduct.getIndexOfTegumProduct(
                 m - 1,
                 elIndx,
                 n - 1,
@@ -465,7 +465,7 @@ export default abstract class PolytopeProduct {
               //We use an ever-so-slightly modified version of the tegum product
               //function, since it's so similar to what we need.
               indices.push(
-                PolytopeProduct._getIndexOfTegumProduct(
+                PolytopeProduct.getIndexOfTegumProduct(
                   m - 1,
                   elIndx,
                   n,
@@ -484,7 +484,7 @@ export default abstract class PolytopeProduct {
               else elIndx = Q_.elementList[n][j][k];
 
               indices.push(
-                PolytopeProduct._getIndexOfTegumProduct(
+                PolytopeProduct.getIndexOfTegumProduct(
                   m,
                   i,
                   n - 1,
@@ -513,7 +513,7 @@ export default abstract class PolytopeProduct {
   //Takes into account the order in which the elements are calculated and added.
   //The only difference between the tegum case and the pyramid case is that for
   //pyramids, we need to consider an extra column in memoizer.
-  private static _getIndexOfTegumProduct(
+  private static getIndexOfTegumProduct(
     m: number,
     i: number,
     n: number,

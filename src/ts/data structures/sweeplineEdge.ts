@@ -8,7 +8,7 @@ import Global from "../global";
  * only be cut to the right. That way, we don't need to modify the SL objects
  * after the division process: only the nodes' connections change.<br />
  * &emsp;The constructor precomputes the [[`slope`]] and gives each edge a
- * unique, immutable [[`_id` | ID]]. These two properties permit consistent
+ * unique, immutable [[`id` | ID]]. These two properties permit consistent
  * ordering of collinear or otherwise identical edges.
  * @param leftVertex The leftmost vertex of the edge.
  * @param rightVertexIndex The index of the rightmost vertex of the
@@ -18,7 +18,7 @@ export default class SweeplineEdge {
   leftVertex: LinkedListNode<Point>;
   rightVertexIndex: number;
   slope: number;
-  private _id: number;
+  private id: number;
 
   /** Constructor for SweeplineEdge. */
   constructor(leftVertex: LinkedListNode<Point>, rightVertexIndex: number) {
@@ -40,7 +40,7 @@ export default class SweeplineEdge {
     const x = leftVertex.getId();
     const y = rightVertex.getId();
     const newID = ((x + y) * (x + y + 1)) / 2 + y;
-    this._id = SweeplineEdge.redirectTable[newID] || newID;
+    this.id = SweeplineEdge.redirectTable[newID] || newID;
   }
 
   /**
@@ -58,7 +58,7 @@ export default class SweeplineEdge {
    * @returns The ID.
    */
   getId(): number {
-    return this._id;
+    return this.id;
   }
 
   directedEdge(): [LinkedListNode<Point>, LinkedListNode<Point>] {
@@ -87,7 +87,7 @@ export default class SweeplineEdge {
     const x = this.leftVertex.getId();
     const y = this.rightVertex().getId();
     const newID = ((x + y) * (x + y + 1)) / 2 + y;
-    SweeplineEdge.redirectTable[newID] = this._id;
+    SweeplineEdge.redirectTable[newID] = this.id;
   }
 
   //TO DELETE

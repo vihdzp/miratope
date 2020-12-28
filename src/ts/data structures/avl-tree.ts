@@ -28,24 +28,24 @@ enum BalanceState {
  */
 export default class AvlTree<T> {
   /** The root of the AVL tree. */
-  private _root: AvlNode<T> | null;
+  private root: AvlNode<T> | null;
   /** The element count of the AVL tree. */
-  private _size: number;
+  private size: number;
   /** Temporary variable for [[`insert`]]. Stores the new inserted node. */
-  private _insertedNode: AvlNode<T> | null;
+  private insertedNode: AvlNode<T> | null;
 
   /**
    * Class constructor.
    *
    * @param customCompare An optional custom compare function.
-   * Overrides [[`_compare`]], and has to work similarly.
+   * Overrides [[`compare`]], and has to work similarly.
    */
   constructor(customCompare: ((a: T, b: T) => number) | null) {
-    this._root = null;
-    this._size = 0;
-    this._insertedNode = null;
+    this.root = null;
+    this.size = 0;
+    this.insertedNode = null;
 
-    if (customCompare) this._compare = customCompare;
+    if (customCompare) this.compare = customCompare;
   }
 
   /**
@@ -56,7 +56,7 @@ export default class AvlTree<T> {
    * @returns -1, 0 or 1 depending on whether `a` is smaller, equal or larger
    * than `b`, respectively.
    */
-  private _compare(a: T, b: T): number {
+  private compare(a: T, b: T): number {
     if (a > b) return 1;
     if (a < b) return -1;
     return 0;
@@ -69,10 +69,10 @@ export default class AvlTree<T> {
    * @returns The inserted node.
    */
   insert(key: T): AvlNode<T> {
-    this._root = this._insert(key, this._root);
-    this._size++;
-    if (!this._insertedNode) throw new Error("AVL insertion failed!");
-    return this._insertedNode;
+    this.root = this._insert(key, this.root);
+    this.size++;
+    if (!this.insertedNode) throw new Error("AVL insertion failed!");
+    return this.insertedNode;
   }
 
   /**
@@ -84,15 +84,15 @@ export default class AvlTree<T> {
    */
   private _insert(key: T, root: AvlNode<T> | null): AvlNode<T> {
     // Perform regular BST insertion
-    if (!root) return (this._insertedNode = new AvlNode(key));
+    if (!root) return (this.insertedNode = new AvlNode(key));
 
-    if (this._compare(key, root.key) < 0)
+    if (this.compare(key, root.key) < 0)
       root.linkLeft(this._insert(key, root.left));
-    else if (this._compare(key, root.key) > 0)
+    else if (this.compare(key, root.key) > 0)
       root.linkRight(this._insert(key, root.right));
     else {
       // It's a duplicate so insertion failed, decrement size to make up for it
-      this._size--;
+      this.size--;
       return root;
     }
 
@@ -102,7 +102,7 @@ export default class AvlTree<T> {
 
     if (balanceState === BalanceState.UNBALANCED_LEFT && root.left) {
       //If the node is unbalanced to the left, it must have a left node.
-      if (this._compare(key, root.left.key) < 0) {
+      if (this.compare(key, root.left.key) < 0) {
         // Left left case
         root = root.rotateRight();
       } else {
@@ -114,7 +114,7 @@ export default class AvlTree<T> {
 
     if (balanceState === BalanceState.UNBALANCED_RIGHT && root.right) {
       //If the node is unbalanced to the right, it must have a right node.
-      if (this._compare(key, root.right.key) > 0) {
+      if (this.compare(key, root.right.key) > 0) {
         // Right right case
         root = root.rotateLeft();
       } else {
@@ -173,8 +173,8 @@ export default class AvlTree<T> {
    * @param key The key being deleted.
    */
   delete(key: T): void {
-    this._root = this._delete(key, this._root);
-    this._size--;
+    this.root = this._delete(key, this.root);
+    this.size--;
   }
 
   /**
@@ -187,11 +187,11 @@ export default class AvlTree<T> {
   private _delete(key: T, root: AvlNode<T> | null): AvlNode<T> | null {
     // Perform regular BST deletion
     if (!root) {
-      this._size++;
+      this.size++;
       return root;
     }
 
-    const compare = this._compare(key, root.key);
+    const compare = this.compare(key, root.key);
     if (compare < 0) {
       // The key to be deleted is in the left sub-tree
       root.linkLeft(this._delete(key, root.left));
@@ -212,7 +212,7 @@ export default class AvlTree<T> {
           root.parent = null;
         } else {
           // Node has 2 children, get the in-order successor
-          const inOrderSuccessor = AvlTree._minValueNode(root.right);
+          const inOrderSuccessor = AvlTree.minValueNode(root.right);
           root.key = inOrderSuccessor.key;
           root.linkRight(this._delete(inOrderSuccessor.key, root.right));
         }
@@ -275,9 +275,9 @@ export default class AvlTree<T> {
    * @returns The node or null if it doesn't exist.
    */
   getNode(key: T): AvlNode<T> | null {
-    if (!this._root) return null;
+    if (!this.root) return null;
 
-    return this._get(key, this._root);
+    return this.get(key, this.root);
   }
 
   /**
@@ -287,18 +287,18 @@ export default class AvlTree<T> {
    * @param root The root of the tree to search in.
    * @returns The node or null if it doesn't exist.
    */
-  private _get(key: T, root: AvlNode<T>): AvlNode<T> | null {
-    const result = this._compare(key, root.key);
+  private get(key: T, root: AvlNode<T>): AvlNode<T> | null {
+    const result = this.compare(key, root.key);
 
     if (result === 0) return root;
 
     if (result < 0) {
       if (!root.left) return null;
-      return this._get(key, root.left);
+      return this.get(key, root.left);
     }
 
     if (!root.right) return null;
-    return this._get(key, root.right);
+    return this.get(key, root.right);
   }
 
   /**
@@ -308,8 +308,8 @@ export default class AvlTree<T> {
    * @returns Whether a node with the key exists.
    */
   contains(key: T): boolean {
-    if (this._root === null) return false;
-    return !!this._get(key, this._root);
+    if (this.root === null) return false;
+    return !!this.get(key, this.root);
   }
 
   /**
@@ -324,8 +324,8 @@ export default class AvlTree<T> {
    * @returns The minimum node in the tree.
    */
   findMinimumNode(): AvlNode<T> | null {
-    if (!this._root) return null;
-    return AvlTree._minValueNode(this._root);
+    if (!this.root) return null;
+    return AvlTree.minValueNode(this.root);
   }
 
   /**
@@ -334,7 +334,7 @@ export default class AvlTree<T> {
    * @param root The node to search.
    * @returns The node with the minimum key in the tree.
    */
-  private static _minValueNode<T>(root: AvlNode<T>): AvlNode<T> {
+  private static minValueNode<T>(root: AvlNode<T>): AvlNode<T> {
     let current = root;
     while (current.left) current = current.left;
     return current;
@@ -352,8 +352,8 @@ export default class AvlTree<T> {
    * @returns The maximum node in the tree.
    */
   findMaximumNode(): AvlNode<T> | null {
-    if (!this._root) return null;
-    return AvlTree._maxValueNode(this._root);
+    if (!this.root) return null;
+    return AvlTree.maxValueNode(this.root);
   }
 
   /**
@@ -362,7 +362,7 @@ export default class AvlTree<T> {
    * @param root The node to search.
    * @returns The node with the maximum key in the tree.
    */
-  private static _maxValueNode<T>(root: AvlNode<T>): AvlNode<T> {
+  private static maxValueNode<T>(root: AvlNode<T>): AvlNode<T> {
     let current = root;
     while (current.right) current = current.right;
     return current;
@@ -371,15 +371,15 @@ export default class AvlTree<T> {
   /**
    * @returns The size of the tree.
    */
-  size(): number {
-    return this._size;
+  getSize(): number {
+    return this.size;
   }
 
   /**
    * @returns Whether the tree is empty.
    */
   isEmpty(): boolean {
-    return this._size === 0;
+    return this.size === 0;
   }
 
   /**
@@ -410,12 +410,12 @@ export default class AvlTree<T> {
    * @returns Whether the tree is sorted or not.
    */
   checkSorted(): boolean {
-    if (!this._root) return true;
+    if (!this.root) return true;
     let node = this.findMinimumNode() as AvlNode<T>;
     let next = this.next(node);
 
     while (next) {
-      if (!(this._compare(node.key, next.key) < 0)) {
+      if (!(this.compare(node.key, next.key) < 0)) {
         console.log(node.key + ", " + next.key + " out of order!");
         return false;
       }

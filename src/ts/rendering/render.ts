@@ -30,7 +30,7 @@ export abstract class Render {
    * collinear edges, concurrent edges, etc.)
    */
   static to(P: PolytopeB, scene: Scene): void {
-    const SL = new AvlTree(Render._SLSort);
+    const SL = new AvlTree(Render.SLSort);
 
     function debug(): void {
       console.log(Render.Event.value.coordinates[Global.index0].toString());
@@ -101,7 +101,7 @@ export abstract class Render {
 
       //Event queue for Bentley-Ottmann, stores vertices.
       //Sorts EQ by lexicographic order of the vertices.
-      Render.EQ = new AvlTree<LinkedListNode<Point>>(Render._order);
+      Render.EQ = new AvlTree<LinkedListNode<Point>>(Render.order);
       for (let j = 0; j < Render.vertexDLL.length; j++)
         Render.EQ.insert(Render.vertexDLL[j]);
 
@@ -144,9 +144,9 @@ export abstract class Render {
             const nextNode = SL.next(node);
 
             //Checks for an intersection with the edge below edgeE.
-            if (prevNode) Render._divide(edge, prevNode.key);
+            if (prevNode) Render.divide(edge, prevNode.key);
             //Checks for an intersection with the edge above edgeE.
-            if (nextNode) Render._divide(edge, nextNode.key);
+            if (nextNode) Render.divide(edge, nextNode.key);
           }
           //Vertex E is a right endpoint of the edge:
           else if (ord > Global.epsilon) {
@@ -168,8 +168,7 @@ export abstract class Render {
 
             //Checks for an intersection between the edges below and above
             //edgeE.
-            if (prevNode && nextNode)
-              Render._divide(prevNode.key, nextNode.key);
+            if (prevNode && nextNode) Render.divide(prevNode.key, nextNode.key);
             SL.delete(edge);
           }
           //The edge is perpendicular to the first coordinate's axis:
@@ -184,7 +183,7 @@ export abstract class Render {
             //"correct height".
             let node = SL.findMinimumNode();
             while (node) {
-              Render._divide(edge, node.key);
+              Render.divide(edge, node.key);
               node = SL.next(node);
             }
           }
@@ -215,7 +214,7 @@ export abstract class Render {
    * @param edgeA The first edge to cut.
    * @param edgeB The second edge to cut.
    */
-  private static _divide(edgeA: SweeplineEdge, edgeB: SweeplineEdge) {
+  private static divide(edgeA: SweeplineEdge, edgeB: SweeplineEdge) {
     //No point in doing anything if the intersection has already been dealt
     //with.
     //...what happens if two different vertices take the same location?
@@ -275,7 +274,7 @@ export abstract class Render {
    * @param b The second point to order.
    * @returns 1, 0 or -1 depending on whether a > b, a = b or a < b.
    */
-  private static _order(
+  private static order(
     a: LinkedListNode<Point>,
     b: LinkedListNode<Point>
   ): number {
@@ -297,7 +296,7 @@ export abstract class Render {
    * also equal, the lines are consistently ordered by their
    * [[`SweeplineEdge.id` | IDs]].
    */
-  private static _SLSort(x: SweeplineEdge, y: SweeplineEdge): number {
+  private static SLSort(x: SweeplineEdge, y: SweeplineEdge): number {
     //This is the only case where the function should return 0:
     if (x.leftVertex === y.leftVertex && x.rightVertex() === y.rightVertex())
       return 0;
