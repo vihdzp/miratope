@@ -554,11 +554,11 @@ export default abstract class PolytopeProduct {
    * {@link Polytope.tegumProduct}, and {@link Polytope.pyramidProduct}.
    * @summary Performs a product of a set of polytopes.
    * @private
-   * @param {Polytope[]} P An array of polytopes to "multiply."
-   * @param {ConstructionNodeType} type The ConstructionNodeType corresponding
+   * @param P An array of polytopes to "multiply."
+   * @param type The ConstructionNodeType corresponding
    * to the product operation.
-   * @param {Function} fun The function used to perform the product.
-   * @returns {Polytope} The resulting product.
+   * @param fun The function used to perform the product.
+   * @returns The resulting product.
    */
   private static _product(
     P: PolytopeB[],
@@ -574,7 +574,7 @@ export default abstract class PolytopeProduct {
     while (P.length) {
       const pop = P.pop() as PolytopeB;
       //Stores the constructions of the elements of P in a temporary array.
-      constructions.push(P[P.length - 1].construction);
+      constructions.push(pop.construction);
       res = fun(pop, res);
     }
 
