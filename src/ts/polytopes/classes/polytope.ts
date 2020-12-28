@@ -1,4 +1,7 @@
-//Exposes the various polytope classes to the global namespace.
+/**
+ * Exposes the various polytope classes to the global namespace.
+ * @packageDocumentation
+ */
 
 import PolytopeBuild from "./polytopeBuild";
 import PolytopeCD from "./polytopeCD";

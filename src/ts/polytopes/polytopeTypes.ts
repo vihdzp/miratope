@@ -30,6 +30,8 @@ export interface OFFOptions {
 
 /**
  * The base class for polytopes.
+ *
+ * @category Polytope Type
  */
 export abstract class PolytopeB {
   /** Represents how a Polytope is built up. */
@@ -47,19 +49,23 @@ export abstract class PolytopeB {
   abstract circumradius(): number;
   abstract gravicenter(): Point;
 
+  /**
+   * Gets the polytope's name from its [[`ConstructionNode`]].
+   *
+   * @returns The polytope's name.
+   */
   getName(): string {
     return this.construction.getName();
   }
 
   /**
    * Saves the current polytope as an OFF file.
+   *
    * @param options The file saving options.
-   * @todo Deal with the nulltope case.
+   * @todo Deal with the nullitope case.
    */
   saveAsOFF(options: OFFOptions = {}): void {
     const P = this.toPolytopeC();
-    //We'll deal with this later.
-    if (!P.elementList[0]) return;
 
     //Maybe automatically project the polytope?
     if (P.spaceDimensions > P.dimensions)
@@ -160,15 +166,17 @@ export abstract class PolytopeB {
     if (comments)
       data.push("\n# ", Translation.elementName(0, pluralAndUppercase), "\n");
 
-    for (let i = 0; i < P.elementList[0].length; i++) {
-      for (let j = 0; j < P.dimensions - 1; j++) {
-        const coord = P.elementList[0][i].coordinates[j];
-        if (coord === undefined) data.push("0 ");
-        else data.push(coord.toString(), " ");
+    if (P.elementList[0]) {
+      for (let i = 0; i < P.elementList[0].length; i++) {
+        for (let j = 0; j < P.dimensions - 1; j++) {
+          const coord = P.elementList[0][i].coordinates[j];
+          if (coord === undefined) data.push("0 ");
+          else data.push(coord.toString(), " ");
+        }
+        const coord = P.elementList[0][i].coordinates[P.dimensions - 1];
+        if (coord === undefined) data.push("0\n");
+        else data.push(coord.toString(), "\n");
       }
-      const coord = P.elementList[0][i].coordinates[P.dimensions - 1];
-      if (coord === undefined) data.push("0\n");
-      else data.push(coord.toString(), "\n");
     }
 
     //Adds faces, or copmonents for compound polygons.
@@ -242,41 +250,44 @@ export abstract class PolytopeB {
   }
 }
 
+/**
+ * Stores a polytope in its "combinatorial" representation: as an array of
+ * elements sorted by rank. The first entry is the array of
+ * [[Point | `Points`]], subsequent entries store the elements as the sets of
+ * the indices their facets are stored in. This representation mirrors closely
+ * the OFF file format.
+ *
+ * @category Polytope Type
+ */
 export class PolytopeC extends PolytopeB {
   construction: ConstructionNode<unknown>;
   dimensions: number;
   spaceDimensions: number;
-  readonly type: PolytopeType;
+  readonly type: PolytopeType = PolytopeType.C;
   elementList: ElementList;
 
   /**
    * The constructor for the PolytopeC class.
-   * @constructor
-   * @param {ElementList} elementList The polytope's element list.
-   * @param {ConstructionNode} constructionRoot The constructionNode
-   * representing how the polytope was built.
-   * @classDesc Represents a polytope as a list of elements, in ascending order
-   * of dimensions,
-   * similarly (but not identically) to an OFF file.
-   * Subelements are stored as indices.
-   * All points are assumed to be of the same dimension.
+   *
+   * @param elementList The polytope's element list.
+   * @param construction The constructionNode representing how the polytope
+   * was built.
    */
   constructor(
     elementList: ElementList,
-    constructionRoot?: ConstructionNode<unknown>
+    construction?: ConstructionNode<unknown>
   ) {
     super();
-    if (!constructionRoot)
+    if (!construction)
       //The construction defaults to just the polytope itself.
-      constructionRoot = new CNPlain([
+      construction = new CNPlain([
         elementList[elementList.length - 2].length,
         elementList.length - 1,
       ]);
 
-    this.construction = constructionRoot;
+    this.construction = construction;
     this.dimensions = elementList.length - 1; //The rank of the polytope.
     this.elementList = elementList;
-    this.type = PolytopeType.C;
 
     if (this.elementList[0])
       this.spaceDimensions = this.elementList[0][0].dimensions();
@@ -290,8 +301,8 @@ export class PolytopeC extends PolytopeB {
 
   /**
    * Scales a polytope up or down.
-   * @param {number} r The scaling factor.
-   * @returns {Polytope} The scaled polytope.
+   * @param r The scaling factor.
+   * @returns The scaled polytope.
    */
   scale(r: number): PolytopeC {
     if (!this.elementList[0]) return this;
@@ -302,7 +313,7 @@ export class PolytopeC extends PolytopeB {
 
   /**
    * Calculates the centroid of a polytope.
-   * @returns {Point} The centroid of the polytope.
+   * @returns The centroid of the polytope.
    */
   gravicenter(): Point {
     if (!this.elementList[0]) return new Point(0);
@@ -337,7 +348,7 @@ export class PolytopeC extends PolytopeB {
   /**
    * Makes every vertex have a set number of coordinates either by adding zeros
    * or removing numbers.
-   * @param {number} dim The new number of coordinates for each vertex.
+   * @param dim The new number of coordinates for each vertex.
    */
   setSpaceDimensions(dim: number): void {
     if (!this.elementList[0]) return;
@@ -361,8 +372,9 @@ export class PolytopeC extends PolytopeB {
   /**
    * Converts the edge representation of the i-th face to an ordered array of
    * vertices.
-   * @param {number} i The selected face.
-   * @returns {number[]} An array with the indices of the vertices of the i-th
+   *
+   * @param i The selected face's index.
+   * @returns An array with the indices of the vertices of the i-th
    * face in order.
    */
   faceToVertices(i: number): number[] {
@@ -394,7 +406,7 @@ export class PolytopeC extends PolytopeB {
 
   /**
    * Places the gravicenter of the polytope at the origin.
-   * @returns {PolytopeC} The recentered polytope.
+   * @returns The recentered polytope.
    */
   recenter(): PolytopeC {
     return this.move(this.gravicenter(), -1);
@@ -402,34 +414,37 @@ export class PolytopeC extends PolytopeB {
 
   /**
    * Ensures that we can always correctly call toPolytopeC on a polytope.
-   * @returns {PolytopeC} The polytope, unchanged.
+   * @returns The polytope, unchanged.
    */
   toPolytopeC(): PolytopeC {
     return this;
   }
 }
 
-//Represents a polytope in a way that takes advantage of symmetry
-//Obviously, this requires a representation of the symmetry group.
-//The other components are a description of how the flags (tuples of
-//vertex/edge/face...) within a single domain connect to each other under
-//"change vertex/edge/..." operations, matrices describing how the symmetry
-//group affects the physical representation of the polytope, and positions of
-//each class of vertices.
-//In this implementation the symmetry group and its physical effects are
-//bundled.
-export class PolytopeS<T> extends PolytopeB {
-  symmetries: ConcreteGroup<T>;
+/**
+ * Represents a polytope in a way that takes advantage of symmetry. Obviously,
+ * this requires a representation of the symmetry group. The other components
+ * are a description of how the flags (tuples of vertex/edge/face...) within a
+ * single domain connect to each other under "change vertex/edge/..."
+ * operations, matrices describing how the symmetry group affects the physical
+ * representation of the polytope, and positions of each class of vertices.
+ * In this implementation the symmetry group and its physical effects are
+ * bundled.
+ *
+ * @category Polytope Type
+ */
+export class PolytopeS extends PolytopeB {
+  symmetries: ConcreteGroup<unknown>;
   flagClasses: FlagClass[];
   vertices: Point[];
   dimensions: number;
   spaceDimensions: number;
   construction: ConstructionNode<unknown>;
   readonly type: PolytopeType;
-  private identitySimplifier: Simplifier<T>;
+  private identitySimplifier: Simplifier<unknown>;
 
   constructor(
-    symmetries: ConcreteGroup<T>,
+    symmetries: ConcreteGroup<unknown>,
     flagClasses: FlagClass[],
     vertices: Point[],
     dimensions: number
@@ -470,7 +485,7 @@ export class PolytopeS<T> extends PolytopeB {
 
   //Apply a flag-change operation to a flag.
   //Operators numbered from vertex to facet.
-  moveFlag(flag: Flag<T>, generator: number): Flag<T> {
+  moveFlag(flag: Flag<unknown>, generator: number): Flag<unknown> {
     const flagClass = flag.number;
     const flagDomain = flag.element;
     const effects = this.flagClasses[generator][flagClass];
@@ -485,7 +500,7 @@ export class PolytopeS<T> extends PolytopeB {
     return new Flag(newFlagClass, newFlagDomain);
   }
 
-  compareFlags(flag1: Flag<T>, flag2: Flag<T>): number {
+  compareFlags(flag1: Flag<unknown>, flag2: Flag<unknown>): number {
     if (flag1.number < flag2.number) return -1;
     if (flag1.number > flag2.number) return 1;
     return this.symmetries.compare(flag1.element, flag2.element);
@@ -495,10 +510,10 @@ export class PolytopeS<T> extends PolytopeB {
   //Modifies a simplifier to use another generator.
   //Almost identical to the merge function but I don't really care rn.
   extendSimplifier(
-    simplifier: Simplifier<T>,
+    simplifier: Simplifier<unknown>,
     generator: number
-  ): Simplifier<T> {
-    const newSimplifier: Simplifier<T> = {};
+  ): Simplifier<unknown> {
+    const newSimplifier: Simplifier<unknown> = {};
     for (const i in simplifier) newSimplifier[i] = simplifier[i];
     for (const i in simplifier) {
       let oldLeftElem = new Flag(0, this.symmetries.identity());
@@ -543,10 +558,10 @@ export class PolytopeS<T> extends PolytopeB {
   //Utility function for toPolytopeC.
   //Merges two simplifiers.
   private mergeSimplifiers(
-    simplifier1: Simplifier<T>,
-    simplifier2: Simplifier<T>
+    simplifier1: Simplifier<unknown>,
+    simplifier2: Simplifier<unknown>
   ) {
-    const newSimplifier: Simplifier<T> = {};
+    const newSimplifier: Simplifier<unknown> = {};
     for (const i in simplifier1) newSimplifier[i] = simplifier1[i];
     for (const i in simplifier1) {
       let oldLeftElem = new Flag(0, this.symmetries.identity());
@@ -572,7 +587,7 @@ export class PolytopeS<T> extends PolytopeB {
       if (order === -1) newSimplifier[rightElem.toString()] = leftElem;
       if (order === 1) newSimplifier[leftElem.toString()] = rightElem;
     }
-    const betterSimplifier: Simplifier<T> = {};
+    const betterSimplifier: Simplifier<unknown> = {};
     for (const i in newSimplifier) {
       let oldElem = new Flag(0, this.symmetries.identity());
       let elem = newSimplifier[i];
@@ -586,7 +601,7 @@ export class PolytopeS<T> extends PolytopeB {
   }
 
   //Count a simplifier's cosets. Not needed except for debugging.
-  simplifierCosets(simplifier: Simplifier<T>): number {
+  simplifierCosets(simplifier: Simplifier<unknown>): number {
     let count = 0;
     for (const i in simplifier) if (i === simplifier[i].toString()) count++;
     return count;
@@ -596,12 +611,12 @@ export class PolytopeS<T> extends PolytopeB {
   //but modified to work for higher dimensions and calculate incidences.
   toPolytopeC(): PolytopeC {
     const maxDomains = 500; //Change to Infinity if you dare
-    const domains: [T, Matrix][] = this.symmetries.enumerateElements(
+    const domains: [unknown, Matrix][] = this.symmetries.enumerateElements(
       maxDomains
     );
 
     //Maps each flag to itself. Used as a base for the later simplifiers.
-    const identitySimplifier: Simplifier<T> = {};
+    const identitySimplifier: Simplifier<unknown> = {};
     for (let i = 0; i < domains.length; i++) {
       for (let j = 0; j < this.flagClasses[0].length; j++) {
         identitySimplifier[j + "," + domains[i]] = new Flag(j, domains[i]);
@@ -638,7 +653,7 @@ export class PolytopeS<T> extends PolytopeB {
 
     //Maps each flag to a representative flag of the subwhatever
     //fixing that flag's vertex/edge/etc.
-    const elementSimplifiers: Simplifier<T>[] = [];
+    const elementSimplifiers: Simplifier<unknown>[] = [];
     console.log("Element simplifiers");
     for (let i = 0; i < this.dimensions; i++) {
       const simplifier = this.mergeSimplifiers(
@@ -652,7 +667,7 @@ export class PolytopeS<T> extends PolytopeB {
 
     //Maps each flag to a representative flag of the subwhatever
     //fixing that flag's vertex-edge/edge-face/etc pair.
-    const intersectionSimplifiers: Simplifier<T>[] = [];
+    const intersectionSimplifiers: Simplifier<unknown>[] = [];
     console.log("Intersection simplifiers");
     for (let i = 0; i < this.dimensions - 1; i++) {
       const simplifier = this.mergeSimplifiers(

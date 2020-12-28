@@ -11,16 +11,6 @@ declare global {
 }
 
 if (!Math.gcd) {
-  /**
-   * Helper function for {@linkcode Polytope.regularPolygon} and
-   * {@linkcode Translation.regularPolygonName}.
-   * Just the most basic form of the Euclidean algorithm.
-   *
-   * @internal
-   * @param a The first number.
-   * @param b The second number.
-   * @returns The greatest common divisor of `a` and `b`.
-   */
   Math.gcd = function (a: number, b: number): number {
     let t: number;
     while (b !== 0) {
@@ -44,9 +34,3 @@ globalThis.P; //Temp variable. OFF imports to here.
 
 //Configures the basic attributes of the scene.
 globalThis.mainScene = new Scene();
-
-//elementList is an array of arrays of arrays that contains all of a Polytope's
-//elements.
-//elementList = [[points], [edges], [faces],..., [ridges], [facets]].
-//A single array in elementList is itself a list of that type of element.
-//The third edge of a polytope would be elementList[1][2].

@@ -137,7 +137,7 @@ export default abstract class ConstructionNode<T> {
    * This function removes children nodes of the same type
    * and replaces them by their children.
    */
-  _mergeChildren(): void {
+  mergeChildren(): void {
     //If the children are an array.
     if (this.child instanceof Array) {
       const oldLength = this.child.length;
@@ -159,7 +159,7 @@ export default abstract class ConstructionNode<T> {
       }
     } else
       throw new Error(
-        "__mergeChildren can only be called in a product ConstructionNode!"
+        "mergeChildren can only be called in a product ConstructionNode!"
       );
   }
 
@@ -183,8 +183,8 @@ export default abstract class ConstructionNode<T> {
   }
 
   /**
-   * Converts a set of ConstructionNodes into their prism product/tegum product/
-   * pyramid product's name.
+   * Converts a set of ConstructionNodes into their
+   * prism product/tegum product/pyramid product's name.
    *
    * @param nodes The array of nodes to convert.
    * @param family The prodct used (i.e. `"prism"`, `"tegum"` or `"pyramid"`).
@@ -192,7 +192,7 @@ export default abstract class ConstructionNode<T> {
    * is considered differently.
    * @param specialFactorModify Specifies what `specialFactor` becomes into
    * within the product.
-   * @return The resulting name.
+   * @returns The resulting name.
    * @example
    * var triangle = new Polygon([3, 1]);
    * var pentagram = new Polygon([5, 2]);
@@ -389,7 +389,7 @@ export class Multiprism extends ConstructionNode<ConstructionNode<unknown>[]> {
   }
 
   getName(): string {
-    this._mergeChildren();
+    this.mergeChildren();
     return ConstructionNode.multiFamily(
       this.child,
       "family/prism",
@@ -433,7 +433,7 @@ export class Multitegum extends ConstructionNode<ConstructionNode<unknown>[]> {
   }
 
   getName(): string {
-    this._mergeChildren();
+    this.mergeChildren();
     return ConstructionNode.multiFamily(
       this.child,
       "family/tegum",
@@ -477,7 +477,7 @@ export class Multipyramid extends ConstructionNode<
   }
 
   getName(): string {
-    this._mergeChildren();
+    this.mergeChildren();
     return ConstructionNode.multiFamily(
       this.child,
       "family/pyramid",

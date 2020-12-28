@@ -8,16 +8,17 @@ import { Translation } from "../translation/translation";
 import Caret from "./caret";
 
 export default abstract class FileOperations {
+  /** Some filename, used as a temporary variable in some functions. */
   static fileName: string;
 
   /**
-   * Helper function for {@link Polytope.openFile},
-   * and more specifically for {@link Polytope._OFFReaderOnload}.
-   * Checks whether two arrays have a common element using a dictionary.
-   * @private
-   * @param {number[]} a The first array to check.
-   * @param {number[]} b The second array to check.
-   * @returns {boolean} Whether the arrays have a common element or not.
+   * Helper function for [[`openFile`]] and more specifically for
+   * [[`onloadOFF`]]. Checks whether two arrays have a common element using a
+   * dictionary.
+   *
+   * @param a The first array to check.
+   * @param b The second array to check.
+   * @returns Whether the arrays have a common element or not.
    */
   static checkCommonElements(a: number[], b: number[]): boolean {
     const vals: boolean[] = [];
@@ -55,10 +56,11 @@ export default abstract class FileOperations {
 
   /**
    * Opens a file and stores it into the global variable `P`.
-   * @param {Event | string} e Either the event triggered by the import button,
+   * @param e Either the event triggered by the import button,
    * or a local filepath.
-   * @todo Replace P by scene.polytope or something similar.
-   * @todo Add support for more file formats.
+   *
+   * @todo Replace P by `scene.polytope` or something similar.
+   * @todo Add support for more file formats (like STL or OBJ).
    * @todo Rewrite the code with npm's fs.
    */
   static openFile(e: Event | string): void {
@@ -140,10 +142,8 @@ export default abstract class FileOperations {
    * This ZIP file contains an XML called geogebra.xml.
    * This function will be called with this XML's data as a string.
    * It will store the 3D polyhedron into the global variable `P`.
-   * @summary Stores the polyhedron described by an XML file
-   * into the global variable `P`.
-   * @private
-   * @param {string} contents The contents of the file.
+   *
+   * @param contents The contents of the file.
    * @todo Load the polyhedron into a scene,
    * instead of loading it into a global variable.
    */
@@ -210,9 +210,8 @@ export default abstract class FileOperations {
           elementList[0].push(new Point([x, y, z]));
           break;
         }
+        //Reading a polygon.
         case 2: {
-          //Reading a polygon.
-
           //Reads vertex names.
           caret.skipToString("<input a0=");
           const verts: number[] = [];
@@ -223,7 +222,8 @@ export default abstract class FileOperations {
             verts.push(vertDict[str]);
             caret.increment();
           }
-          verts.push(verts[0]); //Simulates a cyclic order.
+          //Simulates a cyclic order.
+          verts.push(verts[0]);
 
           //Adds edges.
           const edges: number[] = [];
@@ -275,9 +275,10 @@ export default abstract class FileOperations {
   }
 
   /**
-   * Helper function for {@link Polytope.openFile}.
+   * Helper function for [[`Polytope.openFile`]].
    * Is called when an OFF file is loaded.
-   * @param {string} contents The contents of the file.
+   *
+   * @param contents The contents of the file.
    */
   static onloadOFF(contents: string): void {
     //Caret for reading the OFF file.

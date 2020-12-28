@@ -53,7 +53,7 @@ export default class AvlTree<T> {
    *
    * @param a The first key to compare.
    * @param b The second key to compare.
-   * @return -1, 0 or 1 depending on whether `a` is smaller, equal or larger
+   * @returns -1, 0 or 1 depending on whether `a` is smaller, equal or larger
    * than `b`, respectively.
    */
   private _compare(a: T, b: T): number {
@@ -66,7 +66,7 @@ export default class AvlTree<T> {
    * Inserts a new node with a specific key into the tree.
    *
    * @param key The key being inserted.
-   * @return The inserted node.
+   * @returns The inserted node.
    */
   insert(key: T): AvlNode<T> {
     this._root = this._insert(key, this._root);
@@ -80,7 +80,7 @@ export default class AvlTree<T> {
    *
    * @param key The key being inserted.
    * @param root The root of the tree to insert in.
-   * @return The new tree root.
+   * @returns The new tree root.
    */
   private _insert(key: T, root: AvlNode<T> | null): AvlNode<T> {
     // Perform regular BST insertion
@@ -131,7 +131,7 @@ export default class AvlTree<T> {
    * Finds the next node in the tree.
    *
    * @param node The current node in the tree.
-   * @return The next node in the tree.
+   * @returns The next node in the tree.
    */
   next(node: AvlNode<T>): AvlNode<T> | null {
     if (node.right) {
@@ -151,7 +151,7 @@ export default class AvlTree<T> {
    * Finds the previous node in the tree.
    *
    * @param node The current node in the tree.
-   * @return The previous node in the tree.
+   * @returns The previous node in the tree.
    */
   prev(node: AvlNode<T>): AvlNode<T> | null {
     if (node.left) {
@@ -182,7 +182,7 @@ export default class AvlTree<T> {
    *
    * @param key The key being deleted.
    * @param root The root of the tree to delete from.
-   * @return The new tree root.
+   * @returns The new tree root.
    */
   private _delete(key: T, root: AvlNode<T> | null): AvlNode<T> | null {
     // Perform regular BST deletion
@@ -272,7 +272,7 @@ export default class AvlTree<T> {
    * Gets the node within the tree with a specific key.
    *
    * @param key The key being searched for.
-   * @return The node or null if it doesn't exist.
+   * @returns The node or null if it doesn't exist.
    */
   getNode(key: T): AvlNode<T> | null {
     if (!this._root) return null;
@@ -285,7 +285,7 @@ export default class AvlTree<T> {
    *
    * @param key The key being searched for.
    * @param root The root of the tree to search in.
-   * @return The node or null if it doesn't exist.
+   * @returns The node or null if it doesn't exist.
    */
   private _get(key: T, root: AvlNode<T>): AvlNode<T> | null {
     const result = this._compare(key, root.key);
@@ -305,7 +305,7 @@ export default class AvlTree<T> {
    * Gets whether a node with a specific key is within the tree.
    *
    * @param key The key being searched for.
-   * @return Whether a node with the key exists.
+   * @returns Whether a node with the key exists.
    */
   contains(key: T): boolean {
     if (this._root === null) return false;
@@ -313,7 +313,7 @@ export default class AvlTree<T> {
   }
 
   /**
-   * @return The minimum key in the tree.
+   * @returns The minimum key in the tree.
    */
   findMinimum(): T | null {
     const min = this.findMinimumNode();
@@ -321,7 +321,7 @@ export default class AvlTree<T> {
   }
 
   /**
-   * @return The minimum node in the tree.
+   * @returns The minimum node in the tree.
    */
   findMinimumNode(): AvlNode<T> | null {
     if (!this._root) return null;
@@ -332,7 +332,7 @@ export default class AvlTree<T> {
    * Gets the minimum value node, rooted in a particular node.
    *
    * @param root The node to search.
-   * @return The node with the minimum key in the tree.
+   * @returns The node with the minimum key in the tree.
    */
   private static _minValueNode<T>(root: AvlNode<T>): AvlNode<T> {
     let current = root;
@@ -341,7 +341,7 @@ export default class AvlTree<T> {
   }
 
   /**
-   * @return The maximum key in the tree.
+   * @returns The maximum key in the tree.
    */
   findMaximum(): T | null {
     const max = this.findMaximumNode();
@@ -349,7 +349,7 @@ export default class AvlTree<T> {
   }
 
   /**
-   * @return The maximum node in the tree.
+   * @returns The maximum node in the tree.
    */
   findMaximumNode(): AvlNode<T> | null {
     if (!this._root) return null;
@@ -360,7 +360,7 @@ export default class AvlTree<T> {
    * Gets the maximum value node, rooted in a particular node.
    *
    * @param root The node to search.
-   * @return The node with the maximum key in the tree.
+   * @returns The node with the maximum key in the tree.
    */
   private static _maxValueNode<T>(root: AvlNode<T>): AvlNode<T> {
     let current = root;
@@ -369,14 +369,14 @@ export default class AvlTree<T> {
   }
 
   /**
-   * @return The size of the tree.
+   * @returns The size of the tree.
    */
   size(): number {
     return this._size;
   }
 
   /**
-   * @return Whether the tree is empty.
+   * @returns Whether the tree is empty.
    */
   isEmpty(): boolean {
     return this._size === 0;
@@ -387,7 +387,7 @@ export default class AvlTree<T> {
    * Debug function, will be deleted.
    *
    * @internal
-   * @return The AVL tree as a string.
+   * @returns The AVL tree as a string.
    */
   toString(): string {
     if (this.isEmpty()) return "";
@@ -407,7 +407,7 @@ export default class AvlTree<T> {
    * Debug function, will be deleted.
    *
    * @internal
-   * @return Whether the tree is sorted or not.
+   * @returns Whether the tree is sorted or not.
    */
   checkSorted(): boolean {
     if (!this._root) return true;
@@ -431,7 +431,7 @@ export default class AvlTree<T> {
    * sub-trees are unbalanced.
    *
    * @param node The node to get the difference from.
-   * @return The BalanceState of the node.
+   * @returns The BalanceState of the node.
    */
   static getBalanceState<T>(node: AvlNode<T>): BalanceState {
     return (node.leftHeight() - node.rightHeight()) as BalanceState;
@@ -479,7 +479,7 @@ class AvlNode<T> {
    *    c   d                           d   e
    *```
    *
-   * @return The root of the sub-tree, the node where this node used to be.
+   * @returns The root of the sub-tree, the node where this node used to be.
    */
   rotateRight(): AvlNode<T> {
     const other = this.left as AvlNode<T>;
@@ -500,7 +500,7 @@ class AvlNode<T> {
    *      d   e                       c   d
    *```
    *
-   * @return The root of the sub-tree, the node where this node used
+   * @returns The root of the sub-tree, the node where this node used
    * to be.
    */
   rotateLeft(): AvlNode<T> {
@@ -516,7 +516,7 @@ class AvlNode<T> {
    * Convenience function to get the height of the left child of the node,
    * returning -1 if the node is null.
    *
-   * @return The height of the left child, or -1 if it doesn't exist.
+   * @returns The height of the left child, or -1 if it doesn't exist.
    */
   leftHeight(): number {
     if (!this.left) return -1;
@@ -527,7 +527,7 @@ class AvlNode<T> {
    * Convenience function to get the height of the right child of the node,
    * returning -1 if the node is null.
    *
-   * @return The height of the right child, or -1 if it doesn't exist.
+   * @returns The height of the right child, or -1 if it doesn't exist.
    */
   rightHeight(): number {
     if (!this.right) return -1;

@@ -8,6 +8,11 @@ import Point from "../../geometry/point";
 import { ElementList, PolytopeB, PolytopeC } from "../polytopeTypes";
 import PolytopeBuild from "./polytopeBuild";
 
+/**
+ * A class containing the methods needed to calculate various polytope products.
+ *
+ * @category Polytope Method
+ */
 export default abstract class PolytopeProduct {
   /**
    * Calculates the prism product (Cartesian product) of a set of polytopes.
@@ -29,8 +34,8 @@ export default abstract class PolytopeProduct {
    * Is the one actually performing the product.
    * Takes the prism product of two polytopes.
    * @private
-   * @param {PolytopeB} P The first polytope to multiply.
-   * @param {PolytopeB} Q The second polytope to multiply.
+   * @param P The first polytope to multiply.
+   * @param Q The second polytope to multiply.
    */
   private static _prism(P: PolytopeB, Q: PolytopeB): PolytopeB {
     //Deals with the point, nullitope cases.
@@ -123,14 +128,14 @@ export default abstract class PolytopeProduct {
    * added.
    * @summary Helper function for {@link Polytope.prismProduct}.
    * @private
-   * @param {number} m The dimension of an element on the first polytope.
-   * @param {number} i The index of an element on the first polytope.
-   * @param {number} n The dimension of an element on the second polytope.
-   * @param {number} j The index of an element on the second polytope.
-   * @param {Polytope} P The first polytope to multiply.
-   * @param {Polytope} Q The second polytope to multiply.
+   * @param m The dimension of an element on the first polytope.
+   * @param i The index of an element on the first polytope.
+   * @param n The dimension of an element on the second polytope.
+   * @param j The index of an element on the second polytope.
+   * @param P The first polytope to multiply.
+   * @param Q The second polytope to multiply.
    * @param {number[][]} memoizer An array to store past calculations.
-   * @returns {number} The index described above.
+   * @returns The index described above.
    */
   private static _getIndexOfPrismProduct(
     m: number,
@@ -596,7 +601,7 @@ export default abstract class PolytopeProduct {
  * Extrudes a polytope into a prism.
  *
  * @param height The height of the prism.
- * @return The resulting prism.
+ * @returns The resulting prism.
  */
 PolytopeB.prototype.extrudeToPrism = function (height = 1): PolytopeB {
   return PolytopeProduct.prism(this.toPolytopeC(), PolytopeBuild.dyad(height));

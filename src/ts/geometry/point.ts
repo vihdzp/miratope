@@ -27,7 +27,7 @@ export default class Point {
 
   /**
    * Returns the number of dimensions of the point's space.
-   * @returns {number} The number of coordinates of the point.
+   * @returns The number of coordinates of the point.
    */
   dimensions(): number {
     return this.coordinates.length;
@@ -35,7 +35,7 @@ export default class Point {
 
   /**
    * Clones a Point object. Uses a simple shallow copy.
-   * @returns {Point} A new Point object with the same coordinates as `this`.
+   * @returns A new Point object with the same coordinates as `this`.
    */
   clone(): Point {
     const coordinates: number[] = [];
@@ -47,7 +47,7 @@ export default class Point {
   /**
    * Projects the point into 3D.
    * For now, just the simplest orthographic projection possible.
-   * @returns {Point} The projected point.
+   * @returns The projected point.
    */
   project(): Point {
     return Point.padRight(this, 3 - this.coordinates.length);
@@ -56,7 +56,7 @@ export default class Point {
   /**
    * Adds the coordinates of `P` to the coordinates of a point.
    * Both need to have the same amount of dimensions.
-   * @returns {Point} The point with the added coordinates.
+   * @returns The point with the added coordinates.
    * @throws Will throw an error if the added point does not have the same
    * number of dimensions.
    */
@@ -78,7 +78,7 @@ export default class Point {
   /**
    * Subtracts the coordinates of `P` to the coordinates of a point.
    * Both need to have the same amount of dimensions.
-   * @returns {Point} The point with the subtracted coordinates.
+   * @returns The point with the subtracted coordinates.
    * @throws Will throw an error if the subtracted point does not have the same
    * number of dimensions.
    */
@@ -100,7 +100,7 @@ export default class Point {
   /**
    * Scales up a point by a factor of `r`.
    * Simple scalar multiplication.
-   * @param {number} r The scaling factor.
+   * @param r The scaling factor.
    */
   scale(r: number): Point {
     for (let i = 0; i < this.dimensions(); i++)
@@ -112,9 +112,9 @@ export default class Point {
   /**
    * Takes the Cartesian product of two points.
    * Simply concatenates the coordinates of both points.
-   * @param {Point} P The first point to multiply.
-   * @param {Point} Q The second point to multiply.
-   * @returns {Point} The product of both points.
+   * @param P The first point to multiply.
+   * @param Q The second point to multiply.
+   * @returns The product of both points.
    */
   static product(P: Point, Q: Point): Point {
     //Simply concatenates the coordinates of both points.
@@ -123,9 +123,9 @@ export default class Point {
 
   /**
    * Pads a point's coordinates with zeros to the left.
-   * @param {Point} P The point to be padded.
-   * @param {number} n The number of added zeros.
-   * @returns {Point} The padded point.
+   * @param P The point to be padded.
+   * @param n The number of added zeros.
+   * @returns The padded point.
    */
   static padLeft(P: Point, n: number): Point {
     const coordinates: number[] = [];
@@ -137,9 +137,9 @@ export default class Point {
 
   /**
    * Pads a point's coordinates with zeros to the right.
-   * @param {Point} P The point to be padded.
-   * @param {number} n The number of added zeros.
-   * @returns {Point} The padded point.
+   * @param P The point to be padded.
+   * @param n The number of added zeros.
+   * @returns The padded point.
    */
   static padRight(P: Point, n: number): Point {
     const coordinates: number[] = [];
@@ -151,8 +151,8 @@ export default class Point {
 
   /**
    * Adds a given coordinate to the end of the coordinate list.
-   * @param {Number} coord The coordinate to be added.
-   * @returns {Point} The modified point.
+   * @param coord The coordinate to be added.
+   * @returns The modified point.
    */
   addCoordinate(coord: number): Point {
     this.coordinates.push(coord);

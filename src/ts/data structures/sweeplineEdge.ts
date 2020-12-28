@@ -2,29 +2,25 @@ import Point from "../geometry/point";
 import LinkedListNode from "./linkedListNode";
 import Global from "../global";
 
+/**
+ * Helper class for [[`Render.to`]], used in the sweepline for
+ * Bentley-Ottmann. This format is useful because an edge on the sweepline can
+ * only be cut to the right. That way, we don't need to modify the SL objects
+ * after the division process: only the nodes' connections change.<br />
+ * &emsp;The constructor precomputes the [[`slope`]] and gives each edge a
+ * unique, immutable [[`_id` | ID]]. These two properties permit consistent
+ * ordering of collinear or otherwise identical edges.
+ * @param leftVertex The leftmost vertex of the edge.
+ * @param rightVertexIndex The index of the rightmost vertex of the
+ * edge, relative to `leftVertex`.
+ */
 export default class SweeplineEdge {
   leftVertex: LinkedListNode<Point>;
   rightVertexIndex: number;
   slope: number;
-  private id: number;
+  private _id: number;
 
-  /**
-   * Constructor for SweeplineEdge.
-   * @constructor
-   * @classdesc
-   * Helper class for [Polytope.prototype.renderTo]{@link Polytope#renderTo},
-   * used in the sweep line for Bentley-Ottmann. This format is useful because
-   * an edge on the sweep line can only be cut to the right. That way, we don't
-   * need to modify the SL objects after the division process: only the nodes'
-   * connections change.<br />
-   * &emsp;The constructor precomputes the slope and gives each edge a unique,
-   * immutable ID. These two properties permit consistent ordering of collinear
-   * or otherwise identical edges.
-   * @param {LinkedListNode<Point>} leftVertex The leftmost vertex of the edge.
-   * @param {number} rightVertexIndex The index of the rightmost vertex of the
-   * edge,
-   * relative to `leftVertex`.
-   */
+  /** Constructor for SweeplineEdge. */
   constructor(leftVertex: LinkedListNode<Point>, rightVertexIndex: number) {
     this.leftVertex = leftVertex;
     this.rightVertexIndex = rightVertexIndex;
@@ -41,18 +37,14 @@ export default class SweeplineEdge {
 
     //Gives the edge an immutable ID in terms of its vertices.
     //Uses the redirect table (read below).
-    const x = leftVertex.id;
-    const y = rightVertex.id;
+    const x = leftVertex.getId();
+    const y = rightVertex.getId();
     const newID = ((x + y) * (x + y + 1)) / 2 + y;
-    this.id =
-      SweeplineEdge.redirectTable[newID] === undefined
-        ? newID
-        : SweeplineEdge.redirectTable[newID];
+    this._id = SweeplineEdge.redirectTable[newID] || newID;
   }
 
   /**
-   * The rightmost vertex of the edge, as determined by
-   * [this.rightVertexIndex]{@linkcode SweeplineEdge#rightVertexIndex}.
+   * The rightmost vertex of the edge, as determined by [[`rightVertexIndex`]].
    * @returns {LinkedListNode<Point>} The rightmost vertex of the edge.
    */
   rightVertex(): LinkedListNode<Point> {
@@ -63,10 +55,10 @@ export default class SweeplineEdge {
 
   /**
    * Getter for the ID of the edge.
-   * @returns {number} The ID.
+   * @returns The ID.
    */
   getId(): number {
-    return this.id;
+    return this._id;
   }
 
   directedEdge(): [LinkedListNode<Point>, LinkedListNode<Point>] {
@@ -83,8 +75,7 @@ export default class SweeplineEdge {
    * leftmost vertex of an edge changes, we "redirect" the new calculated ID to
    * the old one.<br />
    * &emsp;The redirect table is filled out as necesary by the
-   * [SweeplineEdge.prototype.updateRedirectTable]{@link SweeplineEdge#updateRedirectTable}
-   * function.
+   * [[`updateRedirectTable`]] method.
    */
   static redirectTable: number[] = [];
 
@@ -93,10 +84,10 @@ export default class SweeplineEdge {
    * ID of the edge remains consisten even if the `leftVertex` changes.
    */
   updateRedirectTable(): void {
-    const x = this.leftVertex.id;
-    const y = this.rightVertex().id;
+    const x = this.leftVertex.getId();
+    const y = this.rightVertex().getId();
     const newID = ((x + y) * (x + y + 1)) / 2 + y;
-    SweeplineEdge.redirectTable[newID] = this.id;
+    SweeplineEdge.redirectTable[newID] = this._id;
   }
 
   //TO DELETE

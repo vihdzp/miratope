@@ -66581,7 +66581,7 @@ class AvlTree {
      *
      * @param a The first key to compare.
      * @param b The second key to compare.
-     * @return -1, 0 or 1 depending on whether `a` is smaller, equal or larger
+     * @returns -1, 0 or 1 depending on whether `a` is smaller, equal or larger
      * than `b`, respectively.
      */
     _compare(a, b) {
@@ -66595,7 +66595,7 @@ class AvlTree {
      * Inserts a new node with a specific key into the tree.
      *
      * @param key The key being inserted.
-     * @return The inserted node.
+     * @returns The inserted node.
      */
     insert(key) {
         this._root = this._insert(key, this._root);
@@ -66609,7 +66609,7 @@ class AvlTree {
      *
      * @param key The key being inserted.
      * @param root The root of the tree to insert in.
-     * @return The new tree root.
+     * @returns The new tree root.
      */
     _insert(key, root) {
         // Perform regular BST insertion
@@ -66657,7 +66657,7 @@ class AvlTree {
      * Finds the next node in the tree.
      *
      * @param node The current node in the tree.
-     * @return The next node in the tree.
+     * @returns The next node in the tree.
      */
     next(node) {
         if (node.right) {
@@ -66678,7 +66678,7 @@ class AvlTree {
      * Finds the previous node in the tree.
      *
      * @param node The current node in the tree.
-     * @return The previous node in the tree.
+     * @returns The previous node in the tree.
      */
     prev(node) {
         if (node.left) {
@@ -66709,7 +66709,7 @@ class AvlTree {
      *
      * @param key The key being deleted.
      * @param root The root of the tree to delete from.
-     * @return The new tree root.
+     * @returns The new tree root.
      */
     _delete(key, root) {
         // Perform regular BST deletion
@@ -66788,7 +66788,7 @@ class AvlTree {
      * Gets the node within the tree with a specific key.
      *
      * @param key The key being searched for.
-     * @return The node or null if it doesn't exist.
+     * @returns The node or null if it doesn't exist.
      */
     getNode(key) {
         if (!this._root)
@@ -66800,7 +66800,7 @@ class AvlTree {
      *
      * @param key The key being searched for.
      * @param root The root of the tree to search in.
-     * @return The node or null if it doesn't exist.
+     * @returns The node or null if it doesn't exist.
      */
     _get(key, root) {
         const result = this._compare(key, root.key);
@@ -66819,7 +66819,7 @@ class AvlTree {
      * Gets whether a node with a specific key is within the tree.
      *
      * @param key The key being searched for.
-     * @return Whether a node with the key exists.
+     * @returns Whether a node with the key exists.
      */
     contains(key) {
         if (this._root === null)
@@ -66827,14 +66827,14 @@ class AvlTree {
         return !!this._get(key, this._root);
     }
     /**
-     * @return The minimum key in the tree.
+     * @returns The minimum key in the tree.
      */
     findMinimum() {
         const min = this.findMinimumNode();
         return min ? min.key : null;
     }
     /**
-     * @return The minimum node in the tree.
+     * @returns The minimum node in the tree.
      */
     findMinimumNode() {
         if (!this._root)
@@ -66845,7 +66845,7 @@ class AvlTree {
      * Gets the minimum value node, rooted in a particular node.
      *
      * @param root The node to search.
-     * @return The node with the minimum key in the tree.
+     * @returns The node with the minimum key in the tree.
      */
     static _minValueNode(root) {
         let current = root;
@@ -66854,14 +66854,14 @@ class AvlTree {
         return current;
     }
     /**
-     * @return The maximum key in the tree.
+     * @returns The maximum key in the tree.
      */
     findMaximum() {
         const max = this.findMaximumNode();
         return max ? max.key : null;
     }
     /**
-     * @return The maximum node in the tree.
+     * @returns The maximum node in the tree.
      */
     findMaximumNode() {
         if (!this._root)
@@ -66872,7 +66872,7 @@ class AvlTree {
      * Gets the maximum value node, rooted in a particular node.
      *
      * @param root The node to search.
-     * @return The node with the maximum key in the tree.
+     * @returns The node with the maximum key in the tree.
      */
     static _maxValueNode(root) {
         let current = root;
@@ -66881,13 +66881,13 @@ class AvlTree {
         return current;
     }
     /**
-     * @return The size of the tree.
+     * @returns The size of the tree.
      */
     size() {
         return this._size;
     }
     /**
-     * @return Whether the tree is empty.
+     * @returns Whether the tree is empty.
      */
     isEmpty() {
         return this._size === 0;
@@ -66897,7 +66897,7 @@ class AvlTree {
      * Debug function, will be deleted.
      *
      * @internal
-     * @return The AVL tree as a string.
+     * @returns The AVL tree as a string.
      */
     toString() {
         if (this.isEmpty())
@@ -66916,7 +66916,7 @@ class AvlTree {
      * Debug function, will be deleted.
      *
      * @internal
-     * @return Whether the tree is sorted or not.
+     * @returns Whether the tree is sorted or not.
      */
     checkSorted() {
         if (!this._root)
@@ -66938,7 +66938,7 @@ class AvlTree {
      * sub-trees are unbalanced.
      *
      * @param node The node to get the difference from.
-     * @return The BalanceState of the node.
+     * @returns The BalanceState of the node.
      */
     static getBalanceState(node) {
         return (node.leftHeight() - node.rightHeight());
@@ -66971,7 +66971,7 @@ class AvlNode {
      *    c   d                           d   e
      *```
      *
-     * @return The root of the sub-tree, the node where this node used to be.
+     * @returns The root of the sub-tree, the node where this node used to be.
      */
     rotateRight() {
         const other = this.left;
@@ -66991,7 +66991,7 @@ class AvlNode {
      *      d   e                       c   d
      *```
      *
-     * @return The root of the sub-tree, the node where this node used
+     * @returns The root of the sub-tree, the node where this node used
      * to be.
      */
     rotateLeft() {
@@ -67006,7 +67006,7 @@ class AvlNode {
      * Convenience function to get the height of the left child of the node,
      * returning -1 if the node is null.
      *
-     * @return The height of the left child, or -1 if it doesn't exist.
+     * @returns The height of the left child, or -1 if it doesn't exist.
      */
     leftHeight() {
         if (!this.left)
@@ -67017,7 +67017,7 @@ class AvlNode {
      * Convenience function to get the height of the right child of the node,
      * returning -1 if the node is null.
      *
-     * @return The height of the right child, or -1 if it doesn't exist.
+     * @returns The height of the right child, or -1 if it doesn't exist.
      */
     rightHeight() {
         if (!this.right)
@@ -67164,7 +67164,7 @@ class ConstructionNode {
      * This function removes children nodes of the same type
      * and replaces them by their children.
      */
-    _mergeChildren() {
+    mergeChildren() {
         //If the children are an array.
         if (this.child instanceof Array) {
             const oldLength = this.child.length;
@@ -67184,7 +67184,7 @@ class ConstructionNode {
             }
         }
         else
-            throw new Error("__mergeChildren can only be called in a product ConstructionNode!");
+            throw new Error("mergeChildren can only be called in a product ConstructionNode!");
     }
     /**
      * Converts a ConstructionNode into the corresponding member of the specified
@@ -67202,8 +67202,8 @@ class ConstructionNode {
         return translation_1.Translation.addAdjective(translation_1.Translation.toAdjective(this.getName(), this.gender), translation_1.Translation.get(family));
     }
     /**
-     * Converts a set of ConstructionNodes into their prism product/tegum product/
-     * pyramid product's name.
+     * Converts a set of ConstructionNodes into their
+     * prism product/tegum product/pyramid product's name.
      *
      * @param nodes The array of nodes to convert.
      * @param family The prodct used (i.e. `"prism"`, `"tegum"` or `"pyramid"`).
@@ -67211,7 +67211,7 @@ class ConstructionNode {
      * is considered differently.
      * @param specialFactorModify Specifies what `specialFactor` becomes into
      * within the product.
-     * @return The resulting name.
+     * @returns The resulting name.
      * @example
      * var triangle = new Polygon([3, 1]);
      * var pentagram = new Polygon([5, 2]);
@@ -67369,7 +67369,7 @@ class Multiprism extends ConstructionNode {
         }
     }
     getName() {
-        this._mergeChildren();
+        this.mergeChildren();
         return ConstructionNode.multiFamily(this.child, "family/prism", "shape/dyad", "family/prism", this.gender);
     }
     setGenders(gender) {
@@ -67401,7 +67401,7 @@ class Multitegum extends ConstructionNode {
         }
     }
     getName() {
-        this._mergeChildren();
+        this.mergeChildren();
         return ConstructionNode.multiFamily(this.child, "family/tegum", "shape/dyad", "family/bipyramid", this.gender);
     }
     setGenders(gender) {
@@ -67431,7 +67431,7 @@ class Multipyramid extends ConstructionNode {
         }
     }
     getName() {
-        this._mergeChildren();
+        this.mergeChildren();
         return ConstructionNode.multiFamily(this.child, "family/pyramid", "shape/point", "family/pyramid", this.gender);
     }
     setGenders(gender) {
@@ -67926,15 +67926,17 @@ exports.ConcreteGroup = ConcreteGroup;
 },{"./matrix":102}],101:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-//A node, for usage in a doubly linked list
-//Each LinkedListNode is linked to two other nodes: linkage should be reflexive.
-//LinkedListNodes don't *necessarily* have a notion of a "previous" and a "next"
-//node. But when they do, node0 is the next node, and node1 is the previous.
+/**
+ * A node, for usage in a (doubly) linked list. Each LinkedListNode is linked to
+ * two other nodes: linkage should be reflexive. LinkedListNodes don't
+ * *necessarily* have a notion of a "previous" and a "next" node. But when they
+ * do, [[`node0`]] is the next node, and [[`node1`]] is the previous.
+ */
 class LinkedListNode {
     constructor(value) {
         this.value = value;
         this.traversed = false;
-        this.id = LinkedListNode.idCounter++;
+        this._id = LinkedListNode._idCounter++;
     }
     linkTo(node) {
         //Links this to node.
@@ -67960,7 +67962,7 @@ class LinkedListNode {
         this.node1 = node;
         node.node0 = this;
     }
-    //Traverses all nodes, while avoiding backtracking.
+    //Traverses all nodes, while avo_iding backtracking.
     getCycle() {
         const cycle = [this.value];
         if (!this.node0)
@@ -67993,15 +67995,17 @@ class LinkedListNode {
         return cycle;
     }
     getNode(i) {
-        if (i === 0)
-            return this.node0;
-        return this.node1;
+        return i === 0 ? this.node0 : this.node1;
+    }
+    /** Retrieves the LinkedListNode's [[`_id` | ID]]. */
+    getId() {
+        return this._id;
     }
 }
 exports.default = LinkedListNode;
 //Represents the number of existing nodes.
-//Used to distinguish between identical elements consistently.
-LinkedListNode.idCounter = 0;
+//Used to distinguish between _identical elements consistently.
+LinkedListNode._idCounter = 0;
 
 },{}],102:[function(require,module,exports){
 "use strict";
@@ -68085,24 +68089,20 @@ exports.default = Matrix;
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const global_1 = require("../global");
+/**
+ * Helper class for [[`Render.to`]], used in the sweepline for
+ * Bentley-Ottmann. This format is useful because an edge on the sweepline can
+ * only be cut to the right. That way, we don't need to modify the SL objects
+ * after the division process: only the nodes' connections change.<br />
+ * &emsp;The constructor precomputes the [[`slope`]] and gives each edge a
+ * unique, immutable [[`_id` | ID]]. These two properties permit consistent
+ * ordering of collinear or otherwise identical edges.
+ * @param leftVertex The leftmost vertex of the edge.
+ * @param rightVertexIndex The index of the rightmost vertex of the
+ * edge, relative to `leftVertex`.
+ */
 class SweeplineEdge {
-    /**
-     * Constructor for SweeplineEdge.
-     * @constructor
-     * @classdesc
-     * Helper class for [Polytope.prototype.renderTo]{@link Polytope#renderTo},
-     * used in the sweep line for Bentley-Ottmann. This format is useful because
-     * an edge on the sweep line can only be cut to the right. That way, we don't
-     * need to modify the SL objects after the division process: only the nodes'
-     * connections change.<br />
-     * &emsp;The constructor precomputes the slope and gives each edge a unique,
-     * immutable ID. These two properties permit consistent ordering of collinear
-     * or otherwise identical edges.
-     * @param {LinkedListNode<Point>} leftVertex The leftmost vertex of the edge.
-     * @param {number} rightVertexIndex The index of the rightmost vertex of the
-     * edge,
-     * relative to `leftVertex`.
-     */
+    /** Constructor for SweeplineEdge. */
     constructor(leftVertex, rightVertexIndex) {
         this.leftVertex = leftVertex;
         this.rightVertexIndex = rightVertexIndex;
@@ -68117,17 +68117,13 @@ class SweeplineEdge {
                     rightVertex.value.coordinates[global_1.default.index0]);
         //Gives the edge an immutable ID in terms of its vertices.
         //Uses the redirect table (read below).
-        const x = leftVertex.id;
-        const y = rightVertex.id;
+        const x = leftVertex.getId();
+        const y = rightVertex.getId();
         const newID = ((x + y) * (x + y + 1)) / 2 + y;
-        this.id =
-            SweeplineEdge.redirectTable[newID] === undefined
-                ? newID
-                : SweeplineEdge.redirectTable[newID];
+        this._id = SweeplineEdge.redirectTable[newID] || newID;
     }
     /**
-     * The rightmost vertex of the edge, as determined by
-     * [this.rightVertexIndex]{@linkcode SweeplineEdge#rightVertexIndex}.
+     * The rightmost vertex of the edge, as determined by [[`rightVertexIndex`]].
      * @returns {LinkedListNode<Point>} The rightmost vertex of the edge.
      */
     rightVertex() {
@@ -68138,10 +68134,10 @@ class SweeplineEdge {
     }
     /**
      * Getter for the ID of the edge.
-     * @returns {number} The ID.
+     * @returns The ID.
      */
     getId() {
-        return this.id;
+        return this._id;
     }
     directedEdge() {
         if (this.rightVertexIndex === 0)
@@ -68154,10 +68150,10 @@ class SweeplineEdge {
      * ID of the edge remains consisten even if the `leftVertex` changes.
      */
     updateRedirectTable() {
-        const x = this.leftVertex.id;
-        const y = this.rightVertex().id;
+        const x = this.leftVertex.getId();
+        const y = this.rightVertex().getId();
         const newID = ((x + y) * (x + y + 1)) / 2 + y;
-        SweeplineEdge.redirectTable[newID] = this.id;
+        SweeplineEdge.redirectTable[newID] = this._id;
     }
     //TO DELETE
     //Used for debugging purposes
@@ -68178,8 +68174,7 @@ exports.default = SweeplineEdge;
  * leftmost vertex of an edge changes, we "redirect" the new calculated ID to
  * the old one.<br />
  * &emsp;The redirect table is filled out as necesary by the
- * [SweeplineEdge.prototype.updateRedirectTable]{@link SweeplineEdge#updateRedirectTable}
- * function.
+ * [[`updateRedirectTable`]] method.
  */
 SweeplineEdge.redirectTable = [];
 
@@ -68193,7 +68188,7 @@ class Caret {
      * @constructor
      * @classdesc A helper class for reading imported text files.
      * Reads through a file, keeping track of its position, line, and column.
-     * @param {string} contents The contents of the file.
+     * @param contents The contents of the file.
      */
     constructor(contents) {
         this.contents = contents;
@@ -68231,7 +68226,7 @@ class Caret {
     /**
      * Shortcut for calling [Caret.prototype.increment]{@linkcode Caret#increment}
      * repeatedly.
-     * @param {number} n The number of times to call
+     * @param n The number of times to call
      * [Caret.prototype.increment]{@linkcode Caret#increment}-
      */
     advance(n) {
@@ -68239,7 +68234,7 @@ class Caret {
             this.increment();
     }
     /** Gets the character at the caret.
-     * @returns {string} The current character.
+     * @returns The current character.
      */
     getChar() {
         return this.contents[this.pos];
@@ -68272,7 +68267,7 @@ class Caret {
     /**
      * Increments the caret until a certain character is reached.
      * Caret ends up before the character.
-     * @param {string} char A character to search for.
+     * @param char A character to search for.
      * @example
      * var C = new Caret("The quick brown fox jumps over the lazy dog.");
      * C.skipToChar('q');
@@ -68289,7 +68284,7 @@ class Caret {
      * Increments the caret until a certain string is read.
      * Caret ends up after the string.
      * @see [Caret.prototype.skipToStringList]{@linkcode Caret#skipToStringList}.
-     * @param {string} str A string to search for.
+     * @param str A string to search for.
      * @example
      * var C = new Caret("The quick brown fox jumps over the lazy dog.");
      * C.skipToString("fox");
@@ -68313,7 +68308,7 @@ class Caret {
      * Caret ends up after the string.
      * @see [Caret.prototype.skipToString]{@linkcode Caret#skipToString}.
      * @param {string[]} strs The list of strings to search for.
-     * @returns {number} The index of the first found string.
+     * @returns The index of the first found string.
      * @example
      * var C = new Caret("The quick brown fox jumps over the lazy dog.");
      * C.skipToStringList(["quick", "lazy"]);
@@ -68347,7 +68342,7 @@ class Caret {
      * hash appears.
      * Caret automatically [skips to next content]{@link Caret#skipToContent}
      * afterwards.
-     * @returns {string} The read word.
+     * @returns The read word.
      * @throws Will throw an error if the caret is currently at the EOF.
      * @throws Will throw an error if the read number is invalid.
      */
@@ -68376,8 +68371,8 @@ class Caret {
     /**
      * Advances the caret until a certain character is reached.
      * Places the caret at the left of such char.
-     * @param {string} char The searched-for character.
-     * @returns {string} The read substring.
+     * @param char The searched-for character.
+     * @returns The read substring.
      */
     readUntil(char) {
         if (this.EOF)
@@ -68399,7 +68394,7 @@ class Caret {
      * appears. Supports numbers in the scientific notation format (e.g. 1E+10).
      * Caret automatically [skips to next content]{@link Caret#skipToContent}
      * afterwards.
-     * @returns {number} The read number, or `NaN` if the caret isn't immmediately
+     * @returns The read number, or `NaN` if the caret isn't immmediately
      * before a number.
      * @throws Will throw an error if the caret is currently at the EOF.
      * @throws Will throw an error if the read number is invalid.
@@ -68470,13 +68465,13 @@ const translation_1 = require("../translation/translation");
 const caret_1 = require("./caret");
 class FileOperations {
     /**
-     * Helper function for {@link Polytope.openFile},
-     * and more specifically for {@link Polytope._OFFReaderOnload}.
-     * Checks whether two arrays have a common element using a dictionary.
-     * @private
-     * @param {number[]} a The first array to check.
-     * @param {number[]} b The second array to check.
-     * @returns {boolean} Whether the arrays have a common element or not.
+     * Helper function for [[`openFile`]] and more specifically for
+     * [[`onloadOFF`]]. Checks whether two arrays have a common element using a
+     * dictionary.
+     *
+     * @param a The first array to check.
+     * @param b The second array to check.
+     * @returns Whether the arrays have a common element or not.
      */
     static checkCommonElements(a, b) {
         const vals = [];
@@ -68510,10 +68505,11 @@ class FileOperations {
     }
     /**
      * Opens a file and stores it into the global variable `P`.
-     * @param {Event | string} e Either the event triggered by the import button,
+     * @param e Either the event triggered by the import button,
      * or a local filepath.
-     * @todo Replace P by scene.polytope or something similar.
-     * @todo Add support for more file formats.
+     *
+     * @todo Replace P by `scene.polytope` or something similar.
+     * @todo Add support for more file formats (like STL or OBJ).
      * @todo Rewrite the code with npm's fs.
      */
     static openFile(e) {
@@ -68587,10 +68583,8 @@ class FileOperations {
      * This ZIP file contains an XML called geogebra.xml.
      * This function will be called with this XML's data as a string.
      * It will store the 3D polyhedron into the global variable `P`.
-     * @summary Stores the polyhedron described by an XML file
-     * into the global variable `P`.
-     * @private
-     * @param {string} contents The contents of the file.
+     *
+     * @param contents The contents of the file.
      * @todo Load the polyhedron into a scene,
      * instead of loading it into a global variable.
      */
@@ -68649,8 +68643,8 @@ class FileOperations {
                     elementList[0].push(new point_1.default([x, y, z]));
                     break;
                 }
+                //Reading a polygon.
                 case 2: {
-                    //Reading a polygon.
                     //Reads vertex names.
                     caret.skipToString("<input a0=");
                     const verts = [];
@@ -68661,7 +68655,8 @@ class FileOperations {
                         verts.push(vertDict[str]);
                         caret.increment();
                     }
-                    verts.push(verts[0]); //Simulates a cyclic order.
+                    //Simulates a cyclic order.
+                    verts.push(verts[0]);
                     //Adds edges.
                     const edges = [];
                     for (let i = 0; i < verts.length - 1; i++) {
@@ -68706,9 +68701,10 @@ class FileOperations {
         globalThis.P = new polytopeTypes_1.PolytopeC(elementList);
     }
     /**
-     * Helper function for {@link Polytope.openFile}.
+     * Helper function for [[`Polytope.openFile`]].
      * Is called when an OFF file is loaded.
-     * @param {string} contents The contents of the file.
+     *
+     * @param contents The contents of the file.
      */
     static onloadOFF(contents) {
         //Caret for reading the OFF file.
@@ -68864,7 +68860,7 @@ const fileOperations_1 = require("./fileOperations");
  * Writes most of the XML manually, just editing what's needed.
  * Only supports 3D stuff for now.
  * @summary Saves a polytope as a GeoGebra file.
- * @param {boolean} wireframe Whether faces are to be omitted.
+ * @param wireframe Whether faces are to be omitted.
  * @todo Compress the file XML a bit?
  * @todo Add a "Made in Miratope v. ###" tag to the Geogebra file.
  * @todo Deal with the nullitope case.
@@ -69265,14 +69261,14 @@ class Point {
     }
     /**
      * Returns the number of dimensions of the point's space.
-     * @returns {number} The number of coordinates of the point.
+     * @returns The number of coordinates of the point.
      */
     dimensions() {
         return this.coordinates.length;
     }
     /**
      * Clones a Point object. Uses a simple shallow copy.
-     * @returns {Point} A new Point object with the same coordinates as `this`.
+     * @returns A new Point object with the same coordinates as `this`.
      */
     clone() {
         const coordinates = [];
@@ -69283,7 +69279,7 @@ class Point {
     /**
      * Projects the point into 3D.
      * For now, just the simplest orthographic projection possible.
-     * @returns {Point} The projected point.
+     * @returns The projected point.
      */
     project() {
         return Point.padRight(this, 3 - this.coordinates.length);
@@ -69291,7 +69287,7 @@ class Point {
     /**
      * Adds the coordinates of `P` to the coordinates of a point.
      * Both need to have the same amount of dimensions.
-     * @returns {Point} The point with the added coordinates.
+     * @returns The point with the added coordinates.
      * @throws Will throw an error if the added point does not have the same
      * number of dimensions.
      */
@@ -69307,7 +69303,7 @@ class Point {
     /**
      * Subtracts the coordinates of `P` to the coordinates of a point.
      * Both need to have the same amount of dimensions.
-     * @returns {Point} The point with the subtracted coordinates.
+     * @returns The point with the subtracted coordinates.
      * @throws Will throw an error if the subtracted point does not have the same
      * number of dimensions.
      */
@@ -69323,7 +69319,7 @@ class Point {
     /**
      * Scales up a point by a factor of `r`.
      * Simple scalar multiplication.
-     * @param {number} r The scaling factor.
+     * @param r The scaling factor.
      */
     scale(r) {
         for (let i = 0; i < this.dimensions(); i++)
@@ -69334,9 +69330,9 @@ class Point {
     /**
      * Takes the Cartesian product of two points.
      * Simply concatenates the coordinates of both points.
-     * @param {Point} P The first point to multiply.
-     * @param {Point} Q The second point to multiply.
-     * @returns {Point} The product of both points.
+     * @param P The first point to multiply.
+     * @param Q The second point to multiply.
+     * @returns The product of both points.
      */
     static product(P, Q) {
         //Simply concatenates the coordinates of both points.
@@ -69344,9 +69340,9 @@ class Point {
     }
     /**
      * Pads a point's coordinates with zeros to the left.
-     * @param {Point} P The point to be padded.
-     * @param {number} n The number of added zeros.
-     * @returns {Point} The padded point.
+     * @param P The point to be padded.
+     * @param n The number of added zeros.
+     * @returns The padded point.
      */
     static padLeft(P, n) {
         const coordinates = [];
@@ -69358,9 +69354,9 @@ class Point {
     }
     /**
      * Pads a point's coordinates with zeros to the right.
-     * @param {Point} P The point to be padded.
-     * @param {number} n The number of added zeros.
-     * @returns {Point} The padded point.
+     * @param P The point to be padded.
+     * @param n The number of added zeros.
+     * @returns The padded point.
      */
     static padRight(P, n) {
         const coordinates = [];
@@ -69372,8 +69368,8 @@ class Point {
     }
     /**
      * Adds a given coordinate to the end of the coordinate list.
-     * @param {Number} coord The coordinate to be added.
-     * @returns {Point} The modified point.
+     * @param coord The coordinate to be added.
+     * @returns The modified point.
      */
     addCoordinate(coord) {
         this.coordinates.push(coord);
@@ -69422,11 +69418,11 @@ class Space {
      * Assumes that these segments are coplanar, but not collinear.
      * Ignores the intersection if it lies outside of the segments, or
      * "too close" to the endpoints.
-     * @param {Point} a The first endpoint of the first segment.
-     * @param {Point} b The second endpoint of the first segment.
-     * @param {Point} c The first endpoint of the second segment.
-     * @param {Point} d The second endpoint of the second segment.
-     * @returns {Point} The intersection point of segments `ab` and `cd`, or
+     * @param a The first endpoint of the first segment.
+     * @param b The second endpoint of the first segment.
+     * @param c The first endpoint of the second segment.
+     * @param d The second endpoint of the second segment.
+     * @returns The intersection point of segments `ab` and `cd`, or
      * `null` if there's none.
      */
     static intersect(a, b, c, d) {
@@ -69485,9 +69481,9 @@ class Space {
     }
     /**
      * Calculates the Euclidean distance between two points.
-     * @param {Point} a The first point.
-     * @param {Point} b The second point.
-     * @returns {number} The distance between `a` and `b`.
+     * @param a The first point.
+     * @param b The second point.
+     * @returns The distance between `a` and `b`.
      */
     static distance(a, b) {
         return Math.sqrt(Space.distanceSq(a, b));
@@ -69495,11 +69491,11 @@ class Space {
     /**
      * Calculates the area of the triangle determined by three vertices
      * when projected onto a specific plane.
-     * @param {Point} a The first of the triangle's vertices.
-     * @param {Point} b The first of the triangle's vertices.
-     * @param {Point} c The first of the triangle's vertices.
-     * @param {number} j The first coordinate of the projection plane.
-     * @param {number} k The second coordinate of the projection plane.
+     * @param a The first of the triangle's vertices.
+     * @param b The first of the triangle's vertices.
+     * @param c The first of the triangle's vertices.
+     * @param j The first coordinate of the projection plane.
+     * @param k The second coordinate of the projection plane.
      */
     static area(a, b, c, j, k) {
         return Math.abs(a.coordinates[j] * (b.coordinates[k] - c.coordinates[k]) +
@@ -69509,9 +69505,9 @@ class Space {
     /**
      * Calculates the squared Euclidean distance between two points.
      * For when you don't need that last square root.
-     * @param {Point} a The first point.
-     * @param {Point} b The second point.
-     * @returns {number} The squared distance between `a` and `b`.
+     * @param a The first point.
+     * @param b The second point.
+     * @returns The squared distance between `a` and `b`.
      */
     static distanceSq(a, b) {
         let res = 0;
@@ -69524,11 +69520,11 @@ class Space {
     /**
      * Returns whether the line from (0, 0) to (a, b) and the line from (0, 0) to
      * (c, d) have the same (neglibly different) slopes
-     * @param {number} a The first coordinate.
-     * @param {number} a The second coordinate.
-     * @param {number} a The third coordinate.
-     * @param {number} a The fourth coordinate.
-     * @returns {boolean} Whether the slopes are approximately equal or not.
+     * @param a The first coordinate.
+     * @param a The second coordinate.
+     * @param a The third coordinate.
+     * @param a The fourth coordinate.
+     * @returns Whether the slopes are approximately equal or not.
      */
     static sameSlope(a, b, c, d) {
         //s is the difference between the angles.
@@ -69573,16 +69569,6 @@ require("./rendering/render");
 const scene_1 = require("./rendering/scene");
 const fileOperations_1 = require("./file operations/fileOperations");
 if (!Math.gcd) {
-    /**
-     * Helper function for {@linkcode Polytope.regularPolygon} and
-     * {@linkcode Translation.regularPolygonName}.
-     * Just the most basic form of the Euclidean algorithm.
-     *
-     * @internal
-     * @param a The first number.
-     * @param b The second number.
-     * @returns The greatest common divisor of `a` and `b`.
-     */
     Math.gcd = function (a, b) {
         let t;
         while (b !== 0) {
@@ -69599,15 +69585,13 @@ document.getElementById("file-input").addEventListener("change", fileOperations_
 globalThis.P; //Temp variable. OFF imports to here.
 //Configures the basic attributes of the scene.
 globalThis.mainScene = new scene_1.default();
-//elementList is an array of arrays of arrays that contains all of a Polytope's
-//elements.
-//elementList = [[points], [edges], [faces],..., [ridges], [facets]].
-//A single array in elementList is itself a list of that type of element.
-//The third edge of a polytope would be elementList[1][2].
 
 },{"./file operations/fileOperations":105,"./polytopes/classes/polytope":112,"./rendering/render":117,"./rendering/scene":118}],112:[function(require,module,exports){
 "use strict";
-//Exposes the various polytope classes to the global namespace.
+/**
+ * Exposes the various polytope classes to the global namespace.
+ * @packageDocumentation
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
 const polytopeBuild_1 = require("./polytopeBuild");
 const polytopeCD_1 = require("./polytopeCD");
@@ -69637,8 +69621,8 @@ class PolytopeBuild {
     /**
      * Simple auxiliary function to get the length of a regular polygon's verf.
      *
-     * @param {number} n The number of sides of the polygon.
-     * @param {number} d The winding number of the polygon.
+     * @param n The number of sides of the polygon.
+     * @param d The winding number of the polygon.
      */
     static verfLength(n, d) {
         if (d === undefined)
@@ -69648,7 +69632,7 @@ class PolytopeBuild {
     /**
      * Creates the [[https://polytope.miraheze.org/wiki/Nullitope | nullitope]].
      *
-     * @returns {Polytope} An instance of the null polytope.
+     * @returns An instance of the null polytope.
      */
     static nullitope() {
         return new polytopeTypes_1.PolytopeC([], new constructionNode_1.Codename("nullitope"));
@@ -69675,7 +69659,7 @@ class PolytopeBuild {
      * Builds a polygon from its vertices.
      *
      * @param points The vertices of the polygon.
-     * @return The polygon with the specified vertices.
+     * @returns The polygon with the specified vertices.
      */
     static polygon(points) {
         const newElementList = [[], [], [[]]];
@@ -69738,7 +69722,7 @@ class PolytopeBuild {
      *
      * @param n The number of sides of the polygon.
      * @param d The winding number of the polygon.
-     * @return The resulting polygon.
+     * @returns The resulting polygon.
      * @todo Replace it by the PolytopeS version.
      */
     static regularPolygonG(n, d) {
@@ -69772,7 +69756,7 @@ class PolytopeBuild {
      * @param The "absolute turning number", as defined above.
      * @param The first edge length of the polygon.
      * @param The second edge length of the polygon.
-     * @return The resulting semiregular polygon.
+     * @returns The resulting semiregular polygon.
      */
     static semiregularPolygon(n, d = 1, a = 1, b = 1) {
         //If n = 4, d = 0, a bowtie is created.
@@ -69840,7 +69824,7 @@ class PolytopeBuild {
      * Positioned in the standard orientation with edge length 1.
      *
      * @param n The number of dimensions.
-     * @return The resulting polytope.
+     * @returns The resulting polytope.
      */
     static hypercube(n) {
         const symmetries = group_1.ConcreteGroup.BC(n);
@@ -69859,7 +69843,7 @@ class PolytopeBuild {
      * Positioned in the standard orientation with edge length 1.
      *
      * @param n The number of dimensions.
-     * @return The resulting polytope.
+     * @returns The resulting polytope.
      */
     static simplex(n) {
         const vertices = [];
@@ -69913,7 +69897,7 @@ class PolytopeBuild {
      * Positioned in the standard orientation with edge length 1.
      *
      * @param n The number of dimensions.
-     * @return The resulting polytope.
+     * @returns The resulting polytope.
      */
     static cross(n) {
         const symmetries = group_1.ConcreteGroup.BC(n);
@@ -69932,7 +69916,7 @@ class PolytopeBuild {
      * Positioned in the standard orientation with edge length 1.
      *
      * @param n The number of dimensions.
-     * @return The resulting polytope.
+     * @returns The resulting polytope.
      */
     static recticross(n) {
         const flagClasses = [];
@@ -69967,7 +69951,7 @@ class PolytopeBuild {
      *
      * @param n The number of sides of the base.
      * @param d The turning number of the base.
-     * @return The resulting antiprism.
+     * @returns The resulting antiprism.
      * @todo Implement antiprisms of compounds.
      */
     static uniformAntiprism(n, d = 1) {
@@ -70345,7 +70329,7 @@ class PolytopeCD {
     /**
      * Creates a Schläfli matrix from a Coxeter diagram
      *
-     * @param {string} diagram The input Coxeter diagram
+     * @param diagram The input Coxeter diagram
      * @returns {number[][]} A 2D array corresponding to the CD's Schläfli matrix
      */
     static cdToMatrix(diagram) {
@@ -70533,8 +70517,8 @@ class PolytopeProduct {
      * Is the one actually performing the product.
      * Takes the prism product of two polytopes.
      * @private
-     * @param {PolytopeB} P The first polytope to multiply.
-     * @param {PolytopeB} Q The second polytope to multiply.
+     * @param P The first polytope to multiply.
+     * @param Q The second polytope to multiply.
      */
     static _prism(P, Q) {
         //Deals with the point, nullitope cases.
@@ -70587,14 +70571,14 @@ class PolytopeProduct {
      * added.
      * @summary Helper function for {@link Polytope.prismProduct}.
      * @private
-     * @param {number} m The dimension of an element on the first polytope.
-     * @param {number} i The index of an element on the first polytope.
-     * @param {number} n The dimension of an element on the second polytope.
-     * @param {number} j The index of an element on the second polytope.
-     * @param {Polytope} P The first polytope to multiply.
-     * @param {Polytope} Q The second polytope to multiply.
+     * @param m The dimension of an element on the first polytope.
+     * @param i The index of an element on the first polytope.
+     * @param n The dimension of an element on the second polytope.
+     * @param j The index of an element on the second polytope.
+     * @param P The first polytope to multiply.
+     * @param Q The second polytope to multiply.
      * @param {number[][]} memoizer An array to store past calculations.
-     * @returns {number} The index described above.
+     * @returns The index described above.
      */
     static _getIndexOfPrismProduct(m, i, n, j, P, Q, memoizer) {
         //Recall that the elements of a single dimension are added in order
@@ -70962,7 +70946,7 @@ exports.default = PolytopeProduct;
  * Extrudes a polytope into a prism.
  *
  * @param height The height of the prism.
- * @return The resulting prism.
+ * @returns The resulting prism.
  */
 polytopeTypes_1.PolytopeB.prototype.extrudeToPrism = function (height = 1) {
     return PolytopeProduct.prism(this.toPolytopeC(), polytopeBuild_1.default.dyad(height));
@@ -71129,8 +71113,8 @@ class PolytopeC extends PolytopeB {
     /**
      * The constructor for the PolytopeC class.
      * @constructor
-     * @param {ElementList} elementList The polytope's element list.
-     * @param {ConstructionNode} constructionRoot The constructionNode
+     * @param elementList The polytope's element list.
+     * @param constructionRoot The constructionNode
      * representing how the polytope was built.
      * @classDesc Represents a polytope as a list of elements, in ascending order
      * of dimensions,
@@ -71161,8 +71145,8 @@ class PolytopeC extends PolytopeB {
     }
     /**
      * Scales a polytope up or down.
-     * @param {number} r The scaling factor.
-     * @returns {Polytope} The scaled polytope.
+     * @param r The scaling factor.
+     * @returns The scaled polytope.
      */
     scale(r) {
         if (!this.elementList[0])
@@ -71173,7 +71157,7 @@ class PolytopeC extends PolytopeB {
     }
     /**
      * Calculates the centroid of a polytope.
-     * @returns {Point} The centroid of the polytope.
+     * @returns The centroid of the polytope.
      */
     gravicenter() {
         if (!this.elementList[0])
@@ -71204,7 +71188,7 @@ class PolytopeC extends PolytopeB {
     /**
      * Makes every vertex have a set number of coordinates either by adding zeros
      * or removing numbers.
-     * @param {number} dim The new number of coordinates for each vertex.
+     * @param dim The new number of coordinates for each vertex.
      */
     setSpaceDimensions(dim) {
         if (!this.elementList[0])
@@ -71221,7 +71205,7 @@ class PolytopeC extends PolytopeB {
     /**
      * Converts the edge representation of the i-th face to an ordered array of
      * vertices.
-     * @param {number} i The selected face.
+     * @param i The selected face.
      * @returns {number[]} An array with the indices of the vertices of the i-th
      * face in order.
      */
@@ -71246,14 +71230,14 @@ class PolytopeC extends PolytopeB {
     }
     /**
      * Places the gravicenter of the polytope at the origin.
-     * @returns {PolytopeC} The recentered polytope.
+     * @returns The recentered polytope.
      */
     recenter() {
         return this.move(this.gravicenter(), -1);
     }
     /**
      * Ensures that we can always correctly call toPolytopeC on a polytope.
-     * @returns {PolytopeC} The polytope, unchanged.
+     * @returns The polytope, unchanged.
      */
     toPolytopeC() {
         return this;
@@ -71541,89 +71525,45 @@ const linkedListNode_1 = require("../data structures/linkedListNode");
 const sweeplineEdge_1 = require("../data structures/sweeplineEdge");
 const avl_tree_1 = require("../data structures/avl-tree");
 const global_1 = require("../global");
+/**
+ * Class with the needed methods to render a polytope.
+ */
 class Render {
-    /** Renders a polytope into a scene.
-     * Implements the Bentley-Ottmann algorithm
-     * as well as a simplification algorithm
-     * to triangulate general polygons.
-     * @summary Renders a polytope into a scene.
+    /** Renders a polytope into a scene. Implements the
+     * [[http://geomalgorithms.com/a09-_intersect-3.html | Bentley-Ottmann algorithm]]
+     * as well as a simplification algorithm to triangulate general polygons.
+     *
+     * @param P The polytope to render.
+     * @param scene The scene into which the polytope is rendered.
      * @todo Guarantee that all edge cases work properly (zero length edges,
      * collinear edges, concurrent edges, etc.)
-     * @see {@link http://geomalgorithms.com/a09-_intersect-3.html|Dan Sunday. Intersections for a Set of Segments. 2012.}
      */
-    static to(P_, scene) {
-        const SL = new avl_tree_1.default(SLSort);
+    static to(P, scene) {
+        const SL = new avl_tree_1.default(Render._SLSort);
         function debug() {
             console.log(Render.Event.value.coordinates[global_1.default.index0].toString());
             console.log(SL.toString());
         }
-        //SL is sorted by the height of the edges' intersections with the sweepline.
-        //If these are equal, the lines are sorted by slope.
-        //If both are equal, the lines are consistently ordered by their IDs
-        //(unique, immutable identifiers).
-        function SLSort(x, y) {
-            //This is the only case where the function should return 0:
-            if (x.leftVertex === y.leftVertex && x.rightVertex() === y.rightVertex())
-                return 0;
-            const a = x.leftVertex.value, b = x.rightVertex().value, c = y.leftVertex.value, d = y.rightVertex().value, k = Render.Event.value.coordinates[global_1.default.index0];
-            //Calculates where in the segments the intersection with the sweepline
-            //lies.
-            const lambda0 = (k - b.coordinates[global_1.default.index0]) /
-                (a.coordinates[global_1.default.index0] - b.coordinates[global_1.default.index0]);
-            const lambda1 = (k - d.coordinates[global_1.default.index0]) /
-                (c.coordinates[global_1.default.index0] - d.coordinates[global_1.default.index0]);
-            //The height difference between the intersections.
-            let res = a.coordinates[global_1.default.index1] * lambda0 +
-                b.coordinates[global_1.default.index1] * (1 - lambda0) -
-                (c.coordinates[global_1.default.index1] * lambda1 +
-                    d.coordinates[global_1.default.index1] * (1 - lambda1));
-            //If the intersections are so similar, we also need to consider the
-            //possibility that the edges actually have a common endpoint.
-            if (Math.abs(res) < global_1.default.epsilon) {
-                //If the first edge starts at a point, and the second ends at that point
-                //then the former gets sorted after the latter.
-                if (lambda0 > 1 - global_1.default.epsilon && lambda1 < global_1.default.epsilon)
-                    return 1;
-                //And viceversa.
-                if (lambda0 < global_1.default.epsilon && lambda1 > 1 - global_1.default.epsilon)
-                    return -1;
-                //If both edges start at the same point, sort by increasing slope.
-                if (lambda0 > 1 - global_1.default.epsilon)
-                    res = 1;
-                //If both edges end at the same point, sort by decreasing slope.
-                else if (lambda0 < global_1.default.epsilon)
-                    res = -1;
-                //The edges are just really close, so compare them normally.
-                else
-                    return res;
-                //The difference between the slopes.
-                res *= Math.atan(x.slope) - Math.atan(y.slope);
-                //If both lines are the same, might as well compare using IDs.
-                if (Math.abs(res) < global_1.default.epsilon)
-                    return x.getId() - y.getId();
-            }
-            return res;
-        }
-        const P = P_.toPolytopeC().recenter();
-        if (!P.elementList[0] || !P.elementList[1] || !P.elementList[2])
+        const Q = P.toPolytopeC().recenter();
+        if (!Q.elementList[0] || !Q.elementList[1] || !Q.elementList[2])
             return;
         //For each face:
-        faceLoop: for (let i = 0; i < P.elementList[2].length; i++) {
+        faceLoop: for (let i = 0; i < Q.elementList[2].length; i++) {
             //Let's not even bother with digons and monogons.
-            if (P.elementList[2][i].length < 3)
+            if (Q.elementList[2][i].length < 3)
                 continue faceLoop;
             /*	if(P.elementList[2][i].length === 3) {
                       //All triangles are convex, so cut to the chase and render it directly.
                   } */
             //Enumerates the vertices in order.
-            const cycle = P.faceToVertices(i);
+            const cycle = Q.faceToVertices(i);
             //Makes a doubly-linked list vertexDLL for the polygon's vertices and the
             //new vertices created.
             //node0 is always the "next" vertex.
             //Every vertex should *always* have two adjacent vertices.
-            Render.vertexDLL = [new linkedListNode_1.default(P.elementList[0][cycle[0]])];
+            Render.vertexDLL = [new linkedListNode_1.default(Q.elementList[0][cycle[0]])];
             for (let j = 0; j < cycle.length - 1; j++) {
-                Render.vertexDLL[j + 1] = new linkedListNode_1.default(P.elementList[0][cycle[j + 1]]);
+                Render.vertexDLL[j + 1] = new linkedListNode_1.default(Q.elementList[0][cycle[j + 1]]);
                 Render.vertexDLL[j].linkToNext(Render.vertexDLL[j + 1]);
             }
             Render.vertexDLL[Render.vertexDLL.length - 1].linkToNext(Render.vertexDLL[0]);
@@ -71748,15 +71688,15 @@ class Render {
             //The rest of the rendering shenanigans are handled by the Scene class.
             scene.add(face);
         }
-        scene.polytopes.push(P_);
+        scene.polytopes.push(P);
     }
     /**
      * renderTo helper function.
      * "Cuts" two edges at the intersection point, adds the new directed edges
      * according to the simplification algorithm.
-     * @private
-     * @param {SLEdge} edgeA The first edge to cut.
-     * @param {SLEdge} edgeB The second edge to cut.
+     *
+     * @param edgeA The first edge to cut.
+     * @param edgeB The second edge to cut.
      */
     static _divide(edgeA, edgeB) {
         //No point in doing anything if the intersection has already been dealt
@@ -71793,13 +71733,14 @@ class Render {
         Render.EQ.insert(newNode1);
         Render.EQ.insert(newNode2);
     }
-    /** Orders two points lexicographically based on the coordinates on indices 0
+    /**
+     * Orders two points lexicographically based on the coordinates on indices 0
      * and 1. Uses the IDs of the vertices to order them consistently if their
      * coordinates are identical.
-     * @private
-     * @param {LinkedListNode<Point>} a The first point to order.
-     * @param {LinkedListNode<Point>} b The second point to order.
-     * @returns {number} 1, 0 or -1 depending on whether a > b, a = b or a < b.
+     *
+     * @param a The first point to order.
+     * @param b The second point to order.
+     * @returns 1, 0 or -1 depending on whether a > b, a = b or a < b.
      */
     static _order(a, b) {
         let c = a.value.coordinates[global_1.default.index0] - b.value.coordinates[global_1.default.index0];
@@ -71808,9 +71749,58 @@ class Render {
             c =
                 a.value.coordinates[global_1.default.index1] - b.value.coordinates[global_1.default.index1];
             if (c === 0)
-                return a.id - b.id;
+                return a.getId() - b.getId();
         }
         return c;
+    }
+    /**
+     * The sweepline is sorted by the height of the edges' intersections with the
+     * sweepline. If these are equal, the lines are sorted by slope. If these are
+     * also equal, the lines are consistently ordered by their
+     * [[`SweeplineEdge.id` | IDs]].
+     */
+    static _SLSort(x, y) {
+        //This is the only case where the function should return 0:
+        if (x.leftVertex === y.leftVertex && x.rightVertex() === y.rightVertex())
+            return 0;
+        const a = x.leftVertex.value, b = x.rightVertex().value, c = y.leftVertex.value, d = y.rightVertex().value, k = Render.Event.value.coordinates[global_1.default.index0];
+        //Calculates where in the segments the intersection with the sweepline
+        //lies.
+        const lambda0 = (k - b.coordinates[global_1.default.index0]) /
+            (a.coordinates[global_1.default.index0] - b.coordinates[global_1.default.index0]);
+        const lambda1 = (k - d.coordinates[global_1.default.index0]) /
+            (c.coordinates[global_1.default.index0] - d.coordinates[global_1.default.index0]);
+        //The height difference between the intersections.
+        let res = a.coordinates[global_1.default.index1] * lambda0 +
+            b.coordinates[global_1.default.index1] * (1 - lambda0) -
+            (c.coordinates[global_1.default.index1] * lambda1 +
+                d.coordinates[global_1.default.index1] * (1 - lambda1));
+        //If the intersections are so similar, we also need to consider the
+        //possibility that the edges actually have a common endpoint.
+        if (Math.abs(res) < global_1.default.epsilon) {
+            //If the first edge starts at a point, and the second ends at that point
+            //then the former gets sorted after the latter.
+            if (lambda0 > 1 - global_1.default.epsilon && lambda1 < global_1.default.epsilon)
+                return 1;
+            //And viceversa.
+            if (lambda0 < global_1.default.epsilon && lambda1 > 1 - global_1.default.epsilon)
+                return -1;
+            //If both edges start at the same point, sort by increasing slope.
+            if (lambda0 > 1 - global_1.default.epsilon)
+                res = 1;
+            //If both edges end at the same point, sort by decreasing slope.
+            else if (lambda0 < global_1.default.epsilon)
+                res = -1;
+            //The edges are just really close, so compare them normally.
+            else
+                return res;
+            //The difference between the slopes.
+            res *= Math.atan(x.slope) - Math.atan(y.slope);
+            //If both lines are the same, might as well compare using IDs.
+            if (Math.abs(res) < global_1.default.epsilon)
+                return x.getId() - y.getId();
+        }
+        return res;
     }
 }
 exports.Render = Render;
@@ -76450,7 +76440,7 @@ class Translation {
     /**
      * Makes the first letter of a string lowercase.
      *
-     * @return The transformed string.
+     * @returns The transformed string.
      */
     static firstToLower(str) {
         return str.charAt(0).toLowerCase() + str.slice(1);
@@ -76458,7 +76448,7 @@ class Translation {
     /**
      * Makes the first letter of a string uppercase.
      *
-     * @return The transformed string.
+     * @returns The transformed string.
      */
     static firstToUpper(str) {
         return str.charAt(0).toUpperCase() + str.slice(1);
@@ -76480,7 +76470,7 @@ class Translation {
     /**
      * Gets the translation of a message from loadMessages.js.
      *
-     * @return The translated message.
+     * @returns The translated message.
      */
     static get(message, options = {}) {
         options.count || (options.count = 1);
@@ -76666,10 +76656,10 @@ class Translation {
      * Works up to d = 30. Defaults to `"d-element"`.<br />
      * &emsp;Most of these are neologisms, so feel free to translate them as you
      * think is appropriate.
-     * @param {Object} [options={}] Result modifiers.
-     * @param {boolean} [options.uppercase] Capitalizes the first letter of
+     * @param [options={}] Result modifiers.
+     * @param [options.uppercase] Capitalizes the first letter of
      * the result.
-     * @param {number} [options.count] The number of objects being referred to.
+     * @param [options.count] The number of objects being referred to.
      * @example
      * Translation.setLanguage("en");
      *

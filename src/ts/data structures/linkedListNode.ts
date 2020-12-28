@@ -1,21 +1,23 @@
-//A node, for usage in a doubly linked list
-//Each LinkedListNode is linked to two other nodes: linkage should be reflexive.
-//LinkedListNodes don't *necessarily* have a notion of a "previous" and a "next"
-//node. But when they do, node0 is the next node, and node1 is the previous.
+/**
+ * A node, for usage in a (doubly) linked list. Each LinkedListNode is linked to
+ * two other nodes: linkage should be reflexive. LinkedListNodes don't
+ * *necessarily* have a notion of a "previous" and a "next" node. But when they
+ * do, [[`node0`]] is the next node, and [[`node1`]] is the previous.
+ */
 export default class LinkedListNode<T> {
   value: T;
   private node0: LinkedListNode<T> | undefined;
   private node1: LinkedListNode<T> | undefined;
   traversed: boolean;
-  id: number;
+  private _id: number;
   //Represents the number of existing nodes.
-  //Used to distinguish between identical elements consistently.
-  private static idCounter = 0;
+  //Used to distinguish between _identical elements consistently.
+  private static _idCounter = 0;
 
   constructor(value: T) {
     this.value = value;
     this.traversed = false;
-    this.id = LinkedListNode.idCounter++;
+    this._id = LinkedListNode._idCounter++;
   }
 
   linkTo(node: LinkedListNode<T>): void {
@@ -46,7 +48,7 @@ export default class LinkedListNode<T> {
     node.node0 = this;
   }
 
-  //Traverses all nodes, while avoiding backtracking.
+  //Traverses all nodes, while avo_iding backtracking.
   getCycle(): T[] {
     const cycle = [this.value];
     if (!this.node0) return cycle;
@@ -81,7 +83,11 @@ export default class LinkedListNode<T> {
   }
 
   getNode(i: number): LinkedListNode<T> | undefined {
-    if (i === 0) return this.node0;
-    return this.node1;
+    return i === 0 ? this.node0 : this.node1;
+  }
+
+  /** Retrieves the LinkedListNode's [[`_id` | ID]]. */
+  getId(): number {
+    return this._id;
   }
 }

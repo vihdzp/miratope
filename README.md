@@ -37,7 +37,7 @@ Miratope does not yet include a library of OFF files. Nevertheless, many of them
 ### Why does my OFF file not render?
 Provisionally, your OFF file is being loaded into the variable `P`. You have to manually render it using the command `P.renderTo(mainScene);`.
 
-Note that at the moment, this works only for 3D OFF files, and can be very buggy.
+Note that at the moment, this works only for 3D OFF files, and can be somewhat buggy.
 
 ### How do I clear the scene?
 Use `mainScene.clear();`.

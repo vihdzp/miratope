@@ -22,8 +22,8 @@ export default abstract class PolytopeBuild {
   /**
    * Simple auxiliary function to get the length of a regular polygon's verf.
    *
-   * @param {number} n The number of sides of the polygon.
-   * @param {number} d The winding number of the polygon.
+   * @param n The number of sides of the polygon.
+   * @param d The winding number of the polygon.
    */
   static verfLength(n: number, d?: number): number {
     if (d === undefined) d = 1;
@@ -33,7 +33,7 @@ export default abstract class PolytopeBuild {
   /**
    * Creates the [[https://polytope.miraheze.org/wiki/Nullitope | nullitope]].
    *
-   * @returns {Polytope} An instance of the null polytope.
+   * @returns An instance of the null polytope.
    */
   static nullitope(): PolytopeB {
     return new PolytopeC([], new CNCodename("nullitope"));
@@ -66,7 +66,7 @@ export default abstract class PolytopeBuild {
    * Builds a polygon from its vertices.
    *
    * @param points The vertices of the polygon.
-   * @return The polygon with the specified vertices.
+   * @returns The polygon with the specified vertices.
    */
   static polygon(points: Point[]): PolytopeB {
     const newElementList: ElementList = [[], [], [[]]];
@@ -138,7 +138,7 @@ export default abstract class PolytopeBuild {
    *
    * @param n The number of sides of the polygon.
    * @param d The winding number of the polygon.
-   * @return The resulting polygon.
+   * @returns The resulting polygon.
    * @todo Replace it by the PolytopeS version.
    */
   static regularPolygonG(n: number, d?: number): PolytopeB {
@@ -178,7 +178,7 @@ export default abstract class PolytopeBuild {
    * @param The "absolute turning number", as defined above.
    * @param The first edge length of the polygon.
    * @param The second edge length of the polygon.
-   * @return The resulting semiregular polygon.
+   * @returns The resulting semiregular polygon.
    */
   static semiregularPolygon(n: number, d = 1, a = 1, b = 1): PolytopeB {
     //If n = 4, d = 0, a bowtie is created.
@@ -257,7 +257,7 @@ export default abstract class PolytopeBuild {
    * Positioned in the standard orientation with edge length 1.
    *
    * @param n The number of dimensions.
-   * @return The resulting polytope.
+   * @returns The resulting polytope.
    */
   static hypercube(n: number): PolytopeB {
     const symmetries = ConcreteGroup.BC(n);
@@ -275,7 +275,7 @@ export default abstract class PolytopeBuild {
    * Positioned in the standard orientation with edge length 1.
    *
    * @param n The number of dimensions.
-   * @return The resulting polytope.
+   * @returns The resulting polytope.
    */
   static simplex(n: number): PolytopeB {
     const vertices: Point[] = [];
@@ -326,7 +326,7 @@ export default abstract class PolytopeBuild {
    * Positioned in the standard orientation with edge length 1.
    *
    * @param n The number of dimensions.
-   * @return The resulting polytope.
+   * @returns The resulting polytope.
    */
   static cross(n: number): PolytopeB {
     const symmetries = ConcreteGroup.BC(n);
@@ -344,7 +344,7 @@ export default abstract class PolytopeBuild {
    * Positioned in the standard orientation with edge length 1.
    *
    * @param n The number of dimensions.
-   * @return The resulting polytope.
+   * @returns The resulting polytope.
    */
   static recticross(n: number): PolytopeB {
     const flagClasses: FlagClass[] = [];
@@ -375,7 +375,7 @@ export default abstract class PolytopeBuild {
    *
    * @param n The number of sides of the base.
    * @param d The turning number of the base.
-   * @return The resulting antiprism.
+   * @returns The resulting antiprism.
    * @todo Implement antiprisms of compounds.
    */
   static uniformAntiprism(n: number, d = 1): PolytopeB {

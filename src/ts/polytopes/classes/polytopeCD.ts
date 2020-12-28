@@ -11,7 +11,7 @@ export default abstract class PolytopeCD {
   /**
    * Creates a Schläfli matrix from a Coxeter diagram
    *
-   * @param {string} diagram The input Coxeter diagram
+   * @param diagram The input Coxeter diagram
    * @returns {number[][]} A 2D array corresponding to the CD's Schläfli matrix
    */
   static cdToMatrix(diagram: string): number[][] {

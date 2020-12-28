@@ -105,12 +105,12 @@ Polytope._matrixFromAngles = function(angles, d) {
  * Taken from optimize.js
  * Minimize an unconstrained function using zero order Powell algorithm.
  * @private
- * @param {function} fnc Function to be minimized. This function takes
+ * @param fnc Function to be minimized. This function takes
  * array of size N as an input, and returns a scalar value as output,
  * which is to be minimized.
- * @param {Array} x0 An array of values of size N, which is an initialization
+ * @param x0 An array of values of size N, which is an initialization
  *	to the minimization algorithm.
- * @return {Object} An object instance with two fields: argument, which
+ * @returns An object instance with two fields: argument, which
  * denotes the best argument found thus far, and fncvalue, which is a
  * value of the function at the best found argument.
 */

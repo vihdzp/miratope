@@ -72,7 +72,7 @@ export abstract class Translation {
   /**
    * Makes the first letter of a string lowercase.
    *
-   * @return The transformed string.
+   * @returns The transformed string.
    */
   static firstToLower(str: string): string {
     return str.charAt(0).toLowerCase() + str.slice(1);
@@ -81,7 +81,7 @@ export abstract class Translation {
   /**
    * Makes the first letter of a string uppercase.
    *
-   * @return The transformed string.
+   * @returns The transformed string.
    */
   static firstToUpper(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -109,7 +109,7 @@ export abstract class Translation {
   /**
    * Gets the translation of a message from loadMessages.js.
    *
-   * @return The translated message.
+   * @returns The translated message.
    */
   static get(message: string, options: LanguageOptions = {}): string {
     options.count ||= 1;
@@ -310,10 +310,10 @@ export abstract class Translation {
    * Works up to d = 30. Defaults to `"d-element"`.<br />
    * &emsp;Most of these are neologisms, so feel free to translate them as you
    * think is appropriate.
-   * @param {Object} [options={}] Result modifiers.
-   * @param {boolean} [options.uppercase] Capitalizes the first letter of
+   * @param [options={}] Result modifiers.
+   * @param [options.uppercase] Capitalizes the first letter of
    * the result.
-   * @param {number} [options.count] The number of objects being referred to.
+   * @param [options.count] The number of objects being referred to.
    * @example
    * Translation.setLanguage("en");
    *

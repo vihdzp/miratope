@@ -12,7 +12,7 @@ export default class Caret {
    * @constructor
    * @classdesc A helper class for reading imported text files.
    * Reads through a file, keeping track of its position, line, and column.
-   * @param {string} contents The contents of the file.
+   * @param contents The contents of the file.
    */
   constructor(contents: string) {
     this.contents = contents;
@@ -50,7 +50,7 @@ export default class Caret {
   /**
    * Shortcut for calling [Caret.prototype.increment]{@linkcode Caret#increment}
    * repeatedly.
-   * @param {number} n The number of times to call
+   * @param n The number of times to call
    * [Caret.prototype.increment]{@linkcode Caret#increment}-
    */
   advance(n: number): void {
@@ -58,7 +58,7 @@ export default class Caret {
   }
 
   /** Gets the character at the caret.
-   * @returns {string} The current character.
+   * @returns The current character.
    */
   getChar(): string {
     return this.contents[this.pos];
@@ -92,7 +92,7 @@ export default class Caret {
   /**
    * Increments the caret until a certain character is reached.
    * Caret ends up before the character.
-   * @param {string} char A character to search for.
+   * @param char A character to search for.
    * @example
    * var C = new Caret("The quick brown fox jumps over the lazy dog.");
    * C.skipToChar('q');
@@ -109,7 +109,7 @@ export default class Caret {
    * Increments the caret until a certain string is read.
    * Caret ends up after the string.
    * @see [Caret.prototype.skipToStringList]{@linkcode Caret#skipToStringList}.
-   * @param {string} str A string to search for.
+   * @param str A string to search for.
    * @example
    * var C = new Caret("The quick brown fox jumps over the lazy dog.");
    * C.skipToString("fox");
@@ -133,7 +133,7 @@ export default class Caret {
    * Caret ends up after the string.
    * @see [Caret.prototype.skipToString]{@linkcode Caret#skipToString}.
    * @param {string[]} strs The list of strings to search for.
-   * @returns {number} The index of the first found string.
+   * @returns The index of the first found string.
    * @example
    * var C = new Caret("The quick brown fox jumps over the lazy dog.");
    * C.skipToStringList(["quick", "lazy"]);
@@ -170,7 +170,7 @@ export default class Caret {
    * hash appears.
    * Caret automatically [skips to next content]{@link Caret#skipToContent}
    * afterwards.
-   * @returns {string} The read word.
+   * @returns The read word.
    * @throws Will throw an error if the caret is currently at the EOF.
    * @throws Will throw an error if the read number is invalid.
    */
@@ -204,8 +204,8 @@ export default class Caret {
   /**
    * Advances the caret until a certain character is reached.
    * Places the caret at the left of such char.
-   * @param {string} char The searched-for character.
-   * @returns {string} The read substring.
+   * @param char The searched-for character.
+   * @returns The read substring.
    */
   readUntil(char: string): string {
     if (this.EOF)
@@ -229,7 +229,7 @@ export default class Caret {
    * appears. Supports numbers in the scientific notation format (e.g. 1E+10).
    * Caret automatically [skips to next content]{@link Caret#skipToContent}
    * afterwards.
-   * @returns {number} The read number, or `NaN` if the caret isn't immmediately
+   * @returns The read number, or `NaN` if the caret isn't immmediately
    * before a number.
    * @throws Will throw an error if the caret is currently at the EOF.
    * @throws Will throw an error if the read number is invalid.

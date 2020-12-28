@@ -7,113 +7,64 @@ import SweeplineEdge from "../data structures/sweeplineEdge";
 import AvlTree from "../data structures/avl-tree";
 import Global from "../global";
 
+/**
+ * Class with the needed methods to render a polytope.
+ */
 export abstract class Render {
+  /** A doubly-linked-list that represents how the intersections of the
+   * polygon's edges are connected. */
   static vertexDLL: LinkedListNode<Point>[];
+  /** An "Event queue", which stores the vertices in lexicographic order. Used
+   * to determine the next point the sweepline should stop at. */
   static EQ: AvlTree<LinkedListNode<Point>>;
+  /** An event on the [[EQ | Event queue]]. */
   static Event: LinkedListNode<Point>;
 
-  /** Renders a polytope into a scene.
-   * Implements the Bentley-Ottmann algorithm
-   * as well as a simplification algorithm
-   * to triangulate general polygons.
-   * @summary Renders a polytope into a scene.
+  /** Renders a polytope into a scene. Implements the
+   * [[http://geomalgorithms.com/a09-_intersect-3.html | Bentley-Ottmann algorithm]]
+   * as well as a simplification algorithm to triangulate general polygons.
+   *
+   * @param P The polytope to render.
+   * @param scene The scene into which the polytope is rendered.
    * @todo Guarantee that all edge cases work properly (zero length edges,
    * collinear edges, concurrent edges, etc.)
-   * @see {@link http://geomalgorithms.com/a09-_intersect-3.html|Dan Sunday. Intersections for a Set of Segments. 2012.}
    */
-  static to(P_: PolytopeB, scene: Scene): void {
-    const SL = new AvlTree(SLSort);
+  static to(P: PolytopeB, scene: Scene): void {
+    const SL = new AvlTree(Render._SLSort);
 
     function debug(): void {
       console.log(Render.Event.value.coordinates[Global.index0].toString());
       console.log(SL.toString());
     }
 
-    //SL is sorted by the height of the edges' intersections with the sweepline.
-    //If these are equal, the lines are sorted by slope.
-    //If both are equal, the lines are consistently ordered by their IDs
-    //(unique, immutable identifiers).
-    function SLSort(x: SweeplineEdge, y: SweeplineEdge): number {
-      //This is the only case where the function should return 0:
-      if (x.leftVertex === y.leftVertex && x.rightVertex() === y.rightVertex())
-        return 0;
-
-      const a = x.leftVertex.value,
-        b = x.rightVertex().value,
-        c = y.leftVertex.value,
-        d = y.rightVertex().value,
-        k = Render.Event.value.coordinates[Global.index0];
-
-      //Calculates where in the segments the intersection with the sweepline
-      //lies.
-      const lambda0 =
-        (k - b.coordinates[Global.index0]) /
-        (a.coordinates[Global.index0] - b.coordinates[Global.index0]);
-      const lambda1 =
-        (k - d.coordinates[Global.index0]) /
-        (c.coordinates[Global.index0] - d.coordinates[Global.index0]);
-
-      //The height difference between the intersections.
-      let res =
-        a.coordinates[Global.index1] * lambda0 +
-        b.coordinates[Global.index1] * (1 - lambda0) -
-        (c.coordinates[Global.index1] * lambda1 +
-          d.coordinates[Global.index1] * (1 - lambda1));
-
-      //If the intersections are so similar, we also need to consider the
-      //possibility that the edges actually have a common endpoint.
-      if (Math.abs(res) < Global.epsilon) {
-        //If the first edge starts at a point, and the second ends at that point
-        //then the former gets sorted after the latter.
-        if (lambda0 > 1 - Global.epsilon && lambda1 < Global.epsilon) return 1;
-        //And viceversa.
-        if (lambda0 < Global.epsilon && lambda1 > 1 - Global.epsilon) return -1;
-
-        //If both edges start at the same point, sort by increasing slope.
-        if (lambda0 > 1 - Global.epsilon) res = 1;
-        //If both edges end at the same point, sort by decreasing slope.
-        else if (lambda0 < Global.epsilon) res = -1;
-        //The edges are just really close, so compare them normally.
-        else return res;
-
-        //The difference between the slopes.
-        res *= Math.atan(x.slope) - Math.atan(y.slope);
-
-        //If both lines are the same, might as well compare using IDs.
-        if (Math.abs(res) < Global.epsilon) return x.getId() - y.getId();
-      }
-      return res;
-    }
-
-    const P = P_.toPolytopeC().recenter();
-    if (!P.elementList[0] || !P.elementList[1] || !P.elementList[2]) return;
+    const Q = P.toPolytopeC().recenter();
+    if (!Q.elementList[0] || !Q.elementList[1] || !Q.elementList[2]) return;
 
     //For each face:
-    faceLoop: for (let i = 0; i < P.elementList[2].length; i++) {
+    faceLoop: for (let i = 0; i < Q.elementList[2].length; i++) {
       //Let's not even bother with digons and monogons.
-      if (P.elementList[2][i].length < 3) continue faceLoop;
+      if (Q.elementList[2][i].length < 3) continue faceLoop;
       /*	if(P.elementList[2][i].length === 3) {
 				//All triangles are convex, so cut to the chase and render it directly.
 			} */
 
       //Enumerates the vertices in order.
-      const cycle = P.faceToVertices(i);
+      const cycle = Q.faceToVertices(i);
 
       //Makes a doubly-linked list vertexDLL for the polygon's vertices and the
       //new vertices created.
       //node0 is always the "next" vertex.
       //Every vertex should *always* have two adjacent vertices.
-      Render.vertexDLL = [new LinkedListNode(P.elementList[0][cycle[0]])];
+      Render.vertexDLL = [new LinkedListNode(Q.elementList[0][cycle[0]])];
       for (let j = 0; j < cycle.length - 1; j++) {
         Render.vertexDLL[j + 1] = new LinkedListNode(
-          P.elementList[0][cycle[j + 1]]
+          Q.elementList[0][cycle[j + 1]]
         );
         Render.vertexDLL[j].linkToNext(Render.vertexDLL[j + 1]);
       }
       Render.vertexDLL[Render.vertexDLL.length - 1].linkToNext(
         Render.vertexDLL[0]
       );
-
       const v0 = Render.vertexDLL[0].value;
 
       //Tries to find two non-equal points. If all points are the same, doesn't
@@ -253,16 +204,16 @@ export abstract class Render {
       scene.add(face);
     }
 
-    scene.polytopes.push(P_);
+    scene.polytopes.push(P);
   }
 
   /**
    * renderTo helper function.
    * "Cuts" two edges at the intersection point, adds the new directed edges
    * according to the simplification algorithm.
-   * @private
-   * @param {SLEdge} edgeA The first edge to cut.
-   * @param {SLEdge} edgeB The second edge to cut.
+   *
+   * @param edgeA The first edge to cut.
+   * @param edgeB The second edge to cut.
    */
   private static _divide(edgeA: SweeplineEdge, edgeB: SweeplineEdge) {
     //No point in doing anything if the intersection has already been dealt
@@ -315,13 +266,14 @@ export abstract class Render {
     Render.EQ.insert(newNode2);
   }
 
-  /** Orders two points lexicographically based on the coordinates on indices 0
+  /**
+   * Orders two points lexicographically based on the coordinates on indices 0
    * and 1. Uses the IDs of the vertices to order them consistently if their
    * coordinates are identical.
-   * @private
-   * @param {LinkedListNode<Point>} a The first point to order.
-   * @param {LinkedListNode<Point>} b The second point to order.
-   * @returns {number} 1, 0 or -1 depending on whether a > b, a = b or a < b.
+   *
+   * @param a The first point to order.
+   * @param b The second point to order.
+   * @returns 1, 0 or -1 depending on whether a > b, a = b or a < b.
    */
   private static _order(
     a: LinkedListNode<Point>,
@@ -334,9 +286,67 @@ export abstract class Render {
 
       c =
         a.value.coordinates[Global.index1] - b.value.coordinates[Global.index1];
-      if (c === 0) return a.id - b.id;
+      if (c === 0) return a.getId() - b.getId();
     }
     return c;
+  }
+
+  /**
+   * The sweepline is sorted by the height of the edges' intersections with the
+   * sweepline. If these are equal, the lines are sorted by slope. If these are
+   * also equal, the lines are consistently ordered by their
+   * [[`SweeplineEdge.id` | IDs]].
+   */
+  private static _SLSort(x: SweeplineEdge, y: SweeplineEdge): number {
+    //This is the only case where the function should return 0:
+    if (x.leftVertex === y.leftVertex && x.rightVertex() === y.rightVertex())
+      return 0;
+
+    const a = x.leftVertex.value,
+      b = x.rightVertex().value,
+      c = y.leftVertex.value,
+      d = y.rightVertex().value,
+      k = Render.Event.value.coordinates[Global.index0];
+
+    //Calculates where in the segments the intersection with the sweepline
+    //lies.
+    const lambda0 =
+      (k - b.coordinates[Global.index0]) /
+      (a.coordinates[Global.index0] - b.coordinates[Global.index0]);
+    const lambda1 =
+      (k - d.coordinates[Global.index0]) /
+      (c.coordinates[Global.index0] - d.coordinates[Global.index0]);
+
+    //The height difference between the intersections.
+    let res =
+      a.coordinates[Global.index1] * lambda0 +
+      b.coordinates[Global.index1] * (1 - lambda0) -
+      (c.coordinates[Global.index1] * lambda1 +
+        d.coordinates[Global.index1] * (1 - lambda1));
+
+    //If the intersections are so similar, we also need to consider the
+    //possibility that the edges actually have a common endpoint.
+    if (Math.abs(res) < Global.epsilon) {
+      //If the first edge starts at a point, and the second ends at that point
+      //then the former gets sorted after the latter.
+      if (lambda0 > 1 - Global.epsilon && lambda1 < Global.epsilon) return 1;
+      //And viceversa.
+      if (lambda0 < Global.epsilon && lambda1 > 1 - Global.epsilon) return -1;
+
+      //If both edges start at the same point, sort by increasing slope.
+      if (lambda0 > 1 - Global.epsilon) res = 1;
+      //If both edges end at the same point, sort by decreasing slope.
+      else if (lambda0 < Global.epsilon) res = -1;
+      //The edges are just really close, so compare them normally.
+      else return res;
+
+      //The difference between the slopes.
+      res *= Math.atan(x.slope) - Math.atan(y.slope);
+
+      //If both lines are the same, might as well compare using IDs.
+      if (Math.abs(res) < Global.epsilon) return x.getId() - y.getId();
+    }
+    return res;
   }
 }
 
