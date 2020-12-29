@@ -128,6 +128,8 @@ export default abstract class FileOperations {
       //Reads the file as an OFF file.
       const xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function () {
+        console.log(this.readyState);
+        console.log(this.status);
         //this.status === 0 is for debug purposes only!
         if (this.readyState === 4 && this.status === 200)
           FileOperations.onloadOFF(this.responseText);
@@ -275,7 +277,7 @@ export default abstract class FileOperations {
   }
 
   /**
-   * Helper function for [[`Polytope.openFile`]].
+   * Helper function for [[`openFile`]].
    * Is called when an OFF file is loaded.
    *
    * @param contents The contents of the file.
