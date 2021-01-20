@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import * as MathJS from "mathjs";
 import Global from "../global";
 
 export default class Point {
@@ -143,9 +144,12 @@ export default class Point {
    */
   static padRight(P: Point, n: number): Point {
     const coordinates: number[] = [];
+
     for (let i = 0; i < P.coordinates.length; i++)
       coordinates.push(P.coordinates[i]);
+
     for (let i = 0; i < n; i++) coordinates.push(0);
+
     return new Point(coordinates);
   }
 
@@ -180,6 +184,7 @@ export default class Point {
         Math.abs(a.coordinates[i] * Global.epsilon)
       )
         return false;
+
     return true;
   }
 
@@ -191,5 +196,11 @@ export default class Point {
       res += t * t;
     }
     return Math.sqrt(res);
+  }
+
+  applyMatrix(matrix: MathJS.Matrix): Point {
+    console.log(matrix["_data"]);
+    const mat = MathJS.multiply(MathJS.matrix([this.coordinates]), matrix);
+    return new Point(mat.toArray()[0]);
   }
 }
