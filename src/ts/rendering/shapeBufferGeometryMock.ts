@@ -35,7 +35,7 @@ export default class ShapeBufferGeometry_ extends THREE.BufferGeometry {
 
     // allow single and array values for "shapes" parameter
 
-    if (Array.isArray(shapes)) {
+    if (Array.isArray(shapes))
       for (let i = 0; i < shapes.length; i++) {
         addShape(shapes[i]);
 
@@ -45,9 +45,7 @@ export default class ShapeBufferGeometry_ extends THREE.BufferGeometry {
         groupStart += groupCount;
         groupCount = 0;
       }
-    } else {
-      addShape(shapes);
-    }
+    else addShape(shapes);
 
     // build geometry
 
@@ -72,16 +70,14 @@ export default class ShapeBufferGeometry_ extends THREE.BufferGeometry {
 
       if (
         (Global.reversePolygon = !THREE.ShapeUtils.isClockWise(shapeVertices))
-      ) {
+      )
         shapeVertices = shapeVertices.reverse();
-      }
 
       for (let i = 0, l = shapeHoles.length; i < l; i++) {
         const shapeHole = shapeHoles[i];
 
-        if (THREE.ShapeUtils.isClockWise(shapeHole) === true) {
+        if (THREE.ShapeUtils.isClockWise(shapeHole))
           shapeHoles[i] = shapeHole.reverse();
-        }
       }
 
       const faces = THREE.ShapeUtils.triangulateShape(
@@ -90,14 +86,12 @@ export default class ShapeBufferGeometry_ extends THREE.BufferGeometry {
       );
 
       // join vertices of inner and outer paths to a single array
-
       for (let i = 0, l = shapeHoles.length; i < l; i++) {
         const shapeHole = shapeHoles[i];
         shapeVertices = shapeVertices.concat(shapeHole);
       }
 
       // vertices, normals, uvs
-
       for (let i = 0, l = shapeVertices.length; i < l; i++) {
         const vertex = shapeVertices[i];
 
@@ -107,13 +101,12 @@ export default class ShapeBufferGeometry_ extends THREE.BufferGeometry {
       }
 
       // incides
-
       for (let i = 0, l = faces.length; i < l; i++) {
         const face = faces[i];
 
-        const a = face[0] + indexOffset;
-        const b = face[1] + indexOffset;
-        const c = face[2] + indexOffset;
+        const a = face[0] + indexOffset,
+          b = face[1] + indexOffset,
+          c = face[2] + indexOffset;
 
         indices.push(a, b, c);
         groupCount += 3;
@@ -122,9 +115,8 @@ export default class ShapeBufferGeometry_ extends THREE.BufferGeometry {
   }
 
   toJSON(): unknown {
-    const data = THREE.BufferGeometry.prototype.toJSON.call(this);
-
-    const shapes = this.parameters.shapes;
+    const data = THREE.BufferGeometry.prototype.toJSON.call(this),
+      shapes = this.parameters.shapes;
 
     return toJSON(shapes, data);
   }
@@ -136,13 +128,13 @@ function toJSON(
 ): unknown {
   data.shapes = [];
 
-  if (Array.isArray(shapes)) {
+  if (Array.isArray(shapes))
     for (let i = 0, l = shapes.length; i < l; i++) {
       const shape = shapes[i];
 
       data.shapes.push(shape["uuid"]);
     }
-  } else data.shapes.push(shapes["uuid"]);
+  else data.shapes.push(shapes["uuid"]);
 
   return data;
 }

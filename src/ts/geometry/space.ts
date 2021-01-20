@@ -3,7 +3,6 @@ import Point from "./point";
 
 /**
  * A namespace for operations on points.
- * @namespace Space
  */
 export default abstract class Space {
   /**
@@ -11,12 +10,13 @@ export default abstract class Space {
    * Assumes that these segments are coplanar, but not collinear.
    * Ignores the intersection if it lies outside of the segments, or
    * "too close" to the endpoints.
+   *
    * @param a The first endpoint of the first segment.
    * @param b The second endpoint of the first segment.
    * @param c The first endpoint of the second segment.
    * @param d The second endpoint of the second segment.
-   * @returns The intersection point of segments `ab` and `cd`, or
-   * `null` if there's none.
+   * @returns The intersection point of segments `ab` and `cd`, or `null` if
+   * there's none.
    */
   static intersect(a: Point, b: Point, c: Point, d: Point): Point | null {
     //Checks if any of the points are in different dimensional spaces
@@ -70,17 +70,25 @@ export default abstract class Space {
     return new Point(pt);
   }
 
-  //Checks if the angle between b - a and c - a is straight to a given precision
+  /**
+   * Checks if three points are "approximately" collinear.
+   *
+   * @param a The first point.
+   * @param b The second point.
+   * @param c The third point.
+   * @returns Whether the angle between b - a and c - a is straight to a given
+   * precision.
+   */
   static collinear(a: Point, b: Point, c: Point): boolean {
-    if (Point.equal(a, b) || Point.equal(a, c))
-      //If "a" is the same as "b" or "c"
-      return true;
+    //If "a" is the same as "b" or "c"
+    if (Point.equal(a, b) || Point.equal(a, c)) return true;
 
     //Calculates (b - a) . (c - a), |b - a|, |c - a|.
     //This will be used to calculate the angle between them.
     let dot = 0,
       norm0 = 0,
       norm1 = 0;
+
     for (let i = 0; i < a.coordinates.length; i++) {
       const sub0 = b.coordinates[i] - a.coordinates[i];
       const sub1 = c.coordinates[i] - a.coordinates[i];
@@ -95,18 +103,9 @@ export default abstract class Space {
   }
 
   /**
-   * Calculates the Euclidean distance between two points.
-   * @param a The first point.
-   * @param b The second point.
-   * @returns The distance between `a` and `b`.
-   */
-  static distance(a: Point, b: Point): number {
-    return Math.sqrt(Space.distanceSq(a, b));
-  }
-
-  /**
    * Calculates the area of the triangle determined by three vertices
    * when projected onto a specific plane.
+   *
    * @param a The first of the triangle's vertices.
    * @param b The first of the triangle's vertices.
    * @param c The first of the triangle's vertices.
@@ -124,31 +123,47 @@ export default abstract class Space {
   /**
    * Calculates the squared Euclidean distance between two points.
    * For when you don't need that last square root.
+   *
    * @param a The first point.
    * @param b The second point.
    * @returns The squared distance between `a` and `b`.
    */
   static distanceSq(a: Point, b: Point): number {
     let res = 0;
+
     for (let i = 0; i < a.coordinates.length; i++) {
       const t = a.coordinates[i] - b.coordinates[i];
       res += t * t;
     }
+
     return res;
   }
 
   /**
-   * Returns whether the line from (0, 0) to (a, b) and the line from (0, 0) to
-   * (c, d) have the same (neglibly different) slopes
+   * Calculates the Euclidean distance between two points.
+   *
+   * @param a The first point.
+   * @param b The second point.
+   * @returns The distance between `a` and `b`.
+   */
+  static distance(a: Point, b: Point): number {
+    return Math.sqrt(Space.distanceSq(a, b));
+  }
+
+  /**
+   * Checks if two lines are "approximately" parallel.
+   *
    * @param a The first coordinate.
-   * @param a The second coordinate.
-   * @param a The third coordinate.
-   * @param a The fourth coordinate.
-   * @returns Whether the slopes are approximately equal or not.
+   * @param b The second coordinate.
+   * @param c The third coordinate.
+   * @param d The fourth coordinate.
+   * @returns Whether the line from (0, 0) to (a, b) and the line from (0, 0) to
+   * (c, d) have neglibly different slopes.
    */
   static sameSlope(a: number, b: number, c: number, d: number): boolean {
     //s is the difference between the angles.
     const s = Math.atan(a / b) - Math.atan(c / d);
+
     //Returns whether the angles (mod pi) are different by less than
     //Global.epsilon.
     return (s + Math.PI + Global.epsilon) % Math.PI < 2 * Global.epsilon;

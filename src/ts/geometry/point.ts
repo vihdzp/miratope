@@ -185,7 +185,7 @@ export default class Point {
    * Converts a point to the `Vector3` class used by three.js.
    * Meant only for 3D points – simply copies the coordinates over.
    *
-   * @return The `Vector3` with the same coordinates as the point.
+   * @returns The `Vector3` with the same coordinates as the point.
    */
   toVector3(): THREE.Vector3 {
     return new THREE.Vector3(...this.coordinates);
@@ -196,7 +196,7 @@ export default class Point {
    *
    * @param a The first point to compare.
    * @param b The second point to compare.
-   * @returns Whether the  respective coordinates are "similar enough" by
+   * @returns Whether the respective coordinates are "similar enough" by
    * floating point standards.
    */
   static equal(a: Point, b: Point): boolean {
@@ -230,7 +230,7 @@ export default class Point {
    * Multiplies a matrix by the vector defined by the point.
    *
    * @param matrix The rotation matrix to apply to the point.
-   * @return The resulting point.
+   * @returns The resulting point.
    */
   applyMatrix(matrix: MathJS.Matrix): Point {
     //The point is treated as a row vector, so we transpose it.

@@ -8,20 +8,26 @@ import ShapeBufferGeometry_ from "./shapeBufferGeometryMock";
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 
 /**
- * The constructor for the `Scene` class.
- * @classdesc Wrapper for a scene, an object that shows a polytope.
- * Class for drawing objects to the scene more efficiently.
+ * Wrapper for a scene, an object that stores and shows a polytope.
  */
 export default class Scene {
-  readonly scene = new THREE.Scene();
+  /** The list of polytopes that are currently on screen. */
   polytopes: PolytopeB[] = [];
+
+  /** Stores all of the polygons, lights, cameras, ... on screen. */
+  readonly scene = new THREE.Scene();
+
+  /** Does the drawing with WEBGL. */
   readonly renderer = new THREE.WebGLRenderer({ antialias: true });
+
+  /** A camera object to change the viewpoint. */
   readonly camera = new THREE.PerspectiveCamera(
     75,
     globalThis.innerWidth / globalThis.innerHeight,
     0.1,
     1000
   );
+
   readonly ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
   readonly directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
   readonly material = new THREE.MeshLambertMaterial({
