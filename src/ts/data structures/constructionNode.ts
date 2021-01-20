@@ -148,13 +148,17 @@ export default abstract class ConstructionNode<T> {
         if (this.child[i].type === this.type) {
           const child = this.child[i].child;
 
-          //If the child is an array (this should always be true):
-          if (child instanceof Array) {
-            //Flatten the children array.
-            for (let j = 0; j < child.length - 1; j++)
-              this.child.push(child.pop());
-            this.child[i] = child.pop();
-          }
+          //The child should always be an array.
+          if (!(child instanceof Array))
+            throw new Error(
+              "mergeChildren called, despite children not being arrays!"
+            );
+
+          //Flatten the children array.
+          for (let j = 0; j < child.length - 1; j++)
+            this.child.push(child.pop());
+
+          this.child[i] = child.pop();
         }
       }
     } else

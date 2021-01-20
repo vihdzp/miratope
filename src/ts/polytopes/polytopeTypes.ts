@@ -439,7 +439,12 @@ export class PolytopeS<T> extends PolytopeB {
     return betterSimplifier;
   }
 
-  //Count a simplifier's cosets. Not needed except for debugging.
+  /**
+   * Counts a simplifier's cosets. Not needed except for debugging.
+   *
+   * @param simplifier The simplifier to perform the count.
+   * @return The number of cosets of the simplifier.
+   */
   simplifierCosets(simplifier: FlagMap<T, Flag<T>>): number {
     let count = 0;
 
