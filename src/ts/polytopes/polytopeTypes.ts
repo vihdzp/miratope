@@ -38,6 +38,7 @@ export abstract class PolytopeB {
   abstract spaceDimensions: number;
   /** The type of polytope. */
   abstract readonly type: PolytopeType;
+
   abstract toPolytopeC(): PolytopeC;
   abstract scale(r: number): PolytopeB;
   abstract move(P: Point, mult: number): PolytopeB;
@@ -123,22 +124,28 @@ export class PolytopeC extends PolytopeB {
     construction?: ConstructionNode<unknown>
   ) {
     super();
+
+    //The construction defaults to just the polytope itself.
     if (!construction)
-      //The construction defaults to just the polytope itself.
       construction = new CNPlain([
         elementList[elementList.length - 2].length,
         elementList.length - 1,
       ]);
 
+    //Sets the class variables.
     this.construction = construction;
     this.dimensions = elementList.length - 1; //The rank of the polytope.
     this.elementList = elementList;
-
-    if (this.elementList[0])
-      this.spaceDimensions = this.elementList[0][0].dimensions();
-    else this.spaceDimensions = -1; //The almighty nullitope (aka nothing)
+    this.spaceDimensions = this.elementList[0]
+      ? this.elementList[0][0].dimensions()
+      : -1;
   }
 
+  /**
+   * Sets the ConstructionNode of a polytope.
+   *
+   * @param construction The new ConstructionNode.
+   */
   setConstruction(construction: ConstructionNode<unknown>): void {
     this.construction = construction;
     construction.polytope = this;

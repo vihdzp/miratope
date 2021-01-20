@@ -1,7 +1,7 @@
 import type { ConcreteGroup, ConcreteGroupElement } from "./group";
 
 /**
- * Represents a (flag)[https://en.wikipedia.org/wiki/Flag_(geometry)] in a
+ * Represents a [[https://en.wikipedia.org/wiki/Flag_(geometry)|flag]] in a
  * PolytopeS object.
  */
 export default class Flag<T> {
@@ -16,13 +16,7 @@ export default class Flag<T> {
   }
 
   toString(): string {
-    return (
-      this.classNumber +
-      "," +
-      this.domain.groupElement +
-      "," +
-      this.domain.matrix
-    );
+    return this.classNumber + "," + this.domain.groupElement;
   }
 }
 
