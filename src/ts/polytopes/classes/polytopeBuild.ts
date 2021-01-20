@@ -261,12 +261,15 @@ export default abstract class PolytopeBuild {
    */
   static hypercube(n: number): PolytopeB {
     const symmetries = ConcreteGroup.BC(n);
-    const flagClasses: FlagClass[] = [];
-    for (let i = 0; i < n; i++) flagClasses.push([[0, [i]]]);
+
+    const flagClass = new FlagClass();
+    for (let i = 0; i < n; i++) flagClass.push(0, [i]);
+
     const coordinates: number[] = [];
     for (let i = 0; i < n; i++) coordinates.push(0.5);
+
     const vertices = [new Point(coordinates)];
-    return new PolytopeS(symmetries, flagClasses, vertices, n);
+    return new PolytopeS(symmetries, [flagClass], vertices, n);
   }
 
   /**
@@ -330,13 +333,16 @@ export default abstract class PolytopeBuild {
    */
   static cross(n: number): PolytopeB {
     const symmetries = ConcreteGroup.BC(n);
-    const flagClasses: FlagClass[] = [];
-    for (let i = 0; i < n; i++) flagClasses.push([[0, [n - (i + 1)]]]);
+    const flagClass = new FlagClass();
+
+    for (let i = 0; i < n; i++) flagClass.push(0, [n - (i + 1)]);
+
     const coordinates: number[] = [];
     for (let i = 1; i < n; i++) coordinates.push(0);
     coordinates.push(Math.SQRT1_2);
+
     const vertices = [new Point(coordinates)];
-    return new PolytopeS(symmetries, flagClasses, vertices, n);
+    return new PolytopeS(symmetries, [flagClass], vertices, n);
   }
 
   /**
@@ -348,23 +354,26 @@ export default abstract class PolytopeBuild {
    */
   static recticross(n: number): PolytopeB {
     const flagClasses: FlagClass[] = [];
-    for (let i = 0; i < n; i++) {
-      const row: FlagClass = [];
-      //i is change, j is flag class
-      for (let j = 0; j < n - 1; j++) {
-        if (j >= i) row.push([j, [n - (i + 2)]]);
-        else if (j === 0 && i === 1) row.push([0, [n - 1]]);
-        else if (i === j + 1) row.push([j - 1, []]);
-        else if (i === j + 2) row.push([j + 1, []]);
-        else row.push([j, [n - (i + 1)]]);
+
+    for (let i = 0; i < n - 1; i++) {
+      const flagClass = new FlagClass();
+
+      for (let j = 0; j < n; j++) {
+        if (i >= j) flagClass.push(i, [n - (j + 2)]);
+        else if (i === 0 && j === 1) flagClass.push(0, [n - 1]);
+        else if (j === i + 1) flagClass.push(i - 1, []);
+        else if (j === i + 2) flagClass.push(i + 1, []);
+        else flagClass.push(i, [n - (j + 1)]);
       }
-      flagClasses.push(row);
+
+      flagClasses.push(flagClass);
     }
+
     const coordinates: number[] = [];
     for (let i = 2; i < n; i++) coordinates.push(0);
+    coordinates.push(Math.SQRT1_2);
+    coordinates.push(Math.SQRT1_2);
 
-    coordinates.push(Math.SQRT1_2);
-    coordinates.push(Math.SQRT1_2);
     const vertices = [new Point(coordinates)];
     return new PolytopeS(ConcreteGroup.BC(n), flagClasses, vertices, n);
   }
