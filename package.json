@@ -3,16 +3,16 @@
   "version": "0.2.0",
   "description": "A renderer for polytopes. Still in alpha.",
   "scripts": {
-    "_bbu": "echo Running Browserify + Babelify + Uglify... & browserify src/js/main.js -t [ babelify --presets [ @babel/preset-env ] ] | uglifyjs -c toplevel,sequences=true,conditionals=true,booleans=true,if_return=true,join_vars=true,drop_console=true -m > out/main.js & echo Done!",
-    "_b": "echo Running Browserify... & browserify src/js/main.js -o out/main.js --debug & echo Done!",
-    "_c": "echo Copying index.html to the project root folder... & copyfiles -u 1 src/index.html ./ & echo Done!",
-    "_h": "echo Running HTMLMinifier... & html-minifier --input-dir src --output-dir ./ --file-ext html --minify-js true --minify-css true --minify-urls true --remove-comments --collapse-whitespace & echo Done!",
-    "_htypedoc": "echo Running HTMLMinifier... & html-minifier --input-dir out/typedoc --output-dir out/typedoc --file-ext html --minify-js true --minify-css true --minify-urls true --remove-comments --collapse-whitespace & echo Done!",
+    "_bbu": "echo Running Browserify + Babelify + Uglify... & browserify src/js/main.js -t [ babelify --presets [ @babel/preset-env ] ] | uglifyjs -c toplevel,sequences=true,conditionals=true,booleans=true,if_return=true,join_vars=true,drop_console=true -m > out/main.js & echo Browserify + Babelify + Uglify Done!",
+    "_b": "echo Running Browserify... & browserify src/js/main.js -o out/main.js --debug & echo Browserify Done!",
+    "_c": "echo Copying index.html to the project root folder... & copyfiles -u 1 src/index.html ./ & echo Copying Done!",
+    "_h": "echo Running HTMLMinifier... & html-minifier --input-dir src --output-dir ./ --file-ext html --minify-js true --minify-css true --minify-urls true --remove-comments --collapse-whitespace & echo HTMLMinifier [main page] Done!",
+    "_htypedoc": "echo Running HTMLMinifier... & html-minifier --input-dir out/typedoc --output-dir out/typedoc --file-ext html --minify-js true --minify-css true --minify-urls true --remove-comments --collapse-whitespace & echo HTMLMinifier [docs] Done!",
     "build": "npm run tsc & npm run _bbu & npm run _h",
     "debug": "npm run tsc & npm run _b & npm run _c",
     "typedoc": "echo Running TypeDoc... & typedoc src/ts & npm run _htypedoc",
-    "eslint": "echo Running ESLint... & eslint src/ts/**/*.ts{,x} --fix & echo Done!",
-    "tsc": "echo Running TypeScript... & tsc & echo Done!",
+    "eslint": "echo Running ESLint... & eslint src/ts/**/*.ts{,x} --fix & echo ESLint Done!",
+    "tsc": "echo Running TypeScript... & tsc & echo TypeScript Done!",
     "fullbuild": "npm run eslint & npm run build & npm run typedoc"
   },
   "repository": {
