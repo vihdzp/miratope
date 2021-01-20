@@ -581,10 +581,10 @@ export class PolytopeS<T> extends PolytopeB {
           if (!this.equalFlags(flag, intersectionSimplifiers[i - 1].get(flag)))
             continue;
 
-          const leftFlag = elementSimplifiers[i - 1].get(flag),
-            rightFlag = elementSimplifiers[i].get(flag),
-            leftID = locations[i - 1].get(leftFlag),
-            rightID = locations[i].get(rightFlag);
+          const leftFlag = elementSimplifiers[i - 1].get(flag);
+          const rightFlag = elementSimplifiers[i].get(flag);
+          const leftID = locations[i - 1].get(leftFlag);
+          const rightID = locations[i].get(rightFlag);
 
           someElems[rightID].push(leftID);
         }

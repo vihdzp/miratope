@@ -198,9 +198,16 @@ export default class Point {
     return Math.sqrt(res);
   }
 
+  /**
+   * Multiplies a matrix by the vector defined by the point.
+   */
   applyMatrix(matrix: MathJS.Matrix): Point {
-    console.log(matrix["_data"]);
-    const mat = MathJS.multiply(MathJS.matrix([this.coordinates]), matrix);
-    return new Point(mat.toArray()[0]);
+    //The point is treated as a row vector, so we transpose it.
+    const columnVector = MathJS.transpose(MathJS.matrix([this.coordinates])),
+      mat = MathJS.multiply(matrix, columnVector);
+
+    //We return the point whose coordinates are the single row of the
+    //multiplication's result.
+    return new Point(MathJS.transpose(mat).toArray()[0]);
   }
 }

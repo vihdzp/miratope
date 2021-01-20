@@ -92,7 +92,7 @@ export class FlagMap<T, U> {
     const str = key.toString();
     const res = this.dictionary[str];
 
-    if (!res)
+    if (res === undefined)
       throw new Error(
         "Flag " +
           str +
