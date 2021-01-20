@@ -27,10 +27,10 @@ jobs:
         node-version: ${{ matrix.node-version }}
       
     - name: Clean install
-    - run: npm ci
+      run: npm ci
       
     - name: Build project and documentation
-    - run: npm run fullbuild
+      run: npm run fullbuild
   
     - name: Commit files
       run: |
