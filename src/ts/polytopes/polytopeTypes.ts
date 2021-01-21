@@ -464,8 +464,7 @@ export class PolytopeS<T> extends PolytopeB {
   //This is basically the algorithm from the Grünbaumian thing,
   //but modified to work for higher dimensions and calculate incidences.
   toPolytopeC(): PolytopeC {
-    const maxDomains = 500; //Change to Infinity if you dare
-    const domains = this.symmetries.enumerateElements(maxDomains);
+    const domains = this.symmetries.enumerateElements();
 
     //Maps each flag to itself. Used as a base for the later simplifiers.
     this.identitySimplifier = new FlagMap<T, Flag<T>>();
@@ -542,6 +541,7 @@ export class PolytopeS<T> extends PolytopeB {
     //separately.
     console.log("Vertices");
     const vertices: Point[] = [];
+
     for (let i = 0; i < domains.length; i++) {
       for (let j = 0; j < this.flagClasses.length; j++) {
         const flag = new Flag(j, domains[i]);
@@ -553,6 +553,7 @@ export class PolytopeS<T> extends PolytopeB {
         vertices.push(vertex);
       }
     }
+
     console.log(vertices);
 
     //Map representatives to IDs.
@@ -580,14 +581,14 @@ export class PolytopeS<T> extends PolytopeB {
     console.log(locations, locationsLengths);
     console.log("Higher elements");
 
-    const elems: ElementList = [vertices];
+    const elementList: ElementList = [vertices];
     for (let i = 1; i < this.dimensions + 1; i++) {
-      //TODO rename this to something better
-      const someElems: number[][] = [];
+      //The array of i-dimensional elements.
+      const elements: number[][] = [];
 
-      for (let j = 0; j < locationsLengths[i]; j++) someElems.push([]);
+      for (let j = 0; j < locationsLengths[i]; j++) elements.push([]);
 
-      for (let j = 0; j < domains.length; j++) {
+      for (let j = 0; j < domains.length; j++)
         for (let k = 0; k < this.flagClasses.length; k++) {
           const flag = new Flag(k, domains[j]);
           if (!this.equalFlags(flag, intersectionSimplifiers[i - 1].get(flag)))
@@ -598,14 +599,13 @@ export class PolytopeS<T> extends PolytopeB {
           const leftID = locations[i - 1].get(leftFlag);
           const rightID = locations[i].get(rightFlag);
 
-          someElems[rightID].push(leftID);
+          elements[rightID].push(leftID);
         }
-      }
 
-      console.log(someElems);
-      elems.push(someElems);
+      console.log(elements);
+      elementList.push(elements);
     }
 
-    return new PolytopeC(elems);
+    return new PolytopeC(elementList);
   }
 }

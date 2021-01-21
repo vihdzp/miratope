@@ -6,7 +6,6 @@ import {
   CupolaicBlend as CNCupolaicBlend,
   Polygon as CNPolygon,
   Pyramid as CNPyramid,
-  Simplex as CNSimplex,
 } from "../../data structures/constructionNode";
 import { FlagClass } from "../../data structures/flag";
 import { ConcreteGroup } from "../../data structures/group";
@@ -234,12 +233,15 @@ export default abstract class PolytopeBuild {
       //Side a.
       //Vertices
       els[0].push(new Point([Math.cos(angle) * R, Math.sin(angle) * R]));
+
       //Face
       els[2][0].push(2 * i);
       angle += alpha;
+
       //Side b
       //Vertices
       els[0].push(new Point([Math.cos(angle) * R, Math.sin(angle) * R]));
+
       //Face
       els[2][0].push(2 * i + 1);
       angle += beta;
@@ -281,46 +283,16 @@ export default abstract class PolytopeBuild {
    * @returns The resulting polytope.
    */
   static simplex(n: number): PolytopeB {
-    const vertices: Point[] = [];
-    //Memoizes some square roots, tiny optimization.
-    const aux: number[] = [Infinity];
-    for (let i = 1; i <= n; i++) aux.push(1 / Math.sqrt(2 * i * (i + 1)));
+    const symmetries = ConcreteGroup.A(n);
 
-    //Adds vertices.
-    for (let i = 0; i <= n; i++) {
-      const coordinates: number[] = [];
-      for (let j = 1; j <= n; j++) {
-        if (j > i) coordinates.push(-aux[j]);
-        else if (j === i) coordinates.push(j * aux[j]);
-        else coordinates.push(0);
-      }
-      vertices.push(new Point(coordinates));
-    }
+    const flagClass = new FlagClass();
+    for (let i = 0; i < n; i++) flagClass.push(0, [i]);
 
-    //Adds higher dimensional elements.
-    const els: ElementList = [vertices];
-    for (let i = 1; i <= n; i++) els.push([]);
-    const locations: number[] = [];
-    for (let i = 0; i < n + 1; i++) locations[Math.pow(2, i)] = i;
-    for (let i = 1; i < Math.pow(2, n + 1); i++) {
-      //Vertices were generated earlier
-      if (!(i & (i - 1))) continue;
-      let elementDimension = -1;
-      let t = i;
-      const elemVertices: number[] = [];
-      do {
-        elementDimension++;
-        elemVertices.push(t & ~(t - 1));
-        t = t & (t - 1);
-      } while (t > 0);
-      const facets: number[] = [];
-      for (let k = 0; k < elemVertices.length; k++)
-        facets.push(locations[i ^ elemVertices[k]]);
-      locations[i] = els[elementDimension].length;
-      (els[elementDimension] as number[][]).push(facets);
-    }
+    const coordinates: number[] = [];
+    for (let i = 0; i < n; i++) coordinates.push(1);
 
-    return new PolytopeC(els, new CNSimplex(n));
+    const vertices = [new Point(coordinates)];
+    return new PolytopeS(symmetries, [flagClass], vertices, n);
   }
 
   /**

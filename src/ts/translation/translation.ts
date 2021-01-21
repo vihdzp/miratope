@@ -17,14 +17,19 @@ export interface LanguageOptions {
 export abstract class Translation {
   /** The wrapped Globalize object. */
   private static globalize: Globalize;
+
   /** A two letter string identifying the language. */
   static language: string;
+
   /** Specifies whether the target language capitalizes all nouns. */
   static nounCapitalization: boolean;
+
   /** Specifies whether the target language places adjectives before nouns. */
   static adjBeforeNoun: boolean;
+
   /** Specifies whether the target language has grammatical gender. */
   static genderedLanguage: boolean;
+
   /**
    * -, one, two, three, four, five, six, seven, eight, nine,
    * to Greek, back to each language.
@@ -125,9 +130,9 @@ export abstract class Translation {
 
   /**
    * Adds an appropriately declensed adjective to a noun.
+   *
    * @param adj The adjective, already declensed.
    * @param noun The noun to which the adjective will be added.
-   *
    * @returns The adjective placed before or after the noun, according to the
    * target language.
    */
@@ -147,8 +152,10 @@ export abstract class Translation {
 
   /** Converts a number `n` into a greek prefix (or whatever works similarly in
    * the target language). Based on
-   * [George Hart's scheme for greek numerical prefixes]{@link https://www.georgehart.com/virtual-polyhedra/greek-prefixes.html}.
+   * [George Hart's scheme for greek numerical prefixes]{@link
+   * https://www.georgehart.com/virtual-polyhedra/greek-prefixes.html}.
    * Works only from 0 to 99999. Defaults to `"n-"`.
+   *
    * @param n The number to convert.
    * @param Result modifiers.
    * @returns The number `n` as a greek prefix.
