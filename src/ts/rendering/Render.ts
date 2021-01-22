@@ -1,5 +1,5 @@
 import Point from "../geometry/Point";
-import Space from "../geometry/Space";
+import * as Space from "../geometry/Space";
 import { PolytopeB } from "../polytopes/types";
 import Scene from "./Scene";
 import LinkedListNode from "../data structures/LinkedListNode";

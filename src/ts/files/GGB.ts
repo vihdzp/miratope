@@ -2,20 +2,22 @@ import * as JSZip from "jszip";
 import Point from "../geometry/Point";
 import { PolytopeB } from "../polytopes/types";
 import { Translation } from "../translation/Translation";
-import Library from "./Library";
+import * as Library from "./Library";
 
 export interface GGBOptions {
-  wireframe: boolean;
+  wireframe?: boolean;
 }
 
 /**
  * Saves a polytope as a GeoGebra file.
- * Writes most of the XML manually, just editing what's needed.
+ * Has most of the XML hardcoded, just editing what's needed.
  *
- * @param wireframe Whether faces are to be omitted.
+ * @param polytope The polytope to be saved.
+ * @param options Whether faces are to be omitted.
  * @todo Compress the file XML a bit?
  * @todo Add a "Made in Miratope v. ###" tag to the Geogebra file.
  * @todo Deal with the nullitope case.
+ * @todo Implement other types of projections.
  */
 export const saveAsGGB = function (
   polytope: PolytopeB,
@@ -270,7 +272,7 @@ export const saveAsGGB = function (
 
   //Closing tags.
   file += "</construction></geogebra>";
-  Library.fileName = Translation.firstToUpper(P.getName()) + ".ggb";
+  Library.setFileName(Translation.firstToUpper(P.getName()) + ".ggb");
 
   //Save file.
   ggb.file("geogebra.xml", file);

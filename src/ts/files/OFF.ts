@@ -1,6 +1,6 @@
 import { PolytopeB } from "../polytopes/types";
 import { Translation } from "../translation/Translation";
-import Library from "./Library";
+import * as Library from "./Library";
 
 export interface OFFOptions {
   comments?: boolean;
@@ -8,6 +8,8 @@ export interface OFFOptions {
 
 /**
  * Saves the current polytope as an OFF file.
+ *
+ * @param polytope The polytope to be saved.
  * @param options The file saving options.
  */
 export const saveAsOFF = function (
@@ -164,6 +166,6 @@ export const saveAsOFF = function (
     }
   }
 
-  Library.fileName = Translation.firstToUpper(P.getName()) + ".off";
+  Library.setFileName(Translation.firstToUpper(P.getName()) + ".off");
   Library.saveBlob(new Blob(data, { type: "text/plain" }));
 };

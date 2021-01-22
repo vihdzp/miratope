@@ -24,7 +24,7 @@ export default class SweeplineEdge {
   slope: number;
 
   /** A unique, immutable [[`ID`]] associated to the sweepline edge. */
-  private id: number;
+  private ID: number;
 
   /**
    * An edge's ID must be immutable, even if the vertices themselves change, so
@@ -65,7 +65,7 @@ export default class SweeplineEdge {
     const y = rightVertex.getId();
     const newID = ((x + y) * (x + y + 1)) / 2 + y;
 
-    this.id = SweeplineEdge.redirectTable[newID] || newID;
+    this.ID = SweeplineEdge.redirectTable[newID] || newID;
   }
 
   /**
@@ -84,7 +84,7 @@ export default class SweeplineEdge {
    * @returns The ID.
    */
   getId(): number {
-    return this.id;
+    return this.ID;
   }
 
   directedEdge(): [LinkedListNode<Point>, LinkedListNode<Point>] {
@@ -101,7 +101,7 @@ export default class SweeplineEdge {
     const x = this.leftVertex.getId();
     const y = this.rightVertex().getId();
     const newID = ((x + y) * (x + y + 1)) / 2 + y;
-    SweeplineEdge.redirectTable[newID] = this.id;
+    SweeplineEdge.redirectTable[newID] = this.ID;
   }
 
   //TO DELETE

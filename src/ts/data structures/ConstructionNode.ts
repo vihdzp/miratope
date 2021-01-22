@@ -150,7 +150,7 @@ export default abstract class ConstructionNode<T> {
           //The child should always be an array.
           if (!(child instanceof Array))
             throw new Error(
-              "mergeChildren called, despite children not being arrays!"
+              "mergeChildren called despite children not being arrays."
             );
 
           //Flatten the children array.
@@ -162,7 +162,7 @@ export default abstract class ConstructionNode<T> {
       }
     } else
       throw new Error(
-        "mergeChildren can only be called in a product ConstructionNode!"
+        "mergeChildren can only be called in a product ConstructionNode."
       );
   }
 

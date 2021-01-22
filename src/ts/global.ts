@@ -1,7 +1,8 @@
-//Stores the global variables used by Miratope.
-//We could just use globalThis, but polluting the global namespace is bad
-//practice.
-
+/**
+ * Stores the global variables used by Miratope.
+ * We could just use `globalThis`, but polluting the global namespace is bad
+ * practice.
+ */
 export default abstract class Global {
   //As part of the render algorithm, every polygon is projected down into 2D.
   //This projection is done by selecting only two of the coordinates of each

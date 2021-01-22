@@ -1,14 +1,12 @@
-import "./polytopes/classes/Global";
 import Point from "./geometry/Point";
-import GraphNode from "./data structures/GraphNode";
 import Scene from "./rendering/Scene";
-import Library from "./files/Library";
+import * as Library from "./files/Library";
 import { OFFOptions, saveAsOFF } from "./files/OFF";
 import { GGBOptions, saveAsGGB } from "./files/GGB";
 import { PolytopeB } from "./polytopes/types";
-import Build from "./polytopes/classes/Build";
-import Product from "./polytopes/classes/Product";
-import CD from "./polytopes/classes/CD";
+import * as Build from "./polytopes/classes/Build";
+import * as Product from "./polytopes/classes/Product";
+import CD from "./data structures/CD";
 import Render from "./rendering/Render";
 
 /** @internal */
@@ -18,6 +16,7 @@ declare global {
   }
 }
 
+//Adds a quick & convenient implementation of the Euclidean algorithm.
 if (!Math.gcd) {
   Math.gcd = function (a: number, b: number): number {
     let t: number;
@@ -45,12 +44,7 @@ globalThis.mainScene = new Scene();
 
 //Declares aliases for functions declared in classes other than PolytopeB.
 
-/**
- * Saves the current polytope as an OFF file.
- *
- * @param options The file saving options.
- * @todo Deal with the nullitope case.
- */
+//Declared in off.ts.
 PolytopeB.prototype["saveAsOFF"] = function (options: OFFOptions = {}): void {
   saveAsOFF(this, options);
 };
@@ -73,11 +67,17 @@ PolytopeB.prototype["extrudeToPrism"] = function (height: number): PolytopeB {
 };
 
 //Declared in CD.ts.
-PolytopeB.prototype["toGraph"] = function (): GraphNode<number>[] {
+/*PolytopeB.prototype["toGraph"] = function (): GraphNode<number>[] {
   return CD.toGraph(this);
-};
+};*/
 
 //Declared in render.ts.
 PolytopeB.prototype["renderTo"] = function (scene: Scene): void {
   Render.to(this, scene);
 };
+
+//Exposes the internal classes.
+globalThis.Build = Build;
+globalThis.CD = CD;
+globalThis.Product = Product;
+globalThis.Library = Library;

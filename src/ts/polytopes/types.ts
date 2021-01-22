@@ -5,7 +5,7 @@ import ConstructionNode, {
 import LinkedListNode from "../data structures/LinkedListNode";
 import Point from "../geometry/Point";
 import type { ConcreteGroup } from "../data structures/groups";
-import Flag, { FlagClass, FlagMap } from "../data structures/flag";
+import Flag, { FlagClass, FlagMap } from "../data structures/flags";
 
 export type ElementList = [Point[], ...number[][][]] | [];
 

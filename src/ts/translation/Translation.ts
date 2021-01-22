@@ -155,8 +155,8 @@ export abstract class Translation {
 
   /** Converts a number `n` into a greek prefix (or whatever works similarly in
    * the target language). Based on
-   * [George Hart's scheme for greek numerical prefixes]{@link
-   * https://www.georgehart.com/virtual-polyhedra/greek-prefixes.html}.
+   * [[https://www.georgehart.com/virtual-polyhedra/greek-prefixes.html|
+   * George Hart's scheme for greek numerical prefixes]].
    * Works only from 0 to 99999. Defaults to `"n-"`.
    *
    * @param n The number to convert.
@@ -314,16 +314,15 @@ export abstract class Translation {
 
   /**
    * The name for an d-element, according to
-   * [Wendy Krieger's polygloss]{@link http://os2fan2.com/gloss/pglosstu.html}.
+   * [[http://os2fan2.com/gloss/pglosstu.html|Wendy Krieger's polygloss]].
    * This is an extension of the scheme Jonathan Bowers uses on
-   * [his website]{@link http://www.polytope.net/hedrondude/home.htm}.
-   * Works up to d = 30. Defaults to `"d-element"`.<br />
-   * &emsp;Most of these are neologisms, so feel free to translate them as you
+   * [[http://www.polytope.net/hedrondude/home.htm|his website]]. Works up to
+   * `d = 30`. Defaults to `"d-element"`.
+   *
+   * Most of these are neologisms, so feel free to translate them as you
    * think is appropriate.
-   * @param [options={}] Result modifiers.
-   * @param [options.uppercase] Capitalizes the first letter of
-   * the result.
-   * @param [options.count] The number of objects being referred to.
+   *
+   * @param options Result modifiers.
    * @example
    * Translation.setLanguage("en");
    *
@@ -836,7 +835,7 @@ export abstract class Translation {
   //Finds the ending that fits a string among a list of endings.
   //Returns its index. -1 if no ending fits.
   //Uses a modified binary search.
-  private static findEnding = function (name: string, endings: Ending[]) {
+  private static findEnding(name: string, endings: Ending[]) {
     let first: number,
       mid: number,
       last: number,
@@ -895,7 +894,14 @@ export abstract class Translation {
 
     //If the match does fit, we return it.
     return firstMatch;
-  };
+  }
+
+  static error(code: string, dev = false): never {
+    let message: string = Translation.get(code);
+    if (dev) message = "UNEXPECTED ERROR: " + message;
+
+    throw new Error(message);
+  }
 }
 
 //Load JSON.
