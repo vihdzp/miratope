@@ -7,6 +7,7 @@ import Point from "../geometry/Point";
 import type { ConcreteGroup } from "../data structures/groups";
 import Flag, { FlagClass, FlagMap } from "../data structures/flags";
 
+/** Stores the elements of a [[`PolytopeC`]], by order of dimension. */
 export type ElementList = [Point[], ...number[][][]] | [];
 
 /** Stores the type of any given [[`PolytopeB`]]. */
