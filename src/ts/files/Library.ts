@@ -4,7 +4,7 @@ import GraphNode from "../data structures/GraphNode";
 import Point from "../geometry/Point";
 import Build from "../polytopes/classes/Build";
 import { ElementList, PolytopeC } from "../polytopes/types";
-import { Translation } from "../Translation/Translation";
+import { Translation } from "../translation/Translation";
 import Caret from "./Caret";
 
 /**

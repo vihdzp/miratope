@@ -1,7 +1,7 @@
 import * as JSZip from "jszip";
 import Point from "../geometry/Point";
 import { PolytopeB } from "../polytopes/types";
-import { Translation } from "../Translation/Translation";
+import { Translation } from "../translation/Translation";
 import Library from "./Library";
 
 export interface GGBOptions {
