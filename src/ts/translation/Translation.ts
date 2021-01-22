@@ -14,7 +14,7 @@ export interface LanguageOptions {
  * various languages. Serves as a wrapper for
  * [[https://github.com/globalizejs/globalize | Globalize.js]].
  *
- * @category Translation classes
+ * @category Translation
  */
 export abstract class Translation {
   /** The wrapped Globalize object. */
@@ -29,13 +29,14 @@ export abstract class Translation {
   /** Specifies whether the target language places adjectives before nouns. */
   static adjBeforeNoun: boolean;
 
-  /** Specifies whether the target language has grammatical gender. */
+  /** Specifies whether the target language has
+   * [[https://en.wikipedia.org/wiki/Grammatical_gender|grammatical gender]]. */
   static genderedLanguage: boolean;
 
   /**
    * -, one, two, three, four, five, six, seven, eight, nine,
    * to Greek, back to each language.
-   * Used for {@linkcode Translation.greekPrefix}.
+   * Used for [[`greekPrefix`]].
    */
   private static readonly _greekUnits = {
     en: [

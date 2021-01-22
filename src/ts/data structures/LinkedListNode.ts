@@ -1,8 +1,12 @@
 /**
- * A node, for usage in a (doubly) linked list. Each LinkedListNode is linked to
- * two other nodes: linkage should be reflexive. LinkedListNodes don't
- * *necessarily* have a notion of a "previous" and a "next" node. But when they
- * do, [[`node0`]] is the next node, and [[`node1`]] is the previous.
+ * A node, for usage in a (doubly) linked list. Each `LinkedListNode` is linked
+ * to two other nodes: linkage should be reflexive.
+ *
+ * `LinkedListNodes` don't *necessarily* have a notion of a "previous" and a
+ * "next" node. But when these are required, by convention, [[`node0`]] is the
+ * next node, and [[`node1`]] is the previous.
+ *
+ * @category Data structure
  */
 export default class LinkedListNode<T> {
   value: T;

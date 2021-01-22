@@ -102,14 +102,32 @@ export class MatrixGroup extends Group<MathJS.Matrix> {
     this.dimension = generators[0].size()[0];
   }
 
+  /**
+   * Returns the identity element of the group.
+   *
+   * @returns The identity matrix of size [[`dimension`]].
+   */
   identity(): MathJS.Matrix {
     return MathJS.identity(this.dimension) as MathJS.Matrix;
   }
 
+  /**
+   * Multiplies two group elements by one another.
+   *
+   * @param elem1 The first group element.
+   * @param elem2 The second group element.
+   * @returns The resulting matrix multiplication of `elem1 * elem2`.
+   */
   multiply(elem1: MathJS.Matrix, elem2: MathJS.Matrix): MathJS.Matrix {
     return MathJS.multiply(elem1, elem2);
   }
 
+  /**
+   * Inverts a given group element.
+   *
+   * @param elem A group element.
+   * @returns The inverse matrix of `elem`.
+   */
   invert(elem: MathJS.Matrix): MathJS.Matrix {
     return MathJS.inv(elem);
   }

@@ -4,7 +4,7 @@ import { Translation, LanguageOptions } from "../translation/Translation";
  * Represents a [[https://en.wikipedia.org/wiki/Caret_navigation|caret]], which
  * reads sequentially through a string.
  *
- * @category File classes
+ * @category File
  */
 export default class Caret {
   /** The string that is currently being read. */

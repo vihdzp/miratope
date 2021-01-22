@@ -33,7 +33,7 @@ jobs:
       run: npm ci
       
     - name: Build project and documentation
-      run: npm run fullbuild-lnx
+      run: npm run fullbuild
   
     - name: Commit files
       run: |

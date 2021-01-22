@@ -10,7 +10,7 @@ import Global from "../global";
 /**
  * Class with the needed methods to render a polytope.
  *
- * @category Rendering classes
+ * @category Rendering
  */
 export default abstract class Render {
   /** A doubly-linked-list that represents how the intersections of the
@@ -60,7 +60,9 @@ export default abstract class Render {
       //node0 is always the "next" vertex.
       //Every vertex should *always* have two adjacent vertices.
       Render.vertexDLL = [new LinkedListNode(Q.elementList[0][cycle[0]])];
-      for (let j = 0; j < cycle.length - 1; j++) {
+
+      let j: 0 | 1;
+      for (j = 0; j < cycle.length - 1; j++) {
         Render.vertexDLL[j + 1] = new LinkedListNode(
           Q.elementList[0][cycle[j + 1]]
         );
@@ -133,7 +135,7 @@ export default abstract class Render {
 
           //Vertex E is a left endpoint of the edge:
           if (ord < -Global.epsilon) {
-            const edge = new SweeplineEdge(Render.Event, j);
+            const edge = new SweeplineEdge(Render.Event, j as 0 | 1);
             const node = SL.insert(edge);
             if (!node) {
               console.log(
@@ -154,7 +156,7 @@ export default abstract class Render {
           }
           //Vertex E is a right endpoint of the edge:
           else if (ord > Global.epsilon) {
-            const edge = new SweeplineEdge(nodeJ, 1 - j);
+            const edge = new SweeplineEdge(nodeJ, (1 - j) as 0 | 1);
 
             //Deletes edge from the sweep line.
             const node = SL.getNode(edge);
@@ -181,7 +183,7 @@ export default abstract class Render {
             Render.Event.value.coordinates[Global.index1] >
             nodeJ.value.coordinates[Global.index1]
           ) {
-            const edge = new SweeplineEdge(Render.Event, j);
+            const edge = new SweeplineEdge(Render.Event, j as 0 | 1);
 
             //I really should only check intersections with segments at the
             //"correct height".
@@ -276,7 +278,8 @@ export default abstract class Render {
    *
    * @param a The first point to order.
    * @param b The second point to order.
-   * @returns 1, 0 or -1 depending on whether a > b, a = b or a < b.
+   * @returns A positive, zero or negative number depending on whether a > b,
+   * a = b or a < b.
    */
   private static order(
     a: LinkedListNode<Point>,
@@ -284,13 +287,15 @@ export default abstract class Render {
   ): number {
     let c =
       a.value.coordinates[Global.index0] - b.value.coordinates[Global.index0];
-    if (c === 0) {
-      //DO NOT REPLACE BY Math.abs(c) < Global.epsilon
 
+    //DO NOT REPLACE BY Math.abs(c) < Global.epsilon
+    if (c === 0) {
       c =
         a.value.coordinates[Global.index1] - b.value.coordinates[Global.index1];
+
       if (c === 0) return a.getId() - b.getId();
     }
+
     return c;
   }
 

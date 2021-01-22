@@ -10,7 +10,7 @@ type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 /**
  * Wrapper for a scene, an object that stores and shows a polytope.
  *
- * @category Rendering classes
+ * @category Rendering
  */
 export default class Scene {
   /** The list of polytopes that are currently on screen. */

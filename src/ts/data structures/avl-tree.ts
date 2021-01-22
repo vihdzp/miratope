@@ -22,15 +22,16 @@ enum BalanceState {
 }
 
 /**
- * Implements the
- * [[https://en.wikipedia.org/wiki/AVL_tree|AVL Tree data structure]]
- * for fast insertion and sorting.
+ * Implements the [[https://en.wikipedia.org/wiki/AVL_tree|AVL Tree data
+ * structure]] for fast insertion and sorting.
  */
 export default class AvlTree<T> {
   /** The root of the AVL tree. */
   private root: AvlNode<T> | null;
+
   /** The element count of the AVL tree. */
   private size: number;
+
   /** Temporary variable for [[`insert`]]. Stores the new inserted node. */
   private insertedNode: AvlNode<T> | null;
 
@@ -38,7 +39,7 @@ export default class AvlTree<T> {
    * Class constructor.
    *
    * @param customCompare An optional custom compare function.
-   * Overrides [[`compare`]], and has to work similarly.
+   * Overrides [[`compare`]], and has to work analogously.
    */
   constructor(customCompare: ((a: T, b: T) => number) | null) {
     this.root = null;

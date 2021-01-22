@@ -10,9 +10,11 @@ import Caret from "./Caret";
 /**
  * Contains various methods to load and save files, particularly those to load
  * the polytope library.
+ *
+ * @category File
  */
 export default abstract class Library {
-  /** Some filename, used as a temporary variable in some functions. */
+  /** A filename, used as a temporary variable in some functions. */
   static fileName: string;
 
   /**
@@ -60,9 +62,9 @@ export default abstract class Library {
 
   /**
    * Opens a file and stores it into the global variable `P`.
+   *
    * @param e Either the event triggered by the import button,
    * or a local filepath.
-   *
    * @todo Replace P by `scene.polytope` or something similar.
    * @todo Add support for more file formats (like STL or OBJ).
    * @todo Rewrite the code with npm's fs.
@@ -84,6 +86,7 @@ export default abstract class Library {
       const i = name.lastIndexOf("."),
         //Extension of file.
         ext = name.substr(i + 1);
+
       //Removes extension from file name.
       name = name.substr(0, i);
       if (Translation.language !== "de") name = Translation.firstToLower(name); //Lowercase name.
@@ -113,6 +116,7 @@ export default abstract class Library {
           break;
       }
     }
+
     //If e is a string.
     else {
       Library.fileName = e;
@@ -154,11 +158,15 @@ export default abstract class Library {
   static onloadGGB(contents: string): void {
     const caret = new Caret(contents);
     const elementList: ElementList = [[], [], [], []];
+
     //Dictionary to convert from GeoGebra point names to indices.
     const vertDict: { [key: string]: number } = {};
+
     //Dictionary to convert from edges to indices.
     const edgeDict: { [key: number]: number } = {};
-    const lst = [
+
+    //The tags we're reading from the file.
+    const tagList = [
       '<element type="point"',
       '<element type="point3d"',
       '<command name="Polygon">',
@@ -166,7 +174,7 @@ export default abstract class Library {
 
     let nextStringIndex: number;
 
-    while ((nextStringIndex = caret.skipToStringList(lst)) != -1) {
+    while ((nextStringIndex = caret.skipToStringList(tagList)) != -1) {
       switch (nextStringIndex) {
         case 0: {
           //Reading a 2D point.
@@ -177,12 +185,16 @@ export default abstract class Library {
 
           //Reads the coordinates.
           caret.skipToString('<coords x="');
+
           let x = caret.readNumber();
           caret.advance(5);
+
           let y = caret.readNumber();
           caret.advance(5);
+
           let z = caret.readNumber();
           caret.advance(5);
+
           x /= z;
           y /= z;
           z /= z;
@@ -199,14 +211,19 @@ export default abstract class Library {
 
           //Reads the coordinates.
           caret.skipToString('<coords x="');
+
           let x = caret.readNumber();
           caret.advance(5);
+
           let y = caret.readNumber();
           caret.advance(5);
+
           let z = caret.readNumber();
           caret.advance(5);
+
           const w = caret.readNumber();
           caret.advance(5);
+
           x /= w;
           y /= w;
           z /= w;
@@ -261,6 +278,7 @@ export default abstract class Library {
     //Graph of incidences between facets.
     const graph: GraphNode<number>[] = [];
     const facets = elementList[2];
+
     for (let i = 0; i < facets.length; i++) graph.push(new GraphNode(i));
 
     //Calculates incidences.

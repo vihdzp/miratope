@@ -9,7 +9,7 @@ type CustomFunctionType = (name: string, gender: string) => string;
  * Helper class for toAdjective.
  * Stores endings of words and what to do with them.
  *
- * @category Translation classes
+ * @category Translation
  */
 export default class Ending {
   /** The pattern at the end of a word. */

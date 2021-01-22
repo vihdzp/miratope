@@ -67,10 +67,10 @@ export default class GraphNode<T> {
 }
 
 /**
- * Wrapper for an array of [[`GraphNodes`|`GraphNode`]].
+ * Wrapper for an array of [[GraphNode|`GraphNodes`]].
  *
  * @typeParam T The type of the value stored in the graph.
- * @category Data structures
+ * @category Data structure
  */
 export class Graph<T> {
   nodes: GraphNode<T>[];
