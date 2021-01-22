@@ -41,7 +41,7 @@ jobs:
         git config --local user.name "github-actions[bot]"
         git add -u
         git reset .gitignore
-        git checkout "Project built" -b "master"
+        git commit -m "Build project" -a
         
     - name: Push changes
       uses: ad-m/github-push-action@master
