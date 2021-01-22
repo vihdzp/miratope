@@ -3,8 +3,8 @@
   "version": "0.2.0",
   "description": "A renderer for polytopes. Still in alpha.",
   "scripts": {
-    "_bbu": "echo Running Browserify + Babelify + Uglify... && browserify src/js/main.js -t [ babelify --presets [ @babel/preset-env ] ] | uglifyjs -c toplevel,sequences=true,conditionals=true,booleans=true,if_return=true,join_vars=true,drop_console=true -m > out/main.js && echo Browserify + Babelify + Uglify Done!",
-    "_b": "echo Running Browserify... && browserify src/js/main.js -o out/main.js --debug && echo Browserify Done!",
+    "_bbu": "mkdir ./out && echo Running Browserify + Babelify + Uglify... && browserify src/js/main.js -t [ babelify --presets [ @babel/preset-env ] ] | uglifyjs -c toplevel,sequences=true,conditionals=true,booleans=true,if_return=true,join_vars=true,drop_console=true -m > out/main.js && echo Browserify + Babelify + Uglify Done!",
+    "_b": "mkdir ./out && echo Running Browserify... && browserify src/js/main.js -o out/main.js --debug && echo Browserify Done!",
     "_c": "echo Copying index.html to the project root folder... && copyfiles -u 1 src/index.html ./ && echo Copying Done!",
     "_h": "echo Running HTMLMinifier... && html-minifier --input-dir src --output-dir ./ --file-ext html --minify-js true --minify-css true --minify-urls true --remove-comments --collapse-whitespace && echo HTMLMinifier [main page] Done!",
     "_htypedoc": "echo Running HTMLMinifier... && html-minifier --input-dir out/typedoc --output-dir out/typedoc --file-ext html --minify-js true --minify-css true --minify-urls true --remove-comments --collapse-whitespace && echo HTMLMinifier [docs] Done!",
