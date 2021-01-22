@@ -1,4 +1,4 @@
-import type { ConcreteGroup, ConcreteGroupElement } from "./group";
+import type { ConcreteGroup, ConcreteGroupElement } from "./groups";
 
 /**
  * Represents a [[https://en.wikipedia.org/wiki/Flag_(geometry)|flag]] in a

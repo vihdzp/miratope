@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import Point from "../geometry/point";
 import Global from "../global";
-import { PolytopeB } from "../polytopes/polytopeTypes";
+import { PolytopeB } from "../polytopes/Types";
 import TrackballControls from "./trackball-controls";
 import ShapeBufferGeometry_ from "./shapeBufferGeometryMock";
 

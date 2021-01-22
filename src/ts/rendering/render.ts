@@ -1,6 +1,6 @@
 import Point from "../geometry/point";
 import Space from "../geometry/space";
-import { PolytopeB } from "../polytopes/polytopeTypes";
+import { PolytopeB } from "../polytopes/types";
 import Scene from "./scene";
 import LinkedListNode from "../data structures/linkedListNode";
 import SweeplineEdge from "../data structures/sweeplineEdge";
@@ -10,13 +10,15 @@ import Global from "../global";
 /**
  * Class with the needed methods to render a polytope.
  */
-export abstract class Render {
+export default abstract class Render {
   /** A doubly-linked-list that represents how the intersections of the
    * polygon's edges are connected. */
   static vertexDLL: LinkedListNode<Point>[];
+
   /** An "Event queue", which stores the vertices in lexicographic order. Used
    * to determine the next point the sweepline should stop at. */
   static EQ: AvlTree<LinkedListNode<Point>>;
+
   /** An event on the [[EQ | Event queue]]. */
   static Event: LinkedListNode<Point>;
 
@@ -348,7 +350,3 @@ export abstract class Render {
     return res;
   }
 }
-
-PolytopeB.prototype.renderTo = function (scene: Scene): void {
-  Render.to(this, scene);
-};
