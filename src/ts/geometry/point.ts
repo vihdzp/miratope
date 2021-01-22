@@ -6,6 +6,8 @@ import Global from "../global";
  * A class for points in arbitary dimensions.
  * Meant for Euclidean space, though hyperbolic space may be eventually
  * implemented.
+ *
+ * @category Geometry
  */
 export default class Point {
   coordinates: number[];
@@ -23,6 +25,7 @@ export default class Point {
       this.coordinates = [];
       for (let i = 0; i < x; i++) this.coordinates[i] = 0;
     }
+
     //Constructor from the coordinates.
     else this.coordinates = x;
   }
@@ -91,17 +94,14 @@ export default class Point {
    * number of dimensions.
    */
   subtract(P: Point): Point {
+    //The points need to have the same number of coordinates.
     if (P.dimensions() !== this.dimensions())
-      //The points need to have the same number of coordinates.
       throw new Error(
         "You can't add points with different amounts of dimensions!"
       );
 
-    for (
-      let i = 0;
-      i < P.dimensions();
-      i++ //Add the respective coordinates.
-    )
+    //Add the respective coordinates.
+    for (let i = 0; i < P.dimensions(); i++)
       this.coordinates[i] -= P.coordinates[i];
 
     return this;

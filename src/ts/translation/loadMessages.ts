@@ -3,8 +3,8 @@ import * as Globalize from "globalize";
 /** Loads the messages used to translate Miratope. */
 export default function loadMessages(): void {
   Globalize.loadMessages({
+    //English is used as a fall-back.
     root: {
-      //English is used as a fall-back.
       meta: {
         nounCapitalization: "false",
         adjBeforeNoun: "true",

@@ -272,7 +272,7 @@ export default abstract class Library {
     //Gets components.
     for (let i = 0; i < facets.length; i++) {
       const component = graph[i].getComponent();
-      if (component) elementList[3].push(component);
+      if (component) elementList[3].push(component.values());
     }
 
     globalThis.P = new PolytopeC(elementList);
@@ -287,13 +287,17 @@ export default abstract class Library {
   static onloadOFF(contents: string): void {
     //Caret for reading the OFF file.
     const caret = new Caret(contents);
+
     //The number of dimensions of the OFF file's polytope.
     let dimensions = caret.readNumber();
+
     //A dictionary mapping hashes of pairs of integers to edge indices.
     const edgeList: number[] = [];
+
     //The amount of vertices, edges, faces...
     //elementCount[1] goes unused except for the special case of 2D components.
     const elementCount: number[] = [];
+
     //The elements of the described polytope.
     const elementList: ElementList = [[]];
 
@@ -428,8 +432,11 @@ export default abstract class Library {
       //Gets components.
       for (let i = 0; i < facets.length; i++) {
         const component = graph[i].getComponent();
+
         if (component)
-          (elementList[elementList.length - 1] as number[][]).push(component);
+          (elementList[elementList.length - 1] as number[][]).push(
+            component.values()
+          );
       }
     }
 

@@ -9,6 +9,8 @@ type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 
 /**
  * Wrapper for a scene, an object that stores and shows a polytope.
+ *
+ * @category Rendering classes
  */
 export default class Scene {
   /** The list of polytopes that are currently on screen. */
@@ -37,6 +39,7 @@ export default class Scene {
   });
   controls: TrackballControls;
 
+  /** Constructor for Scene class. */
   constructor() {
     //Sets up renderer.
     this.renderer.setSize(globalThis.innerWidth, globalThis.innerHeight - 44);
@@ -60,7 +63,8 @@ export default class Scene {
   }
 
   /**
-   * Adds the ambient light and the directional light, fixed w.r.t the scene.
+   * Adds the ambient light and the directional light, fixed with respect to
+   * the scene.
    */
   private addLights(): void {
     this.scene.add(this.ambientLight);
@@ -73,6 +77,7 @@ export default class Scene {
    * This code figures out which of these faces need to be rendered,
    * and transforms the points into 3D. (or at least will when it's fully
    * functional).
+   *
    * @todo Make the code fully functional.
    */
   add(face: Point[][]): void {
@@ -120,6 +125,9 @@ export default class Scene {
         a[Global.index2] =
           _poly[_poly.length - i - 1].coordinates[Global.index2];
       else a[Global.index2] = _poly[i].coordinates[Global.index2];
+
+      //We modify some private variables, which is probably unreliable, but
+      //gets the job done.
       for (let j = 0; j < 3; j++)
         (geometry.attributes.position.array as Writeable<ArrayLike<number>>)[
           3 * i + j
@@ -132,7 +140,9 @@ export default class Scene {
     this.scene.add(new THREE.Mesh(geometry, this.material));
   }
 
-  //Clears and disposes of everything in the scene, except for the lighting.
+  /**
+   * Clears and disposes of everything in the scene, except for the lighting.
+   */
   clear(): void {
     while (this.scene.children.length > 0) {
       if (this.scene.children[0].type === "Mesh")

@@ -1,41 +1,46 @@
 import { Translation, LanguageOptions } from "../translation/translation";
 
+/**
+ * Represents a [[https://en.wikipedia.org/wiki/Caret_navigation|caret]], which
+ * reads sequentially through a string.
+ *
+ * @category File classes
+ */
 export default class Caret {
+  /** The string that is currently being read. */
   contents: string;
+
+  /** The position on the string the caret is currently at. */
   pos: number;
+
+  /** The line on the string the caret is currently at. */
   line: number;
+
+  /** The column in the string the caret is currently at. */
   column: number;
+
+  /** Stores whether the end of the file has been reached or not. */
   EOF: boolean;
 
   /**
-   * Creates a new Caret.
-   * @constructor
-   * @classdesc A helper class for reading imported text files.
-   * Reads through a file, keeping track of its position, line, and column.
+   * Constructor for the Caret class.
+   *
    * @param contents The contents of the file.
    */
   constructor(contents: string) {
     this.contents = contents;
-    /** The current position of the caret.
-     * @type {number} */
     this.pos = 0;
-    /** The line number of the caret.
-     * @type {number} */
-    this.line = 0; //Line
-    /** The column number of the caret.
-     * @type {number} */
+    this.line = 0;
     this.column = 0;
-    /** Stores whether the caret has reached the end of the file or not.
-     * @type {boolean} */
     this.EOF = contents.length === 0;
+
     this.skipToContent();
   }
 
   /** Moves the caret to the next column or the next line.
-   * Automatically keeps track of [this.pos]{@linkcode Caret#pos},
-   * [this.line]{@linkcode Caret#line}, [this.column]{@linkcode Caret#column}, and
-   * [this.EOF]{@linkcode Caret#EOF}. Assumes Windows-style line endings.
-   * @see [Caret.prototype.advance]{@linkcode Caret#advance}.
+   * Automatically keeps track of [[`pos`]], [[`line`]], [[`column`]] and
+   * [[`EOF`]]. Assumes Windows-style line endings.
+   *
    * @todo Take care of Unix and Macintosh line endings.
    */
   increment(): void {
@@ -43,21 +48,23 @@ export default class Caret {
       this.line++;
       this.column = 0;
     } else this.column++;
+
     //Checks if next position is the EOF
     this.EOF = ++this.pos > this.contents.length;
   }
 
   /**
-   * Shortcut for calling [Caret.prototype.increment]{@linkcode Caret#increment}
-   * repeatedly.
-   * @param n The number of times to call
-   * [Caret.prototype.increment]{@linkcode Caret#increment}-
+   * Shortcut for calling [[`increment`]] repeatedly.
+   *
+   * @param n The number of times to call [[`increment`]].
    */
   advance(n: number): void {
     for (let i = 0; i < n; i++) this.increment();
   }
 
-  /** Gets the character at the caret.
+  /**
+   * Gets the character at the caret.
+   *
    * @returns The current character.
    */
   getChar(): string {
@@ -71,13 +78,14 @@ export default class Caret {
   skipToContent(): void {
     while (!this.EOF) {
       switch (this.getChar()) {
-        case "\n": //New Line (\n)
-        case "\r": //Carriage Return (\r)
-        case " ": //Skips Whitespace
+        case "\n": //New Line
+        case "\r": //Carriage Return
+        case " ": //Whitespace
           this.increment();
           break;
-        case "#": //Skips Comments
+        case "#": //The start of a comment
           this.increment();
+
           //A comment lasts from the # until the end of the line.
           //Increments until you hit the EOF or a new line character.
           while (!this.EOF && this.getChar() !== "\n") this.increment();
@@ -92,6 +100,7 @@ export default class Caret {
   /**
    * Increments the caret until a certain character is reached.
    * Caret ends up before the character.
+   *
    * @param char A character to search for.
    * @example
    * var C = new Caret("The quick brown fox jumps over the lazy dog.");
@@ -107,8 +116,8 @@ export default class Caret {
 
   /**
    * Increments the caret until a certain string is read.
-   * Caret ends up after the string.
-   * @see [Caret.prototype.skipToStringList]{@linkcode Caret#skipToStringList}.
+   * The caret ends up after the string.
+   *
    * @param str A string to search for.
    * @example
    * var C = new Caret("The quick brown fox jumps over the lazy dog.");
@@ -130,8 +139,8 @@ export default class Caret {
 
   /**
    * Increments the caret until one in a list of strings is read.
-   * Caret ends up after the string.
-   * @see [Caret.prototype.skipToString]{@linkcode Caret#skipToString}.
+   * The caret ends up after the string.
+   *
    * @param {string[]} strs The list of strings to search for.
    * @returns The index of the first found string.
    * @example
@@ -167,9 +176,9 @@ export default class Caret {
 
   /**
    * Reads the next word from the caret position until a whitespace, newline or
-   * hash appears.
-   * Caret automatically [skips to next content]{@link Caret#skipToContent}
+   * hash appears. Caret automatically [[skips to next content|`skipToContent`]]
    * afterwards.
+   *
    * @returns The read word.
    * @throws Will throw an error if the caret is currently at the EOF.
    * @throws Will throw an error if the read number is invalid.
@@ -227,8 +236,8 @@ export default class Caret {
   /**
    * Reads the next number from the caret position, until a non-numeric char
    * appears. Supports numbers in the scientific notation format (e.g. 1E+10).
-   * Caret automatically [skips to next content]{@link Caret#skipToContent}
-   * afterwards.
+   * Caret automatically [[skips to next content|`skipToContent`]] afterwards.
+   *
    * @returns The read number, or `NaN` if the caret isn't immmediately
    * before a number.
    * @throws Will throw an error if the caret is currently at the EOF.
@@ -273,6 +282,7 @@ export default class Caret {
 
     const res = parseFloat(this.contents.substr(initIndx, endIndx - initIndx));
     if (isNaN(res)) this.throwError("invalidNumber");
+
     return res;
   }
 
@@ -280,6 +290,7 @@ export default class Caret {
    * Throws an error corresponding to the error code.
    * Automatically inserts the line and column numbers
    * into the error message.
+   *
    * @throws The corresponding error.
    */
   throwError(code: string): never {

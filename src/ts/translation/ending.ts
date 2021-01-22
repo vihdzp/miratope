@@ -1,11 +1,3 @@
-//Helper class for toAdjective.
-//Stores endings of words and what to do with them.
-//string: the pattern of the end of a word.
-//sliceDepth: The negative of how many characters at the end are removed.
-//newEnding: the new characters added.
-//genderModificationType: Does different things depending of the gender of the
-//noun.
-
 export enum GenderModificationType {
   es,
   de,
@@ -13,11 +5,27 @@ export enum GenderModificationType {
 
 type CustomFunctionType = (name: string, gender: string) => string;
 
+/**
+ * Helper class for toAdjective.
+ * Stores endings of words and what to do with them.
+ *
+ * @category Translation classes
+ */
 export default class Ending {
+  /** The pattern at the end of a word. */
   string: string;
+
+  /** A function that determines how a word is transformed when turned into an
+   * adjective. */
   customFunction: CustomFunctionType | undefined;
+
+  /** The negative of the amount of characters that are removed at the end. */
   sliceDepth: number | undefined;
+
+  /** The new characters added to turn the word into an adjective. */
   newEnding: string | undefined;
+
+  /** Does different things depending of the gender of the noun. */
   genderModificationType: GenderModificationType | undefined;
 
   //There's a second constructor, that takes only a string and a custom

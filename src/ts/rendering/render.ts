@@ -9,6 +9,8 @@ import Global from "../global";
 
 /**
  * Class with the needed methods to render a polytope.
+ *
+ * @category Rendering classes
  */
 export default abstract class Render {
   /** A doubly-linked-list that represents how the intersections of the

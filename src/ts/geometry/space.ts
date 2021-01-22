@@ -3,6 +3,8 @@ import Point from "./point";
 
 /**
  * A namespace for operations on points.
+ *
+ * @category Geometry
  */
 export default abstract class Space {
   /**

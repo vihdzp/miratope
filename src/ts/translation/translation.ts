@@ -13,6 +13,8 @@ export interface LanguageOptions {
  * Class for translating words, phrases, or generating names for polytopes in
  * various languages. Serves as a wrapper for
  * [[https://github.com/globalizejs/globalize | Globalize.js]].
+ *
+ * @category Translation classes
  */
 export abstract class Translation {
   /** The wrapped Globalize object. */

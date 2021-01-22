@@ -1,4 +1,4 @@
-import GraphNode from "../../data structures/graphNode";
+import GraphNode, { Graph } from "../../data structures/graphNode";
 import { PolytopeB } from "../Types";
 import * as MathJS from "mathjs";
 
@@ -9,11 +9,15 @@ import * as MathJS from "mathjs";
  * @category Polytope Method
  */
 export default abstract class CD {
+  static parse(diagram: string): Graph<string> {
+    return new Graph<string>([new GraphNode<string>(diagram)]);
+  }
+
   /**
    * Creates a Schläfli matrix from a Coxeter diagram
    *
    * @param diagram The input Coxeter diagram
-   * @returns {number[][]} A 2D array corresponding to the CD's Schläfli matrix
+   * @returns A 2D array corresponding to the CD's Schläfli matrix
    */
   static toMatrix(diagram: string): MathJS.Matrix {
     if (/[a-z][a-z]/.test(diagram))
@@ -58,6 +62,7 @@ export default abstract class CD {
         if (i === j) schlafl[i][j] = 2;
       }
     }
+
     for (let i = 0; i < angles.length; i++) {
       let mira1 = angles[i].charCodeAt(0) - 97;
       let mira2 = angles[i].charCodeAt(angles[i].length - 1) - 97;
