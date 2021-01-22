@@ -9,7 +9,7 @@ import { PolytopeB } from "./polytopes/types";
 import Build from "./polytopes/classes/Build";
 import Product from "./polytopes/classes/Product";
 import CD from "./polytopes/classes/CD";
-import Render from "./rendering/render";
+import Render from "./rendering/Render";
 
 /** @internal */
 declare global {

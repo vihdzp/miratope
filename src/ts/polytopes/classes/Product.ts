@@ -3,7 +3,7 @@ import ConstructionNode, {
   Multipyramid as CNMultipyramid,
   Multitegum as CNMultitegum,
   Type as CNType,
-} from "../../data structures/constructionNode";
+} from "../../data structures/ConstructionNode";
 import Point from "../../geometry/Point";
 import { ElementList, PolytopeB, PolytopeC } from "../types";
 import Build from "./Build";

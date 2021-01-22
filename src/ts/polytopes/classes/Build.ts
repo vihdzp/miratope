@@ -6,7 +6,7 @@ import {
   CupolaicBlend as CNCupolaicBlend,
   Polygon as CNPolygon,
   Pyramid as CNPyramid,
-} from "../../data structures/constructionNode";
+} from "../../data structures/ConstructionNode";
 import { FlagClass } from "../../data structures/flag";
 import { ConcreteGroup } from "../../data structures/groups";
 import Point from "../../geometry/Point";

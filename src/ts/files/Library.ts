@@ -1,5 +1,5 @@
 import * as JSZip from "jszip";
-import { Name as CNName } from "../data structures/constructionNode";
+import { Name as CNName } from "../data structures/ConstructionNode";
 import GraphNode from "../data structures/GraphNode";
 import Point from "../geometry/Point";
 import Build from "../polytopes/classes/Build";
