@@ -1,4 +1,4 @@
-import { Translation, LanguageOptions } from "../translation/translation";
+import { Translation, LanguageOptions } from "../Translation/Translation";
 
 /**
  * Represents a [[https://en.wikipedia.org/wiki/Caret_navigation|caret]], which

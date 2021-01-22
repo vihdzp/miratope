@@ -1,11 +1,11 @@
 import * as JSZip from "jszip";
 import { Name as CNName } from "../data structures/constructionNode";
-import GraphNode from "../data structures/graphNode";
-import Point from "../geometry/point";
+import GraphNode from "../data structures/GraphNode";
+import Point from "../geometry/Point";
 import Build from "../polytopes/classes/Build";
 import { ElementList, PolytopeC } from "../polytopes/types";
-import { Translation } from "../translation/translation";
-import Caret from "./caret";
+import { Translation } from "../Translation/Translation";
+import Caret from "./Caret";
 
 /**
  * Contains various methods to load and save files, particularly those to load

@@ -1,5 +1,5 @@
 import Global from "../global";
-import Point from "./point";
+import Point from "./Point";
 
 /**
  * A namespace for operations on points.

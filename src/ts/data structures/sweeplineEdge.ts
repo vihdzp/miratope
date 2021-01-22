@@ -1,5 +1,5 @@
-import Point from "../geometry/point";
-import LinkedListNode from "./linkedListNode";
+import Point from "../geometry/Point";
+import LinkedListNode from "./LinkedListNode";
 import Global from "../global";
 
 /**

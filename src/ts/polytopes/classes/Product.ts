@@ -4,7 +4,7 @@ import ConstructionNode, {
   Multitegum as CNMultitegum,
   Type as CNType,
 } from "../../data structures/constructionNode";
-import Point from "../../geometry/point";
+import Point from "../../geometry/Point";
 import { ElementList, PolytopeB, PolytopeC } from "../types";
 import Build from "./Build";
 
@@ -293,7 +293,7 @@ export default abstract class Product {
     //We'll just tegum multiply the compounds of the first polytope with the
     //compounds of the second.
     //m must be at least 0, since we already dealt with the case where P was a
-    //point.
+    //Point.
     const m = P_.elementList.length - 1;
     const mDimCount = P_.elementList[m].length;
     const n = Q_.elementList.length - 1;

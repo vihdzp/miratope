@@ -74,7 +74,7 @@ export default class Ending {
   }
 
   //Changes the ending of a word, depending on the slice depth and the new
-  //ending.
+  //Ending.
   changeEnding(name: string, gender: string): string {
     if (this.customFunction === undefined) {
       if (this.sliceDepth === 0) return name + this.newEnding;

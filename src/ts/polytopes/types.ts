@@ -2,8 +2,8 @@ import ConstructionNode, {
   Name as CNName,
   Plain as CNPlain,
 } from "../data structures/constructionNode";
-import LinkedListNode from "../data structures/linkedListNode";
-import Point from "../geometry/point";
+import LinkedListNode from "../data structures/LinkedListNode";
+import Point from "../geometry/Point";
 import type { ConcreteGroup } from "../data structures/groups";
 import Flag, { FlagClass, FlagMap } from "../data structures/flag";
 

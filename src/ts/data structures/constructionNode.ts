@@ -1,4 +1,4 @@
-import { Translation } from "../translation/translation";
+import { Translation } from "../Translation/Translation";
 import type { PolytopeB } from "../polytopes/types";
 
 /** An enumeration containing the possible types of [[`ConstructionNode`]]s.
@@ -485,7 +485,7 @@ export class Multipyramid extends ConstructionNode<
     return ConstructionNode.multiFamily(
       this.child,
       "family/pyramid",
-      "shape/point",
+      "shape/Point",
       "family/pyramid",
       this.gender
     );

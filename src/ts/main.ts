@@ -1,8 +1,7 @@
-import "./polytopes/classes/polytope";
-import "./rendering/render";
-import Point from "./geometry/point";
-import GraphNode from "./data structures/graphNode";
-import Scene from "./rendering/scene";
+import "./polytopes/classes/Global";
+import Point from "./geometry/Point";
+import GraphNode from "./data structures/GraphNode";
+import Scene from "./rendering/Scene";
 import Library from "./files/Library";
 import { OFFOptions, saveAsOFF } from "./files/OFF";
 import { GGBOptions, saveAsGGB } from "./files/GGB";

@@ -1,8 +1,8 @@
-import Point from "../geometry/point";
+import Point from "../geometry/Point";
 import Space from "../geometry/space";
 import { PolytopeB } from "../polytopes/types";
-import Scene from "./scene";
-import LinkedListNode from "../data structures/linkedListNode";
+import Scene from "./Scene";
+import LinkedListNode from "../data structures/LinkedListNode";
 import SweeplineEdge from "../data structures/sweeplineEdge";
 import AvlTree from "../data structures/avl-tree";
 import Global from "../global";

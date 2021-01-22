@@ -1,5 +1,5 @@
 import * as Globalize from "globalize";
-import Ending, { GenderModificationType } from "./ending";
+import Ending, { GenderModificationType } from "./Ending";
 import loadJSON from "./loadJSON";
 import loadMessages from "./loadMessages";
 
@@ -434,7 +434,7 @@ export abstract class Translation {
   static hypercube(d: number): string {
     switch (d) {
       case 0:
-        return Translation.get("shape/point");
+        return Translation.get("shape/Point");
       case 1:
         return Translation.get("shape/dyad");
       case 2:
@@ -466,7 +466,7 @@ export abstract class Translation {
   static cross(d: number): string {
     switch (d) {
       case 0:
-        return Translation.get("shape/point");
+        return Translation.get("shape/Point");
       case 1:
         return Translation.get("shape/dyad");
       case 2:
@@ -484,7 +484,7 @@ export abstract class Translation {
   static simplex(d: number): string {
     switch (d) {
       case 0:
-        return Translation.get("shape/point");
+        return Translation.get("shape/Point");
       case 1:
         return Translation.get("shape/dyad");
       case 2:

@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import Point from "../geometry/point";
+import Point from "../geometry/Point";
 import Global from "../global";
 import { PolytopeB } from "../polytopes/types";
 import TrackballControls from "./trackball-controls";

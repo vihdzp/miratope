@@ -9,7 +9,7 @@ import {
 } from "../../data structures/constructionNode";
 import { FlagClass } from "../../data structures/flag";
 import { ConcreteGroup } from "../../data structures/groups";
-import Point from "../../geometry/point";
+import Point from "../../geometry/Point";
 import { ElementList, PolytopeB, PolytopeC, PolytopeS } from "../types";
 
 /**
