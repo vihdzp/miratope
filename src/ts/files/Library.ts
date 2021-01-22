@@ -3,7 +3,7 @@ import { Name as CNName } from "../data structures/constructionNode";
 import GraphNode from "../data structures/graphNode";
 import Point from "../geometry/point";
 import Build from "../polytopes/classes/Build";
-import { ElementList, PolytopeC } from "../polytopes/Types";
+import { ElementList, PolytopeC } from "../polytopes/types";
 import { Translation } from "../translation/translation";
 import Caret from "./caret";
 

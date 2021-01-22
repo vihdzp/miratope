@@ -1,5 +1,5 @@
 import GraphNode, { Graph } from "../../data structures/graphNode";
-import { PolytopeB } from "../Types";
+import { PolytopeB } from "../types";
 import * as MathJS from "mathjs";
 
 /**

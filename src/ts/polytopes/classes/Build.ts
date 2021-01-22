@@ -10,7 +10,7 @@ import {
 import { FlagClass } from "../../data structures/flag";
 import { ConcreteGroup } from "../../data structures/groups";
 import Point from "../../geometry/point";
-import { ElementList, PolytopeB, PolytopeC, PolytopeS } from "../Types";
+import { ElementList, PolytopeB, PolytopeC, PolytopeS } from "../types";
 
 /**
  * A class containing various basic methods to generate polytopes.

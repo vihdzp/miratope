@@ -6,7 +6,7 @@ import Scene from "./rendering/scene";
 import Library from "./files/Library";
 import { OFFOptions, saveAsOFF } from "./files/OFF";
 import { GGBOptions, saveAsGGB } from "./files/GGB";
-import { PolytopeB } from "./polytopes/Types";
+import { PolytopeB } from "./polytopes/types";
 import Build from "./polytopes/classes/Build";
 import Product from "./polytopes/classes/Product";
 import CD from "./polytopes/classes/CD";

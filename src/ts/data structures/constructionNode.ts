@@ -1,5 +1,5 @@
 import { Translation } from "../translation/translation";
-import type { PolytopeB } from "../polytopes/Types";
+import type { PolytopeB } from "../polytopes/types";
 
 /** An enumeration containing the possible types of [[`ConstructionNode`]]s.
  */

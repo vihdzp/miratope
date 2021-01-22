@@ -5,7 +5,7 @@ import ConstructionNode, {
   Type as CNType,
 } from "../../data structures/constructionNode";
 import Point from "../../geometry/point";
-import { ElementList, PolytopeB, PolytopeC } from "../Types";
+import { ElementList, PolytopeB, PolytopeC } from "../types";
 import Build from "./Build";
 
 /**

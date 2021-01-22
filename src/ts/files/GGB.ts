@@ -1,6 +1,6 @@
 import * as JSZip from "jszip";
 import Point from "../geometry/point";
-import { PolytopeB } from "../polytopes/Types";
+import { PolytopeB } from "../polytopes/types";
 import { Translation } from "../translation/translation";
 import Library from "./Library";
 
