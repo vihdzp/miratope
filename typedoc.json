@@ -1,16 +1,17 @@
 {
-	"categorizeByGroup": true,
-     "defaultCategory": "Miscellaneous",
+	"categorizeByGroup": false,
+    "defaultCategory": "Miscellaneous",
 	"favicon": "public/miratope-doc.ico",
-	"hideDate": true,
-	"hideTime": true,
+	"hideDate": false,
+	"hideTime": false,
 	"inputFiles": ["src/ts", "tutorials"],
-	"mode": "file",
+	"mode": "modules",
 	"name": "Miratope Documentation",
 	"out": "out/typedoc",
 	"plugin": [
 		"typedoc-plugin-extras",
-		"typedoc-plugin-example-tag"
+		"typedoc-plugin-example-tag",
+		"typedoc-plugin-external-module-name"
 	],
 	"preferred-example-language": "javascript",
 	"stripinternal": true

@@ -1,8 +1,8 @@
 /**
  * @author Eberhard Graether / http://egraether.com/
- * @author Mark Lundin 	/ http://mark-lundin.com
+ * @author Mark Lundin / http://mark-lundin.com
  * @author Simone Manini / http://daron1337.github.io
- * @author Luca Antiga 	/ http://lantiga.github.io
+ * @author Luca Antiga / http://lantiga.github.io
 
  ** three-trackballcontrols module
  ** @author Jon Lim / https://jonlim.ca
@@ -38,7 +38,7 @@ export default class TrackballControls extends THREE.EventDispatcher {
   object: THREE.PerspectiveCamera;
   domElement: HTMLCanvasElement;
 
-  //API
+  // API
   enabled = true;
 
   screen: Screen = { left: 0, top: 0, width: 0, height: 0 };
@@ -61,7 +61,7 @@ export default class TrackballControls extends THREE.EventDispatcher {
 
   readonly lastPosition = new THREE.Vector3();
 
-  //internals
+  // internals
   private state = STATE.NONE;
   private keyState = STATE.NONE;
 
@@ -82,7 +82,7 @@ export default class TrackballControls extends THREE.EventDispatcher {
   private panStart = new THREE.Vector2();
   private panEnd = new THREE.Vector2();
 
-  //For reset
+  // For reset
   private target0: THREE.Vector3;
   private position0: THREE.Vector3;
   private up0: THREE.Vector3;
@@ -109,7 +109,7 @@ export default class TrackballControls extends THREE.EventDispatcher {
     super();
     this.object = object;
     this.domElement = domElement;
-    //Terrible hack, fix this pls
+    // Terrible hack, fix this pls
     globalThis.trackball = this;
 
     this.target0 = this.target.clone();
@@ -167,7 +167,7 @@ export default class TrackballControls extends THREE.EventDispatcher {
     this.handleResize();
 
     // force an update at start
-    //this.update();
+    // this.update();
   }
 
   handleResize(): void {
@@ -196,12 +196,12 @@ export default class TrackballControls extends THREE.EventDispatcher {
   }
 
   rotateCamera(): void {
-    const axis = new THREE.Vector3(),
-      quaternion = new THREE.Quaternion(),
-      eyeDirection = new THREE.Vector3(),
-      objectUpDirection = new THREE.Vector3(),
-      objectSidewaysDirection = new THREE.Vector3(),
-      moveDirection = new THREE.Vector3();
+    const axis = new THREE.Vector3();
+    const quaternion = new THREE.Quaternion();
+    const eyeDirection = new THREE.Vector3();
+    const objectUpDirection = new THREE.Vector3();
+    const objectSidewaysDirection = new THREE.Vector3();
+    const moveDirection = new THREE.Vector3();
     let angle: number;
 
     moveDirection.set(
@@ -258,16 +258,17 @@ export default class TrackballControls extends THREE.EventDispatcher {
       if (factor !== 1.0 && factor > 0.0) this.eye.multiplyScalar(factor);
 
       if (this.staticMoving) this.zoomStart.copy(this.zoomEnd);
-      else
+      else {
         this.zoomStart.y +=
           (this.zoomEnd.y - this.zoomStart.y) * this.dynamicDampingFactor;
+      }
     }
   }
 
   panCamera(): void {
-    const mouseChange = new THREE.Vector2(),
-      objectUp = new THREE.Vector3(),
-      pan = new THREE.Vector3();
+    const mouseChange = new THREE.Vector2();
+    const objectUp = new THREE.Vector3();
+    const pan = new THREE.Vector3();
 
     mouseChange.copy(this.panEnd).sub(this.panStart);
 
@@ -281,12 +282,13 @@ export default class TrackballControls extends THREE.EventDispatcher {
       this.target.add(pan);
 
       if (this.staticMoving) this.panStart.copy(this.panEnd);
-      else
+      else {
         this.panStart.add(
           mouseChange
             .subVectors(this.panEnd, this.panStart)
             .multiplyScalar(this.dynamicDampingFactor)
         );
+      }
     }
   }
 
@@ -397,12 +399,16 @@ export default class TrackballControls extends THREE.EventDispatcher {
     globalThis.removeEventListener("keydown", TrackballControls.keydown);
 
     if (trackball.keyState !== STATE.NONE) return;
-    else if (event.key === trackball.keys[STATE.ROTATE] && !trackball.noRotate)
+    else if (
+      event.key === trackball.keys[STATE.ROTATE] &&
+      !trackball.noRotate
+    ) {
       trackball.keyState = STATE.ROTATE;
-    else if (event.key === trackball.keys[STATE.ZOOM] && !trackball.noZoom)
+    } else if (event.key === trackball.keys[STATE.ZOOM] && !trackball.noZoom) {
       trackball.keyState = STATE.ZOOM;
-    else if (event.key === trackball.keys[STATE.PAN] && !trackball.noPan)
+    } else if (event.key === trackball.keys[STATE.PAN] && !trackball.noPan) {
       trackball.keyState = STATE.PAN;
+    }
   }
 
   static keyup(): void {
@@ -484,14 +490,15 @@ export default class TrackballControls extends THREE.EventDispatcher {
       trackball.moveCurr.copy(
         trackball.getMouseOnCircle(event.pageX, event.pageY)
       );
-    } else if (state === STATE.ZOOM && !trackball.noZoom)
+    } else if (state === STATE.ZOOM && !trackball.noZoom) {
       trackball.zoomEnd.copy(
         trackball.getMouseOnScreen(event.pageX, event.pageY)
       );
-    else if (state === STATE.PAN && !trackball.noPan)
+    } else if (state === STATE.PAN && !trackball.noPan) {
       trackball.panEnd.copy(
         trackball.getMouseOnScreen(event.pageX, event.pageY)
       );
+    }
   }
 
   static onMouseUp(event: MouseEvent): void {

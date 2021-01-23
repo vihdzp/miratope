@@ -5,13 +5,14 @@
     },
     "extends": [
 		"plugin:@typescript-eslint/recommended",
-		"prettier/@typescript-eslint",
-		"plugin:prettier/recommended"
+		"prettier/@typescript-eslint", 
+		"plugin:prettier/recommended"  
 	],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 12,
-        "sourceType": "module"
+        "sourceType": "module",
+		"project": "./tsconfig.json"
     },
     "plugins": [
         "@typescript-eslint"
@@ -21,12 +22,9 @@
 			"warn",
 			{
 				"tabWidth": 2,
-				"ignoreUrls": true,
 				"ignoreStrings": true,
-				"ignorePattern": "@link",
 				"ignoreRegExpLiterals": true
 			}
-		],
-		"no-unneeded-ternary": "warn"
+		]
 	}
 }

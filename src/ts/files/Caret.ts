@@ -1,4 +1,5 @@
-import { Translation, LanguageOptions } from "../translation/Translation";
+import { LanguageOptions } from "../Translation/interfaces";
+import * as Translation from "../Translation/Translation";
 
 /**
  * Represents a [[https://en.wikipedia.org/wiki/Caret_navigation|caret]], which
@@ -49,7 +50,7 @@ export default class Caret {
       this.column = 0;
     } else this.column++;
 
-    //Checks if next position is the EOF
+    // Checks if next position is the EOF
     this.EOF = ++this.pos > this.contents.length;
   }
 
@@ -78,16 +79,16 @@ export default class Caret {
   skipToContent(): void {
     while (!this.EOF) {
       switch (this.getChar()) {
-        case "\n": //New Line
-        case "\r": //Carriage Return
-        case " ": //Whitespace
+        case "\n": // New Line
+        case "\r": // Carriage Return
+        case " ": // Whitespace
           this.increment();
           break;
-        case "#": //The start of a comment
+        case "#": // The start of a comment
           this.increment();
 
-          //A comment lasts from the # until the end of the line.
-          //Increments until you hit the EOF or a new line character.
+          // A comment lasts from the # until the end of the line.
+          // Increments until you hit the EOF or a new line character.
           while (!this.EOF && this.getChar() !== "\n") this.increment();
           this.increment();
           break;
@@ -152,13 +153,13 @@ export default class Caret {
    * console.log(C.pos);
    */
   skipToStringList(strs: string[]): number {
-    //Counts the amount of matching letters per string.
+    // Counts the amount of matching letters per string.
     const matches: number[] = [];
 
     while (!this.EOF) {
       const c = this.getChar();
 
-      //Updates matches.
+      // Updates matches.
       for (let i = 0; i < strs.length; i++) {
         if (c === strs[i][matches[i]]) matches[i]++;
         else matches[i] = 0;
@@ -166,12 +167,13 @@ export default class Caret {
 
       this.increment();
 
-      //Checks if a match was completed.
-      for (let i = 0; i < strs.length; i++)
+      // Checks if a match was completed.
+      for (let i = 0; i < strs.length; i++) {
         if (matches[i] >= strs[i].length) return i;
+      }
     }
 
-    return -1; //EOF.
+    return -1; // EOF.
   }
 
   /**
@@ -184,29 +186,30 @@ export default class Caret {
    * @throws Will throw an error if the read number is invalid.
    */
   readWord(): string {
-    if (this.EOF)
-      //EOF error
+    if (this.EOF) {
+      // EOF error
       this.throwError("unexpectedEOF");
+    }
 
     const initIndx = this.pos;
 
     WHILELOOP: do {
       switch (this.getChar()) {
-        case "\n": //New Line (\n)
-        case "\r": //Carriage Return (\r)
-        case " ": //Space ( )
-        case "#": //Hashtag (#)
-          break WHILELOOP; //Leave the do-while loop immediately
+        case "\n": // New Line (\n)
+        case "\r": // Carriage Return (\r)
+        case " ": // Space ( )
+        case "#": // Hashtag (#)
+          break WHILELOOP; // Leave the do-while loop immediately
         default:
           this.increment();
           break;
       }
-    } while (!this.EOF); //Until you hit the EOF.
+    } while (!this.EOF); // Until you hit the EOF.
 
     const endIndx = this.pos;
     this.skipToContent();
 
-    //Returns the substring found
+    // Returns the substring found
     return this.contents.substr(initIndx, endIndx - initIndx);
   }
 
@@ -217,19 +220,20 @@ export default class Caret {
    * @returns The read substring.
    */
   readUntil(char: string): string {
-    if (this.EOF)
-      //EOF error
+    if (this.EOF) {
+      // EOF error
       this.throwError("unexpectedEOF");
+    }
 
     const initIndx = this.pos;
 
     do {
       if (this.getChar() === char) break;
-      //Leave the do-while loop immediately
+      // Leave the do-while loop immediately
       else this.increment();
-    } while (!this.EOF); //Until you hit the EOF.
+    } while (!this.EOF); // Until you hit the EOF.
 
-    //Returns the substring found
+    // Returns the substring found
     return this.contents.substr(initIndx, this.pos - initIndx);
   }
 
@@ -244,9 +248,10 @@ export default class Caret {
    * @throws Will throw an error if the read number is invalid.
    */
   readNumber(): number {
-    if (this.EOF)
-      //EOF error
+    if (this.EOF) {
+      // EOF error
       this.throwError("unexpectedEOF");
+    }
 
     const initIndx = this.pos;
 
@@ -270,14 +275,14 @@ export default class Caret {
           this.increment();
           break;
         default:
-          break WHILELOOP; //Leave the do-while loop immediately
+          break WHILELOOP; // Leave the do-while loop immediately
       }
-    } while (!this.EOF); //Until you hit EOF
+    } while (!this.EOF); // Until you hit EOF
 
     const endIndx = this.pos;
     this.skipToContent();
 
-    //We return NaN only when the read number is in fact the empty string.
+    // We return NaN only when the read number is in fact the empty string.
     if (endIndx === initIndx) return NaN;
 
     const res = parseFloat(this.contents.substr(initIndx, endIndx - initIndx));

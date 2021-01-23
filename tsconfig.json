@@ -11,7 +11,8 @@
     "outDir": "src/js",
     "noImplicitAny": false,
     "removeComments": false,
-    "suppressImplicitAnyIndexErrors": false
+    "suppressImplicitAnyIndexErrors": false,
+	"forceConsistentCasingInFileNames": true
   },
   "include": [
     "./src/ts/**/*.ts"

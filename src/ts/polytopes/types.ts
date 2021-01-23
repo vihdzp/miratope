@@ -1,11 +1,11 @@
 import ConstructionNode, {
   Name as CNName,
   Plain as CNPlain,
-} from "../data structures/ConstructionNode";
-import LinkedListNode from "../data structures/LinkedListNode";
+} from "../Data structures/ConstructionNode";
+import LinkedListNode from "../Data structures/LinkedListNode";
 import Point from "../geometry/Point";
-import type { ConcreteGroup } from "../data structures/groups";
-import Flag, { FlagClass, FlagMap } from "../data structures/flags";
+import type { ConcreteGroup } from "../Data structures/groups";
+import Flag, { FlagClass, FlagMap } from "../Data structures/flags";
 
 /** Stores the elements of a [[`PolytopeC`]], by order of dimension. */
 export type ElementList = [Point[], ...number[][][]] | [];
@@ -83,16 +83,17 @@ export class PolytopeC extends PolytopeB {
   ) {
     super();
 
-    //The construction defaults to just the polytope itself.
-    if (!construction)
+    // The construction defaults to just the polytope itself.
+    if (!construction) {
       construction = new CNPlain([
         elementList[elementList.length - 2].length,
         elementList.length - 1,
       ]);
+    }
 
-    //Sets the class variables.
+    // Sets the class variables.
     this.construction = construction;
-    this.dimensions = elementList.length - 1; //The rank of the polytope.
+    this.dimensions = elementList.length - 1; // The rank of the polytope.
     this.elementList = elementList;
     this.spaceDimensions = this.elementList[0]
       ? this.elementList[0][0].dimensions()
@@ -116,8 +117,9 @@ export class PolytopeC extends PolytopeB {
    */
   scale(r: number): PolytopeC {
     if (!this.elementList[0]) return this;
-    for (let i = 0; i < this.elementList[0].length; i++)
+    for (let i = 0; i < this.elementList[0].length; i++) {
       this.elementList[0][i].scale(r);
+    }
     return this;
   }
 
@@ -129,13 +131,14 @@ export class PolytopeC extends PolytopeB {
     const vertices = this.elementList[0];
     if (!vertices) return new Point(0);
 
-    const d = this.spaceDimensions,
-      res: number[] = [];
+    const d = this.spaceDimensions;
+    const res: number[] = [];
 
     for (let i = 0; i < d; i++) res.push(0);
 
-    for (let i = 0; i < vertices.length; i++)
+    for (let i = 0; i < vertices.length; i++) {
       for (let j = 0; j < d; j++) res[j] += vertices[i].coordinates[j];
+    }
 
     for (let i = 0; i < d; i++) res[i] /= vertices.length;
 
@@ -151,8 +154,9 @@ export class PolytopeC extends PolytopeB {
     if (!this.elementList[0]) return this;
     const Q = P.clone().scale(mult);
 
-    for (let i = 0; i < this.elementList[0].length; i++)
+    for (let i = 0; i < this.elementList[0].length; i++) {
       this.elementList[0][i].add(Q);
+    }
 
     return this;
   }
@@ -170,8 +174,9 @@ export class PolytopeC extends PolytopeB {
       let coords = vertices[i].coordinates;
 
       if (coords.length > dim) coords = coords.slice(0, dim);
-      else if (coords.length < dim)
+      else if (coords.length < dim) {
         for (let j = 0; j < dim - coords.length; j++) coords.push(0);
+      }
     }
 
     this.spaceDimensions = dim;
@@ -186,29 +191,32 @@ export class PolytopeC extends PolytopeB {
    * face in order.
    */
   faceToVertices(i: number): number[] {
-    if (!this.elementList[2] || !this.elementList[2][i])
+    if (!this.elementList[2] || !this.elementList[2][i]) {
       throw RangeError("The polytope does not have that many 2-faces!");
+    }
 
-    //Enumerates the vertices in order.
-    //A doubly linked list does the job easily.
+    // Enumerates the vertices in order.
+    // A doubly linked list does the job easily.
     const vertexDLL: LinkedListNode<number>[] = [];
     for (let j = 0; j < this.elementList[2][i].length; j++) {
       const edge = (this.elementList[1] as number[][])[
         this.elementList[2][i][j]
       ];
 
-      if (vertexDLL[edge[0]] === undefined)
+      if (vertexDLL[edge[0]] === undefined) {
         vertexDLL[edge[0]] = new LinkedListNode<number>(edge[0]);
+      }
 
-      if (vertexDLL[edge[1]] === undefined)
+      if (vertexDLL[edge[1]] === undefined) {
         vertexDLL[edge[1]] = new LinkedListNode<number>(edge[1]);
+      }
 
       vertexDLL[edge[0]].linkTo(vertexDLL[edge[1]]);
     }
 
-    //Cycle of vertex indices.
-    //"this.elementList[1][this.elementList[2][i][0]][0]" is just some vertex
-    //index.
+    // Cycle of vertex indices.
+    // "this.elementList[1][this.elementList[2][i][0]][0]" is just some vertex
+    // index.
     return vertexDLL[
       (this.elementList[1] as number[][])[this.elementList[2][i][0]][0]
     ].getCycle();
@@ -304,12 +312,14 @@ export class PolytopeS<T> extends PolytopeB {
    * @param generator The index of the element that is changed.
    */
   moveFlag(flag: Flag<T>, generator: number): Flag<T> {
-    const classNumber = flag.classNumber,
-      domain = flag.domain,
-      elementChange = this.flagClasses[classNumber].elementChanges[generator];
+    const classNumber = flag.classNumber;
+    const domain = flag.domain;
+    const elementChange = this.flagClasses[classNumber].elementChanges[
+      generator
+    ];
 
-    const newClassNumber = elementChange.newClassNumber,
-      newDomain = elementChange.apply(this.symmetries, domain);
+    const newClassNumber = elementChange.newClassNumber;
+    const newDomain = elementChange.apply(this.symmetries, domain);
 
     return new Flag(newClassNumber, newDomain);
   }
@@ -324,9 +334,9 @@ export class PolytopeS<T> extends PolytopeB {
     return this.compareFlags(flag1, flag2) == 0;
   }
 
-  //Utility function for toPolytopeC.
-  //Modifies a simplifier to use another generator.
-  //Almost identical to the merge function but I don't really care rn.
+  // Utility function for toPolytopeC.
+  // Modifies a simplifier to use another generator.
+  // Almost identical to the merge function but I don't really care rn.
   private extendSimplifier(
     simplifier1: FlagMap<T, Flag<T>>,
     simplifier2: number
@@ -348,12 +358,12 @@ export class PolytopeS<T> extends PolytopeB {
     const newSimplifier = simplifier1.clone();
 
     for (const key in simplifier1.dictionary) {
-      let oldLeftElem = new Flag(0, this.symmetries.identity()),
-        oldRightElem: Flag<T>,
-        leftElem: Flag<T>,
-        rightElem: Flag<T>;
+      let oldLeftElem = new Flag(0, this.symmetries.identity());
+      let oldRightElem: Flag<T>;
+      let leftElem: Flag<T>;
+      let rightElem: Flag<T>;
 
-      //extend
+      // extend
       if (typeof simplifier2 == "number") {
         const generator = simplifier2;
 
@@ -362,7 +372,7 @@ export class PolytopeS<T> extends PolytopeB {
         rightElem = this.moveFlag(leftElem, generator);
       }
 
-      //merge
+      // merge
       else {
         oldRightElem = new Flag(0, this.symmetries.identity());
         leftElem = simplifier1.get(key);
@@ -372,26 +382,26 @@ export class PolytopeS<T> extends PolytopeB {
       while (!this.equalFlags(oldLeftElem, leftElem)) {
         oldLeftElem = leftElem;
         leftElem = newSimplifier.get(leftElem);
-        //console.log("upd left", ""+oldLeftElem, ""+leftElem);
+        // console.log("upd left", ""+oldLeftElem, ""+leftElem);
       }
 
       while (!this.equalFlags(oldRightElem, rightElem)) {
         oldRightElem = rightElem;
         rightElem = newSimplifier.get(rightElem);
-        //console.log("upd right", ""+oldRightElem, ""+rightElem);
+        // console.log("upd right", ""+oldRightElem, ""+rightElem);
       }
 
       const order = this.compareFlags(leftElem, rightElem);
 
-      //console.log("order", ""+leftElem, ""+rightElem, order);
+      // console.log("order", ""+leftElem, ""+rightElem, order);
       if (order === 1) newSimplifier.set(leftElem, rightElem);
       else if (order === -1) newSimplifier.set(rightElem, leftElem);
     }
 
     const betterSimplifier = new FlagMap<T, Flag<T>>();
     for (const key in newSimplifier.dictionary) {
-      let oldElem = new Flag(0, this.symmetries.identity()),
-        elem = newSimplifier.get(key);
+      let oldElem = new Flag(0, this.symmetries.identity());
+      let elem = newSimplifier.get(key);
 
       while (!this.equalFlags(oldElem, elem)) {
         oldElem = elem;
@@ -413,27 +423,29 @@ export class PolytopeS<T> extends PolytopeB {
   simplifierCosets(simplifier: FlagMap<T, Flag<T>>): number {
     let count = 0;
 
-    for (const key in simplifier.dictionary)
+    for (const key in simplifier.dictionary) {
       if (key == simplifier.get(key).toString()) count++;
+    }
 
     return count;
   }
 
-  //This is basically the algorithm from the Grünbaumian thing,
-  //but modified to work for higher dimensions and calculate incidences.
+  // This is basically the algorithm from the Grünbaumian thing,
+  // but modified to work for higher dimensions and calculate incidences.
   toPolytopeC(): PolytopeC {
     const domains = this.symmetries.enumerateElements();
 
-    //Maps each flag to itself. Used as a base for the later simplifiers.
+    // Maps each flag to itself. Used as a base for the later simplifiers.
     this.identitySimplifier = new FlagMap<T, Flag<T>>();
-    for (let i = 0; i < domains.length; i++)
+    for (let i = 0; i < domains.length; i++) {
       for (let j = 0; j < this.flagClasses.length; j++) {
         const flag = new Flag(j, domains[i]);
         this.identitySimplifier.set(flag, flag);
       }
+    }
 
-    //Maps each flag to a representative flag of its subwhatever
-    //generated by the first n change vertex/face/etc operations.
+    // Maps each flag to a representative flag of its subwhatever
+    // generated by the first n change vertex/face/etc operations.
     const ascendingSimplifiers = [this.identitySimplifier];
     let lastSimplifier = this.identitySimplifier;
 
@@ -446,8 +458,8 @@ export class PolytopeS<T> extends PolytopeB {
       ascendingSimplifiers.push(lastSimplifier);
     }
 
-    //Maps each flag to a representative flag of its subwhatever
-    //generated by the first n change facet/ridge/etc operations.
+    // Maps each flag to a representative flag of its subwhatever
+    // generated by the first n change facet/ridge/etc operations.
     const descendingSimplifiers = [this.identitySimplifier];
     console.log("Descending simplifiers");
 
@@ -462,8 +474,8 @@ export class PolytopeS<T> extends PolytopeB {
       );
     }
 
-    //Maps each flag to a representative flag of the subwhatever
-    //fixing that flag's vertex/edge/etc.
+    // Maps each flag to a representative flag of the subwhatever
+    // fixing that flag's vertex/edge/etc.
     const elementSimplifiers: FlagMap<T, Flag<T>>[] = [];
     console.log("Element simplifiers");
 
@@ -479,8 +491,8 @@ export class PolytopeS<T> extends PolytopeB {
 
     elementSimplifiers.push(ascendingSimplifiers[this.dimensions]);
 
-    //Maps each flag to a representative flag of the subwhatever
-    //fixing that flag's vertex-edge/edge-face/etc pair.
+    // Maps each flag to a representative flag of the subwhatever
+    // fixing that flag's vertex-edge/edge-face/etc pair.
     const intersectionSimplifiers: FlagMap<T, Flag<T>>[] = [];
     console.log("Intersection simplifiers");
 
@@ -495,8 +507,8 @@ export class PolytopeS<T> extends PolytopeB {
     }
     intersectionSimplifiers.push(ascendingSimplifiers[this.dimensions - 1]);
 
-    //Vertices are inherently different from other elements, so compute them
-    //separately.
+    // Vertices are inherently different from other elements, so compute them
+    // separately.
     console.log("Vertices");
     const vertices: Point[] = [];
 
@@ -504,7 +516,7 @@ export class PolytopeS<T> extends PolytopeB {
       for (let j = 0; j < this.flagClasses.length; j++) {
         const flag = new Flag(j, domains[i]);
 
-        //Skip flags that aren't vertex representatives
+        // Skip flags that aren't vertex representatives
         if (!this.equalFlags(flag, elementSimplifiers[0].get(flag))) continue;
 
         const vertex = this.vertices[j].applyMatrix(flag.domain.matrix);
@@ -514,7 +526,7 @@ export class PolytopeS<T> extends PolytopeB {
 
     console.log(vertices);
 
-    //Map representatives to IDs.
+    // Map representatives to IDs.
     const locations: FlagMap<T, number>[] = [];
     const locationsLengths: number[] = [];
 
@@ -541,16 +553,19 @@ export class PolytopeS<T> extends PolytopeB {
 
     const elementList: ElementList = [vertices];
     for (let i = 1; i < this.dimensions + 1; i++) {
-      //The array of i-dimensional elements.
+      // The array of i-dimensional elements.
       const elements: number[][] = [];
 
       for (let j = 0; j < locationsLengths[i]; j++) elements.push([]);
 
-      for (let j = 0; j < domains.length; j++)
+      for (let j = 0; j < domains.length; j++) {
         for (let k = 0; k < this.flagClasses.length; k++) {
           const flag = new Flag(k, domains[j]);
-          if (!this.equalFlags(flag, intersectionSimplifiers[i - 1].get(flag)))
+          if (
+            !this.equalFlags(flag, intersectionSimplifiers[i - 1].get(flag))
+          ) {
             continue;
+          }
 
           const leftFlag = elementSimplifiers[i - 1].get(flag);
           const rightFlag = elementSimplifiers[i].get(flag);
@@ -559,6 +574,7 @@ export class PolytopeS<T> extends PolytopeB {
 
           elements[rightID].push(leftID);
         }
+      }
 
       console.log(elements);
       elementList.push(elements);

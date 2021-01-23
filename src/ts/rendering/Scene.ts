@@ -41,18 +41,18 @@ export default class Scene {
 
   /** Constructor for Scene class. */
   constructor() {
-    //Sets up renderer.
+    // Sets up renderer.
     this.renderer.setSize(globalThis.innerWidth, globalThis.innerHeight - 44);
     document.body.appendChild(this.renderer.domElement);
 
-    //Sets up the camera.
+    // Sets up the camera.
     this.camera.position.z = 2;
 
-    //Sets up lighting.
+    // Sets up lighting.
     this.directionalLight.position.set(1, 1, -1).normalize();
     this.addLights();
 
-    //Sets up controls.
+    // Sets up controls.
     this.controls = new TrackballControls(
       this.camera,
       this.renderer.domElement
@@ -81,20 +81,20 @@ export default class Scene {
    * @todo Make the code fully functional.
    */
   add(face: Point[][]): void {
-    //A simple polygon of which the face is composed (temporary rendering).
-    const _poly = face[0],
-      //The face projected into 3D, as an array of THREE.Vector3s.
-      poly2D: THREE.Vector2[] = [];
+    // A simple polygon of which the face is composed (temporary rendering).
+    const _poly = face[0];
+    // The face projected into 3D, as an array of THREE.Vector3s.
+    const poly2D: THREE.Vector2[] = [];
 
-    //Here's where I'm supposed to project the face into 3D via the projection
-    //matrix.
+    // Here's where I'm supposed to project the face into 3D via the projection
+    // matrix.
 
-    //These are the analogs of Global.index0 and Global.index1 for the projected
-    //face. (at the moment, I just use the old values, since I'm not doing any
-    //projection yet)
-    //Global.index0 = something; Global.index1 = something;
+    // These are the analogs of Global.index0 and Global.index1 for the projected
+    // face. (at the moment, I just use the old values, since I'm not doing any
+    // projection yet)
+    // Global.index0 = something; Global.index1 = something;
 
-    //The last coordinate.
+    // The last coordinate.
     Global.index2 = 3 - Global.index0 - Global.index1;
 
     for (let i = 0; i < _poly.length; i++) {
@@ -107,13 +107,13 @@ export default class Scene {
     }
 
     const shape = new THREE.Shape(poly2D);
-    //Probably won't work.
+    // Probably won't work.
     /*
 		if(hole)
 			shape.holes.push(new THREE.Shape(hole));*/
 
     const geometry = new ShapeBufferGeometry_(shape);
-    //Reorders vertices and extrudes into 3D appropriately.
+    // Reorders vertices and extrudes into 3D appropriately.
     let a: number[];
 
     for (let i = 0; i < poly2D.length; i++) {
@@ -121,17 +121,18 @@ export default class Scene {
       a[Global.index0] = geometry.attributes.position.array[3 * i];
       a[Global.index1] = geometry.attributes.position.array[3 * i + 1];
 
-      if (Global.reversePolygon)
+      if (Global.reversePolygon) {
         a[Global.index2] =
           _poly[_poly.length - i - 1].coordinates[Global.index2];
-      else a[Global.index2] = _poly[i].coordinates[Global.index2];
+      } else a[Global.index2] = _poly[i].coordinates[Global.index2];
 
-      //We modify some private variables, which is probably unreliable, but
-      //gets the job done.
-      for (let j = 0; j < 3; j++)
+      // We modify some private variables, which is probably unreliable, but
+      // gets the job done.
+      for (let j = 0; j < 3; j++) {
         (geometry.attributes.position.array as Writeable<ArrayLike<number>>)[
           3 * i + j
         ] = a[j];
+      }
     }
 
     geometry.attributes.position.needsUpdate = true;
@@ -145,8 +146,9 @@ export default class Scene {
    */
   clear(): void {
     while (this.scene.children.length > 0) {
-      if (this.scene.children[0].type === "Mesh")
+      if (this.scene.children[0].type === "Mesh") {
         (this.scene.children[0] as THREE.Mesh).geometry.dispose();
+      }
 
       this.scene.remove(this.scene.children[0]);
     }

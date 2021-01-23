@@ -19,14 +19,14 @@ export default class Point {
    * array.
    */
   constructor(x: number[] | number) {
-    //Constructor from the number of dimensions "x", initializes a point at the
-    //origin of R^x
+    // Constructor from the number of dimensions "x", initializes a point at the
+    // origin of R^x
     if (typeof x === "number") {
       this.coordinates = [];
       for (let i = 0; i < x; i++) this.coordinates[i] = 0;
     }
 
-    //Constructor from the coordinates.
+    // Constructor from the coordinates.
     else this.coordinates = x;
   }
 
@@ -47,8 +47,9 @@ export default class Point {
   clone(): Point {
     const coordinates: number[] = [];
 
-    for (let i = 0; i < this.coordinates.length; i++)
+    for (let i = 0; i < this.coordinates.length; i++) {
       coordinates.push(this.coordinates[i]);
+    }
 
     return new Point(coordinates);
   }
@@ -72,15 +73,17 @@ export default class Point {
    * number of dimensions.
    */
   add(P: Point): Point {
-    //The points need to have the same number of coordinates.
-    if (P.dimensions() !== this.dimensions())
+    // The points need to have the same number of coordinates.
+    if (P.dimensions() !== this.dimensions()) {
       throw new Error(
         "You can't add points with different amounts of dimensions!"
       );
+    }
 
-    //Adds the respective coordinates.
-    for (let i = 0; i < P.dimensions(); i++)
+    // Adds the respective coordinates.
+    for (let i = 0; i < P.dimensions(); i++) {
       this.coordinates[i] += P.coordinates[i];
+    }
 
     return this;
   }
@@ -94,15 +97,17 @@ export default class Point {
    * number of dimensions.
    */
   subtract(P: Point): Point {
-    //The points need to have the same number of coordinates.
-    if (P.dimensions() !== this.dimensions())
+    // The points need to have the same number of coordinates.
+    if (P.dimensions() !== this.dimensions()) {
       throw new Error(
         "You can't add points with different amounts of dimensions!"
       );
+    }
 
-    //Add the respective coordinates.
-    for (let i = 0; i < P.dimensions(); i++)
+    // Add the respective coordinates.
+    for (let i = 0; i < P.dimensions(); i++) {
       this.coordinates[i] -= P.coordinates[i];
+    }
 
     return this;
   }
@@ -115,9 +120,10 @@ export default class Point {
    * @returns The point `this`, but scaled.
    */
   scale(r: number): Point {
-    //Multiplies each of the coordinates of x by r.
-    for (let i = 0; i < this.dimensions(); i++)
+    // Multiplies each of the coordinates of x by r.
+    for (let i = 0; i < this.dimensions(); i++) {
       this.coordinates[i] = this.coordinates[i] * r;
+    }
 
     return this;
   }
@@ -146,8 +152,9 @@ export default class Point {
 
     for (let i = 0; i < n; i++) coordinates.push(0);
 
-    for (let i = 0; i < P.coordinates.length; i++)
+    for (let i = 0; i < P.coordinates.length; i++) {
       coordinates.push(P.coordinates[i]);
+    }
 
     return new Point(coordinates);
   }
@@ -162,8 +169,9 @@ export default class Point {
   static padRight(P: Point, n: number): Point {
     const coordinates: number[] = [];
 
-    for (let i = 0; i < P.coordinates.length; i++)
+    for (let i = 0; i < P.coordinates.length; i++) {
       coordinates.push(P.coordinates[i]);
+    }
 
     for (let i = 0; i < n; i++) coordinates.push(0);
 
@@ -200,12 +208,14 @@ export default class Point {
    * floating point standards.
    */
   static equal(a: Point, b: Point): boolean {
-    for (let i = 0; i < a.coordinates.length; i++)
+    for (let i = 0; i < a.coordinates.length; i++) {
       if (
         Math.abs(a.coordinates[i] - b.coordinates[i]) >
         Math.abs(a.coordinates[i] * Global.epsilon)
-      )
+      ) {
         return false;
+      }
+    }
 
     return true;
   }
@@ -233,12 +243,12 @@ export default class Point {
    * @returns The resulting point.
    */
   applyMatrix(matrix: MathJS.Matrix): Point {
-    //The point is treated as a row vector, so we transpose it.
-    const columnVector = MathJS.transpose(MathJS.matrix([this.coordinates])),
-      mat = MathJS.multiply(matrix, columnVector);
+    // The point is treated as a row vector, so we transpose it.
+    const columnVector = MathJS.transpose(MathJS.matrix([this.coordinates]));
+    const mat = MathJS.multiply(matrix, columnVector);
 
-    //We return the point whose coordinates are the single row of the
-    //multiplication's result.
+    // We return the point whose coordinates are the single row of the
+    // multiplication's result.
     return new Point(MathJS.transpose(mat).toArray()[0]);
   }
 }

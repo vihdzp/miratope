@@ -1,3 +1,4 @@
+import "./Translation/load";
 import Point from "./geometry/Point";
 import Scene from "./rendering/Scene";
 import * as Library from "./files/Library";
@@ -6,7 +7,7 @@ import { GGBOptions, saveAsGGB } from "./files/GGB";
 import { PolytopeB } from "./polytopes/types";
 import * as Build from "./polytopes/classes/Build";
 import * as Product from "./polytopes/classes/Product";
-import CD from "./data structures/CD";
+import CD from "./Data structures/CD";
 import Render from "./rendering/Render";
 
 /** @internal */
@@ -16,7 +17,7 @@ declare global {
   }
 }
 
-//Adds a quick & convenient implementation of the Euclidean algorithm.
+// Adds a quick & convenient implementation of the Euclidean algorithm.
 if (!Math.gcd) {
   Math.gcd = function (a: number, b: number): number {
     let t: number;
@@ -29,54 +30,54 @@ if (!Math.gcd) {
   };
 }
 
-//Configure OFF import button.
+// Configure OFF import button.
 (document.getElementById("file-input") as HTMLElement).addEventListener(
   "change",
   Library.openFile,
   false
 );
 
-//Basic variables. Should probably be put in a class in the future.
-globalThis.P; //Temp variable. OFF imports to here.
+// Basic variables. Should probably be put in a class in the future.
+globalThis.P; // Temp variable. OFF imports to here.
 
-//Configures the basic attributes of the scene.
+// Configures the basic attributes of the scene.
 globalThis.mainScene = new Scene();
 
-//Declares aliases for functions declared in classes other than PolytopeB.
+// Declares aliases for functions declared in classes other than PolytopeB.
 
-//Declared in off.ts.
+// Declared in off.ts.
 PolytopeB.prototype["saveAsOFF"] = function (options: OFFOptions = {}): void {
   saveAsOFF(this, options);
 };
 
-//Declared in ggb.ts.
+// Declared in ggb.ts.
 PolytopeB.prototype["saveAsGGB"] = function (options: GGBOptions): void {
   saveAsGGB(this, options);
 };
 
-//Declared in Build.ts.
+// Declared in Build.ts.
 PolytopeB.prototype["extrudeToPyramid"] = function (
   apex: Point | number
 ): PolytopeB {
   return Build.extrudeToPyramid(this, apex);
 };
 
-//Declared in Products.ts.
+// Declared in Products.ts.
 PolytopeB.prototype["extrudeToPrism"] = function (height: number): PolytopeB {
   return Product.extrudeToPrism(this, height);
 };
 
-//Declared in CD.ts.
-/*PolytopeB.prototype["toGraph"] = function (): GraphNode<number>[] {
+// Declared in CD.ts.
+/* PolytopeB.prototype["toGraph"] = function (): GraphNode<number>[] {
   return CD.toGraph(this);
 };*/
 
-//Declared in render.ts.
+// Declared in render.ts.
 PolytopeB.prototype["renderTo"] = function (scene: Scene): void {
   Render.to(this, scene);
 };
 
-//Exposes the internal classes.
+// Exposes the internal classes.
 globalThis.Build = Build;
 globalThis.CD = CD;
 globalThis.Product = Product;

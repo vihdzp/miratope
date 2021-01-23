@@ -1,3 +1,11 @@
+/**
+ * Contains methods to do operations on points.
+ *
+ * @packageDocumentation
+ * @module Space
+ * @category Geometry
+ */
+
 import Global from "../global";
 import Point from "./Point";
 
@@ -20,54 +28,55 @@ export const intersect = function (
   c: Point,
   d: Point
 ): Point | null {
-  //Checks if any of the points are in different dimensional spaces
+  // Checks if any of the points are in different dimensional spaces
   if (
     a.dimensions() !== b.dimensions() ||
     a.dimensions() !== c.dimensions() ||
     a.dimensions() !== d.dimensions()
-  )
+  ) {
     throw new Error(
       "You can't intersect edges with different amounts of dimensions!"
     );
+  }
 
-  //This projects a, b-a, c, d-c onto the a plane
-  //Then, adapts the method from https://stackoverflow.com/a/565282 (by Gareth Rees)
-  const p = [a.coordinates[Global.index0], a.coordinates[Global.index1]],
-    r = [
-      b.coordinates[Global.index0] - a.coordinates[Global.index0],
-      b.coordinates[Global.index1] - a.coordinates[Global.index1],
-    ],
-    q = [c.coordinates[Global.index0], c.coordinates[Global.index1]],
-    s = [
-      d.coordinates[Global.index0] - c.coordinates[Global.index0],
-      d.coordinates[Global.index1] - c.coordinates[Global.index1],
-    ];
+  // This projects a, b-a, c, d-c onto the a plane
+  // Then, adapts the method from https://stackoverflow.com/a/565282 (by Gareth Rees)
+  const p = [a.coordinates[Global.index0], a.coordinates[Global.index1]];
+  const r = [
+    b.coordinates[Global.index0] - a.coordinates[Global.index0],
+    b.coordinates[Global.index1] - a.coordinates[Global.index1],
+  ];
+  const q = [c.coordinates[Global.index0], c.coordinates[Global.index1]];
+  const s = [
+    d.coordinates[Global.index0] - c.coordinates[Global.index0],
+    d.coordinates[Global.index1] - c.coordinates[Global.index1],
+  ];
 
-  //If the two lines' slopes are very similar, do nothing.
-  //They either not intersect or are too similar for us to care.
+  // If the two lines' slopes are very similar, do nothing.
+  // They either not intersect or are too similar for us to care.
   if (sameSlope(r[0], r[1], s[0], s[1])) return null;
 
   const t =
-      ((p[0] - q[0]) * s[1] - (p[1] - q[1]) * s[0]) /
-      (s[0] * r[1] - s[1] * r[0]),
-    u =
-      ((p[0] - q[0]) * r[1] - (p[1] - q[1]) * r[0]) /
-      (s[0] * r[1] - s[1] * r[0]);
+    ((p[0] - q[0]) * s[1] - (p[1] - q[1]) * s[0]) / (s[0] * r[1] - s[1] * r[0]);
+  const u =
+    ((p[0] - q[0]) * r[1] - (p[1] - q[1]) * r[0]) / (s[0] * r[1] - s[1] * r[0]);
 
-  //The intersection lies outside of the segments, or at infinity
-  //Makes sure that "t" and "u" are both inbetween Global.epsilon and 1
+  // The intersection lies outside of the segments, or at infinity
+  // Makes sure that "t" and "u" are both inbetween Global.epsilon and 1
   if (
     t <= Global.epsilon ||
     t >= 1 - Global.epsilon ||
     u <= Global.epsilon ||
     u >= 1 - Global.epsilon
-  )
+  ) {
     return null;
+  }
 
-  //Returns the point a + t * (b - a).
+  // Returns the point a + t * (b - a).
   const pt: number[] = [];
-  for (let i = 0; i < a.dimensions(); i++)
+  for (let i = 0; i < a.dimensions(); i++) {
     pt.push(a.coordinates[i] + (b.coordinates[i] - a.coordinates[i]) * t);
+  }
   return new Point(pt);
 };
 
@@ -81,14 +90,14 @@ export const intersect = function (
  * precision.
  */
 export const collinear = function (a: Point, b: Point, c: Point): boolean {
-  //If "a" is the same as "b" or "c"
+  // If "a" is the same as "b" or "c"
   if (Point.equal(a, b) || Point.equal(a, c)) return true;
 
-  //Calculates (b - a) . (c - a), |b - a|, |c - a|.
-  //This will be used to calculate the angle between them.
-  let dot = 0,
-    norm0 = 0,
-    norm1 = 0;
+  // Calculates (b - a) . (c - a), |b - a|, |c - a|.
+  // This will be used to calculate the angle between them.
+  let dot = 0;
+  let norm0 = 0;
+  let norm1 = 0;
 
   for (let i = 0; i < a.coordinates.length; i++) {
     const sub0 = b.coordinates[i] - a.coordinates[i];
@@ -98,20 +107,22 @@ export const collinear = function (a: Point, b: Point, c: Point): boolean {
     norm1 += sub1 * sub1;
   }
 
-  //Returns true iff the cosine of the angle between b - a and c - a is at a
-  //distance Global.epsilon from 1 or -1.
+  // Returns true iff the cosine of the angle between b - a and c - a is at a
+  // distance Global.epsilon from 1 or -1.
   return 1 - Math.abs(dot / Math.sqrt(norm0 * norm1)) <= Global.epsilon;
 };
 
 /**
  * Calculates the area of the triangle determined by three vertices
- * when projected onto a specific plane.
+ * when projected onto a specific plane. Uses
+ * [[https://en.wikipedia.org/wiki/Shoelace_formula|Gauss' shoelace formula]].
  *
- * @param a The first of the triangle's vertices.
- * @param b The first of the triangle's vertices.
- * @param c The first of the triangle's vertices.
+ * @param a The first triangle vertex.
+ * @param b The second triangle vertex.
+ * @param c The third triangle vertex.
  * @param j The first coordinate of the projection plane.
  * @param k The second coordinate of the projection plane.
+ * @returns The area of the triangle when projected onto the plane.
  */
 export const area = function (
   a: Point,
@@ -173,10 +184,10 @@ export const sameSlope = function (
   c: number,
   d: number
 ): boolean {
-  //s is the difference between the angles.
+  // s is the difference between the angles.
   const s = Math.atan(a / b) - Math.atan(c / d);
 
-  //Returns whether the angles (mod pi) are different by less than
-  //Global.epsilon.
+  // Returns whether the angles (mod pi) are different by less than
+  // Global.epsilon.
   return (s + Math.PI + Global.epsilon) % Math.PI < 2 * Global.epsilon;
 };

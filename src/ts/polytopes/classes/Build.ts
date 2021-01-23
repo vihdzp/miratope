@@ -14,9 +14,9 @@ import {
   CupolaicBlend as CNCupolaicBlend,
   Polygon as CNPolygon,
   Pyramid as CNPyramid,
-} from "../../data structures/ConstructionNode";
-import { FlagClass } from "../../data structures/flags";
-import { ConcreteGroup } from "../../data structures/groups";
+} from "../../Data structures/ConstructionNode";
+import { FlagClass } from "../../Data structures/flags";
+import { ConcreteGroup } from "../../Data structures/groups";
 import Point from "../../geometry/Point";
 import { ElementList, PolytopeB, PolytopeC, PolytopeS } from "../types";
 
@@ -72,16 +72,17 @@ export const dyad = function (length = 1): PolytopeB {
 export const polygon = function (points: Point[]): PolytopeB {
   const newElementList: ElementList = [[], [], [[]]];
 
-  //Adds vertices and the face.
+  // Adds vertices and the face.
   for (let i = 0; i < points.length; i++) {
     newElementList[0].push(points[i]);
     newElementList[2][0].push(i);
   }
 
-  //Adds edges.
+  // Adds edges.
   newElementList[1].push([0, points.length - 1]);
-  for (let i = 0; i < points.length - 1; i++)
+  for (let i = 0; i < points.length - 1; i++) {
     newElementList[1].push([i, i + 1]);
+  }
 
   return new PolytopeC(newElementList, new CNPolygon([points.length, 1]));
 };
@@ -101,30 +102,30 @@ export const regularPolygon = function (n: number, d?: number): PolytopeB {
 
   const els: ElementList = [[], [], []];
   const n_gcd = n / gcd;
-  const invRad = 2 * Math.sin((Math.PI * d) / n); //1 / circumradius.
+  const invRad = 2 * Math.sin((Math.PI * d) / n); // 1 / circumradius.
 
   let angle = 0;
   const t = (2 * Math.PI) / n;
   for (let i = 0; i < n; i++) {
     els[0].push(
       new Point([Math.cos(angle) / invRad, Math.sin(angle) / invRad])
-    ); //Vertices
+    ); // Vertices
     angle += t;
   }
 
-  let x = 0,
-    y = d;
-  //i is the component number.
+  let x = 0;
+  let y = d;
+  // i is the component number.
   for (let i = 0; i < gcd; i++) {
-    //x and y keep track of the vertices that are being connected.
+    // x and y keep track of the vertices that are being connected.
     const components: number[] = [];
-    //j is the edge.
+    // j is the edge.
     for (let j = 0; j < n_gcd; j++) {
-      els[1].push([x, y]); //Edges
+      els[1].push([x, y]); // Edges
       x = y;
       y += d;
       if (y >= n) y -= n;
-      components.push(components.length); //Components
+      components.push(components.length); // Components
     }
     els[2].push(components);
     x++;
@@ -149,19 +150,19 @@ export const regularPolygonG = function (n: number, d?: number): PolytopeB {
 
   let angle = 0;
   const t = (Math.PI * d) / n;
-  const invRad = 2 * Math.sin(t); //1 / the circumradius
+  const invRad = 2 * Math.sin(t); // 1 / the circumradius
 
   for (let i = 0; i < n; i++) {
-    //Vertices
+    // Vertices
     els[0].push(
       new Point([Math.cos(angle) / invRad, Math.sin(angle) / invRad])
     );
-    //Face.
+    // Face.
     els[2][0].push(i);
     angle += 2 * t;
   }
 
-  for (let i = 0; i < n - 1; i++) els[1].push([i, i + 1]); //Edges
+  for (let i = 0; i < n - 1; i++) els[1].push([i, i + 1]); // Edges
   els[1].push([els[0].length - 1, 0]);
 
   return new PolytopeC(els, new CNPolygon([n, d]));
@@ -187,10 +188,10 @@ export const semiregularPolygon = function (
   a = 1,
   b = 1
 ): PolytopeB {
-  //If n = 4, d = 0, a bowtie is created.
-  //Idk if there are more natural parameters for the bowtie.
+  // If n = 4, d = 0, a bowtie is created.
+  // Idk if there are more natural parameters for the bowtie.
   if (n === 4 && d === 0) {
-    //If a > b, swaps b and a.
+    // If a > b, swaps b and a.
     if (a > b) {
       const t = a;
       a = b;
@@ -219,42 +220,42 @@ export const semiregularPolygon = function (
     );
   }
 
-  //The angles and sides of a triangle made by three adjacent vertices.
-  //Also, the circumdiameter 2R.
+  // The angles and sides of a triangle made by three adjacent vertices.
+  // Also, the circumdiameter 2R.
   const gamma = Math.PI * (1 - (2 * d) / n);
   const c = Math.sqrt(a * a + b * b - 2 * a * b * Math.cos(gamma));
   const R = c / Math.sin(gamma) / 2;
 
-  //The sine rule doesn't work here, since asin is multivalued in [0, π/2].
-  //Instead, we use the more complicated cosine rule.
+  // The sine rule doesn't work here, since asin is multivalued in [0, π/2].
+  // Instead, we use the more complicated cosine rule.
 
-  //Actually 2α.
+  // Actually 2α.
   const alpha = 2 * Math.acos((b * b + c * c - a * a) / (2 * b * c));
-  //Actually 2β.
+  // Actually 2β.
   const beta = 2 * Math.acos((a * a + c * c - b * b) / (2 * a * c));
   let angle = 0;
 
   const els: ElementList = [[], [], [[]]];
 
   for (let i = 0; i < n / 2; i++) {
-    //Side a.
-    //Vertices
+    // Side a.
+    // Vertices
     els[0].push(new Point([Math.cos(angle) * R, Math.sin(angle) * R]));
 
-    //Face
+    // Face
     els[2][0].push(2 * i);
     angle += alpha;
 
-    //Side b
-    //Vertices
+    // Side b
+    // Vertices
     els[0].push(new Point([Math.cos(angle) * R, Math.sin(angle) * R]));
 
-    //Face
+    // Face
     els[2][0].push(2 * i + 1);
     angle += beta;
   }
 
-  for (let i = 0; i < n - 1; i++) els[1].push([i, i + 1]); //Edges
+  for (let i = 0; i < n - 1; i++) els[1].push([i, i + 1]); // Edges
   els[1].push([els[0].length - 1, 0]);
 
   return new PolytopeC(els, new CNPolygon([n, d]));
@@ -367,20 +368,20 @@ export const recticross = function (n: number): PolytopeB {
  * @todo Implement antiprisms of compounds.
  */
 export const uniformAntiprism = function (n: number, d = 1): PolytopeB {
-  const x = n / d,
-    //Guarantees an unit edge length polytope.
-    scale = 2 * Math.sin(Math.PI / x),
-    height =
-      Math.sqrt((Math.cos(Math.PI / x) - Math.cos((2 * Math.PI) / x)) / 2) /
-      scale; //Half of the distance between bases.
+  const x = n / d;
+  // Guarantees an unit edge length polytope.
+  const scale = 2 * Math.sin(Math.PI / x);
+  const height =
+    Math.sqrt((Math.cos(Math.PI / x) - Math.cos((2 * Math.PI) / x)) / 2) /
+    scale; // Half of the distance between bases.
 
-  const base1: number[] = [],
-    base2: number[] = [],
-    newElementList: ElementList = [[], [], [base1, base2], [[]]];
+  const base1: number[] = [];
+  const base2: number[] = [];
+  const newElementList: ElementList = [[], [], [base1, base2], [[]]];
 
-  let i = 0; //The edges in the bases.
+  let i = 0; // The edges in the bases.
   while (i < 2 * (n - 1)) {
-    //Vertices.
+    // Vertices.
     newElementList[0].push(
       new Point([
         Math.cos(Math.PI * (i / x)) / scale,
@@ -388,15 +389,15 @@ export const uniformAntiprism = function (n: number, d = 1): PolytopeB {
         height,
       ])
     );
-    //Equatorial edges, top & bottom edges.
+    // Equatorial edges, top & bottom edges.
     newElementList[1].push([i, i + 1], [i, i + 2]);
-    //Triangular faces.
+    // Triangular faces.
     newElementList[2].push([2 * i, 2 * i + 1, 2 * i + 2]);
-    //Polygonal faces.
+    // Polygonal faces.
     base1.push(2 * i + 1);
     i++;
 
-    //Same thing down here:
+    // Same thing down here:
     newElementList[0].push(
       new Point([
         Math.cos(Math.PI * (i / x)) / scale,
@@ -411,7 +412,7 @@ export const uniformAntiprism = function (n: number, d = 1): PolytopeB {
     i++;
   }
 
-  //Adds last elements.
+  // Adds last elements.
   newElementList[0].push(
     new Point([
       Math.cos(Math.PI * (i / x)) / scale,
@@ -436,45 +437,46 @@ export const uniformAntiprism = function (n: number, d = 1): PolytopeB {
   newElementList[2].push([2 * i, 2 * i + 1, 0]);
   base2.push(2 * i + 1);
 
-  //Adds component.
+  // Adds component.
   for (i = 0; i < 2 * (n + 1); i++) newElementList[3][0].push(i);
 
-  //We call Build.regularPolygon(n, d).construction instead of
-  //instanciating the CNPolygon directly so that the ConstructionNode has an
-  //associated polytope.
+  // We call Build.regularPolygon(n, d).construction instead of
+  // instanciating the CNPolygon directly so that the ConstructionNode has an
+  // associated polytope.
   return new PolytopeC(
     newElementList,
     new CNAntiprism(regularPolygon(n, d).construction)
   );
 };
 
-//Creates an {n / d} cupola with regular faces.
+// Creates an {n / d} cupola with regular faces.
 export const cupola = function (n: number, d: number): PolytopeB {
   if (d === undefined) d = 1;
 
-  const x = n / d,
-    //Radius of the smaller base.
-    r1 = 1 / (2 * Math.sin(Math.PI / x)),
-    //Radius of the larger base.
-    r2 = 1 / (2 * Math.sin(Math.PI / (2 * x))),
-    //Temporary variable.
-    t = 1 / (2 * Math.tan(Math.PI / x)) - 1 / (2 * Math.tan(Math.PI / (2 * x))),
-    //Distance between bases.
-    h0 = Math.sqrt(1 - t * t),
-    //Distance between circumcenter and smaller base.
-    h1 = ((r2 * r2 - r1 * r1) / h0 + h0) / 2,
-    //Distance between circumcenter and larger base.
-    h2 = h1 - h0;
+  const x = n / d;
+  // Radius of the smaller base.
+  const r1 = 1 / (2 * Math.sin(Math.PI / x));
+  // Radius of the larger base.
+  const r2 = 1 / (2 * Math.sin(Math.PI / (2 * x)));
+  // Temporary variable.
+  const t =
+    1 / (2 * Math.tan(Math.PI / x)) - 1 / (2 * Math.tan(Math.PI / (2 * x)));
+  // Distance between bases.
+  const h0 = Math.sqrt(1 - t * t);
+  // Distance between circumcenter and smaller base.
+  const h1 = ((r2 * r2 - r1 * r1) / h0 + h0) / 2;
+  // Distance between circumcenter and larger base.
+  const h2 = h1 - h0;
 
-  //The cupola's bases.
-  const base1: number[] = [],
-    base2: number[] = [],
-    //List of elements of the cupola.
-    newElementList: ElementList = [[], [], [base1, base2], [[]]];
+  // The cupola's bases.
+  const base1: number[] = [];
+  const base2: number[] = [];
+  // List of elements of the cupola.
+  const newElementList: ElementList = [[], [], [base1, base2], [[]]];
 
   let i: number;
   for (i = 0; i < n - 1; i++) {
-    //Small base's vertices.
+    // Small base's vertices.
     newElementList[0].push(
       new Point([
         r1 * Math.cos(2 * Math.PI * (i / x)),
@@ -482,20 +484,20 @@ export const cupola = function (n: number, d: number): PolytopeB {
         h1,
       ])
     );
-    //Small base's edges.
+    // Small base's edges.
     newElementList[1].push([i, i + 1]);
-    //Connecting edges.
+    // Connecting edges.
     newElementList[1].push([i, n + 2 * i]);
     newElementList[1].push([i, n + 2 * i + 1]);
-    //Triangles.
+    // Triangles.
     newElementList[2].push([3 * i + 1, 3 * i + 2, 3 * n + 2 * i]);
-    //Squares.
+    // Squares.
     newElementList[2].push([3 * i + 2, 3 * n + 2 * i + 1, 3 * i + 4, 3 * i]);
-    //Small base.
+    // Small base.
     base1.push(3 * i);
   }
 
-  //Adds last elements.
+  // Adds last elements.
   newElementList[0].push(
     new Point([
       r1 * Math.cos(2 * Math.PI * (i / x)),
@@ -511,7 +513,7 @@ export const cupola = function (n: number, d: number): PolytopeB {
   base1.push(3 * i);
 
   for (i = 0; i < 2 * n - 1; i++) {
-    //Big base's vertices.
+    // Big base's vertices.
     newElementList[0].push(
       new Point([
         r2 * Math.cos(Math.PI * ((i - 0.5) / x)),
@@ -519,12 +521,12 @@ export const cupola = function (n: number, d: number): PolytopeB {
         h2,
       ])
     );
-    //Big base's edges.
+    // Big base's edges.
     newElementList[1].push([n + i, n + i + 1]);
-    //Big base.
+    // Big base.
     base2.push(3 * n + i);
   }
-  //Adds last elements.
+  // Adds last elements.
   newElementList[0].push(
     new Point([
       r2 * Math.cos(Math.PI * ((i - 0.5) / x)),
@@ -537,40 +539,41 @@ export const cupola = function (n: number, d: number): PolytopeB {
 
   for (i = 0; i < 2 * n + 2; i++) newElementList[3][0].push(i);
 
-  //We call Build.regularPolygon(n, d).construction instead of
-  //instanciating the CNPolygon directly so that the ConstructionNode has an
-  //associated polytope.
+  // We call Build.regularPolygon(n, d).construction instead of
+  // instanciating the CNPolygon directly so that the ConstructionNode has an
+  // associated polytope.
   return new PolytopeC(
     newElementList,
     new CNCupola(regularPolygon(n, d).construction)
   );
 };
 
-//Creates an {n / d} cuploid with regular faces.
+// Creates an {n / d} cuploid with regular faces.
 export const cuploid = function (n: number, d: number): PolytopeB {
   if (d === undefined) d = 1;
-  const x = n / d,
-    //Radius of the smaller base.
-    r1 = 1 / (2 * Math.sin(Math.PI / x)),
-    //Radius of the larger base.
-    r2 = 1 / (2 * Math.sin(Math.PI / (2 * x))),
-    //Temporary variable.
-    t = 1 / (2 * Math.tan(Math.PI / x)) - 1 / (2 * Math.tan(Math.PI / (2 * x))),
-    //Distance between bases.
-    h0 = Math.sqrt(1 - t * t),
-    //Distance between circumcenter and smaller base.
-    h1 = ((r2 * r2 - r1 * r1) / h0 + h0) / 2,
-    //Distance between circumcenter and larger base.
-    h2 = h1 - h0;
+  const x = n / d;
+  // Radius of the smaller base.
+  const r1 = 1 / (2 * Math.sin(Math.PI / x));
+  // Radius of the larger base.
+  const r2 = 1 / (2 * Math.sin(Math.PI / (2 * x)));
+  // Temporary variable.
+  const t =
+    1 / (2 * Math.tan(Math.PI / x)) - 1 / (2 * Math.tan(Math.PI / (2 * x)));
+  // Distance between bases.
+  const h0 = Math.sqrt(1 - t * t);
+  // Distance between circumcenter and smaller base.
+  const h1 = ((r2 * r2 - r1 * r1) / h0 + h0) / 2;
+  // Distance between circumcenter and larger base.
+  const h2 = h1 - h0;
 
-  //The base of the cupola.
-  const base: number[] = [],
-    //List of elements of the cupola.
-    newElementList: ElementList = [[], [], [base], [[]]];
+  // The base of the cupola.
+  const base: number[] = [];
+  // List of elements of the cupola.
+  const newElementList: ElementList = [[], [], [base], [[]]];
 
   let i: number;
   for (i = 0; i < n - 1; i++) {
-    //Small base's vertices.
+    // Small base's vertices.
     newElementList[0].push(
       new Point([
         r1 * Math.cos(2 * Math.PI * (i / x)),
@@ -578,25 +581,25 @@ export const cuploid = function (n: number, d: number): PolytopeB {
         h1,
       ])
     );
-    //Small base's edges.
+    // Small base's edges.
     newElementList[1].push([i, i + 1]);
-    //Connecting edges.
+    // Connecting edges.
     newElementList[1].push([i, n + ((2 * i) % n)]);
     newElementList[1].push([i, n + ((2 * i + 1) % n)]);
-    //Triangles.
+    // Triangles.
     newElementList[2].push([3 * i + 1, 3 * i + 2, 3 * n + ((2 * i) % n)]);
-    //Squares.
+    // Squares.
     newElementList[2].push([
       3 * i + 2,
       3 * n + ((2 * i + 1) % n),
       3 * i + 4,
       3 * i,
     ]);
-    //Small base.
+    // Small base.
     base.push(3 * i);
   }
 
-  //Adds last elements.
+  // Adds last elements.
   newElementList[0].push(
     new Point([
       r1 * Math.cos(2 * Math.PI * (i / x)),
@@ -612,7 +615,7 @@ export const cuploid = function (n: number, d: number): PolytopeB {
   base.push(3 * i);
 
   for (i = 0; i < n - 1; i++) {
-    //Big base's vertices.
+    // Big base's vertices.
     newElementList[0].push(
       new Point([
         r2 * Math.cos(Math.PI * ((i - 0.5) / x)),
@@ -620,10 +623,10 @@ export const cuploid = function (n: number, d: number): PolytopeB {
         h2,
       ])
     );
-    //Big base's edges.
+    // Big base's edges.
     newElementList[1].push([n + i, n + i + 1]);
   }
-  //Adds last elements.
+  // Adds last elements.
   newElementList[0].push(
     new Point([
       r2 * Math.cos(Math.PI * ((i - 0.5) / x)),
@@ -635,42 +638,43 @@ export const cuploid = function (n: number, d: number): PolytopeB {
 
   for (i = 0; i < 2 * n + 1; i++) newElementList[3][0].push(i);
 
-  //We call Build.regularPolygon(n, d).construction instead of
-  //instanciating the CNPolygon directly so that the ConstructionNode has an
-  //associated polytope.
+  // We call Build.regularPolygon(n, d).construction instead of
+  // instanciating the CNPolygon directly so that the ConstructionNode has an
+  // associated polytope.
   return new PolytopeC(
     newElementList,
     new CNCuploid(regularPolygon(n, d).construction)
   );
 };
 
-//Creates an {n / d} cupolaic blend with regular faces.
+// Creates an {n / d} cupolaic blend with regular faces.
 export const cupolaicBlend = function (n: number, d: number): PolytopeB {
   if (d === undefined) d = 1;
 
-  const x = n / d,
-    r1 = 1 / (2 * Math.sin(Math.PI / x)), //Radius of the smaller base.
-    r2 = 1 / (2 * Math.sin(Math.PI / (2 * x))), //Radius of the larger base.
-    //Temporary variable.
-    t = 1 / (2 * Math.tan(Math.PI / x)) - 1 / (2 * Math.tan(Math.PI / (2 * x))),
-    //Distance between bases.
-    h0 = Math.sqrt(1 - t * t),
-    //Distance between circumcenter and smaller base.
-    h1 = ((r2 * r2 - r1 * r1) / h0 + h0) / 2,
-    //Distance between circumcenter and larger base.
-    h2 = h1 - h0;
+  const x = n / d;
+  const r1 = 1 / (2 * Math.sin(Math.PI / x)); // Radius of the smaller base.
+  const r2 = 1 / (2 * Math.sin(Math.PI / (2 * x))); // Radius of the larger base.
+  // Temporary variable.
+  const t =
+    1 / (2 * Math.tan(Math.PI / x)) - 1 / (2 * Math.tan(Math.PI / (2 * x)));
+  // Distance between bases.
+  const h0 = Math.sqrt(1 - t * t);
+  // Distance between circumcenter and smaller base.
+  const h1 = ((r2 * r2 - r1 * r1) / h0 + h0) / 2;
+  // Distance between circumcenter and larger base.
+  const h2 = h1 - h0;
 
-  //The bases of the cupola.
-  const base1: number[] = [],
-    base2: number[] = [],
-    //List of elements of the cupola.
-    newElementList: ElementList = [[], [], [base1, base2], [[]]];
+  // The bases of the cupola.
+  const base1: number[] = [];
+  const base2: number[] = [];
+  // List of elements of the cupola.
+  const newElementList: ElementList = [[], [], [base1, base2], [[]]];
 
   let even = true;
 
   let i: number;
   for (i = 0; i < 2 * (n - 1); i++) {
-    //Small bases' vertices.
+    // Small bases' vertices.
     newElementList[0].push(
       new Point([
         r1 * Math.cos(Math.PI * (i / x)),
@@ -678,22 +682,22 @@ export const cupolaicBlend = function (n: number, d: number): PolytopeB {
         h1,
       ])
     );
-    //Small bases' edges.
+    // Small bases' edges.
     newElementList[1].push([i, i + 2]);
-    //Connecting edges.
+    // Connecting edges.
     newElementList[1].push([i, 2 * n + i]);
     newElementList[1].push([i, 2 * n + i + 1]);
-    //Triangles.
+    // Triangles.
     newElementList[2].push([3 * i + 1, 3 * i + 2, 6 * n + i]);
-    //Squares.
+    // Squares.
     newElementList[2].push([3 * i + 2, 6 * n + i + 1, 3 * i + 7, 3 * i]);
-    //Small base.
+    // Small base.
     if (even) base1.push(3 * i);
     else base2.push(3 * i);
     even = !even;
   }
 
-  //Adds last elements.
+  // Adds last elements.
   newElementList[0].push(
     new Point([
       r1 * Math.cos(Math.PI * (i / x)),
@@ -724,7 +728,7 @@ export const cupolaicBlend = function (n: number, d: number): PolytopeB {
   base2.push(3 * i);
 
   for (i = 0; i < 2 * n - 1; i++) {
-    //Big base's vertices.
+    // Big base's vertices.
     newElementList[0].push(
       new Point([
         r2 * Math.cos(Math.PI * ((i - 0.5) / x)),
@@ -732,10 +736,10 @@ export const cupolaicBlend = function (n: number, d: number): PolytopeB {
         h2,
       ])
     );
-    //Big base's edges.
+    // Big base's edges.
     newElementList[1].push([2 * n + i, 2 * n + i + 1]);
   }
-  //Adds last elements.
+  // Adds last elements.
   newElementList[0].push(
     new Point([
       r2 * Math.cos(Math.PI * ((i - 0.5) / x)),
@@ -747,9 +751,9 @@ export const cupolaicBlend = function (n: number, d: number): PolytopeB {
 
   for (i = 0; i < 2 * n + 1; i++) newElementList[3][0].push(i);
 
-  //We call Build.regularPolygon(n, d).construction instead of
-  //instanciating the CNPolygon directly so that the ConstructionNode has an
-  //associated polytope.
+  // We call Build.regularPolygon(n, d).construction instead of
+  // instanciating the CNPolygon directly so that the ConstructionNode has an
+  // associated polytope.
   return new PolytopeC(
     newElementList,
     new CNCupolaicBlend(regularPolygon(n, d).construction)
@@ -768,9 +772,10 @@ export const extrudeToPyramid = function (
   const P = polytope.toPolytopeC();
   if (!P.elementList[0]) return new PolytopeC([[new Point([])]]);
 
-  let els: number[], i: number;
+  let els: number[];
+  let i: number;
 
-  //If the height was passed instead, builds a point from there.
+  // If the height was passed instead, builds a point from there.
   if (typeof apex === "number") {
     const newApex: number[] = [];
     for (let i = 0; i < P.dimensions; i++) newApex.push(0);
@@ -782,25 +787,28 @@ export const extrudeToPyramid = function (
   (P.elementList as number[][][]).push([]);
 
   const oldElNumbers: number[] = [];
-  for (i = 0; i <= P.dimensions; i++)
+  for (i = 0; i <= P.dimensions; i++) {
     oldElNumbers.push(P.elementList[i].length);
+  }
 
-  //Adds apex.
+  // Adds apex.
   P.elementList[0].push(apex);
   P.setSpaceDimensions(Math.max(apex.dimensions(), P.spaceDimensions));
 
-  //Adds edges.
+  // Adds edges.
   if (P.elementList[1]) {
-    for (i = 0; i < oldElNumbers[0]; i++)
+    for (i = 0; i < oldElNumbers[0]; i++) {
       P.elementList[1].push([i, oldElNumbers[0]]);
+    }
   }
 
-  //Adds remaining elements.
+  // Adds remaining elements.
   for (let d = 2; d <= P.dimensions; d++) {
     for (i = 0; i < oldElNumbers[d - 1]; i++) {
       els = [i];
-      for (let j = 0; j < (P.elementList[d - 1] as number[][])[i].length; j++)
+      for (let j = 0; j < (P.elementList[d - 1] as number[][])[i].length; j++) {
         els.push(P.elementList[d - 1][i][j] + oldElNumbers[d - 1]);
+      }
       (P.elementList[d] as number[][]).push(els);
     }
   }
