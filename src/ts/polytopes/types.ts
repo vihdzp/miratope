@@ -1,7 +1,8 @@
-import ConstructionNode, {
+import type ConstructionNode from "../Data structures/Construction/base";
+import {
   Name as CNName,
   Plain as CNPlain,
-} from "../Data structures/ConstructionNode";
+} from "../Data structures/Construction/Node";
 import LinkedListNode from "../Data structures/LinkedListNode";
 import Point from "../geometry/Point";
 import type { ConcreteGroup } from "../Data structures/groups";

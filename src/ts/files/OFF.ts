@@ -1,6 +1,6 @@
 import { PolytopeB } from "../polytopes/types";
-import * as Translation from "../Translation/Translation";
-import * as Naming from "../Translation/Naming";
+import * as Message from "../Translation/Basic/Message";
+import { Language } from "../Translation/Language";
 import * as Library from "./Library";
 
 export interface OFFOptions {
@@ -50,7 +50,7 @@ export const saveAsOFF = function (
     case 1: // Also LOL
       data.push("1OFF\n");
       if (comments) {
-        data.push("# ", Naming.element(0, pluralAndUppercase), "\n");
+        data.push("# ", Language.element(0, pluralAndUppercase), "\n");
       }
       data.push(elementCounts[0].toString(), "\n");
       break;
@@ -59,9 +59,9 @@ export const saveAsOFF = function (
       if (comments) {
         data.push(
           "# ",
-          Naming.element(0, pluralAndUppercase),
+          Language.element(0, pluralAndUppercase),
           ", ",
-          Translation.get("misc/component", pluralAndUppercase),
+          Message.get("misc/component", pluralAndUppercase),
           "\n"
         );
       }
@@ -77,11 +77,11 @@ export const saveAsOFF = function (
       if (comments) {
         data.push(
           "# ",
-          Naming.element(0, pluralAndUppercase),
+          Language.element(0, pluralAndUppercase),
           ", ",
-          Naming.element(2, pluralAndUppercase),
+          Language.element(2, pluralAndUppercase),
           ", ",
-          Naming.element(1, pluralAndUppercase),
+          Language.element(1, pluralAndUppercase),
           "\n"
         );
       }
@@ -99,14 +99,14 @@ export const saveAsOFF = function (
       if (comments) {
         data.push(
           "# ",
-          Naming.element(0, pluralAndUppercase),
+          Language.element(0, pluralAndUppercase),
           ", ",
-          Naming.element(2, pluralAndUppercase),
+          Language.element(2, pluralAndUppercase),
           ", ",
-          Naming.element(1, pluralAndUppercase)
+          Language.element(1, pluralAndUppercase)
         );
         for (let i = 3; i < P.dimensions; i++) {
-          data.push(", ", Naming.element(i, pluralAndUppercase));
+          data.push(", ", Language.element(i, pluralAndUppercase));
         }
         data.push("\n");
       }
@@ -125,7 +125,8 @@ export const saveAsOFF = function (
   }
 
   // Adds vertices. Fills in zeros if spaceDimensions < dimensions.
-  if (comments) data.push("\n# ", Naming.element(0, pluralAndUppercase), "\n");
+  if (comments)
+    data.push("\n# ", Language.element(0, pluralAndUppercase), "\n");
 
   if (P.elementList[0]) {
     for (let i = 0; i < P.elementList[0].length; i++) {
@@ -146,10 +147,10 @@ export const saveAsOFF = function (
       if (P.dimensions === 2) {
         data.push(
           "\n# ",
-          Translation.get("misc/component", pluralAndUppercase),
+          Message.get("misc/component", pluralAndUppercase),
           "\n"
         );
-      } else data.push("\n# ", Naming.element(2, pluralAndUppercase), "\n");
+      } else data.push("\n# ", Language.element(2, pluralAndUppercase), "\n");
     }
     for (let i = 0; i < elementCounts[2]; i++) {
       const vertices = P.faceToVertices(i);
@@ -164,7 +165,7 @@ export const saveAsOFF = function (
   // Adds the rest of the elements.
   for (let d = 3; d < P.dimensions; d++) {
     if (comments) {
-      data.push("\n# ", Naming.element(d, pluralAndUppercase), "\n");
+      data.push("\n# ", Language.element(d, pluralAndUppercase), "\n");
     }
     for (let i = 0; i < P.elementList[d].length; i++) {
       const len: number = (P.elementList[d] as number[][])[i].length;
@@ -174,6 +175,6 @@ export const saveAsOFF = function (
     }
   }
 
-  Library.setFileName(Translation.firstToUpper(P.getName()) + ".off");
+  Library.setFileName(Message.firstToUpper(P.getName()) + ".off");
   Library.saveBlob(new Blob(data, { type: "text/plain" }));
 };

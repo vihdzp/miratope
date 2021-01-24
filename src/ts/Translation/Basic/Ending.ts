@@ -1,8 +1,8 @@
-import type { Gender } from "./interfaces";
+import type { Gender } from "./LanguageOptions";
 type CustomFunctionType = (name: string, gender: Gender) => string;
 
 /**
- * Helper class for toAdjective.
+ * Helper class for the [[`Adjective`]] module.
  * Stores endings of words and what to do with them.
  *
  * @category Translation

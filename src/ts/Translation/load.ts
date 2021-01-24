@@ -3,31 +3,19 @@
  */
 
 import * as Globalize from "globalize";
+import { setLanguage } from "./Language";
 
-import "./loadJSON";
-import * as Translation from "./Translation";
-import * as Adjectives from "./Adjective";
-
-import en from "./Languages/en";
-import es from "./Languages/es";
-import de from "./Languages/de";
-
-import en_endings from "./Languages/en_endings";
-import es_endings from "./Languages/es_endings";
+import en_messages from "./Languages/en_messages";
+import es_messages from "./Languages/es_messages";
+import de_messages from "./Languages/de_messages";
 
 /** Loads the messages used to translate Miratope. */
 Globalize.loadMessages({
   // English is used as a fall-back.
-  root: en,
-  es: es,
-  de: de,
+  root: en_messages,
+  es: es_messages,
+  de: de_messages,
   en: {}, // DON'T FILL THIS!
 });
 
-/** Loads the endings used in the [[`Adjectives.to`]] method. */
-Adjectives.loadEndings({
-  en: en_endings,
-  es: es_endings,
-});
-
-Translation.setLanguage("en");
+setLanguage("en");

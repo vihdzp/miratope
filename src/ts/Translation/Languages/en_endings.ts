@@ -1,4 +1,4 @@
-import Ending from "../Ending";
+import Ending from "../Basic/Ending";
 
 export default [
   new Ending("da", 0, "ic"), // Rotunda(ic)

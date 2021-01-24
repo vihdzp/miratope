@@ -1,6 +1,6 @@
-import Ending from "../Ending";
-import { Gender } from "../interfaces";
-import { convert as toAdjective } from "../Adjective";
+import { _language } from "./base";
+import Ending from "../Basic/Ending";
+import { Gender } from "../Basic/LanguageOptions";
 
 // Helper function for toAdjective.
 // Meant for Spanish.
@@ -10,7 +10,7 @@ import { convert as toAdjective } from "../Adjective";
 const adjPrevWord = function (name: string, gender: Gender) {
   const i = name.lastIndexOf(" ");
   return (
-    toAdjective(name.substr(0, i), gender) +
+    _language.toAdjective(name.substr(0, i), gender) +
     name.substr(i, name.length - i - 1) +
     (gender === Gender.male ? "o" : "a")
   );

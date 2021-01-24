@@ -9,12 +9,13 @@
 
 import * as JSZip from "jszip";
 
-import { Name as CNName } from "../Data structures/ConstructionNode";
+import { Name as CNName } from "../Data structures/Construction/Node";
 import { GraphNode } from "../Data structures/graphs";
 import Point from "../geometry/Point";
 import * as Build from "../polytopes/classes/Build";
 import { ElementList, PolytopeC } from "../polytopes/types";
-import * as Translation from "../Translation/Translation";
+import * as Message from "../Translation/Basic/Message";
+import { Language } from "../Translation/Language";
 import Caret from "./Caret";
 
 /** A filename, used as a temporary variable in some functions. */
@@ -97,7 +98,7 @@ export const openFile = function (e: Event | string): void {
 
     // Removes extension from file name.
     name = name.substr(0, i);
-    if (Translation.language !== "de") name = Translation.firstToLower(name); // Lowercase name.
+    if (Language.code !== "de") name = Message.firstToLower(name); // Lowercase name.
 
     // Stored in a global variable
     // so it can be accessed from PolytopeB._readerOnload.
@@ -138,9 +139,7 @@ export const openFile = function (e: Event | string): void {
     fileName = fileName.substr(0, i);
 
     // Lowercase name.
-    if (Translation.language !== "de") {
-      fileName = Translation.firstToLower(fileName);
-    }
+    if (!Language.nounCapitalization) fileName = Message.firstToLower(fileName);
 
     // Reads the file as an OFF file.
     const xhttp = new XMLHttpRequest();

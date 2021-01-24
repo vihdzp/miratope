@@ -1,5 +1,4 @@
-import { LanguageOptions } from "../Translation/interfaces";
-import * as Translation from "../Translation/Translation";
+import * as Message from "../Translation/Basic/Message";
 
 /**
  * Represents a [[https://en.wikipedia.org/wiki/Caret_navigation|caret]], which
@@ -168,9 +167,8 @@ export default class Caret {
       this.increment();
 
       // Checks if a match was completed.
-      for (let i = 0; i < strs.length; i++) {
+      for (let i = 0; i < strs.length; i++)
         if (matches[i] >= strs[i].length) return i;
-      }
     }
 
     return -1; // EOF.
@@ -248,35 +246,14 @@ export default class Caret {
    * @throws Will throw an error if the read number is invalid.
    */
   readNumber(): number {
-    if (this.EOF) {
-      // EOF error
-      this.throwError("unexpectedEOF");
-    }
+    // EOF error
+    if (this.EOF) this.throwError("unexpectedEOF");
 
     const initIndx = this.pos;
 
-    WHILELOOP: do {
-      switch (this.getChar()) {
-        case "+":
-        case "-":
-        case ".":
-        case "e":
-        case "E":
-        case "0":
-        case "1":
-        case "2":
-        case "3":
-        case "4":
-        case "5":
-        case "6":
-        case "7":
-        case "8":
-        case "9":
-          this.increment();
-          break;
-        default:
-          break WHILELOOP; // Leave the do-while loop immediately
-      }
+    do {
+      if (Caret.isNumericChar(this.getChar())) this.increment();
+      else break; // Leave the do-while loop immediately
     } while (!this.EOF); // Until you hit EOF
 
     const endIndx = this.pos;
@@ -291,19 +268,29 @@ export default class Caret {
     return res;
   }
 
+  private static isNumericChar(char: string): boolean {
+    const code = char.charCodeAt(0);
+
+    return char in ["+", "-", ".", "e", "E"] || (48 <= code && code <= 57);
+  }
+
   /**
    * Throws an error corresponding to the error code.
    * Automatically inserts the line and column numbers
    * into the error message.
    *
+   * @param code The error code.
+   * @param dev Whether the error is the user's or the developer's fault.
    * @throws The corresponding error.
    */
-  throwError(code: string): never {
-    throw new Error(
-      Translation.get("error/" + code, {
-        line: this.line,
-        column: this.column,
-      } as LanguageOptions)
+  throwError(code: string, dev = false): never {
+    return Message.error(
+      code,
+      {
+        arg0: this.line.toString(),
+        arg1: this.column.toString(),
+      },
+      dev
     );
   }
 }

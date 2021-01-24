@@ -1,5 +1,5 @@
-import { LabeledGraph, LabeledGraphNode } from "./graphs";
-// import * as MathJS from "mathjs";
+import { GraphBase, GraphNodeBase } from "./graphs";
+import * as MathJS from "mathjs";
 
 /** Maximum length allowed for a CD. */
 const MAX_LEN = 100;
@@ -115,12 +115,12 @@ export default class CD {
    *
    * @returns The CD as a labeled graph.
    */
-  toGraph(): LabeledGraph<string, string> {
+  toGraph(): CDGraph {
     this.index = 0;
     const cd = this.diagram;
 
     // The nodes in the final graph.
-    const nodes: LabeledGraphNode<string, string>[] = [];
+    const nodes: CDNode[] = [];
 
     // The node pairs to link in the final graph.
     const edges: EdgeRef[] = [];
@@ -212,7 +212,7 @@ export default class CD {
             if (nodes.length > MAX_LEN) throw new Error("Diagram too big.");
 
             newNodeRef = new NodeRef(nodes.length, index);
-            nodes.push(new LabeledGraphNode(newNodeLabel));
+            nodes.push(new CDNode(newNodeLabel));
 
             // Toggles the flag to link stuff.
             linkNodes = true;
@@ -279,7 +279,130 @@ export default class CD {
     }
 
     // Returns the graph.
-    return new LabeledGraph(nodes);
+    return new CDGraph(nodes);
+  }
+}
+
+/**
+ * Stores a node in a Coxeter Diagram.
+ */
+export class CDNode extends GraphNodeBase<string> {
+  /** The value stored in a node. */
+  value: string;
+
+  /** The nodes adjacent to this one in the graph. */
+  neighbors: CDNode[];
+
+  /** Stores whether a node has been traversed, used in some algorithms. */
+  traversed: boolean;
+
+  /** The labels of the edges adjacent to this node. */
+  labels: string[];
+
+  /** The index of the node in the corresponding graph. */
+  arrayIndex: number | undefined;
+
+  constructor(value: string) {
+    super(value);
+
+    this.value = value;
+    this.neighbors = [];
+    this.traversed = false;
+    this.labels = [];
+  }
+
+  /**
+   * Connects one edge to another. Not meant to be called twice.
+   *
+   * @param node The node to link `this` to.
+   */
+  linkTo(node: CDNode, label: string): void {
+    this.neighbors.push(node);
+    node.neighbors.push(this);
+
+    this.labels.push(label);
+    node.labels.push(label);
+  }
+
+  /**
+   * Gets the connected component of a node in a graph.
+   *
+   * @returns The connected component of `this`.
+   */
+  getComponent(): CDGraph {
+    return super.getComponent() as CDGraph;
+  }
+
+  /**
+   * Gets the numeric value of a given label.
+   *
+   * @param index The index of the label.
+   * @returns The label as a number.
+   */
+  parseLabel(index: number): number {
+    return Number(this.labels[index]);
+  }
+}
+
+/**
+ * Wrapper for an array of [[CDNode|`CDNodes`]]. An instance of this class is
+ * returned by the [[`CD.toGraph`]] method.
+ *
+ * @category Data structures
+ */
+export class CDGraph extends GraphBase<string> {
+  nodes: CDNode[];
+
+  /**
+   * Constructor for Graph class.
+   *
+   * @param nodes The nodes of the graph.
+   */
+  constructor(nodes: CDNode[]) {
+    super(nodes);
+
+    this.nodes = nodes;
+
+    // Sets the arrayIndex attribute in each node.
+    for (let i = 0; i < nodes.length; i++) nodes[i].arrayIndex = i;
+  }
+
+  /**
+   * Gets the Schläfli matrix of a Coxeter diagram. Each entry (i, j) is
+   * proportional to the cosine of the angle between the i-th and j-th mirrors.
+   *
+   * @returns The Schläfli matrix of the CD.
+   */
+  schlaflian(): MathJS.Matrix {
+    const n = this.size(),
+      matrix: number[][] = [];
+
+    // For every node in the graph:
+    for (let i = 0; i < n; i++) {
+      matrix.push(new Array(n).fill(0));
+
+      const node = this.nodes[i],
+        neighbors = node.neighbors;
+
+      matrix[i][i] = 2;
+
+      //For every neighbor:
+      for (let j = 0; j < neighbors.length; j++) {
+        const neighbor = neighbors[j],
+          label = node.parseLabel(j);
+
+        if (label === null)
+          throw new Error("Ø not permitted in circumradius computation.");
+
+        if (neighbor.arrayIndex === undefined)
+          throw new Error("Node not declared correctly.");
+
+        // Fills in the matrix entries.
+        matrix[i][neighbor.arrayIndex] = -2 * Math.cos(Math.PI / label);
+      }
+    }
+
+    return MathJS.matrix(matrix);
   }
 }
 

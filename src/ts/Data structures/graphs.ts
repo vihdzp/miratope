@@ -5,7 +5,7 @@
  * @typeParam T The type of the value stored in the node.
  * @category Data structures
  */
-class GraphNodeBase<T> {
+export class GraphNodeBase<T> {
   /** The value stored in a node. */
   value: T;
 
@@ -58,7 +58,7 @@ class GraphNodeBase<T> {
  * @typeParam T The type of the value stored in the graph.
  * @category Data structures
  */
-class GraphBase<T> {
+export class GraphBase<T> {
   nodes: GraphNodeBase<T>[];
 
   /**
@@ -83,6 +83,15 @@ class GraphBase<T> {
     }
 
     return values;
+  }
+
+  /**
+   * Returns the number of nodes in the graph.
+   *
+   * @returns The size of the graph.
+   */
+  size(): number {
+    return this.nodes.length;
   }
 }
 
@@ -146,79 +155,6 @@ export class Graph<T> extends GraphBase<T> {
    * @param nodes The nodes of the graph.
    */
   constructor(nodes: GraphNode<T>[]) {
-    super(nodes);
-
-    this.nodes = nodes;
-  }
-}
-
-/**
- * Stores a node in a labeled graph.
- *
- * @typeParam T The type of the value stored in the graph.
- * @typeParam U The type of the edge labels.
- * @category Data structures
- */
-export class LabeledGraphNode<T, U> extends GraphNodeBase<T> {
-  /** The value stored in a node. */
-  value: T;
-
-  /** The nodes adjacent to this one in the graph. */
-  neighbors: LabeledGraphNode<T, U>[];
-
-  /** Stores whether a node has been traversed, used in some algorithms. */
-  traversed: boolean;
-
-  /** The labels of the edges adjacent to this node. */
-  labels: U[];
-
-  constructor(value: T) {
-    super(value);
-
-    this.value = value;
-    this.neighbors = [];
-    this.traversed = false;
-    this.labels = [];
-  }
-
-  /**
-   * Connects one edge to another. Not meant to be called twice.
-   *
-   * @param node The node to link `this` to.
-   */
-  linkTo(node: LabeledGraphNode<T, U>, label: U): void {
-    this.neighbors.push(node);
-    node.neighbors.push(this);
-
-    this.labels.push(label);
-    node.labels.push(label);
-  }
-
-  /**
-   * Gets the connected component of a node in a graph.
-   *
-   * @returns The connected component of `this`.
-   */
-  getComponent(): LabeledGraph<T, U> {
-    return super.getComponent() as LabeledGraph<T, U>;
-  }
-}
-
-/**
- * Wrapper for an array of [[LabeledGraphNode|`LabeledGraphNodes`]].
- *
- * @typeParam T The type of the value stored in the graph.
- * @category Data structures
- */
-export class LabeledGraph<T, U> extends GraphBase<T> {
-  nodes: LabeledGraphNode<T, U>[];
-
-  /**
-   * Constructor for Graph class.
-   *
-   * @param nodes The nodes of the graph.
-   */
-  constructor(nodes: LabeledGraphNode<T, U>[]) {
     super(nodes);
 
     this.nodes = nodes;

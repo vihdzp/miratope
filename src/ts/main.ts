@@ -9,6 +9,7 @@ import * as Build from "./polytopes/classes/Build";
 import * as Product from "./polytopes/classes/Product";
 import CD from "./Data structures/CD";
 import Render from "./rendering/Render";
+import { setLanguage } from "./Translation/Language";
 
 /** @internal */
 declare global {
@@ -42,6 +43,8 @@ globalThis.P; // Temp variable. OFF imports to here.
 
 // Configures the basic attributes of the scene.
 globalThis.mainScene = new Scene();
+
+globalThis.setLanguage = setLanguage;
 
 // Declares aliases for functions declared in classes other than PolytopeB.
 

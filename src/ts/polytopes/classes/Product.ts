@@ -6,12 +6,13 @@
  * @category Polytope methods
  */
 
-import ConstructionNode, {
+import type ConstructionNode from "../../Data structures/Construction/base";
+import {
   Multiprism as CNMultiprism,
   Multipyramid as CNMultipyramid,
   Multitegum as CNMultitegum,
-  Type as CNType,
-} from "../../Data structures/ConstructionNode";
+} from "../../Data structures/Construction/Node";
+import CNType from "../../Data structures/Construction/Type";
 import Point from "../../geometry/Point";
 import { ElementList, PolytopeB, PolytopeC } from "../types";
 import * as Build from "./Build";

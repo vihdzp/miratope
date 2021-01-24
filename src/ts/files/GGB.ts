@@ -1,7 +1,7 @@
 import * as JSZip from "jszip";
 import Point from "../geometry/Point";
 import { PolytopeB } from "../polytopes/types";
-import * as Translation from "../Translation/Translation";
+import * as Message from "../Translation/Basic/Message";
 import * as Library from "./Library";
 
 export interface GGBOptions {
@@ -281,7 +281,7 @@ export const saveAsGGB = function (
 
   // Closing tags.
   file += "</construction></geogebra>";
-  Library.setFileName(Translation.firstToUpper(P.getName()) + ".ggb");
+  Library.setFileName(Message.firstToUpper(P.getName()) + ".ggb");
 
   // Save file.
   ggb.file("geogebra.xml", file);

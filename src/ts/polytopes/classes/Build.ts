@@ -13,8 +13,8 @@ import {
   Cupola as CNCupola,
   CupolaicBlend as CNCupolaicBlend,
   Polygon as CNPolygon,
-  Pyramid as CNPyramid,
-} from "../../Data structures/ConstructionNode";
+  Multipyramid as CNMultipyramid,
+} from "../../Data structures/Construction/Node";
 import { FlagClass } from "../../Data structures/flags";
 import { ConcreteGroup } from "../../Data structures/groups";
 import Point from "../../geometry/Point";
@@ -813,7 +813,7 @@ export const extrudeToPyramid = function (
     }
   }
 
-  const construction = new CNPyramid(P.construction);
+  const construction = new CNMultipyramid([P.construction]);
   P.setConstruction(construction);
   return P;
 };
