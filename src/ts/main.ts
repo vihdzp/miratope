@@ -1,4 +1,4 @@
-import "./Translation/load";
+import { Language, setLanguage } from "./Translation/Language";
 import Point from "./geometry/Point";
 import Scene from "./rendering/Scene";
 import * as Library from "./files/Library";
@@ -9,7 +9,6 @@ import * as Build from "./polytopes/classes/Build";
 import * as Product from "./polytopes/classes/Product";
 import CD from "./Data structures/CD";
 import Render from "./rendering/Render";
-import { setLanguage } from "./Translation/Language";
 
 /** @internal */
 declare global {
@@ -45,6 +44,7 @@ globalThis.P; // Temp variable. OFF imports to here.
 globalThis.mainScene = new Scene();
 
 globalThis.setLanguage = setLanguage;
+globalThis.Language = Language;
 
 // Declares aliases for functions declared in classes other than PolytopeB.
 

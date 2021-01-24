@@ -100,10 +100,80 @@ export default class Ending {
     return name;
   }
 
+  /**
+   * Helper function for [[`BaseLanguage.toAdjective`]].
+   * Finds the ending that fits a string among a list of endings.
+   * Uses a modified binary search.
+   *
+   * @param name The string for which we want to match an ending.
+   * @param endings The sorted list of endings that `name` will be compared to.
+   * @returns The first ending that matches, or `null` if none does.
+   */
+  static findEnding(name: string, endings: Ending[]): Ending | null {
+    let first: number;
+    let mid: number;
+    let last: number;
+    let firstMatch = 0;
+    let lastMatch: number = endings.length - 1;
+    let k = 1; // The number of characters we're checking.
+    let backup = -1;
+
+    // Adds one letter of name at a time.
+    // Searches for the least and greatest elements of _endings
+    // that are compatible with the observed letters.
+    while (lastMatch !== firstMatch) {
+      // If the first (shorter) possibility fits, and no other (longer one)
+      // does, we'll use that one.
+      if (endings[firstMatch].string.length < k) backup = firstMatch;
+      else backup = -1;
+
+      // Finds firstMatch.
+      first = firstMatch;
+      last = lastMatch;
+      while (last - first > 1) {
+        mid = Math.floor((first + last) / 2);
+        if (Ending.compare(name, endings[mid].string, k) <= 0) last = mid;
+        else first = mid;
+      }
+
+      if (Ending.compare(name, endings[first].string, k) === 0) {
+        firstMatch = first;
+      } else firstMatch = last;
+
+      // Finds lastMatch.
+      first = firstMatch;
+      last = lastMatch;
+      while (last - first > 1) {
+        mid = Math.floor((first + last) / 2);
+        if (Ending.compare(name, endings[mid].string, k) < 0) last = mid;
+        else first = mid;
+      }
+
+      if (Ending.compare(name, endings[last].string, k) === 0) lastMatch = last;
+      else lastMatch = first;
+
+      k++;
+    }
+
+    // If at some point, only one match fits,
+    // we check if it fits the whole string.
+    // Note: we haven't checked whether the (k - 1)th character is correct.
+    const endingStr = endings[firstMatch].string;
+    for (k--; k <= endingStr.length; k++) {
+      // No match.
+      const nameChar = name.charAt(name.length - k).toLowerCase();
+      const endChar = endingStr.charAt(endingStr.length - k).toLowerCase();
+      if (nameChar !== endChar) return endings[backup] || null;
+    }
+
+    // If the match does fit, we return it.
+    return endings[firstMatch];
+  }
+
   /* Compares the kth to last (and therefore the last k characters backwards) of
     name with _endings kth entry,
     in alphabetical order. */
-  static compare(name: string, endingStr: string, k: number): number {
+  private static compare(name: string, endingStr: string, k: number): number {
     const i = name.length - k;
     const j = endingStr.length - k;
 

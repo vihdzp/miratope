@@ -17,12 +17,6 @@ export default class en extends BaseLanguage {
     super();
   }
 
-  plain(n: number, dimension: number, options: Options = {}): string {
-    return (
-      this.greekPrefix(n, options) + this.polytopeEnding(dimension, options)
-    );
-  }
-
   polytopeEnding(d: number, options: Options = {}): string {
     options.count ||= 1;
 

@@ -41,10 +41,10 @@ export default abstract class BaseLanguage {
    * @param gender The grammatical gender to use.
    * @returns The polytope name as an adjective.
    * @example
-   * //Sets language to English.
+   * // Sets language to English.
    * setLanguage("en");
    *
-   * //Cubical
+   * // "cubic"
    * console.log(Language.toAdjective("cube"));
    */
   toAdjective(name: string, gender: Gender): string {
@@ -68,73 +68,25 @@ export default abstract class BaseLanguage {
     }
   }
 
-  // Helper function for toAdjective.
-  // Finds the ending that fits a string among a list of endings.
-  // Returns its index. -1 if no ending fits.
-  // Uses a modified binary search.
+  /**
+   * Calls [[`Ending.findEnding`]] using the language's list of endings.
+   *
+   * @param name The string for which we want to match an ending.
+   * @returns The first ending that matches, or `null` if none does.
+   */
   private findEnding(name: string): Ending | null {
-    const endings = this.endings;
-
-    let first: number;
-    let mid: number;
-    let last: number;
-    let firstMatch = 0;
-    let lastMatch: number = endings.length - 1;
-    let k = 1; // The number of characters we're checking.
-    let backup = -1;
-
-    // Adds one letter of name at a time.
-    // Searches for the least and greatest elements of _endings
-    // that are compatible with the observed letters.
-    while (lastMatch !== firstMatch) {
-      // If the first (shorter) possibility fits, and no other (longer one)
-      // does, we'll use that one.
-      if (endings[firstMatch].string.length < k) backup = firstMatch;
-      else backup = -1;
-
-      // Finds firstMatch.
-      first = firstMatch;
-      last = lastMatch;
-      while (last - first > 1) {
-        mid = Math.floor((first + last) / 2);
-        if (Ending.compare(name, endings[mid].string, k) <= 0) last = mid;
-        else first = mid;
-      }
-
-      if (Ending.compare(name, endings[first].string, k) === 0) {
-        firstMatch = first;
-      } else firstMatch = last;
-
-      // Finds lastMatch.
-      first = firstMatch;
-      last = lastMatch;
-      while (last - first > 1) {
-        mid = Math.floor((first + last) / 2);
-        if (Ending.compare(name, endings[mid].string, k) < 0) last = mid;
-        else first = mid;
-      }
-
-      if (Ending.compare(name, endings[last].string, k) === 0) lastMatch = last;
-      else lastMatch = first;
-
-      k++;
-    }
-
-    // If at some point, only one match fits,
-    // we check if it fits the whole string.
-    // Note: we haven't checked whether the (k - 1)th character is correct.
-    const endingStr = endings[firstMatch].string;
-    for (k--; k <= endingStr.length; k++) {
-      // No match.
-      const nameChar = name.charAt(name.length - k).toLowerCase();
-      const endChar = endingStr.charAt(endingStr.length - k).toLowerCase();
-      if (nameChar !== endChar) return endings[backup] || null;
-    }
-
-    // If the match does fit, we return it.
-    return endings[firstMatch];
+    return Ending.findEnding(name, this.endings);
   }
 
+  /**
+   * Adds an appropriately declensed adjective to a noun.
+   *
+   * @param adj The adjective, already declensed.
+   * @param noun The noun to which the adjective is added.
+   * @param options Additional options.
+   * @returns A string with the adjective + noun combination in the correct
+   * order.
+   */
   addAdjective(adj: string, noun: string, options: Options = {}): string {
     let res: string;
 
@@ -194,19 +146,19 @@ export default abstract class BaseLanguage {
     return Gender.male;
   }
 
-  /** The grammatical gender of d-hypercube. */
+  /** The grammatical gender of "d-hypercube". */
   hypercubeGender(d: number): Gender {
     d;
     return Gender.male;
   }
 
-  /** The grammatical gender of d-simplex. */
+  /** The grammatical gender of "d-simplex". */
   simplexGender(d: number): Gender {
     d;
     return Gender.male;
   }
 
-  /** The grammatical gender of d-orthoplex. */
+  /** The grammatical gender of "d-orthoplex". */
   crossGender(d: number): Gender {
     d;
     return Gender.male;
@@ -394,7 +346,8 @@ export default abstract class BaseLanguage {
   polytopeEnding(d: number, options: Options = {}): string {
     options.count ||= 1;
 
-    if (d > 31) return d + "-polytope" + (options.count > 1 ? "s" : "");
+    if (d === 2) return Message.get("misc/gon", options);
+    if (d > 31) return d + "-" + Message.get("shape/polytope", options);
 
     return this.element(d - 1, options);
   }
@@ -426,15 +379,16 @@ export default abstract class BaseLanguage {
       );
     }
 
-    // Counts the number of stellation non-compounds.
-    let count: number;
-    // Gets the index of {n/d} among these.
-    let index = 0;
-    let i = 2;
-
     // Any polygon with more than 42 sides has at least 6 non-compound
     // stellations.
     if (n > 42) return this.simpleStar(n, d);
+
+    // Counts the number of stellation non-compounds.
+    let count: number;
+
+    // Gets the index of {n/d} among these.
+    let index = 0;
+    let i = 2;
 
     // Calculates the index.
     while (i < d)
