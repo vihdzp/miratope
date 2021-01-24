@@ -107,15 +107,15 @@ export const openFile = function (e: Event | string): void {
     // Handles the file according to its extension.
     switch (ext) {
       case "off":
-        reader.onload = function (e: ProgressEvent<FileReader>) {
-          onloadOFF((e.target as FileReader).result as string);
+        reader.onload = function (ev: ProgressEvent<FileReader>) {
+          onloadOFF((ev.target as FileReader).result as string);
         };
         reader.readAsText(file);
         break;
       case "ggb":
-        reader.onload = function (e: ProgressEvent<FileReader>) {
-          if (e.target && e.target.result) {
-            JSZip.loadAsync(e.target.result).then(function (zip: JSZip) {
+        reader.onload = function (ev: ProgressEvent<FileReader>) {
+          if (ev.target && ev.target.result) {
+            JSZip.loadAsync(ev.target.result).then(function (zip: JSZip) {
               const xml = zip.file("geogebra.xml");
               if (xml) xml.async("string").then(onloadGGB);
               else throw new Error("Invalid GeoGebra file!");

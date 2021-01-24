@@ -367,8 +367,8 @@ export class ConcreteGroup<T> extends Group<ConcreteGroupElement<T>> {
     );
   }
 
-  // The representation may behave completely differently from the abstract group
-  // so it isn't worth trusting
+  // The representation may behave completely differently from the abstract
+  // group so it isn't worth trusting.
   equal(
     elem1: ConcreteGroupElement<T>,
     elem2: ConcreteGroupElement<T>
@@ -416,8 +416,8 @@ export class ConcreteGroup<T> extends Group<ConcreteGroupElement<T>> {
       symmetryGens.push(threeNode);
     }
 
-    // Using a RewriteGroup here might be better but generating those is slightly
-    // unpleasant.
+    // Using a RewriteGroup here might be better but generating those is
+    // slightly unpleasant.
     // 3D and 4D RewriteGroups for debugging toPolytopeS.
     const abstractSymmetries = new RewriteGroup(4, [
       new RewriteRule([0, 0], []),
@@ -462,13 +462,13 @@ export class ConcreteGroup<T> extends Group<ConcreteGroupElement<T>> {
     const symmetryGens: MathJS.Matrix[] = [];
 
     // The first of the 3-nodes in the Coxeter Diagram.
-    const threeNode = MathJS.identity(n) as MathJS.Matrix;
+    let threeNode = MathJS.identity(n) as MathJS.Matrix;
     threeNode.swapRows(0, n - 1);
     symmetryGens.push(threeNode);
 
     // The other 3-nodes in the Coxeter Diagram.
     for (let i = 0; i < n - 1; i++) {
-      const threeNode = MathJS.identity(n) as MathJS.Matrix;
+      threeNode = MathJS.identity(n) as MathJS.Matrix;
       threeNode.swapRows(i, i + 1);
       symmetryGens.push(threeNode);
     }

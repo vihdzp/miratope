@@ -346,10 +346,12 @@ export default abstract class BaseLanguage {
   polytopeEnding(d: number, options: Options = {}): string {
     options.count ||= 1;
 
-    if (d === 2) return Message.get("misc/gon", options);
-    if (d > 31) return d + "-" + Message.get("shape/polytope", options);
-
-    return this.element(d - 1, options);
+    if (d === 1) return Message.get("misc/telon", options);
+    else if (d === 2) return Message.get("misc/gon", options);
+    else if (d === 3) return Message.get("misc/hedron", options);
+    else if (d === 4) return Message.get("misc/choron", options);
+    else if (d > 31) return d + "-" + Message.get("shape/polytope", options);
+    else return this.element(d - 1, options);
   }
 
   // Gives a name for {n / d}.

@@ -96,6 +96,10 @@ export default {
     crossed: "crossed",
     strophic: "strophic",
     element: "element",
+
+    telon: "telon",
     gon: "gon",
+    hedron: "hedron",
+    choron: "choron",
   },
 };

@@ -524,7 +524,7 @@ const getIndexOfTegumProduct = function (
   P: PolytopeC,
   Q: PolytopeC,
   memoizer: number[][],
-  tegum: boolean
+  tegumMode: boolean
 ): number {
   // Recall that the elements of a single dimension are added in order
   // nullitope * facet, vertex * ridge, ...
@@ -546,7 +546,7 @@ const getIndexOfTegumProduct = function (
     if (memoizer[m][n]) return memoizer[m][n] + offset;
   } else memoizer[m] = [];
 
-  if (m === 0 || n === Q.elementList.length - (tegum ? 1 : 0)) {
+  if (m === 0 || n === Q.elementList.length - (tegumMode ? 1 : 0)) {
     memoizer[m][n] = 0;
   } else if (m === 1) {
     memoizer[m][n] = memoizer[m - 1][n + 1] + Q.elementList[n].length;

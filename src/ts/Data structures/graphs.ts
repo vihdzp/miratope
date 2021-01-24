@@ -27,28 +27,39 @@ export class GraphNodeBase<T> {
   }
 
   /**
-   * Gets the connected component of a node in a graph.
+   * Gets the connected component of a node in a graph. When called from a child
+   * class, the return type of this function will always match whatever the type
+   * of [[`neighbors`]] is.
+   *
+   * This function shouldn't be called directly: use [[`getComponent`]] instead.
+   *
+   * @returns The connected component of `this`.
+   */
+  _getComponent(): GraphNodeBase<T>[] {
+    const components: GraphNodeBase<T>[] = [];
+    DFS(this);
+
+    return components;
+
+    // Auxiliary function, actually determines the connected component by
+    // performing a DFS.
+    function DFS(node: GraphNodeBase<T>): void {
+      components.push(node);
+      node.traversed = true;
+
+      for (let i = 0; i < node.neighbors.length; i++)
+        if (!node.neighbors[i].traversed) DFS(node.neighbors[i]);
+    }
+  }
+
+  /**
+   * Gets the connected component of a node in a graph. When inherited, this
+   * method should have the return type of the associated graph class.
    *
    * @returns The connected component of `this`.
    */
   getComponent(): GraphBase<T> {
-    const components: GraphNodeBase<T>[] = [];
-    _getComponent(this);
-
-    // Resets the traversed variable in all of the nodes.
-    for (let i = 0; i < components.length; i++) components[i].traversed = false;
-
-    return new GraphBase(components);
-
-    // Auxiliary function, actually determines the connected component.
-    function _getComponent(node: GraphNodeBase<T>): void {
-      components.push(node);
-      node.traversed = true;
-
-      for (let i = 0; i < node.neighbors.length; i++) {
-        if (!node.neighbors[i].traversed) _getComponent(node.neighbors[i]);
-      }
-    }
+    return new GraphBase(this._getComponent());
   }
 }
 
@@ -93,6 +104,27 @@ export class GraphBase<T> {
   size(): number {
     return this.nodes.length;
   }
+
+  /**
+   * Gets the connected components of the graph.
+   *
+   * @returns An array with all of the connected components of the graph.
+   */
+  getComponents(): GraphBase<T>[] {
+    const components: GraphBase<T>[] = [];
+    const size = this.size();
+
+    // Puts the connected components in an array.
+    for (let i = 0; i < size; i++) {
+      const node = this.nodes[i];
+      if (!node.traversed) components.push(node.getComponent());
+    }
+
+    // Resets visited attribute.
+    for (let i = 0; i < size; i++) this.nodes[i].traversed = false;
+
+    return components;
+  }
 }
 
 /**
@@ -136,7 +168,7 @@ export class GraphNode<T> extends GraphNodeBase<T> {
    * @returns The connected component of `this`.
    */
   getComponent(): Graph<T> {
-    return super.getComponent() as Graph<T>;
+    return new Graph(this._getComponent() as GraphNode<T>[]);
   }
 }
 

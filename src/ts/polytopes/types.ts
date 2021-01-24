@@ -465,8 +465,7 @@ export class PolytopeS<T> extends PolytopeB {
     console.log("Descending simplifiers");
 
     for (let i = 0; i < this.dimensions; i++) {
-      const lastSimplifier =
-        descendingSimplifiers[descendingSimplifiers.length - 1];
+      lastSimplifier = descendingSimplifiers[descendingSimplifiers.length - 1];
 
       console.log(lastSimplifier, this.simplifierCosets(lastSimplifier));
 
@@ -559,14 +558,11 @@ export class PolytopeS<T> extends PolytopeB {
 
       for (let j = 0; j < locationsLengths[i]; j++) elements.push([]);
 
-      for (let j = 0; j < domains.length; j++) {
+      for (let j = 0; j < domains.length; j++)
         for (let k = 0; k < this.flagClasses.length; k++) {
           const flag = new Flag(k, domains[j]);
-          if (
-            !this.equalFlags(flag, intersectionSimplifiers[i - 1].get(flag))
-          ) {
+          if (!this.equalFlags(flag, intersectionSimplifiers[i - 1].get(flag)))
             continue;
-          }
 
           const leftFlag = elementSimplifiers[i - 1].get(flag);
           const rightFlag = elementSimplifiers[i].get(flag);
@@ -575,7 +571,6 @@ export class PolytopeS<T> extends PolytopeB {
 
           elements[rightID].push(leftID);
         }
-      }
 
       console.log(elements);
       elementList.push(elements);

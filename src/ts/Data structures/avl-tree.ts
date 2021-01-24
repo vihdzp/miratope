@@ -347,7 +347,7 @@ export default class AvlTree<T> {
    * @param root The node to search.
    * @returns The node with the minimum key in the tree.
    */
-  private static minValueNode<T>(root: AvlNode<T>): AvlNode<T> {
+  private static minValueNode<U>(root: AvlNode<U>): AvlNode<U> {
     let current = root;
     while (current.left) current = current.left;
     return current;
@@ -375,7 +375,7 @@ export default class AvlTree<T> {
    * @param root The node to search.
    * @returns The node with the maximum key in the tree.
    */
-  private static maxValueNode<T>(root: AvlNode<T>): AvlNode<T> {
+  private static maxValueNode<U>(root: AvlNode<U>): AvlNode<U> {
     let current = root;
     while (current.right) current = current.right;
     return current;
@@ -446,7 +446,7 @@ export default class AvlTree<T> {
    * @param node The node to get the difference from.
    * @returns The BalanceState of the node.
    */
-  static getBalanceState<T>(node: AvlNode<T>): BalanceState {
+  static getBalanceState<U>(node: AvlNode<U>): BalanceState {
     return (node.leftHeight() - node.rightHeight()) as BalanceState;
   }
 }

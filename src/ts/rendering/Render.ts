@@ -62,8 +62,7 @@ export default abstract class Render {
       // Every vertex should *always* have two adjacent vertices.
       Render.vertexDLL = [new LinkedListNode(Q.elementList[0][cycle[0]])];
 
-      let j: 0 | 1;
-      for (j = 0; j < cycle.length - 1; j++) {
+      for (let j = 0; j < cycle.length - 1; j++) {
         Render.vertexDLL[j + 1] = new LinkedListNode(
           Q.elementList[0][cycle[j + 1]]
         );
@@ -77,9 +76,9 @@ export default abstract class Render {
       // Tries to find two non-equal points. If all points are the same, doesn't
       // render the face.
       let a = 1;
-      while (Point.equal(v0, Render.vertexDLL[a].value)) {
+      while (Point.equal(v0, Render.vertexDLL[a].value))
         if (++a >= Render.vertexDLL.length) continue faceLoop;
-      }
+
       const va = Render.vertexDLL[a].value;
 
       // Tries to find three non-collinear points. If all points are collinear,
@@ -100,22 +99,19 @@ export default abstract class Render {
 
       Global.index0 = 0;
       Global.index1 = 1;
-      for (let j = 0; j < v0.dimensions(); j++) {
-        for (let k = j + 1; k < v0.dimensions(); k++) {
+      for (let j = 0; j < v0.dimensions(); j++)
+        for (let k = j + 1; k < v0.dimensions(); k++)
           if ((area = Space.area(v0, va, vb, j, k)) > maxArea) {
             Global.index0 = j;
             Global.index1 = k;
             maxArea = area;
           }
-        }
-      }
 
       // Event queue for Bentley-Ottmann, stores vertices.
       // Sorts EQ by lexicographic order of the vertices.
       Render.EQ = new AvlTree<LinkedListNode<Point>>(Render.order);
-      for (let j = 0; j < Render.vertexDLL.length; j++) {
+      for (let j = 0; j < Render.vertexDLL.length; j++)
         Render.EQ.insert(Render.vertexDLL[j]);
-      }
 
       // Bentley-Ottmann:
       while (!Render.EQ.isEmpty()) {
