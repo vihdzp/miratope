@@ -53,6 +53,16 @@ export abstract class PolytopeB {
   getName(): string {
     return this.construction.getName();
   }
+
+  /**
+   * Sets the ConstructionNode of a polytope.
+   *
+   * @param construction The new ConstructionNode.
+   */
+  setConstruction(construction: ConstructionNode<unknown>): void {
+    this.construction = construction;
+    construction.polytope = this;
+  }
 }
 
 /**
@@ -99,16 +109,6 @@ export class PolytopeC extends PolytopeB {
     this.spaceDimensions = this.elementList[0]
       ? this.elementList[0][0].dimensions()
       : -1;
-  }
-
-  /**
-   * Sets the ConstructionNode of a polytope.
-   *
-   * @param construction The new ConstructionNode.
-   */
-  setConstruction(construction: ConstructionNode<unknown>): void {
-    this.construction = construction;
-    construction.polytope = this;
   }
 
   /**

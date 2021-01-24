@@ -8,6 +8,10 @@ export const _setLanguage = function (language: BaseLanguage): void {
   _language = language;
 };
 
+/**
+ * The base class for all other languages. Specifies attributes of the language,
+ * and contains method stubs that should mostly work across most languages.
+ */
 export default abstract class BaseLanguage {
   /** Whether nouns are capitalized. */
   nounCapitalization = false;
@@ -38,7 +42,7 @@ export default abstract class BaseLanguage {
    * @returns The polytope name as an adjective.
    * @example
    * //Sets language to English.
-   * Translation.setLanguage("en");
+   * setLanguage("en");
    *
    * //Cubical
    * console.log(Language.toAdjective("cube"));
@@ -400,9 +404,13 @@ export default abstract class BaseLanguage {
   // uses the [small/-/medial/great/grand] n-gram naming scheme.
   // For everything else, uses d-strophic n-gon.
   regularPolygon(n: number, d?: number, options: Options = {}): string {
-    if (d === undefined || d === 1) return this.plain(n, 2);
-    if (n === 3 && d === 1) return Message.get("shape/triangle", options);
-    if (n === 4 && d === 1) return Message.get("shape/square", options);
+    d ||= 1;
+
+    if (d === 1) {
+      if (n === 3) return Message.get("shape/triangle", options);
+      else if (n === 4) return Message.get("shape/square", options);
+      else return this.plain(n, 2);
+    }
 
     options.uppercase ||= this.nounCapitalization;
 

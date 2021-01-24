@@ -14,6 +14,9 @@ import {
   CupolaicBlend as CNCupolaicBlend,
   Polygon as CNPolygon,
   Multipyramid as CNMultipyramid,
+  Hypercube as CNHypercube,
+  Simplex as CNSimplex,
+  Cross as CNCross,
 } from "../../Data structures/Construction/Node";
 import { FlagClass } from "../../Data structures/flags";
 import { ConcreteGroup } from "../../Data structures/groups";
@@ -279,7 +282,10 @@ export const hypercube = function (n: number): PolytopeB {
   for (let i = 0; i < n; i++) coordinates.push(0.5);
 
   const vertices = [new Point(coordinates)];
-  return new PolytopeS(symmetries, [flagClass], vertices, n);
+  const P = new PolytopeS(symmetries, [flagClass], vertices, n);
+
+  P.setConstruction(new CNHypercube(n));
+  return P;
 };
 
 /**
@@ -300,7 +306,10 @@ export const simplex = function (n: number): PolytopeB {
   for (let i = 0; i < n; i++) coordinates.push(1);
 
   const vertices = [new Point(coordinates)];
-  return new PolytopeS(symmetries, [flagClass], vertices, n);
+  const P = new PolytopeS(symmetries, [flagClass], vertices, n);
+
+  P.setConstruction(new CNSimplex(n));
+  return P;
 };
 
 /**
@@ -322,7 +331,10 @@ export const cross = function (n: number): PolytopeB {
   coordinates.push(Math.SQRT1_2);
 
   const vertices = [new Point(coordinates)];
-  return new PolytopeS(symmetries, [flagClass], vertices, n);
+  const P = new PolytopeS(symmetries, [flagClass], vertices, n);
+
+  P.setConstruction(new CNCross(n));
+  return P;
 };
 
 /**
@@ -652,21 +664,27 @@ export const cupolaicBlend = function (n: number, d: number): PolytopeB {
   if (d === undefined) d = 1;
 
   const x = n / d;
-  const r1 = 1 / (2 * Math.sin(Math.PI / x)); // Radius of the smaller base.
-  const r2 = 1 / (2 * Math.sin(Math.PI / (2 * x))); // Radius of the larger base.
-  // Temporary variable.
+
+  // r1: Radius of the smaller base.
+  // r2: Radius of the larger base.
+  const r1 = 1 / (2 * Math.sin(Math.PI / x)),
+    r2 = 1 / (2 * Math.sin(Math.PI / (2 * x)));
+
+  // Auxiliary variable, used to calculate h0.
   const t =
     1 / (2 * Math.tan(Math.PI / x)) - 1 / (2 * Math.tan(Math.PI / (2 * x)));
-  // Distance between bases.
-  const h0 = Math.sqrt(1 - t * t);
-  // Distance between circumcenter and smaller base.
-  const h1 = ((r2 * r2 - r1 * r1) / h0 + h0) / 2;
-  // Distance between circumcenter and larger base.
-  const h2 = h1 - h0;
+
+  // h0: Distance between bases.
+  // h1: Distance between circumcenter and smaller base.
+  // h2: Distance between circumcenter and larger base.
+  const h0 = Math.sqrt(1 - t * t),
+    h1 = ((r2 * r2 - r1 * r1) / h0 + h0) / 2,
+    h2 = h1 - h0;
 
   // The bases of the cupola.
-  const base1: number[] = [];
-  const base2: number[] = [];
+  const base1: number[] = [],
+    base2: number[] = [];
+
   // List of elements of the cupola.
   const newElementList: ElementList = [[], [], [base1, base2], [[]]];
 
