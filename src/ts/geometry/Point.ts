@@ -60,8 +60,18 @@ export default class Point {
    *
    * @returns The projected point.
    */
-  project(): Point {
-    return Point.padRight(this, 3 - this.coordinates.length);
+  project(P: Point): Point {
+    return P.clone().scale(this.dot(P) / P.sqMagnitude());
+  }
+
+  dot(P: Point): number {
+    let res = 0;
+    const dim = this.dimensions();
+
+    for(let i = 0; i < dim; i++)
+      res += this.coordinates[i] * P.coordinates[i];
+    
+    return res;
   }
 
   /**
@@ -226,6 +236,15 @@ export default class Point {
    * @returns The distance of a point to the origin.
    */
   magnitude(): number {
+    return Math.sqrt(this.sqMagnitude());
+  }
+
+  /**
+   * Calculates a point's magnitude.
+   *
+   * @returns The distance of a point to the origin.
+   */
+  sqMagnitude(): number {
     let res = 0;
 
     for (let i = 0; i < this.coordinates.length; i++) {
@@ -233,7 +252,7 @@ export default class Point {
       res += t * t;
     }
 
-    return Math.sqrt(res);
+    return res;
   }
 
   /**

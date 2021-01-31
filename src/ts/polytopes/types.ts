@@ -5,6 +5,7 @@ import {
 } from "../Data structures/Construction/Node";
 import LinkedListNode from "../Data structures/LinkedListNode";
 import Point from "../geometry/Point";
+import * as Space from "../geometry/Space";
 import type { ConcreteGroup } from "../Data structures/groups";
 import Flag, { FlagClass, FlagMap } from "../Data structures/flags";
 
@@ -149,6 +150,65 @@ export class PolytopeC extends PolytopeB {
   circumradius(): number {
     const els = this.toPolytopeC().elementList;
     return els[0] ? els[0][0].magnitude() : 0;
+  }
+
+  /**
+   * Calculates the circumcenter of the polytope.
+   *
+   * @returns Either the circumcenter of the polytope, or null if it doesn't
+   * exist.
+   */
+  circumcenter(): Point | null {
+    const vertices = this.elementList[0];
+    const epsilon = 1e-9;
+
+    // If this is the nullitope, return null.
+    if (vertices === undefined) return null;
+
+    // An array of orthogonal vectors that span the space of all of the points
+    // we've checked up to a certain point.
+    const vectors: Point[] = [];
+
+    // The first point of the polytope.
+    const P = vertices[0];
+
+    // The circumcenter of the points that we've checked as of yet.
+    const O = vertices[0];
+    console.log("O: ", O.clone());
+    // Keeps track of the vectors array and of O, adding one point at a time.
+    for (let i = 1; i < vertices.length; i++) {
+      // The next point.
+      const Q = vertices[i];
+      console.log("Q: ", Q.clone());
+
+      // Calculates the projection of Q onto the hyperplane in which all of the
+      // points we've added lie.
+      const v = P.clone().subtract(Q);
+      for (let j = 0; j < vectors.length; j++) v.add(Q.project(vectors[j]));
+
+      // If Q lies outside of the hyperplane of the previous points:
+      if (v.magnitude() > epsilon) {
+        // Q - v is perpendicular to the previous vectors, by construction.
+        vectors.push(v);
+        console.log("v: ", v.clone());
+
+        // Calculates the new circumcenter.
+        console.log("P: ", P.clone());
+        const k =
+          (Space.distanceSq(O, P) - Space.distance(O, Q)) /
+          (2 * P.clone().subtract(Q).dot(v));
+        console.log("k: ", k);
+        O.add(v.clone().scale(k));
+        console.log("O: ", O.clone());
+      }
+      // If Q lies in the hyperplane of the previous points, check that the
+      // circumcenter still works.
+      else if (Math.abs(Space.distance(P, Q) - Space.distance(Q, O)) > epsilon)
+        return null;
+    }
+
+    // Returns the circumcenter.
+    return O;
   }
 
   move(P: Point, mult: number): PolytopeC {

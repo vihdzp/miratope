@@ -252,7 +252,7 @@ export default class Caret {
     const initIndx = this.pos;
 
     do {
-      if (Caret.isNumericChar(this.getChar())) this.increment();
+      if (this.isNumericChar()) this.increment();
       else break; // Leave the do-while loop immediately
     } while (!this.EOF); // Until you hit EOF
 
@@ -268,10 +268,12 @@ export default class Caret {
     return res;
   }
 
-  private static isNumericChar(char: string): boolean {
-    const code = char.charCodeAt(0);
+  private isNumericChar(): boolean {
+    const char = this.getChar();
+    if (["+", "-", ".", "e", "E"].includes(char)) return true;
 
-    return char in ["+", "-", ".", "e", "E"] || (48 <= code && code <= 57);
+    const code = char.charCodeAt(0);
+    return 48 <= code && code <= 57;
   }
 
   /**

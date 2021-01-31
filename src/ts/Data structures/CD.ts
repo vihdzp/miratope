@@ -351,8 +351,8 @@ export class CDNode extends GraphNodeBase<string> {
    *
    * @returns The connected component of `this`.
    */
-  getComponent(): CDGraph {
-    return new CDGraph(this._getComponent() as CDNode[]);
+  getComponent(reset = true): CDGraph {
+    return new CDGraph(this._getComponent(reset) as CDNode[]);
   }
 
   /** Stores all of the possible node labels and their corresponding values. */

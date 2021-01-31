@@ -317,6 +317,8 @@ export class ConcreteGroupElement<T> {
  * abstract group. In practice, the concrete group used is always a
  * [[`RewriteGroup`]]. This way, we can both mitigate the floating point errors
  * and the comparatively slow algorithms for pure matrix groups.
+ *
+ * @typeParam T The type of the [[`groupElement`]].
  */
 export class ConcreteGroup<T> extends Group<ConcreteGroupElement<T>> {
   generators: ConcreteGroupElement<T>[];

@@ -1,13 +1,23 @@
-"use strict";
+import * as Space from "../geometry/Space";
+import { PolytopeC } from "./types";
+import { ConcreteGroup } from "../Data structures/groups";
+
 const ATTEMPTS = 10;
 
-//NOT YET FUNCTIONAL
-//Tries to create a uniform polytope with edge length 1 from a given verf, with a given symmetry.
-//Doesn't yet work, depends on various methods that haven't been coded yet.
-Polytope.createFromVerf = function (V, S) {
-  V = V.clone(); //Clones the verf, so that the original isn't modified.
+/**
+ * Tries to create a uniform polytope with edge length 1 from a given verf, with 
+ * a given symmetry.
+ * 
+ * Doesn't yet work, depends on various methods that haven't been coded yet.
+ * 
+ * @param V The verf of the polytope. 
+ * @param S The symmetry group of the polytope.
+ */
+/*export const createFromVerf = function (V: PolytopeC, S: ConcreteGroup<number[]>) {
+  //Clones the verf, so that the original isn't modified.
+  //V = V.clone(); 
 
-  var A = V.circumcenter(); //Apex of verf pyramid.
+  let A = V.circumcenter(); //Apex of verf pyramid.
   var r = Space.distanceSq(A, V.elementList[0][0]); //Squared circumradius.
 
   //r has to be less than 1.
@@ -103,7 +113,7 @@ Polytope._matrixFromAngles = function (angles, d) {
     }
 
   return result;
-};
+};*/
 
 /**
  * Taken from optimize.js
@@ -118,7 +128,7 @@ Polytope._matrixFromAngles = function (angles, d) {
  * denotes the best argument found thus far, and fncvalue, which is a
  * value of the function at the best found argument.
  */
-Polytope._minimize = function (fnc, x0) {
+/*Polytope._minimize = function (fnc, x0) {
   var eps = 1e-2;
 
   var convergence = false;
@@ -166,4 +176,4 @@ Polytope._minimize = function (fnc, x0) {
   solution.fncvalue = fx;
 
   return solution;
-};
+};*/

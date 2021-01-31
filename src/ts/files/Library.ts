@@ -10,7 +10,7 @@
 import * as JSZip from "jszip";
 
 import { Name as CNName } from "../Data structures/Construction/Node";
-import { GraphNode } from "../Data structures/graphs";
+import { Graph, GraphNode } from "../Data structures/graphs";
 import Point from "../geometry/Point";
 import * as Build from "../polytopes/classes/Build";
 import { ElementList, PolytopeC } from "../polytopes/types";
@@ -286,7 +286,7 @@ const onloadGGB = function (contents: string): void {
 
   // Gets components.
   // Graph of incidences between facets.
-  const graph: GraphNode<number>[] = [];
+  const graph: Graph<number> = new Graph();
   const facets = elementList[2];
 
   for (let i = 0; i < facets.length; i++) graph.push(new GraphNode(i));
@@ -294,13 +294,14 @@ const onloadGGB = function (contents: string): void {
   // Calculates incidences.
   for (let i = 0; i < facets.length; i++) {
     for (let j = i + 1; j < facets.length; j++) {
-      if (checkCommonElements(facets[i], facets[j])) graph[i].linkTo(graph[j]);
+      if (checkCommonElements(facets[i], facets[j]))
+        graph.nodes[i].linkTo(graph.nodes[j]);
     }
   }
 
   // Gets components.
   for (let i = 0; i < facets.length; i++) {
-    const component = graph[i].getComponent();
+    const component = graph.nodes[i].getComponent();
     if (component) elementList[3].push(component.values());
   }
 
@@ -376,13 +377,17 @@ const onloadOFF = function (contents: string): void {
   }
 
   // Adds vertices.
+  const vertices = elementList[0];
   for (let i = 0; i < elementCount[0]; i++) {
     const coords: number[] = [];
     for (let j = 0; j < dimensions; j++) coords.push(caret.readNumber());
-    elementList[0].push(new Point(coords));
+    vertices.push(new Point(coords));
   }
 
   if (dimensions >= 2) {
+    const edges = elementList[1];
+    const faces = elementList[2];
+
     // Adds faces and edges (or compounds in the special case).
     for (let i = 0; i < elementCount[2]; i++) {
       const indices: number[] = [];
@@ -393,84 +398,66 @@ const onloadOFF = function (contents: string): void {
       for (let j = 0; j < elCount; j++) indices.push(caret.readNumber());
 
       // Creates edges.
-      for (let j = 0; j < elCount - 1; j++) {
+      for (let j = 0; j < elCount; j++) {
         // Orders the edge's vertices.
         let x = indices[j];
-        let y = indices[j + 1];
+        let y = indices[(j + 1) % elCount];
+
         if (x < y) {
           const t = x;
           x = y;
           y = t;
         }
+
         const t = ((x + y + 1) * (x + y)) / 2 + y; // Cantor pairing function.
         if (edgeList[t] === undefined) {
           edgeList[t] = elementList[1].length;
-          elementList[1].push([x, y]);
+          edges.push([x, y]);
         }
         face.push(edgeList[t]);
       }
-      // Last edge.
-      let x = indices[0];
-      let y = indices[indices.length - 1];
-      if (x < y) {
-        const t = x;
-        x = y;
-        y = t;
-      }
-      const t = ((x + y + 1) * (x + y)) / 2 + y; // Cantor pairing function.
-      if (edgeList[t] === undefined) {
-        edgeList[t] = elementList[1].length;
-        elementList[1].push([x, y]);
-      }
-      face.push(edgeList[t]);
 
-      elementList[2].push(face);
+      faces.push(face);
     }
   }
 
   // Adds higher-dimensional elements.
-  for (let i = 3; i < dimensions; i++) {
+  for (let i = 3; i < dimensions; i++)
     for (let j = 0; j < elementCount[i]; j++) {
       const indices: number[] = [];
       const elCount = caret.readNumber();
+
       for (let t = 0; t < elCount; t++) indices.push(caret.readNumber());
       (elementList[i] as number[][]).push(indices);
     }
-  }
 
   // Gets components. The 1D case is trivial.
   if (dimensions === 1) {
-    elementList[1].push([]);
-    for (let i = 0; i < elementCount[0]; i++) elementList[1][0].push(i);
+    const edges = elementList[1];
+    edges.push([]);
+    for (let i = 0; i < elementCount[0]; i++) edges[0].push(i);
   }
 
   // Gets components in higher dimensions, except in 2D,
   // where they've already been retrieved.
   else if (dimensions >= 3) {
     // Graph of incidences between facets.
-    const graph: GraphNode<number>[] = [];
+    const graph: Graph<number> = new Graph();
     const facets: number[][] = elementList[dimensions - 1] as number[][];
     for (let i = 0; i < facets.length; i++) graph.push(new GraphNode(i));
 
     // Calculates incidences.
-    for (let i = 0; i < facets.length; i++) {
-      for (let j = i + 1; j < facets.length; j++) {
-        if (checkCommonElements(facets[i], facets[j])) {
-          graph[i].linkTo(graph[j]);
-        }
-      }
-    }
+    for (let i = 0; i < facets.length; i++)
+      for (let j = i + 1; j < facets.length; j++)
+        if (checkCommonElements(facets[i], facets[j]))
+          graph.nodes[i].linkTo(graph.nodes[j]);
 
     // Gets components.
-    for (let i = 0; i < facets.length; i++) {
-      const component = graph[i].getComponent();
-
-      if (component) {
-        (elementList[elementList.length - 1] as number[][]).push(
-          component.values()
-        );
-      }
-    }
+    const components = graph.getComponents();
+    for (let i = 0; i < components.length; i++)
+      (elementList[elementList.length - 1] as number[][]).push(
+        components[i].values()
+      );
   }
 
   globalThis.P = new PolytopeC(elementList, new CNName(fileName));

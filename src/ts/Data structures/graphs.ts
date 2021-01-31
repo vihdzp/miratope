@@ -35,16 +35,19 @@ export class GraphNodeBase<T> {
    *
    * @returns The connected component of `this`.
    */
-  _getComponent(): GraphNodeBase<T>[] {
-    const components: GraphNodeBase<T>[] = [];
+  _getComponent(reset: boolean): GraphNodeBase<T>[] {
+    const component: GraphNodeBase<T>[] = [];
     DFS(this);
 
-    return components;
+    if (reset)
+      for (let i = 0; i < component.length; i++) component[i].traversed = false;
+
+    return component;
 
     // Auxiliary function, actually determines the connected component by
     // performing a DFS.
     function DFS(node: GraphNodeBase<T>): void {
-      components.push(node);
+      component.push(node);
       node.traversed = true;
 
       for (let i = 0; i < node.neighbors.length; i++)
@@ -58,8 +61,8 @@ export class GraphNodeBase<T> {
    *
    * @returns The connected component of `this`.
    */
-  getComponent(): GraphBase<T> {
-    return new GraphBase(this._getComponent());
+  getComponent(reset = true): GraphBase<T> {
+    return new GraphBase(this._getComponent(reset));
   }
 }
 
@@ -77,7 +80,7 @@ export class GraphBase<T> {
    *
    * @param nodes The nodes of the graph.
    */
-  constructor(nodes: GraphNodeBase<T>[]) {
+  constructor(nodes: GraphNodeBase<T>[] = []) {
     this.nodes = nodes;
   }
 
@@ -89,11 +92,14 @@ export class GraphBase<T> {
   values(): T[] {
     const values: T[] = [];
 
-    for (let i = 0; i < this.nodes.length; i++) {
+    for (let i = 0; i < this.nodes.length; i++)
       values.push(this.nodes[i].value);
-    }
 
     return values;
+  }
+
+  push(node: GraphNodeBase<T>): void {
+    this.nodes.push(node);
   }
 
   /**
@@ -117,7 +123,7 @@ export class GraphBase<T> {
     // Puts the connected components in an array.
     for (let i = 0; i < size; i++) {
       const node = this.nodes[i];
-      if (!node.traversed) components.push(node.getComponent());
+      if (!node.traversed) components.push(node.getComponent(false));
     }
 
     // Resets visited attribute.
@@ -167,8 +173,8 @@ export class GraphNode<T> extends GraphNodeBase<T> {
    *
    * @returns The connected component of `this`.
    */
-  getComponent(): Graph<T> {
-    return new Graph(this._getComponent() as GraphNode<T>[]);
+  getComponent(reset = true): Graph<T> {
+    return new Graph(this._getComponent(reset) as GraphNode<T>[]);
   }
 }
 
@@ -186,7 +192,7 @@ export class Graph<T> extends GraphBase<T> {
    *
    * @param nodes The nodes of the graph.
    */
-  constructor(nodes: GraphNode<T>[]) {
+  constructor(nodes: GraphNode<T>[] = []) {
     super(nodes);
 
     this.nodes = nodes;
