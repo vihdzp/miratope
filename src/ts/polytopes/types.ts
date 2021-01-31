@@ -43,7 +43,7 @@ export abstract class PolytopeB {
   abstract scale(r: number): PolytopeB;
   abstract move(P: Point, mult: number): PolytopeB;
 
-  abstract circumradius(): number;
+  abstract circumradius(): number | null;
   abstract gravicenter(): Point;
 
   /**
@@ -119,9 +119,9 @@ export class PolytopeC extends PolytopeB {
    */
   scale(r: number): PolytopeC {
     if (!this.elementList[0]) return this;
-    for (let i = 0; i < this.elementList[0].length; i++) {
-      this.elementList[0][i].scale(r);
-    }
+
+    this.elementList[0] = this.elementList[0].map((x) => x.scale(r));
+
     return this;
   }
 
@@ -138,18 +138,21 @@ export class PolytopeC extends PolytopeB {
 
     for (let i = 0; i < d; i++) res.push(0);
 
-    for (let i = 0; i < vertices.length; i++) {
+    for (let i = 0; i < vertices.length; i++)
       for (let j = 0; j < d; j++) res[j] += vertices[i].coordinates[j];
-    }
 
     for (let i = 0; i < d; i++) res[i] /= vertices.length;
 
     return new Point(res);
   }
 
-  circumradius(): number {
-    const els = this.toPolytopeC().elementList;
-    return els[0] ? els[0][0].magnitude() : 0;
+  circumradius(): number | null {
+    if (!this.elementList[0]) return null;
+
+    const circ = this.circumcenter();
+    if (!circ) return null;
+
+    return Space.distance(this.elementList[0][0], circ);
   }
 
   /**
@@ -175,12 +178,11 @@ export class PolytopeC extends PolytopeB {
 
     // The circumcenter of the points that we've checked as of yet.
     let O = new Point(this.spaceDimensions);
-    console.log("O: ", O);
+
     // Keeps track of the vectors array and of O, adding one point at a time.
     for (let i = 1; i < vertices.length; i++) {
       // The next point, translated by P.
       const Q = vertices[i].subtract(P);
-      console.log("Q: ", Q);
 
       // Calculates the projection of Q onto the hyperplane in which all of the
       // points we've added lie.
@@ -192,13 +194,10 @@ export class PolytopeC extends PolytopeB {
       if (v.magnitude() > epsilon) {
         // v is perpendicular to the previous vectors, by construction.
         vectors.push(v);
-        console.log("v: ", v);
 
         // Calculates the new circumcenter.
         const k = (Space.distanceSq(O, Q) - O.sqMagnitude()) / (2 * Q.dot(v));
-        console.log("k: ", k);
         O = O.add(v.scale(k));
-        console.log("O: ", O);
       }
 
       // If Q lies in the hyperplane of the previous points, check that the
@@ -215,9 +214,7 @@ export class PolytopeC extends PolytopeB {
     if (!this.elementList[0]) return this;
     const Q = P.scale(mult);
 
-    for (let i = 0; i < this.elementList[0].length; i++) {
-      this.elementList[0][i].add(Q);
-    }
+    this.elementList[0] = this.elementList[0].map((x) => x.add(Q));
 
     return this;
   }
@@ -235,9 +232,8 @@ export class PolytopeC extends PolytopeB {
       let coords = vertices[i].coordinates;
 
       if (coords.length > dim) coords = coords.slice(0, dim);
-      else if (coords.length < dim) {
+      else if (coords.length < dim)
         for (let j = 0; j < dim - coords.length; j++) coords.push(0);
-      }
     }
 
     this.spaceDimensions = dim;
@@ -252,25 +248,23 @@ export class PolytopeC extends PolytopeB {
    * face in order.
    */
   faceToVertices(i: number): number[] {
-    if (!this.elementList[2] || !this.elementList[2][i]) {
+    const edges = this.elementList[1],
+      faces = this.elementList[2];
+
+    if (!edges || !faces || !faces[i])
       throw RangeError("The polytope does not have that many 2-faces!");
-    }
 
     // Enumerates the vertices in order.
     // A doubly linked list does the job easily.
     const vertexDLL: LinkedListNode<number>[] = [];
-    for (let j = 0; j < this.elementList[2][i].length; j++) {
-      const edge = (this.elementList[1] as number[][])[
-        this.elementList[2][i][j]
-      ];
+    for (let j = 0; j < faces[i].length; j++) {
+      const edge = edges[faces[i][j]];
 
-      if (vertexDLL[edge[0]] === undefined) {
+      if (vertexDLL[edge[0]] === undefined)
         vertexDLL[edge[0]] = new LinkedListNode<number>(edge[0]);
-      }
 
-      if (vertexDLL[edge[1]] === undefined) {
+      if (vertexDLL[edge[1]] === undefined)
         vertexDLL[edge[1]] = new LinkedListNode<number>(edge[1]);
-      }
 
       vertexDLL[edge[0]].linkTo(vertexDLL[edge[1]]);
     }
@@ -278,9 +272,7 @@ export class PolytopeC extends PolytopeB {
     // Cycle of vertex indices.
     // "this.elementList[1][this.elementList[2][i][0]][0]" is just some vertex
     // index.
-    return vertexDLL[
-      (this.elementList[1] as number[][])[this.elementList[2][i][0]][0]
-    ].getCycle();
+    return vertexDLL[edges[faces[i][0]][0]].getCycle();
   }
 
   /**
@@ -315,8 +307,10 @@ export class PolytopeC extends PolytopeB {
 export class PolytopeS<T> extends PolytopeB {
   /** The symmetry group of the polytope. */
   symmetries: ConcreteGroup<T>;
+
   /** Stores the interactions between flag classes. */
   flagClasses: FlagClass[];
+
   /** Stores a set of vertices that generates the entire polytope. */
   vertices: Point[];
   dimensions: number;
