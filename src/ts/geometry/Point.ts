@@ -45,32 +45,22 @@ export default class Point {
    * @returns A new Point object with the same coordinates as `this`.
    */
   clone(): Point {
-    const coordinates: number[] = [];
-
-    for (let i = 0; i < this.coordinates.length; i++) {
-      coordinates.push(this.coordinates[i]);
-    }
-
-    return new Point(coordinates);
+    return new Point([...this.coordinates]);
   }
 
   /**
-   * Projects the point into 3D.
-   * For now, just the simplest orthographic projection possible.
-   *
    * @returns The projected point.
    */
   project(P: Point): Point {
-    return P.clone().scale(this.dot(P) / P.sqMagnitude());
+    return P.scale(this.dot(P) / P.sqMagnitude());
   }
 
   dot(P: Point): number {
     let res = 0;
     const dim = this.dimensions();
 
-    for(let i = 0; i < dim; i++)
-      res += this.coordinates[i] * P.coordinates[i];
-    
+    for (let i = 0; i < dim; i++) res += this.coordinates[i] * P.coordinates[i];
+
     return res;
   }
 
@@ -90,12 +80,12 @@ export default class Point {
       );
     }
 
+    const res: number[] = [];
     // Adds the respective coordinates.
-    for (let i = 0; i < P.dimensions(); i++) {
-      this.coordinates[i] += P.coordinates[i];
-    }
+    for (let i = 0; i < P.dimensions(); i++)
+      res.push(this.coordinates[i] + P.coordinates[i]);
 
-    return this;
+    return new Point(res);
   }
 
   /**
@@ -114,12 +104,12 @@ export default class Point {
       );
     }
 
-    // Add the respective coordinates.
-    for (let i = 0; i < P.dimensions(); i++) {
-      this.coordinates[i] -= P.coordinates[i];
-    }
+    const res: number[] = [];
+    // Adds the respective coordinates.
+    for (let i = 0; i < P.dimensions(); i++)
+      res.push(this.coordinates[i] - P.coordinates[i]);
 
-    return this;
+    return new Point(res);
   }
 
   /**
@@ -130,12 +120,7 @@ export default class Point {
    * @returns The point `this`, but scaled.
    */
   scale(r: number): Point {
-    // Multiplies each of the coordinates of x by r.
-    for (let i = 0; i < this.dimensions(); i++) {
-      this.coordinates[i] = this.coordinates[i] * r;
-    }
-
-    return this;
+    return new Point(this.coordinates.map((x) => x * r));
   }
 
   /**
