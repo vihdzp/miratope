@@ -5,12 +5,12 @@ import { ConcreteGroup } from "../Data structures/groups";
 const ATTEMPTS = 10;
 
 /**
- * Tries to create a uniform polytope with edge length 1 from a given verf, with 
+ * Tries to create a uniform polytope with edge length 1 from a given verf, with
  * a given symmetry.
- * 
+ *
  * Doesn't yet work, depends on various methods that haven't been coded yet.
- * 
- * @param V The verf of the polytope. 
+ *
+ * @param V The verf of the polytope.
  * @param S The symmetry group of the polytope.
  */
 /*export const createFromVerf = function (V: PolytopeC, S: ConcreteGroup<number[]>) {
