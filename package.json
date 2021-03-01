@@ -29,7 +29,7 @@
     "globalize": "^1.6.0",
     "jszip": "^3.5.0",
     "mathjs": "^9.0.0",
-    "three": "^0.123.0",
+    "three": "^0.125.0",
     "typescript": "^4.1.3"
   },
   "devDependencies": {
